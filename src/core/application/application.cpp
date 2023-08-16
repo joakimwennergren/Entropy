@@ -18,7 +18,8 @@ Application::Application()
     }
 
     // Create a windowed mode window
-    _window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    _window = glfwCreateWindow(640, 480, "Symbios dev application", NULL, NULL);
+
     if (!_window)
     {
         PLOG_FATAL << "Could not create window!";
