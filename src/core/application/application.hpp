@@ -41,9 +41,10 @@ class Application
 {
 public:
     Application();
+
+public:
     virtual void Initialize() = 0;
     int Run();
 
-protected:
 private:
 };
