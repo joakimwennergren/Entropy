@@ -5,7 +5,10 @@
     <ClCompile Include="C:\Symbios\src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Symbios\src\core\application.cpp">
+    <ClCompile Include="C:\Symbios\src\core\application\application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Symbios\src\core\context\context.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

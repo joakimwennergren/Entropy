@@ -86,7 +86,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Symbios\src\core;C:\Symbios\external\CrossWindow\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Symbios\src;C:\Symbios\src\core\application;C:\Symbios\src\core\context;C:\Symbios\external\CrossWindow\src;C:\Symbios\external\plog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -104,10 +104,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;XWIN_WIN32=1;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Symbios\src\core;C:\Symbios\external\CrossWindow\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Symbios\src;C:\Symbios\src\core\application;C:\Symbios\src\core\context;C:\Symbios\external\CrossWindow\src;C:\Symbios\external\plog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Symbios\src\core;C:\Symbios\external\CrossWindow\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Symbios\src;C:\Symbios\src\core\application;C:\Symbios\src\core\context;C:\Symbios\external\CrossWindow\src;C:\Symbios\external\plog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -130,7 +130,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Symbios\src\core;C:\Symbios\external\CrossWindow\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Symbios\src;C:\Symbios\src\core\application;C:\Symbios\src\core\context;C:\Symbios\external\CrossWindow\src;C:\Symbios\external\plog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ExceptionHandling>Sync</ExceptionHandling>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -148,10 +148,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;XWIN_WIN32=1;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Symbios\src\core;C:\Symbios\external\CrossWindow\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Symbios\src;C:\Symbios\src\core\application;C:\Symbios\src\core\context;C:\Symbios\external\CrossWindow\src;C:\Symbios\external\plog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Symbios\src\core;C:\Symbios\external\CrossWindow\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Symbios\src;C:\Symbios\src\core\application;C:\Symbios\src\core\context;C:\Symbios\external\CrossWindow\src;C:\Symbios\external\plog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -174,7 +174,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Symbios\src\core;C:\Symbios\external\CrossWindow\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Symbios\src;C:\Symbios\src\core\application;C:\Symbios\src\core\context;C:\Symbios\external\CrossWindow\src;C:\Symbios\external\plog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ExceptionHandling>Sync</ExceptionHandling>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
@@ -192,10 +192,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;XWIN_WIN32=1;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Symbios\src\core;C:\Symbios\external\CrossWindow\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Symbios\src;C:\Symbios\src\core\application;C:\Symbios\src\core\context;C:\Symbios\external\CrossWindow\src;C:\Symbios\external\plog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Symbios\src\core;C:\Symbios\external\CrossWindow\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Symbios\src;C:\Symbios\src\core\application;C:\Symbios\src\core\context;C:\Symbios\external\CrossWindow\src;C:\Symbios\external\plog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -218,7 +218,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Symbios\src\core;C:\Symbios\external\CrossWindow\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Symbios\src;C:\Symbios\src\core\application;C:\Symbios\src\core\context;C:\Symbios\external\CrossWindow\src;C:\Symbios\external\plog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -235,10 +235,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;XWIN_WIN32=1;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Symbios\src\core;C:\Symbios\external\CrossWindow\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Symbios\src;C:\Symbios\src\core\application;C:\Symbios\src\core\context;C:\Symbios\external\CrossWindow\src;C:\Symbios\external\plog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Symbios\src\core;C:\Symbios\external\CrossWindow\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Symbios\src;C:\Symbios\src\core\application;C:\Symbios\src\core\context;C:\Symbios\external\CrossWindow\src;C:\Symbios\external\plog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -319,7 +319,8 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   <ItemGroup>
     <ClCompile Include="C:\Symbios\external\CrossWindow\src\CrossWindow\Main\Win32Main.cpp" />
     <ClCompile Include="C:\Symbios\src\main.cpp" />
-    <ClCompile Include="C:\Symbios\src\core\application.cpp" />
+    <ClCompile Include="C:\Symbios\src\core\application\application.cpp" />
+    <ClCompile Include="C:\Symbios\src\core\context\context.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:\Symbios\build-WIN\ZERO_CHECK.vcxproj">

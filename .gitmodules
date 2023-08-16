@@ -4,3 +4,6 @@
 [submodule "CrossWindow"]
 	path = external/CrossWindow
 	url = https://github.com/alaingalvan/CrossWindow.git
+[submodule "plog"]
+	path = external/plog
+	url = https://github.com/SergiusTheBest/plog.git

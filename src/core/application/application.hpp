@@ -1,4 +1,13 @@
 #pragma once
+#include "CrossWindow/CrossWindow.h"
+
+#include "context.hpp"
+#include "config.h"
+
+#include <plog/Log.h>
+#include <plog/Init.h>
+#include <plog/Formatters/TxtFormatter.h>
+#include <plog/Appenders/ColorConsoleAppender.h>
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 // define something for Windows (32-bit and 64-bit, this part is common)
@@ -43,8 +52,11 @@ public:
     Application();
 
 public:
-    virtual void Initialize() = 0;
-    int Run();
+    // virtual void Initialize() = 0;
+    void Run();
 
 private:
+    xwin::Window _window;
+    xwin::EventQueue _eventQueue;
+    std::shared_ptr<Context> _context;
 };

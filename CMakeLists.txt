@@ -9,6 +9,9 @@ project(
 # Window management
 add_subdirectory(external/crosswindow)
 
+# Logging
+add_subdirectory(external/plog)
+
 xwin_add_executable(
     # Target
     Symbios
@@ -28,6 +31,9 @@ target_sources(Symbios PRIVATE
 
 target_include_directories(Symbios PRIVATE
 
+    # Config
+    src
+
     # Core
     src/core/application
     src/core/context
@@ -40,9 +46,9 @@ target_compile_features(Symbios PRIVATE cxx_std_17)
 
 #target_link_libraries(Symbios "-framework Metal")
 
-target_link_libraries(
-    Symbios
+target_link_libraries( Symbios
     CrossWindow
+    plog
 )
 
 if(XCODE)
