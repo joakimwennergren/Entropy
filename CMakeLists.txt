@@ -6,7 +6,7 @@ project(
     LANGUAGES CXX
 )
 
-# Window management
+# Windowing on desktop
 add_subdirectory(external/glfw)
 
 # Logging
