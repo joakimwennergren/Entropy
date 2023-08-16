@@ -3,24 +3,45 @@ cmake_minimum_required(VERSION 3.0)
 project(
     Symbios
     VERSION 0.0.1
-    LANGUAGES CXX C # programming languages used by the project
+    LANGUAGES CXX
 )
 
-add_executable(Symbios)
+# Window management
+add_subdirectory(external/crosswindow)
+
+xwin_add_executable(
+    # Target
+    Symbios
+    
+    # Source Files 
+    "${SOURCE_FILES}"
+)
 
 target_sources(Symbios PRIVATE
+    # Main entrypoint
     src/main.cpp
+
+    # Core
+    src/core/application.cpp
 )
 
 target_include_directories(Symbios PRIVATE
 
+    # Core
+    src/core
+
     # Metal-CPP
-    external/metal-cpp/
+    #external/metal-cpp/
 )
 
 target_compile_features(Symbios PRIVATE cxx_std_17)
 
-target_link_libraries(Symbios "-framework Metal")
+#target_link_libraries(Symbios "-framework Metal")
+
+target_link_libraries(
+    Symbios
+    CrossWindow
+)
 
 if(XCODE)
     set_target_properties(Symbios PROPERTIES

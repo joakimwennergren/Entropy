@@ -1,0 +1,5 @@
+C:\Symbios\external\CrossWindow\src\CrossWindow\Main\Win32Main.cpp;C:\Symbios\build-WIN\Symbios.dir\Debug\Win32Main.obj
+C:\Symbios\src\main.cpp;C:\Symbios\build-WIN\Symbios.dir\Debug\main.obj
+C:\Symbios\src\core\application.cpp;C:\Symbios\build-WIN\Symbios.dir\Debug\application.obj
+C:\Symbios\src\core\metal\appdelegate.cpp;C:\Symbios\build-WIN\Symbios.dir\Debug\appdelegate.obj
+C:\Symbios\src\core\metal\mtkviewdelegate.cpp;C:\Symbios\build-WIN\Symbios.dir\Debug\mtkviewdelegate.obj
