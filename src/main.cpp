@@ -8,6 +8,7 @@ void xmain(int argc, const char **argv)
     windowDesc.title = "My Title";
     windowDesc.visible = true;
     windowDesc.width = 640;
+    windowDesc.backgroundColor = 0xFF00CCFF;
     windowDesc.height = 480;
 
     bool closed = false;

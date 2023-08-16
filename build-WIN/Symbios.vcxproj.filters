@@ -8,12 +8,6 @@
     <ClCompile Include="C:\Symbios\src\core\application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Symbios\src\core\metal\appdelegate.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Symbios\src\core\metal\mtkviewdelegate.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="C:\Symbios\CMakeLists.txt" />
