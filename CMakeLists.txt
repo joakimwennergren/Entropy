@@ -7,26 +7,28 @@ project(
 )
 
 # Windowing on desktop
-#add_subdirectory(external/glfw)
+add_subdirectory(external/glfw)
 
 # Logging
 add_subdirectory(external/plog)
 
+# find_package(Vulkan REQUIRED)
 add_executable(
+
     # Target
     Symbios
-    
-    # Source Files 
+
+    # Source Files
     "${SOURCE_FILES}"
 )
 
 target_sources(Symbios PRIVATE
+
     # Main entrypoint
     src/main.cpp
 
     # Core
     src/core/application/application.cpp
-    src/core/application/appdelegate.cpp
     src/core/context/context.cpp
 )
 
@@ -46,7 +48,8 @@ target_include_directories(Symbios PRIVATE
 target_compile_features(Symbios PRIVATE cxx_std_17)
 
 target_link_libraries(Symbios
-    #glfw
+
+    # glfw - dont link when building for iOS
     plog
 )
 

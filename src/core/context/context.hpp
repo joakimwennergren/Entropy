@@ -6,4 +6,9 @@
  */
 class Context
 {
+public:
+    Context();
+
+private:
+    void CreateInstance();
 };

@@ -5,8 +5,8 @@ empty:=
 space:= $(empty) $(empty)
 spaceplus:= $(empty)\ $(empty)
 
-TARGETS += $(subst $(space),$(spaceplus),$(wildcard /Users/joakim/Desktop/Symbios/external/plog/CMakeLists.txt))
-TARGETS += $(subst $(space),$(spaceplus),$(wildcard /usr/local/Cellar/cmake/3.24.1/share/cmake/Modules/GNUInstallDirs.cmake))
+TARGETS += $(subst $(space),$(spaceplus),$(wildcard /Users/joakimwennergren/Desktop/Symbios/external/plog/CMakeLists.txt))
+TARGETS += $(subst $(space),$(spaceplus),$(wildcard /opt/homebrew/Cellar/cmake/3.25.2/share/cmake/Modules/GNUInstallDirs.cmake))
 
-/Users/joakim/Desktop/Symbios/build-iOS/CMakeFiles/cmake.check_cache: $(TARGETS)
-	/usr/local/Cellar/cmake/3.24.1/bin/cmake -H/Users/joakim/Desktop/Symbios -B/Users/joakim/Desktop/Symbios/build-iOS
+/Users/joakimwennergren/Desktop/Symbios/build-iOS/CMakeFiles/cmake.check_cache: $(TARGETS)
+	/opt/homebrew/Cellar/cmake/3.25.2/bin/cmake -H/Users/joakimwennergren/Desktop/Symbios -B/Users/joakimwennergren/Desktop/Symbios/build-iOS

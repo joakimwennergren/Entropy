@@ -28,11 +28,7 @@ Application::Application()
         return;
     }
 #endif
-
-#if BUILD_FOR_IOS == true
-    _pAutoreleasePool = NS::AutoreleasePool::alloc()->init();
-#endif
-
+    
     // Create Vulkan context
     auto context = Context();
     _context = std::make_shared<Context>(context);
@@ -46,10 +42,6 @@ Application::~Application()
 {
 #if BUILD_FOR_DESKTOP == true
     glfwTerminate();
-#endif
-
-#if BUILD_FOR_IOS == true
-    this->_pAutoreleasePool->release();
 #endif
 }
 
@@ -68,11 +60,5 @@ void Application::Run()
         glfwPollEvents();
     }
 #endif
-
-#if BUILD_FOR_IOS == true
-
-    MyAppDelegate del;
-    UI::ApplicationMain(0, 0, &del);
-
-#endif
 }
+

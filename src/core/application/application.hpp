@@ -13,7 +13,6 @@
 #endif
 
 #if BUILD_FOR_IOS == true
-#include "appdelegate.hpp"
 #endif
 
 /**
@@ -35,7 +34,7 @@ private:
     GLFWwindow *_window;
 #endif
 #if BUILD_FOR_IOS == true
-    NS::AutoreleasePool *_pAutoreleasePool;
+
 #endif
     std::shared_ptr<Context>
         _context;
