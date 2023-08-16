@@ -22,13 +22,15 @@ target_sources(Symbios PRIVATE
     src/main.cpp
 
     # Core
-    src/core/application.cpp
+    src/core/application/application.cpp
+    src/core/context/context.cpp
 )
 
 target_include_directories(Symbios PRIVATE
 
     # Core
-    src/core
+    src/core/application
+    src/core/context
 
     # Metal-CPP
     #external/metal-cpp/
