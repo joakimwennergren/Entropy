@@ -1,5 +1,4 @@
 #pragma once
-#include "CrossWindow/CrossWindow.h"
 
 #include "context.hpp"
 #include "config.h"
@@ -19,16 +18,7 @@
 #elif __APPLE__
 
 #if TARGET_IPHONE_SIMULATOR
-// iOS, tvOS, or watchOS Simulator
-#elif TARGET_OS_MACCATALYST
-// Mac's Catalyst (ports iOS API into Mac, like UIKit).
-#elif TARGET_OS_IPHONE
-// iOS, tvOS, or watchOS device
-#elif TARGET_OS_MAC
-// Other kinds of Apple platforms
-#else
-#error "Unknown Apple platform"
-#endif
+
 #elif __ANDROID__
 // Below __linux__ check should be enough to handle Android,
 // but something may be unique to Android.
@@ -40,6 +30,7 @@
 // POSIX
 #else
 #error "Unknown compiler"
+#endif
 #endif
 
 /**
@@ -56,7 +47,5 @@ public:
     void Run();
 
 private:
-    xwin::Window _window;
-    xwin::EventQueue _eventQueue;
     std::shared_ptr<Context> _context;
 };

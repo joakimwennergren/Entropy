@@ -7,12 +7,12 @@ project(
 )
 
 # Window management
-add_subdirectory(external/crosswindow)
+add_subdirectory(external/glfw)
 
 # Logging
 add_subdirectory(external/plog)
 
-xwin_add_executable(
+add_executable(
     # Target
     Symbios
     
@@ -47,7 +47,7 @@ target_compile_features(Symbios PRIVATE cxx_std_17)
 #target_link_libraries(Symbios "-framework Metal")
 
 target_link_libraries( Symbios
-    CrossWindow
+    glfw
     plog
 )
 
