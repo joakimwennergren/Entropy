@@ -9,6 +9,9 @@
 #include <plog/Appenders/ColorConsoleAppender.h>
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+
+#include <GLFW/glfw3.h>
+
 // define something for Windows (32-bit and 64-bit, this part is common)
 #ifdef _WIN64
 // define something for Windows (64-bit only)
@@ -16,6 +19,8 @@
 // define something for Windows (32-bit only)
 #endif
 #elif __APPLE__
+
+#include <GLFW/glfw3.h>
 
 #if TARGET_IPHONE_SIMULATOR
 
@@ -41,11 +46,13 @@ class Application
 {
 public:
     Application();
+    ~Application();
 
 public:
     // virtual void Initialize() = 0;
     void Run();
 
 private:
+    GLFWwindow *_window;
     std::shared_ptr<Context> _context;
 };
