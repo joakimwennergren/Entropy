@@ -7,7 +7,7 @@ project(
 )
 
 # Windowing on desktop
-add_subdirectory(external/glfw)
+#add_subdirectory(external/glfw)
 
 # Logging
 add_subdirectory(external/plog)
@@ -26,6 +26,7 @@ target_sources(Symbios PRIVATE
 
     # Core
     src/core/application/application.cpp
+    src/core/application/appdelegate.cpp
     src/core/context/context.cpp
 )
 
@@ -39,15 +40,13 @@ target_include_directories(Symbios PRIVATE
     src/core/context
 
     # Metal-CPP
-    #external/metal-cpp/
+    external/metal-cpp/
 )
 
 target_compile_features(Symbios PRIVATE cxx_std_17)
 
-#target_link_libraries(Symbios "-framework Metal")
-
-target_link_libraries( Symbios
-    glfw
+target_link_libraries(Symbios
+    #glfw
     plog
 )
 

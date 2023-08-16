@@ -10,6 +10,7 @@ Application::Application()
     static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
     plog::init(plog::verbose, &consoleAppender);
 
+#if BUILD_FOR_DESKTOP == true
     // Initialize GLFW
     if (!glfwInit())
     {
@@ -26,6 +27,11 @@ Application::Application()
         glfwTerminate();
         return;
     }
+#endif
+
+#if BUILD_FOR_IOS == true
+    _pAutoreleasePool = NS::AutoreleasePool::alloc()->init();
+#endif
 
     // Create Vulkan context
     auto context = Context();
@@ -38,7 +44,13 @@ Application::Application()
  */
 Application::~Application()
 {
+#if BUILD_FOR_DESKTOP == true
     glfwTerminate();
+#endif
+
+#if BUILD_FOR_IOS == true
+    this->_pAutoreleasePool->release();
+#endif
 }
 
 /**
@@ -48,10 +60,19 @@ Application::~Application()
  */
 void Application::Run()
 {
+#if BUILD_FOR_DESKTOP == true
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(_window))
     {
         /* Poll for and process events */
         glfwPollEvents();
     }
+#endif
+
+#if BUILD_FOR_IOS == true
+
+    MyAppDelegate del;
+    UI::ApplicationMain(0, 0, &del);
+
+#endif
 }
