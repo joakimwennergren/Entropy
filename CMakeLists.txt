@@ -12,14 +12,13 @@ add_subdirectory(external/glfw)
 # Logging
 add_subdirectory(external/plog)
 
-# find_package(Vulkan REQUIRED)
+# Vulkan
+find_package(Vulkan REQUIRED)
+
 add_executable(
 
     # Target
     Symbios
-
-    # Source Files
-    "${SOURCE_FILES}"
 )
 
 target_sources(Symbios PRIVATE
@@ -37,6 +36,9 @@ target_include_directories(Symbios PRIVATE
     # Config
     src
 
+    # Vulkan
+    ${Vulkan_INCLUDE_DIRS}
+
     # Core
     src/core/application
     src/core/context
@@ -49,8 +51,10 @@ target_compile_features(Symbios PRIVATE cxx_std_17)
 
 target_link_libraries(Symbios
 
-    # glfw - dont link when building for iOS
+    ${Vulkan_LIBRARIES}
+    glfw
     plog
+
 )
 
 if(XCODE)

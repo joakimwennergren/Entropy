@@ -1,6 +1,6 @@
 #pragma once
 
-#define USE_LOGGING true
+#define USE_DEBUG false
 
-#define BUILD_FOR_IOS true
-#define BUILD_FOR_DESKTOP false
+#define BUILD_FOR_IOS false
+#define BUILD_FOR_DESKTOP true

@@ -36,6 +36,5 @@ private:
 #if BUILD_FOR_IOS == true
 
 #endif
-    std::shared_ptr<Context>
-        _context;
+    std::shared_ptr<Context *> _context;
 };

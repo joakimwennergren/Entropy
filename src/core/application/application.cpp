@@ -28,10 +28,10 @@ Application::Application()
         return;
     }
 #endif
-    
+
     // Create Vulkan context
-    auto context = Context();
-    _context = std::make_shared<Context>(context);
+    auto context = new Context();
+    _context = std::make_shared<Context *>(context);
 }
 
 /**
@@ -41,6 +41,7 @@ Application::Application()
 Application::~Application()
 {
 #if BUILD_FOR_DESKTOP == true
+    glfwDestroyWindow(_window);
     glfwTerminate();
 #endif
 }
@@ -61,4 +62,3 @@ void Application::Run()
     }
 #endif
 }
-
