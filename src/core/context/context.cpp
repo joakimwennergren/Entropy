@@ -1,13 +1,17 @@
 #include "context.hpp"
 
+using namespace Symbios::Core;
+
 Context::Context()
 {
     this->CreateInstance();
+    this->PickPhysicalDevice();
 }
 
 Context::~Context()
 {
     vkDestroyInstance(this->_instance, nullptr);
+    //vkDestroyDevice(this->_device, nullptr); (crasch)
 
 #if USE_DEBUG == true
     DestroyDebugUtilsMessengerEXT(_instance, _debugMessenger, nullptr);
@@ -48,15 +52,16 @@ void Context::CreateInstance()
 {
     VkApplicationInfo appInfo{};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    appInfo.pApplicationName = "Hello Triangle";
+    appInfo.pApplicationName = "Symbios dev application";
     appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-    appInfo.pEngineName = "No Engine";
+    appInfo.pEngineName = "Symbios";
     appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.apiVersion = VK_API_VERSION_1_0;
 
     VkInstanceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     createInfo.pApplicationInfo = &appInfo;
+    createInfo.flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR; // Only on MacOS??
 
     uint32_t extensionCount = 0;
     vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
@@ -69,6 +74,7 @@ void Context::CreateInstance()
 
     for (const auto &extension : extensionProps)
     {
+        std::cout << extension.extensionName << std::endl;
         extensions.push_back(extension.extensionName);
     }
 
@@ -95,7 +101,8 @@ void Context::CreateInstance()
 
     if (vkCreateInstance(&createInfo, nullptr, &this->_instance) != VK_SUCCESS)
     {
-        throw std::runtime_error("failed to create instance!");
+        PLOG_FATAL << "failed to create vulkan instance!";
+        return;
     }
 
 #if USE_DEBUG == true
@@ -166,4 +173,97 @@ void Context::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMes
     {
         func(instance, debugMessenger, pAllocator);
     }
+}
+
+void Context::PickPhysicalDevice()
+{
+    uint32_t deviceCount = 0;
+    vkEnumeratePhysicalDevices(_instance, &deviceCount, nullptr);
+
+    if (deviceCount == 0)
+    {
+        PLOG_FATAL << "Failed to find GPUs with Vulkan support!";
+        return;
+    }
+
+    std::vector<VkPhysicalDevice> devices(deviceCount);
+    vkEnumeratePhysicalDevices(_instance, &deviceCount, devices.data());
+
+    for (const auto &device : devices)
+    {
+        if (IsDeviceSuitable(device))
+        {
+            _physicalDevice = device;
+            break;
+        }
+    }
+
+    if (_physicalDevice == VK_NULL_HANDLE)
+    {
+        throw std::runtime_error("failed to find a suitable GPU!");
+    }
+}
+
+bool Context::IsDeviceSuitable(VkPhysicalDevice device)
+{
+    QueueFamilyIndices indices = FindQueueFamilies(device);
+
+    return indices.isComplete();
+}
+
+Context::QueueFamilyIndices Context::FindQueueFamilies(VkPhysicalDevice device)
+{
+    QueueFamilyIndices indices;
+
+    uint32_t queueFamilyCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+
+    std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
+
+    int i = 0;
+    for (const auto &queueFamily : queueFamilies)
+    {
+        if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+        {
+            indices.graphicsFamily = i;
+        }
+
+        if (indices.isComplete())
+        {
+            break;
+        }
+
+        i++;
+    }
+
+    return indices;
+}
+
+void Context::CreateLogicalDevice()
+{
+    QueueFamilyIndices indices = FindQueueFamilies(_physicalDevice);
+
+    VkDeviceQueueCreateInfo queueCreateInfo{};
+    queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+    queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
+    queueCreateInfo.queueCount = 1;
+
+    float queuePriority = 1.0f;
+    queueCreateInfo.pQueuePriorities = &queuePriority;
+
+    VkPhysicalDeviceFeatures deviceFeatures{};
+
+    VkDeviceCreateInfo createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+    createInfo.pQueueCreateInfos = &queueCreateInfo;
+    createInfo.queueCreateInfoCount = 1;
+    createInfo.pEnabledFeatures = &deviceFeatures;
+
+    if (vkCreateDevice(_physicalDevice, &createInfo, nullptr, &_device) != VK_SUCCESS)
+    {
+        throw std::runtime_error("failed to create logical device!");
+    }
+
+    vkGetDeviceQueue(_device, indices.graphicsFamily.value(), 0, &graphicsQueue);
 }

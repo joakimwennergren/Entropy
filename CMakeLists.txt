@@ -7,13 +7,13 @@ project(
 )
 
 # Windowing on desktop
-add_subdirectory(external/glfw)
+#add_subdirectory(external/glfw)
 
 # Logging
 add_subdirectory(external/plog)
 
 # Vulkan
-find_package(Vulkan REQUIRED)
+#find_package(Vulkan REQUIRED)
 
 add_executable(
 
@@ -52,7 +52,7 @@ target_compile_features(Symbios PRIVATE cxx_std_17)
 target_link_libraries(Symbios
 
     ${Vulkan_LIBRARIES}
-    glfw
+    #glfw
     plog
 
 )

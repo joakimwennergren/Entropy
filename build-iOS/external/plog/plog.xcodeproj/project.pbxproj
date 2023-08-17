@@ -7,167 +7,180 @@
 	objects = {
 
 /* Begin PBXAggregateTarget section */
-		036916995C724DDDB09022F5 /* ZERO_CHECK */ = {
+		6DA54ADD52A344109FA6E40D /* ALL_BUILD */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 4AFECDF3C68245C198A66BD0 /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */;
+			buildConfigurationList = DB5E5A452A654FAC9AD564F7 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */;
 			buildPhases = (
-				3DC67DD085960DA8BEC03F51 /* Generate CMakeFiles/ZERO_CHECK */,
+				1B987EB935E7B5D06F56FF41 /* Generate CMakeFiles/ALL_BUILD */,
+			);
+			dependencies = (
+				758B3FDB049B4410AEAF3B19 /* PBXTargetDependency */,
+			);
+			name = ALL_BUILD;
+			productName = ALL_BUILD;
+		};
+		8750AF4312314F7B837A3AE8 /* ZERO_CHECK */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 1AFEFA6D30624C718D9303D7 /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */;
+			buildPhases = (
+				DCA61C5336C41AB3BD788F55 /* Generate CMakeFiles/ZERO_CHECK */,
 			);
 			dependencies = (
 			);
 			name = ZERO_CHECK;
 			productName = ZERO_CHECK;
 		};
-		4F1C3D455DD64CF98BD4BD7B /* ALL_BUILD */ = {
-			isa = PBXAggregateTarget;
-			buildConfigurationList = 6A4EA4C848AF4909BE4DC979 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */;
-			buildPhases = (
-				DE5B62A50334426EDA803661 /* Generate CMakeFiles/ALL_BUILD */,
-			);
-			dependencies = (
-				3074E0F07ECC4FEFA3BE8050 /* PBXTargetDependency */,
-			);
-			name = ALL_BUILD;
-			productName = ALL_BUILD;
-		};
-		FA40D315DF5E422FA71D4D0D /* install */ = {
-			isa = PBXAggregateTarget;
-			buildConfigurationList = BF56C57106584FA2B40FCCC8 /* Build configuration list for PBXAggregateTarget "install" */;
-			buildPhases = (
-				93426DA6A4AC2C2AC9CE883C /* CMake PostBuild Rules */,
-			);
-			dependencies = (
-				BC3954236D8B4187BD53A483 /* PBXTargetDependency */,
-			);
-			name = install;
-			productName = install;
-		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildStyle section */
-		9EDEC60DA89745779304569E /* MinSizeRel */ = {
-			isa = PBXBuildStyle;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-			};
-			name = MinSizeRel;
-		};
-		B5B7F71E9B554A0693A156F4 /* RelWithDebInfo */ = {
-			isa = PBXBuildStyle;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-			};
-			name = RelWithDebInfo;
-		};
-		CF392BA778F740CFB7D6E79E /* Debug */ = {
-			isa = PBXBuildStyle;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-			};
-			name = Debug;
-		};
-		DB9CE6C9210B40F49CA3489F /* Release */ = {
+		18C5B86088FA4657BB14757D /* Release */ = {
 			isa = PBXBuildStyle;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
 			};
 			name = Release;
 		};
+		3360555DE86B44DFB4F04334 /* MinSizeRel */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = MinSizeRel;
+		};
+		3FD198EBEC14412FB8E40BB9 /* Debug */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
+		F75E8949A0F04309AF7ABE03 /* RelWithDebInfo */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = RelWithDebInfo;
+		};
 /* End PBXBuildStyle section */
 
 /* Begin PBXContainerItemProxy section */
-		AA69ECC9B10342938C0D3CFA /* PBXContainerItemProxy */ = {
+		6B06C4228FA24B1883640B7A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 0765FCEC04B6466C826953B1 /* Project object */;
+			containerPortal = 1DFDF4D2ECC14789988A3282 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4F1C3D455DD64CF98BD4BD7B;
-			remoteInfo = ALL_BUILD;
-		};
-		FF84BAD59B974AFB81B648BF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0765FCEC04B6466C826953B1 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 036916995C724DDDB09022F5;
+			remoteGlobalIDString = 8750AF4312314F7B837A3AE8;
 			remoteInfo = ZERO_CHECK;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		7582F7E5B5E44975AA062B8A /* /Users/joakimwennergren/Desktop/Symbios/external/plog/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		FAA96E2AAA20412DA43D28DB /* /Users/joakim/Desktop/Symbios/external/plog/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
-		154541A758464196A34D62B3 /* CMake Rules */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "CMake Rules";
-			sourceTree = "<group>";
-		};
-		8A739CADAE354F798EDD1382 /* ALL_BUILD */ = {
-			isa = PBXGroup;
-			children = (
-				154541A758464196A34D62B3 /* CMake Rules */,
-				7582F7E5B5E44975AA062B8A /* /Users/joakimwennergren/Desktop/Symbios/external/plog/CMakeLists.txt */,
-			);
-			name = ALL_BUILD;
-			sourceTree = "<group>";
-		};
-		9C089AEFD01947F682147CF2 = {
-			isa = PBXGroup;
-			children = (
-				8A739CADAE354F798EDD1382 /* ALL_BUILD */,
-				FDE6930C678048C383DB32BE /* Products */,
-				CB492B5B739F412DA447DAAD /* Frameworks */,
-			);
-			sourceTree = "<group>";
-		};
-		CB492B5B739F412DA447DAAD /* Frameworks */ = {
+		02D37123FD4D40DBB3804A04 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		FDE6930C678048C383DB32BE /* Products */ = {
+		135D381DFCBA4381B4C172C6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
+		4BC9E14A8A1F41B18E9535F3 = {
+			isa = PBXGroup;
+			children = (
+				67F069B4F3674FA0A832B0E0 /* ALL_BUILD */,
+				135D381DFCBA4381B4C172C6 /* Products */,
+				02D37123FD4D40DBB3804A04 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		67F069B4F3674FA0A832B0E0 /* ALL_BUILD */ = {
+			isa = PBXGroup;
+			children = (
+				FDF9E0DBEAC44142A12281E6 /* CMake Rules */,
+				FAA96E2AAA20412DA43D28DB /* /Users/joakim/Desktop/Symbios/external/plog/CMakeLists.txt */,
+			);
+			name = ALL_BUILD;
+			sourceTree = "<group>";
+		};
+		FDF9E0DBEAC44142A12281E6 /* CMake Rules */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "CMake Rules";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXProject section */
-		0765FCEC04B6466C826953B1 /* Project object */ = {
+		1DFDF4D2ECC14789988A3282 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 			};
-			buildConfigurationList = 84E744F9EFFF4AF9BE62AC6E /* Build configuration list for PBXProject "plog" */;
+			buildConfigurationList = FFE1254EC7464625BC0CBC42 /* Build configuration list for PBXProject "plog" */;
 			buildSettings = {
 			};
 			buildStyles = (
-				CF392BA778F740CFB7D6E79E /* Debug */,
-				DB9CE6C9210B40F49CA3489F /* Release */,
-				9EDEC60DA89745779304569E /* MinSizeRel */,
-				B5B7F71E9B554A0693A156F4 /* RelWithDebInfo */,
+				3FD198EBEC14412FB8E40BB9 /* Debug */,
+				18C5B86088FA4657BB14757D /* Release */,
+				3360555DE86B44DFB4F04334 /* MinSizeRel */,
+				F75E8949A0F04309AF7ABE03 /* RelWithDebInfo */,
 			);
 			compatibilityVersion = "Xcode 3.2";
 			hasScannedForEncodings = 0;
-			mainGroup = 9C089AEFD01947F682147CF2;
-			projectDirPath = /Users/joakimwennergren/Desktop/Symbios/external/plog;
+			mainGroup = 4BC9E14A8A1F41B18E9535F3;
+			projectDirPath = /Users/joakim/Desktop/Symbios/external/plog;
 			projectRoot = "";
 			targets = (
-				4F1C3D455DD64CF98BD4BD7B /* ALL_BUILD */,
-				036916995C724DDDB09022F5 /* ZERO_CHECK */,
-				FA40D315DF5E422FA71D4D0D /* install */,
+				6DA54ADD52A344109FA6E40D /* ALL_BUILD */,
+				8750AF4312314F7B837A3AE8 /* ZERO_CHECK */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		1B987EB935E7B5D06F56FF41 /* Generate CMakeFiles/ALL_BUILD */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Generate CMakeFiles/ALL_BUILD";
+			outputPaths = (
+"/Users/joakim/Desktop/Symbios/build-iOS/external/plog/CMakeFiles/ALL_BUILD"			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e
+if test \"$CONFIGURATION\" = \"Debug\"; then :
+  cd /Users/joakim/Desktop/Symbios/build-iOS/external/plog
+  echo Build\\ all\\ projects
+fi
+if test \"$CONFIGURATION\" = \"Release\"; then :
+  cd /Users/joakim/Desktop/Symbios/build-iOS/external/plog
+  echo Build\\ all\\ projects
+fi
+if test \"$CONFIGURATION\" = \"MinSizeRel\"; then :
+  cd /Users/joakim/Desktop/Symbios/build-iOS/external/plog
+  echo Build\\ all\\ projects
+fi
+if test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :
+  cd /Users/joakim/Desktop/Symbios/build-iOS/external/plog
+  echo Build\\ all\\ projects
+fi
+";
+			showEnvVarsInLog = 0;
+		};
 		3C0110FC8322DE7E50886E21 = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -181,85 +194,6 @@
 			shellPath = /bin/sh;
 			shellScript = "# shell script goes here
 exit 0";
-			showEnvVarsInLog = 0;
-		};
-		3DC67DD085960DA8BEC03F51 /* Generate CMakeFiles/ZERO_CHECK */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Generate CMakeFiles/ZERO_CHECK";
-			outputPaths = (
-"/Users/joakimwennergren/Desktop/Symbios/build-iOS/external/plog/CMakeFiles/ZERO_CHECK"			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "set -e
-if test \"$CONFIGURATION\" = \"Debug\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/plog
-  make -f /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/plog/CMakeScripts/ReRunCMake.make
-fi
-if test \"$CONFIGURATION\" = \"Release\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/plog
-  make -f /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/plog/CMakeScripts/ReRunCMake.make
-fi
-if test \"$CONFIGURATION\" = \"MinSizeRel\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/plog
-  make -f /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/plog/CMakeScripts/ReRunCMake.make
-fi
-if test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/plog
-  make -f /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/plog/CMakeScripts/ReRunCMake.make
-fi
-";
-			showEnvVarsInLog = 0;
-		};
-		87AF4882E018677E2624B544 = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# shell script goes here
-exit 0";
-			showEnvVarsInLog = 0;
-		};
-		93426DA6A4AC2C2AC9CE883C /* CMake PostBuild Rules */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			name = "CMake PostBuild Rules";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "set -e
-if test \"$CONFIGURATION\" = \"Debug\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/plog
-  /opt/homebrew/Cellar/cmake/3.25.2/bin/cmake -DBUILD_TYPE=$CONFIGURATION -DEFFECTIVE_PLATFORM_NAME=$EFFECTIVE_PLATFORM_NAME -P cmake_install.cmake
-fi
-if test \"$CONFIGURATION\" = \"Release\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/plog
-  /opt/homebrew/Cellar/cmake/3.25.2/bin/cmake -DBUILD_TYPE=$CONFIGURATION -DEFFECTIVE_PLATFORM_NAME=$EFFECTIVE_PLATFORM_NAME -P cmake_install.cmake
-fi
-if test \"$CONFIGURATION\" = \"MinSizeRel\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/plog
-  /opt/homebrew/Cellar/cmake/3.25.2/bin/cmake -DBUILD_TYPE=$CONFIGURATION -DEFFECTIVE_PLATFORM_NAME=$EFFECTIVE_PLATFORM_NAME -P cmake_install.cmake
-fi
-if test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/plog
-  /opt/homebrew/Cellar/cmake/3.25.2/bin/cmake -DBUILD_TYPE=$CONFIGURATION -DEFFECTIVE_PLATFORM_NAME=$EFFECTIVE_PLATFORM_NAME -P cmake_install.cmake
-fi
-";
 			showEnvVarsInLog = 0;
 		};
 		9B50530E35CC49C82C2FACCF = {
@@ -277,7 +211,7 @@ fi
 exit 0";
 			showEnvVarsInLog = 0;
 		};
-		DE5B62A50334426EDA803661 /* Generate CMakeFiles/ALL_BUILD */ = {
+		DCA61C5336C41AB3BD788F55 /* Generate CMakeFiles/ZERO_CHECK */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -285,27 +219,27 @@ exit 0";
 			);
 			inputPaths = (
 			);
-			name = "Generate CMakeFiles/ALL_BUILD";
+			name = "Generate CMakeFiles/ZERO_CHECK";
 			outputPaths = (
-"/Users/joakimwennergren/Desktop/Symbios/build-iOS/external/plog/CMakeFiles/ALL_BUILD"			);
+"/Users/joakim/Desktop/Symbios/build-iOS/external/plog/CMakeFiles/ZERO_CHECK"			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "set -e
 if test \"$CONFIGURATION\" = \"Debug\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/plog
-  echo Build\\ all\\ projects
+  cd /Users/joakim/Desktop/Symbios/build-iOS/external/plog
+  make -f /Users/joakim/Desktop/Symbios/build-iOS/external/plog/CMakeScripts/ReRunCMake.make
 fi
 if test \"$CONFIGURATION\" = \"Release\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/plog
-  echo Build\\ all\\ projects
+  cd /Users/joakim/Desktop/Symbios/build-iOS/external/plog
+  make -f /Users/joakim/Desktop/Symbios/build-iOS/external/plog/CMakeScripts/ReRunCMake.make
 fi
 if test \"$CONFIGURATION\" = \"MinSizeRel\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/plog
-  echo Build\\ all\\ projects
+  cd /Users/joakim/Desktop/Symbios/build-iOS/external/plog
+  make -f /Users/joakim/Desktop/Symbios/build-iOS/external/plog/CMakeScripts/ReRunCMake.make
 fi
 if test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/plog
-  echo Build\\ all\\ projects
+  cd /Users/joakim/Desktop/Symbios/build-iOS/external/plog
+  make -f /Users/joakim/Desktop/Symbios/build-iOS/external/plog/CMakeScripts/ReRunCMake.make
 fi
 ";
 			showEnvVarsInLog = 0;
@@ -313,39 +247,55 @@ fi
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		3074E0F07ECC4FEFA3BE8050 /* PBXTargetDependency */ = {
+		758B3FDB049B4410AEAF3B19 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 036916995C724DDDB09022F5 /* ZERO_CHECK */;
-			targetProxy = FF84BAD59B974AFB81B648BF /* PBXContainerItemProxy */;
-		};
-		BC3954236D8B4187BD53A483 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4F1C3D455DD64CF98BD4BD7B /* ALL_BUILD */;
-			targetProxy = AA69ECC9B10342938C0D3CFA /* PBXContainerItemProxy */;
+			target = 8750AF4312314F7B837A3AE8 /* ZERO_CHECK */;
+			targetProxy = 6B06C4228FA24B1883640B7A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		004E1D908F4844A7AE03075B /* Debug */ = {
+		112755326D0246F280DB15BC /* MinSizeRel */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = ("","$(inherited)");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = ALL_BUILD;
-				SECTORDER_FLAGS = "";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
+				ARCHS = "arm64 x86_64";
+				"ARCHS[sdk=iphoneos*]" = arm64;
+				"ARCHS[sdk=iphonesimulator*]" = "x86_64 arm64";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGNING_REQUIRED = NO;
+				ENABLE_BITCODE = NO;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = iphoneos;
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/plog/build";
+				"VALID_ARCHS[sdk=iphoneos*]" = arm64;
+				"VALID_ARCHS[sdk=iphonesimulator*]" = "x86_64 arm64";
 			};
-			name = Debug;
+			name = MinSizeRel;
 		};
-		06E86F01DBFD42B8855CB14D /* MinSizeRel */ = {
+		220B1DB3CEF94C1D8A0C2362 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "arm64 x86_64";
+				"ARCHS[sdk=iphoneos*]" = arm64;
+				"ARCHS[sdk=iphonesimulator*]" = "x86_64 arm64";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGNING_REQUIRED = NO;
+				ENABLE_BITCODE = NO;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = iphoneos;
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/plog/build";
+				"VALID_ARCHS[sdk=iphoneos*]" = arm64;
+				"VALID_ARCHS[sdk=iphonesimulator*]" = "x86_64 arm64";
+			};
+			name = Release;
+		};
+		257D2DEAF08743ED803AF9BF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
@@ -359,65 +309,13 @@ fi
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = ZERO_CHECK;
 				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/plog";
 				USE_HEADERMAP = NO;
 				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = MinSizeRel;
-		};
-		09B43005E6604EE896E00C62 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = arm64;
-				"ARCHS[sdk=iphonesimulator*]" = arm64;
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGNING_REQUIRED = NO;
-				ENABLE_BITCODE = NO;
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator16.4.sdk;
-				SYMROOT = "/Users/joakimwennergren/Desktop/Symbios/build-iOS/build";
-				"VALID_ARCHS[sdk=iphonesimulator*]" = arm64;
-			};
-			name = Release;
-		};
-		2DCC4EC0633948DF89FF873A /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = arm64;
-				"ARCHS[sdk=iphonesimulator*]" = arm64;
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGNING_REQUIRED = NO;
-				ENABLE_BITCODE = NO;
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator16.4.sdk;
-				SYMROOT = "/Users/joakimwennergren/Desktop/Symbios/build-iOS/build";
-				"VALID_ARCHS[sdk=iphonesimulator*]" = arm64;
 			};
 			name = Debug;
 		};
-		3193D0FC549646F7870EB7A5 /* RelWithDebInfo */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = ("","$(inherited)");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = install;
-				SECTORDER_FLAGS = "";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = RelWithDebInfo;
-		};
-		5BAC22484CC94BA0ABB122AD /* RelWithDebInfo */ = {
+		2F07D3DC3E714653BEB59D52 /* RelWithDebInfo */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
@@ -431,12 +329,33 @@ fi
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = ALL_BUILD;
 				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/plog";
 				USE_HEADERMAP = NO;
 				WARNING_CFLAGS = ("$(inherited)");
 			};
 			name = RelWithDebInfo;
 		};
-		61B85307ED4A4483B223F55F /* MinSizeRel */ = {
+		3EF9C47032A549378313CC85 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "arm64 x86_64";
+				"ARCHS[sdk=iphoneos*]" = arm64;
+				"ARCHS[sdk=iphonesimulator*]" = "x86_64 arm64";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGNING_REQUIRED = NO;
+				ENABLE_BITCODE = NO;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = iphoneos;
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/plog/build";
+				"VALID_ARCHS[sdk=iphoneos*]" = arm64;
+				"VALID_ARCHS[sdk=iphonesimulator*]" = "x86_64 arm64";
+			};
+			name = Debug;
+		};
+		75C6F74FC79043E59A9B4412 /* RelWithDebInfo */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
@@ -448,14 +367,15 @@ fi
 				INSTALL_PATH = "";
 				OTHER_LDFLAGS = ("","$(inherited)");
 				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = install;
+				PRODUCT_NAME = ZERO_CHECK;
 				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/plog";
 				USE_HEADERMAP = NO;
 				WARNING_CFLAGS = ("$(inherited)");
 			};
-			name = MinSizeRel;
+			name = RelWithDebInfo;
 		};
-		6D4158D70B4A4294A8C9C64B /* MinSizeRel */ = {
+		892E129A6DCA4D00BCC43EBB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
@@ -469,29 +389,13 @@ fi
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = ALL_BUILD;
 				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/plog";
 				USE_HEADERMAP = NO;
 				WARNING_CFLAGS = ("$(inherited)");
 			};
-			name = MinSizeRel;
+			name = Debug;
 		};
-		712EC3B846734400BC710E25 /* MinSizeRel */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = arm64;
-				"ARCHS[sdk=iphonesimulator*]" = arm64;
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGNING_REQUIRED = NO;
-				ENABLE_BITCODE = NO;
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator16.4.sdk;
-				SYMROOT = "/Users/joakimwennergren/Desktop/Symbios/build-iOS/build";
-				"VALID_ARCHS[sdk=iphonesimulator*]" = arm64;
-			};
-			name = MinSizeRel;
-		};
-		8ADDE0558E4848C684FE13E9 /* Release */ = {
+		BE63209FA02B4CB2A60E5691 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
@@ -505,12 +409,13 @@ fi
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = ALL_BUILD;
 				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/plog";
 				USE_HEADERMAP = NO;
 				WARNING_CFLAGS = ("$(inherited)");
 			};
 			name = Release;
 		};
-		C10D20E204A843419E4CBD2E /* Release */ = {
+		D690795D800D409EA904CA8B /* MinSizeRel */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
@@ -522,50 +427,55 @@ fi
 				INSTALL_PATH = "";
 				OTHER_LDFLAGS = ("","$(inherited)");
 				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = install;
+				PRODUCT_NAME = ALL_BUILD;
 				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/plog";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		DCD25A75F1044BA58C36FFED /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/plog";
 				USE_HEADERMAP = NO;
 				WARNING_CFLAGS = ("$(inherited)");
 			};
 			name = Release;
 		};
-		CA611741E0154D80A95444EB /* RelWithDebInfo */ = {
+		E6712BE5AB4C44EF88C97A7D /* RelWithDebInfo */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = arm64;
-				"ARCHS[sdk=iphonesimulator*]" = arm64;
+				ARCHS = "arm64 x86_64";
+				"ARCHS[sdk=iphoneos*]" = arm64;
+				"ARCHS[sdk=iphonesimulator*]" = "x86_64 arm64";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGNING_REQUIRED = NO;
 				ENABLE_BITCODE = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator16.4.sdk;
-				SYMROOT = "/Users/joakimwennergren/Desktop/Symbios/build-iOS/build";
-				"VALID_ARCHS[sdk=iphonesimulator*]" = arm64;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = iphoneos;
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/plog/build";
+				"VALID_ARCHS[sdk=iphoneos*]" = arm64;
+				"VALID_ARCHS[sdk=iphonesimulator*]" = "x86_64 arm64";
 			};
 			name = RelWithDebInfo;
 		};
-		CB1D06CD2C704B27B514AA12 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = ("","$(inherited)");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = install;
-				SECTORDER_FLAGS = "";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = Debug;
-		};
-		D99E505441E44E17A5BFBEF7 /* Debug */ = {
+		F53A636DBC02474CAC7EFF45 /* MinSizeRel */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
@@ -579,97 +489,49 @@ fi
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = ZERO_CHECK;
 				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/plog";
 				USE_HEADERMAP = NO;
 				WARNING_CFLAGS = ("$(inherited)");
 			};
-			name = Debug;
-		};
-		E53298A4A50B4E24A2CECEEA /* RelWithDebInfo */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = ("","$(inherited)");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = ZERO_CHECK;
-				SECTORDER_FLAGS = "";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = RelWithDebInfo;
-		};
-		EE20EC9CC9E14B8CAB165F04 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = ("","$(inherited)");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = ZERO_CHECK;
-				SECTORDER_FLAGS = "";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = Release;
+			name = MinSizeRel;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		4AFECDF3C68245C198A66BD0 /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */ = {
+		1AFEFA6D30624C718D9303D7 /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D99E505441E44E17A5BFBEF7 /* Debug */,
-				EE20EC9CC9E14B8CAB165F04 /* Release */,
-				06E86F01DBFD42B8855CB14D /* MinSizeRel */,
-				E53298A4A50B4E24A2CECEEA /* RelWithDebInfo */,
+				257D2DEAF08743ED803AF9BF /* Debug */,
+				DCD25A75F1044BA58C36FFED /* Release */,
+				F53A636DBC02474CAC7EFF45 /* MinSizeRel */,
+				75C6F74FC79043E59A9B4412 /* RelWithDebInfo */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		6A4EA4C848AF4909BE4DC979 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */ = {
+		DB5E5A452A654FAC9AD564F7 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				004E1D908F4844A7AE03075B /* Debug */,
-				8ADDE0558E4848C684FE13E9 /* Release */,
-				6D4158D70B4A4294A8C9C64B /* MinSizeRel */,
-				5BAC22484CC94BA0ABB122AD /* RelWithDebInfo */,
+				892E129A6DCA4D00BCC43EBB /* Debug */,
+				BE63209FA02B4CB2A60E5691 /* Release */,
+				D690795D800D409EA904CA8B /* MinSizeRel */,
+				2F07D3DC3E714653BEB59D52 /* RelWithDebInfo */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		84E744F9EFFF4AF9BE62AC6E /* Build configuration list for PBXProject "plog" */ = {
+		FFE1254EC7464625BC0CBC42 /* Build configuration list for PBXProject "plog" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2DCC4EC0633948DF89FF873A /* Debug */,
-				09B43005E6604EE896E00C62 /* Release */,
-				712EC3B846734400BC710E25 /* MinSizeRel */,
-				CA611741E0154D80A95444EB /* RelWithDebInfo */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
-		BF56C57106584FA2B40FCCC8 /* Build configuration list for PBXAggregateTarget "install" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				CB1D06CD2C704B27B514AA12 /* Debug */,
-				C10D20E204A843419E4CBD2E /* Release */,
-				61B85307ED4A4483B223F55F /* MinSizeRel */,
-				3193D0FC549646F7870EB7A5 /* RelWithDebInfo */,
+				3EF9C47032A549378313CC85 /* Debug */,
+				220B1DB3CEF94C1D8A0C2362 /* Release */,
+				112755326D0246F280DB15BC /* MinSizeRel */,
+				E6712BE5AB4C44EF88C97A7D /* RelWithDebInfo */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 0765FCEC04B6466C826953B1 /* Project object */;
+	rootObject = 1DFDF4D2ECC14789988A3282 /* Project object */;
 }

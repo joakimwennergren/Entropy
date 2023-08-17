@@ -1,4 +1,4 @@
-# Install script for directory: /Users/joakimwennergren/Desktop/Symbios
+# Install script for directory: /Users/joakim/Desktop/Symbios
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -37,14 +37,14 @@ if(NOT DEFINED CMAKE_OBJDUMP)
   set(CMAKE_OBJDUMP "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/objdump")
 endif()
 
-set(CMAKE_BINARY_DIR "/Users/joakimwennergren/Desktop/Symbios/build-iOS")
+set(CMAKE_BINARY_DIR "/Users/joakim/Desktop/Symbios/build-iOS")
 
 if(NOT PLATFORM_NAME)
   if(NOT "$ENV{PLATFORM_NAME}" STREQUAL "")
     set(PLATFORM_NAME "$ENV{PLATFORM_NAME}")
   endif()
   if(NOT PLATFORM_NAME)
-    set(PLATFORM_NAME iphonesimulator)
+    set(PLATFORM_NAME iphoneos)
   endif()
 endif()
 
@@ -53,14 +53,13 @@ if(NOT EFFECTIVE_PLATFORM_NAME)
     set(EFFECTIVE_PLATFORM_NAME "$ENV{EFFECTIVE_PLATFORM_NAME}")
   endif()
   if(NOT EFFECTIVE_PLATFORM_NAME)
-    set(EFFECTIVE_PLATFORM_NAME -iphonesimulator)
+    set(EFFECTIVE_PLATFORM_NAME -iphoneos)
   endif()
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/cmake_install.cmake")
-  include("/Users/joakimwennergren/Desktop/Symbios/build-iOS/external/plog/cmake_install.cmake")
+  include("/Users/joakim/Desktop/Symbios/build-iOS/external/plog/cmake_install.cmake")
 
 endif()
 
@@ -72,5 +71,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/Users/joakimwennergren/Desktop/Symbios/build-iOS/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/Users/joakim/Desktop/Symbios/build-iOS/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

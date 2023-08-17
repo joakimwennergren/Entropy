@@ -7,232 +7,211 @@
 	objects = {
 
 /* Begin PBXAggregateTarget section */
-		036916995C724DDDB09022F5 /* ZERO_CHECK */ = {
+		26D89694663B4A04918FDE3E /* install */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 4AE2CB798DA9403294CA178C /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */;
+			buildConfigurationList = 769BD01B1C24449995864328 /* Build configuration list for PBXAggregateTarget "install" */;
 			buildPhases = (
-				061C26BF504C36A82242585A /* Generate CMakeFiles/ZERO_CHECK */,
+				93426DA6A4AC2C2AC9CE883C /* CMake PostBuild Rules */,
 			);
 			dependencies = (
+				9DFB49678C5141AA90082637 /* PBXTargetDependency */,
 			);
-			name = ZERO_CHECK;
-			productName = ZERO_CHECK;
+			name = install;
+			productName = install;
 		};
-		1D868E6B4185450DAF262340 /* uninstall */ = {
+		52FF7E8603FD423EAB80C766 /* uninstall */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = BB27F71F497C477D80C3DBEE /* Build configuration list for PBXAggregateTarget "uninstall" */;
+			buildConfigurationList = CFA545E9BB8B48BB9FA07E34 /* Build configuration list for PBXAggregateTarget "uninstall" */;
 			buildPhases = (
-				6D03E913D7A1284EF3A75E97 /* Generate CMakeFiles/uninstall */,
+				EF8E113455252FFEBCAE5B77 /* Generate CMakeFiles/uninstall */,
 			);
 			dependencies = (
-				D31A627795BE4A6D9D40D58F /* PBXTargetDependency */,
+				E8E1FE2942F54CB58757A7CF /* PBXTargetDependency */,
 			);
 			name = uninstall;
 			productName = uninstall;
 		};
-		4F1C3D455DD64CF98BD4BD7B /* ALL_BUILD */ = {
+		6DA54ADD52A344109FA6E40D /* ALL_BUILD */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = C3A6393BBF4F4122AD75DCA2 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */;
+			buildConfigurationList = 5C4A3D084082447D95C99827 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */;
 			buildPhases = (
-				1DC709B9C56FAB0AA29B276B /* Generate CMakeFiles/ALL_BUILD */,
+				9C976A7482788D0F0A12F7AE /* Generate CMakeFiles/ALL_BUILD */,
 			);
 			dependencies = (
-				558DF5D0873244CC9D96D6BA /* PBXTargetDependency */,
-				8E07F45C3E064A218D8667EA /* PBXTargetDependency */,
-				A4AE407A3210408080333CAD /* PBXTargetDependency */,
+				8619398EACE246DE990A8FD3 /* PBXTargetDependency */,
+				957F6C4849604A8DB7BB3F60 /* PBXTargetDependency */,
 			);
 			name = ALL_BUILD;
 			productName = ALL_BUILD;
 		};
-		8E187B6D02304B9A82675BD5 /* update_mappings */ = {
+		73C302AFE80C49F28D1E679C /* update_mappings */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = E705595C9C55415882FFFC98 /* Build configuration list for PBXAggregateTarget "update_mappings" */;
+			buildConfigurationList = 9CA84B51B4AF416781B7A0DF /* Build configuration list for PBXAggregateTarget "update_mappings" */;
 			buildPhases = (
-				3828C5B1D489A45C05EAAAF1 /* Generate src/CMakeFiles/update_mappings */,
+				DC3DB64DC81E5E6FF0E44648 /* Generate src/CMakeFiles/update_mappings */,
 			);
 			dependencies = (
 			);
 			name = update_mappings;
 			productName = update_mappings;
 		};
-		C6C1F6ADE4284223BE40BAAE /* docs */ = {
+		8750AF4312314F7B837A3AE8 /* ZERO_CHECK */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 0033170BE43B4BFF94214E5F /* Build configuration list for PBXAggregateTarget "docs" */;
+			buildConfigurationList = DCBA5D3FCEF7410A84E7DD85 /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */;
 			buildPhases = (
-				693FF1B2C869F414D9938198 /* Generate docs/html/index.html */,
+				486E50A5629D0598AF689039 /* Generate CMakeFiles/ZERO_CHECK */,
 			);
 			dependencies = (
 			);
-			name = docs;
-			productName = docs;
-		};
-		FA40D315DF5E422FA71D4D0D /* install */ = {
-			isa = PBXAggregateTarget;
-			buildConfigurationList = 0DA0890D75D94BD7B63D9A79 /* Build configuration list for PBXAggregateTarget "install" */;
-			buildPhases = (
-				93426DA6A4AC2C2AC9CE883C /* CMake PostBuild Rules */,
-			);
-			dependencies = (
-				A13C2FC2A29C460497BBF045 /* PBXTargetDependency */,
-			);
-			name = install;
-			productName = install;
+			name = ZERO_CHECK;
+			productName = ZERO_CHECK;
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		025DE1F394F74350A3A3FC65 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_platform.h */ = {isa = PBXBuildFile; fileRef = B09B8321D27F4BC8A11C5132 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_platform.h */; };
-		0D055A6753B94467813E365E /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_window.c */ = {isa = PBXBuildFile; fileRef = 490C4194A16542758C6E129D /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_window.c */; };
-		166897C21A074D4F9F93455E /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/include/GLFW/glfw3.h */ = {isa = PBXBuildFile; fileRef = 46444918E11F446584DE4B3B /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/include/GLFW/glfw3.h */; };
-		22E7E6820BD94DDCACBDBE93 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_joystick.h */ = {isa = PBXBuildFile; fileRef = 4B22748015B94993AB61A572 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_joystick.h */; };
-		238995ECD0DE466BA85BDC6D /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/init.c */ = {isa = PBXBuildFile; fileRef = 151D6BD63CB548ADB0BE7210 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/init.c */; };
-		2B13A3A98C5D4067BDAB76E7 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_init.c */ = {isa = PBXBuildFile; fileRef = A240C57196ED4758B530F22C /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_init.c */; };
-		2F514DBBEDB646BFB01DA699 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/CMakeLists.txt */ = {isa = PBXBuildFile; fileRef = 2390B42EAF494213AF0E7B30 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/CMakeLists.txt */; };
-		3A7681EC76F34AA395B96EF7 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/monitor.c */ = {isa = PBXBuildFile; fileRef = DC1FEBF3DE1A4A8A8FF3C72D /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/monitor.c */; };
-		3C750973AEAC4A7D8EA0AB62 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_monitor.c */ = {isa = PBXBuildFile; fileRef = D6B842F63FFD4A579EEC17D0 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_monitor.c */; };
-		3FBA477949B940639BE0954E /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/input.c */ = {isa = PBXBuildFile; fileRef = CDE9682DFFE64722989661F1 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/input.c */; };
-		55F19A14C6594C41B24D8FDA /* /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/src/CMakeFiles/glfw.dir/Info.plist */ = {isa = PBXBuildFile; fileRef = 942CD4F96C9A40FF920CA94D /* /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/src/CMakeFiles/glfw.dir/Info.plist */; };
-		5AFF61B200A244D0B9B4E6B1 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/context.c */ = {isa = PBXBuildFile; fileRef = BE17EEA0B2D042A4BADCD6DE /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/context.c */; };
-		64B368E3CE8C40A0A98D5F56 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/nsgl_context.m */ = {isa = PBXBuildFile; fileRef = 3BB7780F682F4C79ADDA6831 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/nsgl_context.m */; };
-		66E32C596AFD4BBEAB22AAE9 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/egl_context.c */ = {isa = PBXBuildFile; fileRef = 6118927DEA8A407E803BE4BE /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/egl_context.c */; };
-		6A92DF091C9C461BBF5A6971 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/posix_thread.c */ = {isa = PBXBuildFile; fileRef = B4555F2C276042C08F80DB84 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/posix_thread.c */; };
-		6B532E98AAD74D32905A8A4A /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/platform.c */ = {isa = PBXBuildFile; fileRef = CB2243795BB146668E6B0789 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/platform.c */; };
-		7491B67912AD452FB94BCB99 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_joystick.c */ = {isa = PBXBuildFile; fileRef = 3298708DE55D45558B3116A4 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_joystick.c */; };
-		7F4092B1D26449178FD587A0 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/internal.h */ = {isa = PBXBuildFile; fileRef = 90AC329D40F74B0D861A5113 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/internal.h */; };
-		94CCD43CF44D4297A46F1CBA /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/posix_thread.h */ = {isa = PBXBuildFile; fileRef = 76CF1F76D7654D03B1FE5B56 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/posix_thread.h */; };
-		96E84195088E459E8A24CED0 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_platform.h */ = {isa = PBXBuildFile; fileRef = D56C5B7E17C04549B488C320 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_platform.h */; };
-		9F488A4FBC7F4B7ABE5151D2 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/posix_module.c */ = {isa = PBXBuildFile; fileRef = 9C772CAB39C741E28989A657 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/posix_module.c */; };
-		AC03B069D0D6494C90DDF215 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_monitor.m */ = {isa = PBXBuildFile; fileRef = F3EAB18E4AC244859F1EE033 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_monitor.m */; };
-		AFBFEF706A5C44F99A0F5311 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_window.m */ = {isa = PBXBuildFile; fileRef = C3D017C76F3946BEBEC06CDB /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_window.m */; };
-		B2FFF42A552B458CA8553490 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_joystick.h */ = {isa = PBXBuildFile; fileRef = 27B38DA00E414F04B1B858C7 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_joystick.h */; };
-		B32ABC554DE040BA974026F2 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/window.c */ = {isa = PBXBuildFile; fileRef = 2B63693831B14788BFB1D7E4 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/window.c */; };
-		B9AE9DC9C78C4331952FE14B /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_joystick.m */ = {isa = PBXBuildFile; fileRef = 07C49C7F12F04C79AD09957A /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_joystick.m */; };
-		C9880A75E03D439FB6DE935F /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_init.m */ = {isa = PBXBuildFile; fileRef = 8D9F7244FB6744B3A4327680 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_init.m */; };
-		CBCD1CDCA73146AEB4F335C3 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/osmesa_context.c */ = {isa = PBXBuildFile; fileRef = BA3B30A3BC4340598708FD24 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/osmesa_context.c */; };
-		E48F7E19594646578EB078C2 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/include/GLFW/glfw3native.h */ = {isa = PBXBuildFile; fileRef = 7420D536D3AF4F65B8A39D1C /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/include/GLFW/glfw3native.h */; };
-		E65BC3892331489A82071C15 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/mappings.h */ = {isa = PBXBuildFile; fileRef = 0B81EA83780046BE811AC186 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/mappings.h */; };
-		E68EDAE303C243B8AF25B99D /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/vulkan.c */ = {isa = PBXBuildFile; fileRef = 915F63C4B0AC423FB9050ED2 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/vulkan.c */; };
-		EBA03C92177C4A0CAD48666F /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_time.h */ = {isa = PBXBuildFile; fileRef = 1DCBEC0F63174408BB3FC7EC /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_time.h */; };
-		F60B6972D25C433DB39F8A0F /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/platform.h */ = {isa = PBXBuildFile; fileRef = 6F0BBC57FAD54FABA42B511D /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/platform.h */; };
-		FB62E5BE45AB462D91402AFF /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_time.c */ = {isa = PBXBuildFile; fileRef = 4C880A750B39430CA621674B /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_time.c */; };
+		0E538E59BA3D4ABE8A85BC3B /* /Users/joakim/Desktop/Symbios/external/glfw/include/GLFW/glfw3native.h */ = {isa = PBXBuildFile; fileRef = B73E39F1FC80439DB48DF9AA /* /Users/joakim/Desktop/Symbios/external/glfw/include/GLFW/glfw3native.h */; };
+		31D4EA4C33304E948DA9A7AD /* /Users/joakim/Desktop/Symbios/external/glfw/src/posix_module.c */ = {isa = PBXBuildFile; fileRef = DDAE2646B98347F080DEDE46 /* /Users/joakim/Desktop/Symbios/external/glfw/src/posix_module.c */; };
+		3841E242A6C849C8AF35333B /* /Users/joakim/Desktop/Symbios/external/glfw/src/egl_context.c */ = {isa = PBXBuildFile; fileRef = E20C64D10F4C4C69A82F4FD3 /* /Users/joakim/Desktop/Symbios/external/glfw/src/egl_context.c */; };
+		3A29C55BE73D42218E2F33F4 /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_monitor.c */ = {isa = PBXBuildFile; fileRef = 7F33991F2B3F49C0B1671B00 /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_monitor.c */; };
+		3BC38D40D07A4DABA7C1380F /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_platform.h */ = {isa = PBXBuildFile; fileRef = EDDF881037FA4966B0BC3AAD /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_platform.h */; };
+		3CE8107E32B045CDB8D3F026 /* /Users/joakim/Desktop/Symbios/external/glfw/src/monitor.c */ = {isa = PBXBuildFile; fileRef = 5E47A71CBC37451AB964633E /* /Users/joakim/Desktop/Symbios/external/glfw/src/monitor.c */; };
+		40016DC9C4AC4AC7A3436FAE /* /Users/joakim/Desktop/Symbios/external/glfw/src/posix_thread.c */ = {isa = PBXBuildFile; fileRef = C9387FD80EAB49A49064265A /* /Users/joakim/Desktop/Symbios/external/glfw/src/posix_thread.c */; };
+		405C3E40516D46189D709AFA /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_joystick.c */ = {isa = PBXBuildFile; fileRef = FA8E7C1A6A944B95B7852397 /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_joystick.c */; };
+		4289F6B8EEF34C09A02E1CA0 /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_joystick.h */ = {isa = PBXBuildFile; fileRef = FF694E852C8947F992DFDC86 /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_joystick.h */; };
+		4BCE3C1480E2471F82136848 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_window.m */ = {isa = PBXBuildFile; fileRef = 9C3DF925A5B9412BAA1AEA57 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_window.m */; };
+		5D201FA6429F4DF4AAC09C1F /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_window.c */ = {isa = PBXBuildFile; fileRef = 53BFD331B53F4B6B91D18883 /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_window.c */; };
+		60A819BD34A64CDF84A89375 /* /Users/joakim/Desktop/Symbios/external/glfw/src/vulkan.c */ = {isa = PBXBuildFile; fileRef = C1B17752D0D74F5C904619E8 /* /Users/joakim/Desktop/Symbios/external/glfw/src/vulkan.c */; };
+		642ACCFE025A4635A5B52064 /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_init.c */ = {isa = PBXBuildFile; fileRef = FE622C1DDA83484DBB6BDF08 /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_init.c */; };
+		672A5300C78E43FF84D9C246 /* /Users/joakim/Desktop/Symbios/external/glfw/src/platform.h */ = {isa = PBXBuildFile; fileRef = B140E15D767944CA9DACABD0 /* /Users/joakim/Desktop/Symbios/external/glfw/src/platform.h */; };
+		6FE698E2C6244B908A102E5F /* /Users/joakim/Desktop/Symbios/build-iOS/external/glfw/src/CMakeFiles/glfw.dir/Info.plist */ = {isa = PBXBuildFile; fileRef = D5904E4D96324AC1856C75DC /* /Users/joakim/Desktop/Symbios/build-iOS/external/glfw/src/CMakeFiles/glfw.dir/Info.plist */; };
+		71FBCB834701457FB34A0DB2 /* /Users/joakim/Desktop/Symbios/external/glfw/src/init.c */ = {isa = PBXBuildFile; fileRef = 139AC24145D5472DAB3E1395 /* /Users/joakim/Desktop/Symbios/external/glfw/src/init.c */; };
+		78DEFB2E12434C5A8377663A /* /Users/joakim/Desktop/Symbios/external/glfw/src/CMakeLists.txt */ = {isa = PBXBuildFile; fileRef = 698B53656220437E910641F3 /* /Users/joakim/Desktop/Symbios/external/glfw/src/CMakeLists.txt */; };
+		80671A84DA204C378E69B253 /* /Users/joakim/Desktop/Symbios/external/glfw/src/nsgl_context.m */ = {isa = PBXBuildFile; fileRef = 10B482187A6F4392A34CA1E0 /* /Users/joakim/Desktop/Symbios/external/glfw/src/nsgl_context.m */; };
+		80C552067A8B4A30965B226D /* /Users/joakim/Desktop/Symbios/external/glfw/src/posix_thread.h */ = {isa = PBXBuildFile; fileRef = 973D80F5D38C45E2B3314409 /* /Users/joakim/Desktop/Symbios/external/glfw/src/posix_thread.h */; };
+		86BFC75749A8404D97030CF1 /* /Users/joakim/Desktop/Symbios/external/glfw/include/GLFW/glfw3.h */ = {isa = PBXBuildFile; fileRef = B73D9D49D0274000AF0D9EF1 /* /Users/joakim/Desktop/Symbios/external/glfw/include/GLFW/glfw3.h */; };
+		880F4D7D9E754211902337CC /* /Users/joakim/Desktop/Symbios/external/glfw/src/input.c */ = {isa = PBXBuildFile; fileRef = 127C8F669B9647E7A3BC5B64 /* /Users/joakim/Desktop/Symbios/external/glfw/src/input.c */; };
+		93B1ED0B0F6F4C749E9A957E /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_init.m */ = {isa = PBXBuildFile; fileRef = F0F4193385F0417B8D56EFF7 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_init.m */; };
+		9645719DB40A4E6BB9D2350A /* /Users/joakim/Desktop/Symbios/external/glfw/src/window.c */ = {isa = PBXBuildFile; fileRef = AAC59DA02CA34B3CB26B1973 /* /Users/joakim/Desktop/Symbios/external/glfw/src/window.c */; };
+		A1B02C674880473B81496610 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_time.c */ = {isa = PBXBuildFile; fileRef = 2E8A0579304040B589DCAB79 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_time.c */; };
+		ADB0511E0C8A487696D28BE1 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_time.h */ = {isa = PBXBuildFile; fileRef = F8CD15A238FC4C0092566265 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_time.h */; };
+		BBDDF95F3C3C4882AC4772FA /* /Users/joakim/Desktop/Symbios/external/glfw/src/mappings.h */ = {isa = PBXBuildFile; fileRef = 4CE55134D2704DA5A39366C6 /* /Users/joakim/Desktop/Symbios/external/glfw/src/mappings.h */; };
+		C4219830BE824537B83C39BD /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_monitor.m */ = {isa = PBXBuildFile; fileRef = 9A79AA10F6BC4A06B2014417 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_monitor.m */; };
+		CABA0073D98143AC871F9F6B /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_joystick.h */ = {isa = PBXBuildFile; fileRef = D2B791609F554991A04B8F0C /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_joystick.h */; };
+		CB7A8F25D1014B1D840C51A6 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_platform.h */ = {isa = PBXBuildFile; fileRef = 1E503B50CC1E4AA69785F970 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_platform.h */; };
+		CD32A093D44F4249AB81B17C /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_joystick.m */ = {isa = PBXBuildFile; fileRef = 3F6F2EF27ACD43A9BA14F213 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_joystick.m */; };
+		E7FCABF76E1D48C6945336A1 /* /Users/joakim/Desktop/Symbios/external/glfw/src/osmesa_context.c */ = {isa = PBXBuildFile; fileRef = FAB35703980542A490B97106 /* /Users/joakim/Desktop/Symbios/external/glfw/src/osmesa_context.c */; };
+		E8F2560560FB4D4D84118B1C /* /Users/joakim/Desktop/Symbios/external/glfw/src/internal.h */ = {isa = PBXBuildFile; fileRef = 82A5EBC733784A368B176C00 /* /Users/joakim/Desktop/Symbios/external/glfw/src/internal.h */; };
+		F29A241E3C9C46579513B85D /* /Users/joakim/Desktop/Symbios/external/glfw/src/platform.c */ = {isa = PBXBuildFile; fileRef = 2EC4B87A3C9C4E1D817439A6 /* /Users/joakim/Desktop/Symbios/external/glfw/src/platform.c */; };
+		F4E6D4FAE0064C8A8EB23E68 /* /Users/joakim/Desktop/Symbios/external/glfw/src/context.c */ = {isa = PBXBuildFile; fileRef = A37940C1480F408190B1302C /* /Users/joakim/Desktop/Symbios/external/glfw/src/context.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildStyle section */
-		184C10F7978E42899AE2EDB2 /* MinSizeRel */ = {
-			isa = PBXBuildStyle;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-			};
-			name = MinSizeRel;
-		};
-		26B03329215642FAA1B3DB41 /* Debug */ = {
-			isa = PBXBuildStyle;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-			};
-			name = Debug;
-		};
-		2C28073330074639859EDADD /* Release */ = {
-			isa = PBXBuildStyle;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-			};
-			name = Release;
-		};
-		5B8A3C247C6145A097AE1876 /* RelWithDebInfo */ = {
+		044A4942827449269EA016C4 /* RelWithDebInfo */ = {
 			isa = PBXBuildStyle;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
 			};
 			name = RelWithDebInfo;
 		};
+		0584EE7F6AAC4DF5A7B2A942 /* MinSizeRel */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = MinSizeRel;
+		};
+		ADF477D8CC574ABCBC15B84D /* Release */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Release;
+		};
+		E8ED0014AAC2433393BA3FD9 /* Debug */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
 /* End PBXBuildStyle section */
 
 /* Begin PBXContainerItemProxy section */
-		129FFF27F05E4D5B84DE9F46 /* PBXContainerItemProxy */ = {
+		5770822C9318415A83A0D401 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = D9D54E3D5C3D4C17BB80B8D8 /* Project object */;
+			containerPortal = 90E9AD09406A42518BCAA401 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 036916995C724DDDB09022F5;
+			remoteGlobalIDString = 8750AF4312314F7B837A3AE8;
 			remoteInfo = ZERO_CHECK;
 		};
-		767A9E3FB5904BC09D2A116C /* PBXContainerItemProxy */ = {
+		80688DAB99CF4CB2B33BA8CB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = D9D54E3D5C3D4C17BB80B8D8 /* Project object */;
+			containerPortal = 90E9AD09406A42518BCAA401 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = C6C1F6ADE4284223BE40BAAE;
-			remoteInfo = docs;
+			remoteGlobalIDString = 81229D55449A4E8BB963AAFA;
+			remoteInfo = glfw;
 		};
-		848665E1F25F460F8091969A /* PBXContainerItemProxy */ = {
+		E7F0F19BCE9B4D61A2CFCEA2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = D9D54E3D5C3D4C17BB80B8D8 /* Project object */;
+			containerPortal = 90E9AD09406A42518BCAA401 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4F1C3D455DD64CF98BD4BD7B;
+			remoteGlobalIDString = 6DA54ADD52A344109FA6E40D;
 			remoteInfo = ALL_BUILD;
 		};
-		D0D176055A94454BB58A396E /* PBXContainerItemProxy */ = {
+		F2CF73E1D84640D7ADFBC9F3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = D9D54E3D5C3D4C17BB80B8D8 /* Project object */;
+			containerPortal = 90E9AD09406A42518BCAA401 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 036916995C724DDDB09022F5;
+			remoteGlobalIDString = 8750AF4312314F7B837A3AE8;
 			remoteInfo = ZERO_CHECK;
-		};
-		E6953042EE414F87B5CD48A8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D9D54E3D5C3D4C17BB80B8D8 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = AD713A08605B4E7C96C68B80;
-			remoteInfo = glfw;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		031F31D3737B46139312E16A /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/mappings.h.in */ = {isa = PBXFileReference; explicitFileType = sourcecode; fileEncoding = 4; name = mappings.h.in; path = src/mappings.h.in; sourceTree = SOURCE_ROOT; };
-		07C49C7F12F04C79AD09957A /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_joystick.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; name = cocoa_joystick.m; path = src/cocoa_joystick.m; sourceTree = SOURCE_ROOT; };
-		0B81EA83780046BE811AC186 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/mappings.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = mappings.h; path = src/mappings.h; sourceTree = SOURCE_ROOT; };
-		151D6BD63CB548ADB0BE7210 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/init.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = init.c; path = src/init.c; sourceTree = SOURCE_ROOT; };
-		1DCBEC0F63174408BB3FC7EC /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_time.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = cocoa_time.h; path = src/cocoa_time.h; sourceTree = SOURCE_ROOT; };
-		2390B42EAF494213AF0E7B30 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = src/CMakeLists.txt; sourceTree = SOURCE_ROOT; };
-		27B38DA00E414F04B1B858C7 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_joystick.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = cocoa_joystick.h; path = src/cocoa_joystick.h; sourceTree = SOURCE_ROOT; };
-		2B63693831B14788BFB1D7E4 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/window.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = window.c; path = src/window.c; sourceTree = SOURCE_ROOT; };
-		3298708DE55D45558B3116A4 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_joystick.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = null_joystick.c; path = src/null_joystick.c; sourceTree = SOURCE_ROOT; };
-		3BB7780F682F4C79ADDA6831 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/nsgl_context.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; name = nsgl_context.m; path = src/nsgl_context.m; sourceTree = SOURCE_ROOT; };
-		4639D72B00E443FB9BE4EA68 /* /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/docs/Doxyfile */ = {isa = PBXFileReference; explicitFileType = sourcecode; fileEncoding = 4; name = Doxyfile; path = "/Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/docs/Doxyfile"; sourceTree = "<absolute>"; };
-		46444918E11F446584DE4B3B /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/include/GLFW/glfw3.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = glfw3.h; path = include/GLFW/glfw3.h; sourceTree = SOURCE_ROOT; };
-		490C4194A16542758C6E129D /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_window.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = null_window.c; path = src/null_window.c; sourceTree = SOURCE_ROOT; };
-		4B22748015B94993AB61A572 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_joystick.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = null_joystick.h; path = src/null_joystick.h; sourceTree = SOURCE_ROOT; };
-		4C2580B1677C43D8AFD98C32 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/docs/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = docs/CMakeLists.txt; sourceTree = SOURCE_ROOT; };
-		4C880A750B39430CA621674B /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_time.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = cocoa_time.c; path = src/cocoa_time.c; sourceTree = SOURCE_ROOT; };
-		6118927DEA8A407E803BE4BE /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/egl_context.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = egl_context.c; path = src/egl_context.c; sourceTree = SOURCE_ROOT; };
-		6F0BBC57FAD54FABA42B511D /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/platform.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = platform.h; path = src/platform.h; sourceTree = SOURCE_ROOT; };
-		7420D536D3AF4F65B8A39D1C /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/include/GLFW/glfw3native.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = glfw3native.h; path = include/GLFW/glfw3native.h; sourceTree = SOURCE_ROOT; };
-		76CF1F76D7654D03B1FE5B56 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/posix_thread.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = posix_thread.h; path = src/posix_thread.h; sourceTree = SOURCE_ROOT; };
-		8810BAC2CA164978BF5DD524 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = src/CMakeLists.txt; sourceTree = SOURCE_ROOT; };
-		8D9F7244FB6744B3A4327680 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_init.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; name = cocoa_init.m; path = src/cocoa_init.m; sourceTree = SOURCE_ROOT; };
-		8F3F3B4E48844610BE030B12 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
-		90AC329D40F74B0D861A5113 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/internal.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = internal.h; path = src/internal.h; sourceTree = SOURCE_ROOT; };
-		915F63C4B0AC423FB9050ED2 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/vulkan.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = vulkan.c; path = src/vulkan.c; sourceTree = SOURCE_ROOT; };
-		942CD4F96C9A40FF920CA94D /* /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/src/CMakeFiles/glfw.dir/Info.plist */ = {isa = PBXFileReference; explicitFileType = sourcecode.text.plist; fileEncoding = 4; name = Info.plist; path = "/Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/src/CMakeFiles/glfw.dir/Info.plist"; sourceTree = "<absolute>"; };
-		954E4E1A4B174996BE6034D3 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
-		9C772CAB39C741E28989A657 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/posix_module.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = posix_module.c; path = src/posix_module.c; sourceTree = SOURCE_ROOT; };
-		A240C57196ED4758B530F22C /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_init.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = null_init.c; path = src/null_init.c; sourceTree = SOURCE_ROOT; };
-		B09B8321D27F4BC8A11C5132 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_platform.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = cocoa_platform.h; path = src/cocoa_platform.h; sourceTree = SOURCE_ROOT; };
-		B4555F2C276042C08F80DB84 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/posix_thread.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = posix_thread.c; path = src/posix_thread.c; sourceTree = SOURCE_ROOT; };
-		B59A9CD1B3B04127B89472D4 /* glfw */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libglfw3.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		B87EB674D6DA466FAAA72DF6 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/CMake/GenerateMappings.cmake */ = {isa = PBXFileReference; explicitFileType = sourcecode; fileEncoding = 4; name = GenerateMappings.cmake; path = CMake/GenerateMappings.cmake; sourceTree = SOURCE_ROOT; };
-		BA3B30A3BC4340598708FD24 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/osmesa_context.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = osmesa_context.c; path = src/osmesa_context.c; sourceTree = SOURCE_ROOT; };
-		BE17EEA0B2D042A4BADCD6DE /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/context.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = context.c; path = src/context.c; sourceTree = SOURCE_ROOT; };
-		C3D017C76F3946BEBEC06CDB /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_window.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; name = cocoa_window.m; path = src/cocoa_window.m; sourceTree = SOURCE_ROOT; };
-		CB2243795BB146668E6B0789 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/platform.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = platform.c; path = src/platform.c; sourceTree = SOURCE_ROOT; };
-		CDE9682DFFE64722989661F1 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/input.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = input.c; path = src/input.c; sourceTree = SOURCE_ROOT; };
-		D56C5B7E17C04549B488C320 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_platform.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = null_platform.h; path = src/null_platform.h; sourceTree = SOURCE_ROOT; };
-		D6B842F63FFD4A579EEC17D0 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_monitor.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = null_monitor.c; path = src/null_monitor.c; sourceTree = SOURCE_ROOT; };
-		DC1FEBF3DE1A4A8A8FF3C72D /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/monitor.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = monitor.c; path = src/monitor.c; sourceTree = SOURCE_ROOT; };
-		F3EAB18E4AC244859F1EE033 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_monitor.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; name = cocoa_monitor.m; path = src/cocoa_monitor.m; sourceTree = SOURCE_ROOT; };
+		065DA2497E234A27B6EB2D24 /* /Users/joakim/Desktop/Symbios/external/glfw/src/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = src/CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		10B482187A6F4392A34CA1E0 /* /Users/joakim/Desktop/Symbios/external/glfw/src/nsgl_context.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; name = nsgl_context.m; path = src/nsgl_context.m; sourceTree = SOURCE_ROOT; };
+		127C8F669B9647E7A3BC5B64 /* /Users/joakim/Desktop/Symbios/external/glfw/src/input.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = input.c; path = src/input.c; sourceTree = SOURCE_ROOT; };
+		139AC24145D5472DAB3E1395 /* /Users/joakim/Desktop/Symbios/external/glfw/src/init.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = init.c; path = src/init.c; sourceTree = SOURCE_ROOT; };
+		1E503B50CC1E4AA69785F970 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_platform.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = cocoa_platform.h; path = src/cocoa_platform.h; sourceTree = SOURCE_ROOT; };
+		2E8A0579304040B589DCAB79 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_time.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = cocoa_time.c; path = src/cocoa_time.c; sourceTree = SOURCE_ROOT; };
+		2EC4B87A3C9C4E1D817439A6 /* /Users/joakim/Desktop/Symbios/external/glfw/src/platform.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = platform.c; path = src/platform.c; sourceTree = SOURCE_ROOT; };
+		371C3030573D4E3F952CE924 /* /Users/joakim/Desktop/Symbios/external/glfw/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		3F6F2EF27ACD43A9BA14F213 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_joystick.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; name = cocoa_joystick.m; path = src/cocoa_joystick.m; sourceTree = SOURCE_ROOT; };
+		4AE5A4F712064BDABAD6518D /* /Users/joakim/Desktop/Symbios/external/glfw/src/mappings.h.in */ = {isa = PBXFileReference; explicitFileType = sourcecode; fileEncoding = 4; name = mappings.h.in; path = src/mappings.h.in; sourceTree = SOURCE_ROOT; };
+		4CE55134D2704DA5A39366C6 /* /Users/joakim/Desktop/Symbios/external/glfw/src/mappings.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = mappings.h; path = src/mappings.h; sourceTree = SOURCE_ROOT; };
+		53BFD331B53F4B6B91D18883 /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_window.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = null_window.c; path = src/null_window.c; sourceTree = SOURCE_ROOT; };
+		5E47A71CBC37451AB964633E /* /Users/joakim/Desktop/Symbios/external/glfw/src/monitor.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = monitor.c; path = src/monitor.c; sourceTree = SOURCE_ROOT; };
+		698B53656220437E910641F3 /* /Users/joakim/Desktop/Symbios/external/glfw/src/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = src/CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		79D5F2E4896D4FE7A7EDC15F /* /Users/joakim/Desktop/Symbios/external/glfw/CMake/GenerateMappings.cmake */ = {isa = PBXFileReference; explicitFileType = sourcecode; fileEncoding = 4; name = GenerateMappings.cmake; path = CMake/GenerateMappings.cmake; sourceTree = SOURCE_ROOT; };
+		7F33991F2B3F49C0B1671B00 /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_monitor.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = null_monitor.c; path = src/null_monitor.c; sourceTree = SOURCE_ROOT; };
+		82A5EBC733784A368B176C00 /* /Users/joakim/Desktop/Symbios/external/glfw/src/internal.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = internal.h; path = src/internal.h; sourceTree = SOURCE_ROOT; };
+		973D80F5D38C45E2B3314409 /* /Users/joakim/Desktop/Symbios/external/glfw/src/posix_thread.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = posix_thread.h; path = src/posix_thread.h; sourceTree = SOURCE_ROOT; };
+		9A79AA10F6BC4A06B2014417 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_monitor.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; name = cocoa_monitor.m; path = src/cocoa_monitor.m; sourceTree = SOURCE_ROOT; };
+		9C3DF925A5B9412BAA1AEA57 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_window.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; name = cocoa_window.m; path = src/cocoa_window.m; sourceTree = SOURCE_ROOT; };
+		A37940C1480F408190B1302C /* /Users/joakim/Desktop/Symbios/external/glfw/src/context.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = context.c; path = src/context.c; sourceTree = SOURCE_ROOT; };
+		AAC59DA02CA34B3CB26B1973 /* /Users/joakim/Desktop/Symbios/external/glfw/src/window.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = window.c; path = src/window.c; sourceTree = SOURCE_ROOT; };
+		B140E15D767944CA9DACABD0 /* /Users/joakim/Desktop/Symbios/external/glfw/src/platform.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = platform.h; path = src/platform.h; sourceTree = SOURCE_ROOT; };
+		B73D9D49D0274000AF0D9EF1 /* /Users/joakim/Desktop/Symbios/external/glfw/include/GLFW/glfw3.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = glfw3.h; path = include/GLFW/glfw3.h; sourceTree = SOURCE_ROOT; };
+		B73E39F1FC80439DB48DF9AA /* /Users/joakim/Desktop/Symbios/external/glfw/include/GLFW/glfw3native.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = glfw3native.h; path = include/GLFW/glfw3native.h; sourceTree = SOURCE_ROOT; };
+		C1B17752D0D74F5C904619E8 /* /Users/joakim/Desktop/Symbios/external/glfw/src/vulkan.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = vulkan.c; path = src/vulkan.c; sourceTree = SOURCE_ROOT; };
+		C3EB377E69A84F0CA58664BC /* /Users/joakim/Desktop/Symbios/external/glfw/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		C9387FD80EAB49A49064265A /* /Users/joakim/Desktop/Symbios/external/glfw/src/posix_thread.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = posix_thread.c; path = src/posix_thread.c; sourceTree = SOURCE_ROOT; };
+		D2B791609F554991A04B8F0C /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_joystick.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = cocoa_joystick.h; path = src/cocoa_joystick.h; sourceTree = SOURCE_ROOT; };
+		D5904E4D96324AC1856C75DC /* /Users/joakim/Desktop/Symbios/build-iOS/external/glfw/src/CMakeFiles/glfw.dir/Info.plist */ = {isa = PBXFileReference; explicitFileType = sourcecode.text.plist; fileEncoding = 4; name = Info.plist; path = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw/src/CMakeFiles/glfw.dir/Info.plist"; sourceTree = "<absolute>"; };
+		DDAE2646B98347F080DEDE46 /* /Users/joakim/Desktop/Symbios/external/glfw/src/posix_module.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = posix_module.c; path = src/posix_module.c; sourceTree = SOURCE_ROOT; };
+		E20C64D10F4C4C69A82F4FD3 /* /Users/joakim/Desktop/Symbios/external/glfw/src/egl_context.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = egl_context.c; path = src/egl_context.c; sourceTree = SOURCE_ROOT; };
+		EDDF881037FA4966B0BC3AAD /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_platform.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = null_platform.h; path = src/null_platform.h; sourceTree = SOURCE_ROOT; };
+		F0F4193385F0417B8D56EFF7 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_init.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; name = cocoa_init.m; path = src/cocoa_init.m; sourceTree = SOURCE_ROOT; };
+		F8CD15A238FC4C0092566265 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_time.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = cocoa_time.h; path = src/cocoa_time.h; sourceTree = SOURCE_ROOT; };
+		FA8E7C1A6A944B95B7852397 /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_joystick.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = null_joystick.c; path = src/null_joystick.c; sourceTree = SOURCE_ROOT; };
+		FAB35703980542A490B97106 /* /Users/joakim/Desktop/Symbios/external/glfw/src/osmesa_context.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = osmesa_context.c; path = src/osmesa_context.c; sourceTree = SOURCE_ROOT; };
+		FBBD263A0DC8408E90A73FA2 /* glfw */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libglfw3.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FE622C1DDA83484DBB6BDF08 /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_init.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = null_init.c; path = src/null_init.c; sourceTree = SOURCE_ROOT; };
+		FF694E852C8947F992DFDC86 /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_joystick.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = null_joystick.h; path = src/null_joystick.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		F7204387827E4921A0D68D3A /* Frameworks */ = {
+		C7608918B752437482A301E7 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -242,183 +221,173 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		004CE107C7BE44DCA76CDB9A /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				942CD4F96C9A40FF920CA94D /* /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/src/CMakeFiles/glfw.dir/Info.plist */,
-			);
-			name = Resources;
-			sourceTree = "<group>";
-		};
-		2990D9E0D6534581979C12EC /* CMake Rules */ = {
+		091AA33152E24DED9071EFCE /* CMake Rules */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = "CMake Rules";
 			sourceTree = "<group>";
 		};
-		3ACEC3624EE246C2B7695F16 /* Source Files */ = {
+		118018C2912B439D83553B5C /* CMake Rules */ = {
 			isa = PBXGroup;
 			children = (
-				8D9F7244FB6744B3A4327680 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_init.m */,
-				07C49C7F12F04C79AD09957A /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_joystick.m */,
-				F3EAB18E4AC244859F1EE033 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_monitor.m */,
-				4C880A750B39430CA621674B /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_time.c */,
-				C3D017C76F3946BEBEC06CDB /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_window.m */,
-				BE17EEA0B2D042A4BADCD6DE /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/context.c */,
-				6118927DEA8A407E803BE4BE /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/egl_context.c */,
-				151D6BD63CB548ADB0BE7210 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/init.c */,
-				CDE9682DFFE64722989661F1 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/input.c */,
-				DC1FEBF3DE1A4A8A8FF3C72D /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/monitor.c */,
-				3BB7780F682F4C79ADDA6831 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/nsgl_context.m */,
-				A240C57196ED4758B530F22C /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_init.c */,
-				3298708DE55D45558B3116A4 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_joystick.c */,
-				D6B842F63FFD4A579EEC17D0 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_monitor.c */,
-				490C4194A16542758C6E129D /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_window.c */,
-				BA3B30A3BC4340598708FD24 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/osmesa_context.c */,
-				CB2243795BB146668E6B0789 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/platform.c */,
-				9C772CAB39C741E28989A657 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/posix_module.c */,
-				B4555F2C276042C08F80DB84 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/posix_thread.c */,
-				915F63C4B0AC423FB9050ED2 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/vulkan.c */,
-				2B63693831B14788BFB1D7E4 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/window.c */,
 			);
-			name = "Source Files";
+			name = "CMake Rules";
 			sourceTree = "<group>";
 		};
-		4CB1F6C9646C45DE8B41DCBB /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				B59A9CD1B3B04127B89472D4 /* glfw */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		563DDC52D1674EEC9E42D91C /* Frameworks */ = {
+		1C5AACEA8A1E4D99B04E4205 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		565071A9C32249EE9662BC78 /* GLFW3 */ = {
+		249D6505AEDD4CE7B289F9CC = {
 			isa = PBXGroup;
 			children = (
-				62C6FCBD2E8B4DE38A34EC72 /* uninstall */,
-				87CAE965BA384761B69BA30F /* glfw */,
-				817A595456F44A24B3D9C23D /* update_mappings */,
-				FE059CA93D1741A58915D294 /* docs */,
+				3003AC78049043F593008709 /* GLFW3 */,
+				F564D203401A4AC582BEC58E /* ALL_BUILD */,
+				A79CA4BA95B04EB7BE1B27F9 /* Products */,
+				1C5AACEA8A1E4D99B04E4205 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		2C6DD113BE79488DA61FA424 /* Header Files */ = {
+			isa = PBXGroup;
+			children = (
+				4AE5A4F712064BDABAD6518D /* /Users/joakim/Desktop/Symbios/external/glfw/src/mappings.h.in */,
+			);
+			name = "Header Files";
+			sourceTree = "<group>";
+		};
+		3003AC78049043F593008709 /* GLFW3 */ = {
+			isa = PBXGroup;
+			children = (
+				B79A6E482F074E418A32616E /* uninstall */,
+				A0B9CCA8D1764770AC80F5EA /* glfw */,
+				ACD45454FC48451E9DB58AD9 /* update_mappings */,
 			);
 			name = GLFW3;
 			sourceTree = "<group>";
 		};
-		5742366D9FE1481B8A80D46D /* Header Files */ = {
+		3E9D91CA61934E9BB3FFD118 /* Source Files */ = {
 			isa = PBXGroup;
 			children = (
-				031F31D3737B46139312E16A /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/mappings.h.in */,
+				F0F4193385F0417B8D56EFF7 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_init.m */,
+				3F6F2EF27ACD43A9BA14F213 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_joystick.m */,
+				9A79AA10F6BC4A06B2014417 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_monitor.m */,
+				2E8A0579304040B589DCAB79 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_time.c */,
+				9C3DF925A5B9412BAA1AEA57 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_window.m */,
+				A37940C1480F408190B1302C /* /Users/joakim/Desktop/Symbios/external/glfw/src/context.c */,
+				E20C64D10F4C4C69A82F4FD3 /* /Users/joakim/Desktop/Symbios/external/glfw/src/egl_context.c */,
+				139AC24145D5472DAB3E1395 /* /Users/joakim/Desktop/Symbios/external/glfw/src/init.c */,
+				127C8F669B9647E7A3BC5B64 /* /Users/joakim/Desktop/Symbios/external/glfw/src/input.c */,
+				5E47A71CBC37451AB964633E /* /Users/joakim/Desktop/Symbios/external/glfw/src/monitor.c */,
+				10B482187A6F4392A34CA1E0 /* /Users/joakim/Desktop/Symbios/external/glfw/src/nsgl_context.m */,
+				FE622C1DDA83484DBB6BDF08 /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_init.c */,
+				FA8E7C1A6A944B95B7852397 /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_joystick.c */,
+				7F33991F2B3F49C0B1671B00 /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_monitor.c */,
+				53BFD331B53F4B6B91D18883 /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_window.c */,
+				FAB35703980542A490B97106 /* /Users/joakim/Desktop/Symbios/external/glfw/src/osmesa_context.c */,
+				2EC4B87A3C9C4E1D817439A6 /* /Users/joakim/Desktop/Symbios/external/glfw/src/platform.c */,
+				DDAE2646B98347F080DEDE46 /* /Users/joakim/Desktop/Symbios/external/glfw/src/posix_module.c */,
+				C9387FD80EAB49A49064265A /* /Users/joakim/Desktop/Symbios/external/glfw/src/posix_thread.c */,
+				C1B17752D0D74F5C904619E8 /* /Users/joakim/Desktop/Symbios/external/glfw/src/vulkan.c */,
+				AAC59DA02CA34B3CB26B1973 /* /Users/joakim/Desktop/Symbios/external/glfw/src/window.c */,
+			);
+			name = "Source Files";
+			sourceTree = "<group>";
+		};
+		59D87F0859E642FA97006769 /* CMake Rules */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "CMake Rules";
+			sourceTree = "<group>";
+		};
+		7179AEB5BA394F5BA5083543 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				D5904E4D96324AC1856C75DC /* /Users/joakim/Desktop/Symbios/build-iOS/external/glfw/src/CMakeFiles/glfw.dir/Info.plist */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		7B4C294150D14845B4746DF0 /* Header Files */ = {
+			isa = PBXGroup;
+			children = (
+				B73D9D49D0274000AF0D9EF1 /* /Users/joakim/Desktop/Symbios/external/glfw/include/GLFW/glfw3.h */,
+				B73E39F1FC80439DB48DF9AA /* /Users/joakim/Desktop/Symbios/external/glfw/include/GLFW/glfw3native.h */,
+				D2B791609F554991A04B8F0C /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_joystick.h */,
+				1E503B50CC1E4AA69785F970 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_platform.h */,
+				F8CD15A238FC4C0092566265 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_time.h */,
+				82A5EBC733784A368B176C00 /* /Users/joakim/Desktop/Symbios/external/glfw/src/internal.h */,
+				4CE55134D2704DA5A39366C6 /* /Users/joakim/Desktop/Symbios/external/glfw/src/mappings.h */,
+				FF694E852C8947F992DFDC86 /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_joystick.h */,
+				EDDF881037FA4966B0BC3AAD /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_platform.h */,
+				B140E15D767944CA9DACABD0 /* /Users/joakim/Desktop/Symbios/external/glfw/src/platform.h */,
+				973D80F5D38C45E2B3314409 /* /Users/joakim/Desktop/Symbios/external/glfw/src/posix_thread.h */,
 			);
 			name = "Header Files";
 			sourceTree = "<group>";
 		};
-		62C6FCBD2E8B4DE38A34EC72 /* uninstall */ = {
+		A0B9CCA8D1764770AC80F5EA /* glfw */ = {
 			isa = PBXGroup;
 			children = (
-				E976769D04CF43BCBB2BF877 /* CMake Rules */,
-				954E4E1A4B174996BE6034D3 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/CMakeLists.txt */,
-			);
-			name = uninstall;
-			sourceTree = "<group>";
-		};
-		817A595456F44A24B3D9C23D /* update_mappings */ = {
-			isa = PBXGroup;
-			children = (
-				5742366D9FE1481B8A80D46D /* Header Files */,
-				A703219AB8CE453FA148A7FA /* CMake Rules */,
-				B87EB674D6DA466FAAA72DF6 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/CMake/GenerateMappings.cmake */,
-				8810BAC2CA164978BF5DD524 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/CMakeLists.txt */,
-			);
-			name = update_mappings;
-			sourceTree = "<group>";
-		};
-		87CAE965BA384761B69BA30F /* glfw */ = {
-			isa = PBXGroup;
-			children = (
-				EE8CB0B237CC4F6D97D6349E /* Header Files */,
-				3ACEC3624EE246C2B7695F16 /* Source Files */,
-				004CE107C7BE44DCA76CDB9A /* Resources */,
-				2390B42EAF494213AF0E7B30 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/CMakeLists.txt */,
+				7B4C294150D14845B4746DF0 /* Header Files */,
+				3E9D91CA61934E9BB3FFD118 /* Source Files */,
+				7179AEB5BA394F5BA5083543 /* Resources */,
+				698B53656220437E910641F3 /* /Users/joakim/Desktop/Symbios/external/glfw/src/CMakeLists.txt */,
 			);
 			name = glfw;
 			sourceTree = "<group>";
 		};
-		A703219AB8CE453FA148A7FA /* CMake Rules */ = {
+		A79CA4BA95B04EB7BE1B27F9 /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				FBBD263A0DC8408E90A73FA2 /* glfw */,
 			);
-			name = "CMake Rules";
+			name = Products;
 			sourceTree = "<group>";
 		};
-		B3950CF4F09F4B68A4413F3C /* ALL_BUILD */ = {
+		ACD45454FC48451E9DB58AD9 /* update_mappings */ = {
 			isa = PBXGroup;
 			children = (
-				2990D9E0D6534581979C12EC /* CMake Rules */,
-				8F3F3B4E48844610BE030B12 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/CMakeLists.txt */,
+				2C6DD113BE79488DA61FA424 /* Header Files */,
+				59D87F0859E642FA97006769 /* CMake Rules */,
+				79D5F2E4896D4FE7A7EDC15F /* /Users/joakim/Desktop/Symbios/external/glfw/CMake/GenerateMappings.cmake */,
+				065DA2497E234A27B6EB2D24 /* /Users/joakim/Desktop/Symbios/external/glfw/src/CMakeLists.txt */,
+			);
+			name = update_mappings;
+			sourceTree = "<group>";
+		};
+		B79A6E482F074E418A32616E /* uninstall */ = {
+			isa = PBXGroup;
+			children = (
+				118018C2912B439D83553B5C /* CMake Rules */,
+				C3EB377E69A84F0CA58664BC /* /Users/joakim/Desktop/Symbios/external/glfw/CMakeLists.txt */,
+			);
+			name = uninstall;
+			sourceTree = "<group>";
+		};
+		F564D203401A4AC582BEC58E /* ALL_BUILD */ = {
+			isa = PBXGroup;
+			children = (
+				091AA33152E24DED9071EFCE /* CMake Rules */,
+				371C3030573D4E3F952CE924 /* /Users/joakim/Desktop/Symbios/external/glfw/CMakeLists.txt */,
 			);
 			name = ALL_BUILD;
-			sourceTree = "<group>";
-		};
-		E976769D04CF43BCBB2BF877 /* CMake Rules */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "CMake Rules";
-			sourceTree = "<group>";
-		};
-		EACD1E34A4EB4E188D3828C0 = {
-			isa = PBXGroup;
-			children = (
-				565071A9C32249EE9662BC78 /* GLFW3 */,
-				B3950CF4F09F4B68A4413F3C /* ALL_BUILD */,
-				4CB1F6C9646C45DE8B41DCBB /* Products */,
-				563DDC52D1674EEC9E42D91C /* Frameworks */,
-			);
-			sourceTree = "<group>";
-		};
-		EE8CB0B237CC4F6D97D6349E /* Header Files */ = {
-			isa = PBXGroup;
-			children = (
-				46444918E11F446584DE4B3B /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/include/GLFW/glfw3.h */,
-				7420D536D3AF4F65B8A39D1C /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/include/GLFW/glfw3native.h */,
-				27B38DA00E414F04B1B858C7 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_joystick.h */,
-				B09B8321D27F4BC8A11C5132 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_platform.h */,
-				1DCBEC0F63174408BB3FC7EC /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_time.h */,
-				90AC329D40F74B0D861A5113 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/internal.h */,
-				0B81EA83780046BE811AC186 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/mappings.h */,
-				4B22748015B94993AB61A572 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_joystick.h */,
-				D56C5B7E17C04549B488C320 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_platform.h */,
-				6F0BBC57FAD54FABA42B511D /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/platform.h */,
-				76CF1F76D7654D03B1FE5B56 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/posix_thread.h */,
-			);
-			name = "Header Files";
-			sourceTree = "<group>";
-		};
-		FE059CA93D1741A58915D294 /* docs */ = {
-			isa = PBXGroup;
-			children = (
-				4639D72B00E443FB9BE4EA68 /* /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/docs/Doxyfile */,
-				4C2580B1677C43D8AFD98C32 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/docs/CMakeLists.txt */,
-			);
-			name = docs;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		AD713A08605B4E7C96C68B80 /* glfw */ = {
+		81229D55449A4E8BB963AAFA /* glfw */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C45E9D947A2A4B358A88F688 /* Build configuration list for PBXNativeTarget "glfw" */;
+			buildConfigurationList = 4B9964F760854C398991E598 /* Build configuration list for PBXNativeTarget "glfw" */;
 			buildPhases = (
-				D72212D5BF814016B589882B /* Sources */,
-				F7204387827E4921A0D68D3A /* Frameworks */,
+				75CCBA373B7744F9A9682D9E /* Sources */,
+				C7608918B752437482A301E7 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -426,144 +395,44 @@
 			);
 			name = glfw;
 			productName = glfw;
-			productReference = B59A9CD1B3B04127B89472D4 /* glfw */;
+			productReference = FBBD263A0DC8408E90A73FA2 /* glfw */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		D9D54E3D5C3D4C17BB80B8D8 /* Project object */ = {
+		90E9AD09406A42518BCAA401 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 			};
-			buildConfigurationList = 33AECD1C815441198E680BE0 /* Build configuration list for PBXProject "GLFW" */;
+			buildConfigurationList = 134B2BF5223E4082ABCFE40A /* Build configuration list for PBXProject "GLFW" */;
 			buildSettings = {
 			};
 			buildStyles = (
-				26B03329215642FAA1B3DB41 /* Debug */,
-				2C28073330074639859EDADD /* Release */,
-				184C10F7978E42899AE2EDB2 /* MinSizeRel */,
-				5B8A3C247C6145A097AE1876 /* RelWithDebInfo */,
+				E8ED0014AAC2433393BA3FD9 /* Debug */,
+				ADF477D8CC574ABCBC15B84D /* Release */,
+				0584EE7F6AAC4DF5A7B2A942 /* MinSizeRel */,
+				044A4942827449269EA016C4 /* RelWithDebInfo */,
 			);
 			compatibilityVersion = "Xcode 3.2";
 			hasScannedForEncodings = 0;
-			mainGroup = EACD1E34A4EB4E188D3828C0;
-			projectDirPath = /Users/joakimwennergren/Desktop/Symbios/external/glfw;
+			mainGroup = 249D6505AEDD4CE7B289F9CC;
+			projectDirPath = /Users/joakim/Desktop/Symbios/external/glfw;
 			projectRoot = "";
 			targets = (
-				4F1C3D455DD64CF98BD4BD7B /* ALL_BUILD */,
-				036916995C724DDDB09022F5 /* ZERO_CHECK */,
-				C6C1F6ADE4284223BE40BAAE /* docs */,
-				AD713A08605B4E7C96C68B80 /* glfw */,
-				FA40D315DF5E422FA71D4D0D /* install */,
-				1D868E6B4185450DAF262340 /* uninstall */,
-				8E187B6D02304B9A82675BD5 /* update_mappings */,
+				6DA54ADD52A344109FA6E40D /* ALL_BUILD */,
+				8750AF4312314F7B837A3AE8 /* ZERO_CHECK */,
+				81229D55449A4E8BB963AAFA /* glfw */,
+				26D89694663B4A04918FDE3E /* install */,
+				52FF7E8603FD423EAB80C766 /* uninstall */,
+				73C302AFE80C49F28D1E679C /* update_mappings */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		061C26BF504C36A82242585A /* Generate CMakeFiles/ZERO_CHECK */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Generate CMakeFiles/ZERO_CHECK";
-			outputPaths = (
-"/Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/CMakeFiles/ZERO_CHECK"			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "set -e
-if test \"$CONFIGURATION\" = \"Debug\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw
-  make -f /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/CMakeScripts/ReRunCMake.make
-fi
-if test \"$CONFIGURATION\" = \"Release\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw
-  make -f /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/CMakeScripts/ReRunCMake.make
-fi
-if test \"$CONFIGURATION\" = \"MinSizeRel\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw
-  make -f /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/CMakeScripts/ReRunCMake.make
-fi
-if test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw
-  make -f /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/CMakeScripts/ReRunCMake.make
-fi
-";
-			showEnvVarsInLog = 0;
-		};
-		1DC709B9C56FAB0AA29B276B /* Generate CMakeFiles/ALL_BUILD */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Generate CMakeFiles/ALL_BUILD";
-			outputPaths = (
-"/Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/CMakeFiles/ALL_BUILD"			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "set -e
-if test \"$CONFIGURATION\" = \"Debug\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw
-  echo Build\\ all\\ projects
-fi
-if test \"$CONFIGURATION\" = \"Release\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw
-  echo Build\\ all\\ projects
-fi
-if test \"$CONFIGURATION\" = \"MinSizeRel\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw
-  echo Build\\ all\\ projects
-fi
-if test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw
-  echo Build\\ all\\ projects
-fi
-";
-			showEnvVarsInLog = 0;
-		};
-		3828C5B1D489A45C05EAAAF1 /* Generate src/CMakeFiles/update_mappings */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Generate src/CMakeFiles/update_mappings";
-			outputPaths = (
-"/Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/src/CMakeFiles/update_mappings"			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "set -e
-if test \"$CONFIGURATION\" = \"Debug\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/external/glfw/src
-  /opt/homebrew/Cellar/cmake/3.25.2/bin/cmake -P /Users/joakimwennergren/Desktop/Symbios/external/glfw/CMake/GenerateMappings.cmake mappings.h.in mappings.h
-fi
-if test \"$CONFIGURATION\" = \"Release\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/external/glfw/src
-  /opt/homebrew/Cellar/cmake/3.25.2/bin/cmake -P /Users/joakimwennergren/Desktop/Symbios/external/glfw/CMake/GenerateMappings.cmake mappings.h.in mappings.h
-fi
-if test \"$CONFIGURATION\" = \"MinSizeRel\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/external/glfw/src
-  /opt/homebrew/Cellar/cmake/3.25.2/bin/cmake -P /Users/joakimwennergren/Desktop/Symbios/external/glfw/CMake/GenerateMappings.cmake mappings.h.in mappings.h
-fi
-if test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/external/glfw/src
-  /opt/homebrew/Cellar/cmake/3.25.2/bin/cmake -P /Users/joakimwennergren/Desktop/Symbios/external/glfw/CMake/GenerateMappings.cmake mappings.h.in mappings.h
-fi
-";
-			showEnvVarsInLog = 0;
-		};
 		3C0110FC8322DE7E50886E21 = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -594,39 +463,7 @@ exit 0";
 exit 0";
 			showEnvVarsInLog = 0;
 		};
-		693FF1B2C869F414D9938198 /* Generate docs/html/index.html */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-"/Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/docs/Doxyfile",/Users/joakimwennergren/Desktop/Symbios/external/glfw/docs/DoxygenLayout.xml,/Users/joakimwennergren/Desktop/Symbios/external/glfw/docs/build.dox,/Users/joakimwennergren/Desktop/Symbios/external/glfw/docs/compat.dox,/Users/joakimwennergren/Desktop/Symbios/external/glfw/docs/compile.dox,/Users/joakimwennergren/Desktop/Symbios/external/glfw/docs/context.dox,/Users/joakimwennergren/Desktop/Symbios/external/glfw/docs/extra.css,/Users/joakimwennergren/Desktop/Symbios/external/glfw/docs/footer.html,/Users/joakimwennergren/Desktop/Symbios/external/glfw/docs/header.html,/Users/joakimwennergren/Desktop/Symbios/external/glfw/docs/input.dox,/Users/joakimwennergren/Desktop/Symbios/external/glfw/docs/internal.dox,/Users/joakimwennergren/Desktop/Symbios/external/glfw/docs/intro.dox,/Users/joakimwennergren/Desktop/Symbios/external/glfw/docs/main.dox,/Users/joakimwennergren/Desktop/Symbios/external/glfw/docs/monitor.dox,/Users/joakimwennergren/Desktop/Symbios/external/glfw/docs/moving.dox,/Users/joakimwennergren/Desktop/Symbios/external/glfw/docs/news.dox,/Users/joakimwennergren/Desktop/Symbios/external/glfw/docs/quick.dox,/Users/joakimwennergren/Desktop/Symbios/external/glfw/docs/spaces.svg,/Users/joakimwennergren/Desktop/Symbios/external/glfw/docs/vulkan.dox,/Users/joakimwennergren/Desktop/Symbios/external/glfw/docs/window.dox,/Users/joakimwennergren/Desktop/Symbios/external/glfw/include/GLFW/glfw3.h,/Users/joakimwennergren/Desktop/Symbios/external/glfw/include/GLFW/glfw3native.h			);
-			name = "Generate docs/html/index.html";
-			outputPaths = (
-"/Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/docs/html/index.html"			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "set -e
-if test \"$CONFIGURATION\" = \"Debug\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/docs
-  /opt/homebrew/bin/doxygen
-fi
-if test \"$CONFIGURATION\" = \"Release\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/docs
-  /opt/homebrew/bin/doxygen
-fi
-if test \"$CONFIGURATION\" = \"MinSizeRel\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/docs
-  /opt/homebrew/bin/doxygen
-fi
-if test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/docs
-  /opt/homebrew/bin/doxygen
-fi
-";
-			showEnvVarsInLog = 0;
-		};
-		6D03E913D7A1284EF3A75E97 /* Generate CMakeFiles/uninstall */ = {
+		486E50A5629D0598AF689039 /* Generate CMakeFiles/ZERO_CHECK */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -634,27 +471,27 @@ fi
 			);
 			inputPaths = (
 			);
-			name = "Generate CMakeFiles/uninstall";
+			name = "Generate CMakeFiles/ZERO_CHECK";
 			outputPaths = (
-"/Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/CMakeFiles/uninstall"			);
+"/Users/joakim/Desktop/Symbios/build-iOS/external/glfw/CMakeFiles/ZERO_CHECK"			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "set -e
 if test \"$CONFIGURATION\" = \"Debug\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw
-  /opt/homebrew/Cellar/cmake/3.25.2/bin/cmake -P /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/cmake_uninstall.cmake
+  cd /Users/joakim/Desktop/Symbios/build-iOS/external/glfw
+  make -f /Users/joakim/Desktop/Symbios/build-iOS/external/glfw/CMakeScripts/ReRunCMake.make
 fi
 if test \"$CONFIGURATION\" = \"Release\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw
-  /opt/homebrew/Cellar/cmake/3.25.2/bin/cmake -P /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/cmake_uninstall.cmake
+  cd /Users/joakim/Desktop/Symbios/build-iOS/external/glfw
+  make -f /Users/joakim/Desktop/Symbios/build-iOS/external/glfw/CMakeScripts/ReRunCMake.make
 fi
 if test \"$CONFIGURATION\" = \"MinSizeRel\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw
-  /opt/homebrew/Cellar/cmake/3.25.2/bin/cmake -P /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/cmake_uninstall.cmake
+  cd /Users/joakim/Desktop/Symbios/build-iOS/external/glfw
+  make -f /Users/joakim/Desktop/Symbios/build-iOS/external/glfw/CMakeScripts/ReRunCMake.make
 fi
 if test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw
-  /opt/homebrew/Cellar/cmake/3.25.2/bin/cmake -P /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/cmake_uninstall.cmake
+  cd /Users/joakim/Desktop/Symbios/build-iOS/external/glfw
+  make -f /Users/joakim/Desktop/Symbios/build-iOS/external/glfw/CMakeScripts/ReRunCMake.make
 fi
 ";
 			showEnvVarsInLog = 0;
@@ -687,20 +524,20 @@ exit 0";
 			shellPath = /bin/sh;
 			shellScript = "set -e
 if test \"$CONFIGURATION\" = \"Debug\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw
-  /opt/homebrew/Cellar/cmake/3.25.2/bin/cmake -DBUILD_TYPE=$CONFIGURATION -DEFFECTIVE_PLATFORM_NAME=$EFFECTIVE_PLATFORM_NAME -P cmake_install.cmake
+  cd /Users/joakim/Desktop/Symbios/build-iOS/external/glfw
+  /usr/local/Cellar/cmake/3.24.1/bin/cmake -DBUILD_TYPE=$CONFIGURATION -DEFFECTIVE_PLATFORM_NAME=$EFFECTIVE_PLATFORM_NAME -P cmake_install.cmake
 fi
 if test \"$CONFIGURATION\" = \"Release\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw
-  /opt/homebrew/Cellar/cmake/3.25.2/bin/cmake -DBUILD_TYPE=$CONFIGURATION -DEFFECTIVE_PLATFORM_NAME=$EFFECTIVE_PLATFORM_NAME -P cmake_install.cmake
+  cd /Users/joakim/Desktop/Symbios/build-iOS/external/glfw
+  /usr/local/Cellar/cmake/3.24.1/bin/cmake -DBUILD_TYPE=$CONFIGURATION -DEFFECTIVE_PLATFORM_NAME=$EFFECTIVE_PLATFORM_NAME -P cmake_install.cmake
 fi
 if test \"$CONFIGURATION\" = \"MinSizeRel\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw
-  /opt/homebrew/Cellar/cmake/3.25.2/bin/cmake -DBUILD_TYPE=$CONFIGURATION -DEFFECTIVE_PLATFORM_NAME=$EFFECTIVE_PLATFORM_NAME -P cmake_install.cmake
+  cd /Users/joakim/Desktop/Symbios/build-iOS/external/glfw
+  /usr/local/Cellar/cmake/3.24.1/bin/cmake -DBUILD_TYPE=$CONFIGURATION -DEFFECTIVE_PLATFORM_NAME=$EFFECTIVE_PLATFORM_NAME -P cmake_install.cmake
 fi
 if test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :
-  cd /Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw
-  /opt/homebrew/Cellar/cmake/3.25.2/bin/cmake -DBUILD_TYPE=$CONFIGURATION -DEFFECTIVE_PLATFORM_NAME=$EFFECTIVE_PLATFORM_NAME -P cmake_install.cmake
+  cd /Users/joakim/Desktop/Symbios/build-iOS/external/glfw
+  /usr/local/Cellar/cmake/3.24.1/bin/cmake -DBUILD_TYPE=$CONFIGURATION -DEFFECTIVE_PLATFORM_NAME=$EFFECTIVE_PLATFORM_NAME -P cmake_install.cmake
 fi
 ";
 			showEnvVarsInLog = 0;
@@ -720,6 +557,72 @@ fi
 exit 0";
 			showEnvVarsInLog = 0;
 		};
+		9C976A7482788D0F0A12F7AE /* Generate CMakeFiles/ALL_BUILD */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Generate CMakeFiles/ALL_BUILD";
+			outputPaths = (
+"/Users/joakim/Desktop/Symbios/build-iOS/external/glfw/CMakeFiles/ALL_BUILD"			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e
+if test \"$CONFIGURATION\" = \"Debug\"; then :
+  cd /Users/joakim/Desktop/Symbios/build-iOS/external/glfw
+  echo Build\\ all\\ projects
+fi
+if test \"$CONFIGURATION\" = \"Release\"; then :
+  cd /Users/joakim/Desktop/Symbios/build-iOS/external/glfw
+  echo Build\\ all\\ projects
+fi
+if test \"$CONFIGURATION\" = \"MinSizeRel\"; then :
+  cd /Users/joakim/Desktop/Symbios/build-iOS/external/glfw
+  echo Build\\ all\\ projects
+fi
+if test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :
+  cd /Users/joakim/Desktop/Symbios/build-iOS/external/glfw
+  echo Build\\ all\\ projects
+fi
+";
+			showEnvVarsInLog = 0;
+		};
+		DC3DB64DC81E5E6FF0E44648 /* Generate src/CMakeFiles/update_mappings */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Generate src/CMakeFiles/update_mappings";
+			outputPaths = (
+"/Users/joakim/Desktop/Symbios/build-iOS/external/glfw/src/CMakeFiles/update_mappings"			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e
+if test \"$CONFIGURATION\" = \"Debug\"; then :
+  cd /Users/joakim/Desktop/Symbios/external/glfw/src
+  /usr/local/Cellar/cmake/3.24.1/bin/cmake -P /Users/joakim/Desktop/Symbios/external/glfw/CMake/GenerateMappings.cmake mappings.h.in mappings.h
+fi
+if test \"$CONFIGURATION\" = \"Release\"; then :
+  cd /Users/joakim/Desktop/Symbios/external/glfw/src
+  /usr/local/Cellar/cmake/3.24.1/bin/cmake -P /Users/joakim/Desktop/Symbios/external/glfw/CMake/GenerateMappings.cmake mappings.h.in mappings.h
+fi
+if test \"$CONFIGURATION\" = \"MinSizeRel\"; then :
+  cd /Users/joakim/Desktop/Symbios/external/glfw/src
+  /usr/local/Cellar/cmake/3.24.1/bin/cmake -P /Users/joakim/Desktop/Symbios/external/glfw/CMake/GenerateMappings.cmake mappings.h.in mappings.h
+fi
+if test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :
+  cd /Users/joakim/Desktop/Symbios/external/glfw/src
+  /usr/local/Cellar/cmake/3.24.1/bin/cmake -P /Users/joakim/Desktop/Symbios/external/glfw/CMake/GenerateMappings.cmake mappings.h.in mappings.h
+fi
+";
+			showEnvVarsInLog = 0;
+		};
 		EF220574C043FA76D2683574 = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -735,500 +638,101 @@ exit 0";
 exit 0";
 			showEnvVarsInLog = 0;
 		};
-		FC5B5C9115E405ED6F6F6625 = {
+		EF8E113455252FFEBCAE5B77 /* Generate CMakeFiles/uninstall */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Generate CMakeFiles/uninstall";
 			outputPaths = (
-			);
+"/Users/joakim/Desktop/Symbios/build-iOS/external/glfw/CMakeFiles/uninstall"			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# shell script goes here
-exit 0";
+			shellScript = "set -e
+if test \"$CONFIGURATION\" = \"Debug\"; then :
+  cd /Users/joakim/Desktop/Symbios/build-iOS/external/glfw
+  /usr/local/Cellar/cmake/3.24.1/bin/cmake -P /Users/joakim/Desktop/Symbios/build-iOS/external/glfw/cmake_uninstall.cmake
+fi
+if test \"$CONFIGURATION\" = \"Release\"; then :
+  cd /Users/joakim/Desktop/Symbios/build-iOS/external/glfw
+  /usr/local/Cellar/cmake/3.24.1/bin/cmake -P /Users/joakim/Desktop/Symbios/build-iOS/external/glfw/cmake_uninstall.cmake
+fi
+if test \"$CONFIGURATION\" = \"MinSizeRel\"; then :
+  cd /Users/joakim/Desktop/Symbios/build-iOS/external/glfw
+  /usr/local/Cellar/cmake/3.24.1/bin/cmake -P /Users/joakim/Desktop/Symbios/build-iOS/external/glfw/cmake_uninstall.cmake
+fi
+if test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :
+  cd /Users/joakim/Desktop/Symbios/build-iOS/external/glfw
+  /usr/local/Cellar/cmake/3.24.1/bin/cmake -P /Users/joakim/Desktop/Symbios/build-iOS/external/glfw/cmake_uninstall.cmake
+fi
+";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		D72212D5BF814016B589882B /* Sources */ = {
+		75CCBA373B7744F9A9682D9E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C9880A75E03D439FB6DE935F /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_init.m */,
-				B9AE9DC9C78C4331952FE14B /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_joystick.m */,
-				AC03B069D0D6494C90DDF215 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_monitor.m */,
-				FB62E5BE45AB462D91402AFF /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_time.c */,
-				AFBFEF706A5C44F99A0F5311 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/cocoa_window.m */,
-				5AFF61B200A244D0B9B4E6B1 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/context.c */,
-				66E32C596AFD4BBEAB22AAE9 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/egl_context.c */,
-				238995ECD0DE466BA85BDC6D /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/init.c */,
-				3FBA477949B940639BE0954E /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/input.c */,
-				3A7681EC76F34AA395B96EF7 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/monitor.c */,
-				64B368E3CE8C40A0A98D5F56 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/nsgl_context.m */,
-				2B13A3A98C5D4067BDAB76E7 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_init.c */,
-				7491B67912AD452FB94BCB99 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_joystick.c */,
-				3C750973AEAC4A7D8EA0AB62 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_monitor.c */,
-				0D055A6753B94467813E365E /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/null_window.c */,
-				CBCD1CDCA73146AEB4F335C3 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/osmesa_context.c */,
-				6B532E98AAD74D32905A8A4A /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/platform.c */,
-				9F488A4FBC7F4B7ABE5151D2 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/posix_module.c */,
-				6A92DF091C9C461BBF5A6971 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/posix_thread.c */,
-				E68EDAE303C243B8AF25B99D /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/vulkan.c */,
-				B32ABC554DE040BA974026F2 /* /Users/joakimwennergren/Desktop/Symbios/external/glfw/src/window.c */,
+				93B1ED0B0F6F4C749E9A957E /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_init.m */,
+				CD32A093D44F4249AB81B17C /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_joystick.m */,
+				C4219830BE824537B83C39BD /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_monitor.m */,
+				A1B02C674880473B81496610 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_time.c */,
+				4BCE3C1480E2471F82136848 /* /Users/joakim/Desktop/Symbios/external/glfw/src/cocoa_window.m */,
+				F4E6D4FAE0064C8A8EB23E68 /* /Users/joakim/Desktop/Symbios/external/glfw/src/context.c */,
+				3841E242A6C849C8AF35333B /* /Users/joakim/Desktop/Symbios/external/glfw/src/egl_context.c */,
+				71FBCB834701457FB34A0DB2 /* /Users/joakim/Desktop/Symbios/external/glfw/src/init.c */,
+				880F4D7D9E754211902337CC /* /Users/joakim/Desktop/Symbios/external/glfw/src/input.c */,
+				3CE8107E32B045CDB8D3F026 /* /Users/joakim/Desktop/Symbios/external/glfw/src/monitor.c */,
+				80671A84DA204C378E69B253 /* /Users/joakim/Desktop/Symbios/external/glfw/src/nsgl_context.m */,
+				642ACCFE025A4635A5B52064 /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_init.c */,
+				405C3E40516D46189D709AFA /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_joystick.c */,
+				3A29C55BE73D42218E2F33F4 /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_monitor.c */,
+				5D201FA6429F4DF4AAC09C1F /* /Users/joakim/Desktop/Symbios/external/glfw/src/null_window.c */,
+				E7FCABF76E1D48C6945336A1 /* /Users/joakim/Desktop/Symbios/external/glfw/src/osmesa_context.c */,
+				F29A241E3C9C46579513B85D /* /Users/joakim/Desktop/Symbios/external/glfw/src/platform.c */,
+				31D4EA4C33304E948DA9A7AD /* /Users/joakim/Desktop/Symbios/external/glfw/src/posix_module.c */,
+				40016DC9C4AC4AC7A3436FAE /* /Users/joakim/Desktop/Symbios/external/glfw/src/posix_thread.c */,
+				60A819BD34A64CDF84A89375 /* /Users/joakim/Desktop/Symbios/external/glfw/src/vulkan.c */,
+				9645719DB40A4E6BB9D2350A /* /Users/joakim/Desktop/Symbios/external/glfw/src/window.c */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		558DF5D0873244CC9D96D6BA /* PBXTargetDependency */ = {
+		8619398EACE246DE990A8FD3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = AD713A08605B4E7C96C68B80 /* glfw */;
-			targetProxy = E6953042EE414F87B5CD48A8 /* PBXContainerItemProxy */;
+			target = 8750AF4312314F7B837A3AE8 /* ZERO_CHECK */;
+			targetProxy = F2CF73E1D84640D7ADFBC9F3 /* PBXContainerItemProxy */;
 		};
-		8E07F45C3E064A218D8667EA /* PBXTargetDependency */ = {
+		957F6C4849604A8DB7BB3F60 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = C6C1F6ADE4284223BE40BAAE /* docs */;
-			targetProxy = 767A9E3FB5904BC09D2A116C /* PBXContainerItemProxy */;
+			target = 81229D55449A4E8BB963AAFA /* glfw */;
+			targetProxy = 80688DAB99CF4CB2B33BA8CB /* PBXContainerItemProxy */;
 		};
-		A13C2FC2A29C460497BBF045 /* PBXTargetDependency */ = {
+		9DFB49678C5141AA90082637 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 4F1C3D455DD64CF98BD4BD7B /* ALL_BUILD */;
-			targetProxy = 848665E1F25F460F8091969A /* PBXContainerItemProxy */;
+			target = 6DA54ADD52A344109FA6E40D /* ALL_BUILD */;
+			targetProxy = E7F0F19BCE9B4D61A2CFCEA2 /* PBXContainerItemProxy */;
 		};
-		A4AE407A3210408080333CAD /* PBXTargetDependency */ = {
+		E8E1FE2942F54CB58757A7CF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 036916995C724DDDB09022F5 /* ZERO_CHECK */;
-			targetProxy = D0D176055A94454BB58A396E /* PBXContainerItemProxy */;
-		};
-		D31A627795BE4A6D9D40D58F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 036916995C724DDDB09022F5 /* ZERO_CHECK */;
-			targetProxy = 129FFF27F05E4D5B84DE9F46 /* PBXContainerItemProxy */;
+			target = 8750AF4312314F7B837A3AE8 /* ZERO_CHECK */;
+			targetProxy = 5770822C9318415A83A0D401 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		14A9A5BFA3AE474F84131562 /* Debug */ = {
+		0118716772CC499BBA430261 /* MinSizeRel */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (arm64,x86_64);
 				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = ("","$(inherited)");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = ZERO_CHECK;
-				SECTORDER_FLAGS = "";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = Debug;
-		};
-		19F08309E73D441FB17E23DE /* RelWithDebInfo */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = ("","$(inherited)");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = uninstall;
-				SECTORDER_FLAGS = "";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = RelWithDebInfo;
-		};
-		224C0A91B9374F0B93D21857 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = ("","$(inherited)");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = ALL_BUILD;
-				SECTORDER_FLAGS = "";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = Debug;
-		};
-		2A78D9324CEB45D58131469E /* RelWithDebInfo */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = ("","$(inherited)");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = docs;
-				SECTORDER_FLAGS = "";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = RelWithDebInfo;
-		};
-		31004C64298A4AD69B205479 /* RelWithDebInfo */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = ("","$(inherited)");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = update_mappings;
-				SECTORDER_FLAGS = "";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = RelWithDebInfo;
-		};
-		3321EA5E8AC347539199F88C /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = ("","$(inherited)");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = install;
-				SECTORDER_FLAGS = "";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = Release;
-		};
-		3CA2FFE99E0C4933A43A5760 /* RelWithDebInfo */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = ("","$(inherited)");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = ZERO_CHECK;
-				SECTORDER_FLAGS = "";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = RelWithDebInfo;
-		};
-		42B46962E9E141088D0F907E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = ("","$(inherited)");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = uninstall;
-				SECTORDER_FLAGS = "";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = Debug;
-		};
-		43EB3CCC8BF3434488D26DD1 /* RelWithDebInfo */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = ("","$(inherited)");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = install;
-				SECTORDER_FLAGS = "";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = RelWithDebInfo;
-		};
-		446DBB8249E74DC39EC31BFF /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = arm64;
-				"ARCHS[sdk=iphonesimulator*]" = arm64;
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGNING_REQUIRED = NO;
-				ENABLE_BITCODE = NO;
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator16.4.sdk;
-				SYMROOT = "/Users/joakimwennergren/Desktop/Symbios/build-iOS/build";
-				"VALID_ARCHS[sdk=iphonesimulator*]" = arm64;
-			};
-			name = Debug;
-		};
-		4A8F81C43E064AA6BCB5DC32 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = ("","$(inherited)");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = update_mappings;
-				SECTORDER_FLAGS = "";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = Release;
-		};
-		505DF0D50178433BA26AEA46 /* MinSizeRel */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = ("","$(inherited)");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = ALL_BUILD;
-				SECTORDER_FLAGS = "";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = MinSizeRel;
-		};
-		5B734346DF9E45549844907B /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = arm64;
-				COMBINE_HIDPI_IMAGES = YES;
-				CONFIGURATION_BUILD_DIR = "/Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/src/Debug${EFFECTIVE_PLATFORM_NAME}";
-				EXECUTABLE_PREFIX = lib;
-				EXECUTABLE_SUFFIX = .a;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",_GLFW_COCOA,"$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = (/Users/joakimwennergren/Desktop/Symbios/external/glfw/include,/Users/joakimwennergren/Desktop/Symbios/external/glfw/src,"/Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/src","$(inherited)");
-				INSTALL_PATH = "";
-				LIBRARY_STYLE = STATIC;
-				ONLY_ACTIVE_ARCH = NO;
-				OTHER_CFLAGS = ("   -fPIC -Wall '-std=c99' ","$(inherited)");
-				OTHER_LIBTOOLFLAGS = ("");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = glfw3;
-				SECTORDER_FLAGS = "";
-				TARGET_TEMP_DIR = "/Users/joakimwennergren/Desktop/Symbios/build-iOS/build/glfw.build/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = Debug;
-		};
-		5F3D660717514EDCABA9165F /* MinSizeRel */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = arm64;
-				"ARCHS[sdk=iphonesimulator*]" = arm64;
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGNING_REQUIRED = NO;
-				ENABLE_BITCODE = NO;
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator16.4.sdk;
-				SYMROOT = "/Users/joakimwennergren/Desktop/Symbios/build-iOS/build";
-				"VALID_ARCHS[sdk=iphonesimulator*]" = arm64;
-			};
-			name = MinSizeRel;
-		};
-		644F2C4A35C4422BABBAFB22 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = ("","$(inherited)");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = docs;
-				SECTORDER_FLAGS = "";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = Release;
-		};
-		659D725139434C28A8A40722 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = ("","$(inherited)");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = update_mappings;
-				SECTORDER_FLAGS = "";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = Debug;
-		};
-		682541625D734BEF8417100B /* RelWithDebInfo */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = arm64;
-				"ARCHS[sdk=iphonesimulator*]" = arm64;
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGNING_REQUIRED = NO;
-				ENABLE_BITCODE = NO;
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator16.4.sdk;
-				SYMROOT = "/Users/joakimwennergren/Desktop/Symbios/build-iOS/build";
-				"VALID_ARCHS[sdk=iphonesimulator*]" = arm64;
-			};
-			name = RelWithDebInfo;
-		};
-		780224FE81C64DE2994C1FE2 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = arm64;
-				COMBINE_HIDPI_IMAGES = YES;
-				CONFIGURATION_BUILD_DIR = "/Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/src/Release${EFFECTIVE_PLATFORM_NAME}";
-				EXECUTABLE_PREFIX = lib;
-				EXECUTABLE_SUFFIX = .a;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",_GLFW_COCOA,"$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = (/Users/joakimwennergren/Desktop/Symbios/external/glfw/include,/Users/joakimwennergren/Desktop/Symbios/external/glfw/src,"/Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/src","$(inherited)");
-				INSTALL_PATH = "";
-				LIBRARY_STYLE = STATIC;
-				ONLY_ACTIVE_ARCH = NO;
-				OTHER_CFLAGS = ("    -DNDEBUG -fPIC -Wall '-std=c99' ","$(inherited)");
-				OTHER_LIBTOOLFLAGS = ("");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = glfw3;
-				SECTORDER_FLAGS = "";
-				TARGET_TEMP_DIR = "/Users/joakimwennergren/Desktop/Symbios/build-iOS/build/glfw.build/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = Release;
-		};
-		7C4B6B77E4CF4988B7DC7CA0 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = ("","$(inherited)");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = uninstall;
-				SECTORDER_FLAGS = "";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = Release;
-		};
-		7E11ECF326D540C58006460D /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = ("","$(inherited)");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = docs;
-				SECTORDER_FLAGS = "";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = Debug;
-		};
-		8CD249F9FEB64E0EACB03BB5 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = ("","$(inherited)");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = ZERO_CHECK;
-				SECTORDER_FLAGS = "";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = Release;
-		};
-		A0249F3DA3F042BE946CCF1B /* MinSizeRel */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = arm64;
-				COMBINE_HIDPI_IMAGES = YES;
-				CONFIGURATION_BUILD_DIR = "/Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/src/MinSizeRel${EFFECTIVE_PLATFORM_NAME}";
 				EXECUTABLE_PREFIX = lib;
 				EXECUTABLE_SUFFIX = .a;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
@@ -1236,7 +740,7 @@ exit 0";
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",_GLFW_COCOA,"$(inherited)");
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = (/Users/joakimwennergren/Desktop/Symbios/external/glfw/include,/Users/joakimwennergren/Desktop/Symbios/external/glfw/src,"/Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/src","$(inherited)");
+				HEADER_SEARCH_PATHS = (/Users/joakim/Desktop/Symbios/external/glfw/include,/Users/joakim/Desktop/Symbios/external/glfw/src,"/Users/joakim/Desktop/Symbios/build-iOS/external/glfw/src","$(inherited)");
 				INSTALL_PATH = "";
 				LIBRARY_STYLE = STATIC;
 				ONLY_ACTIVE_ARCH = NO;
@@ -1245,87 +749,13 @@ exit 0";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = glfw3;
 				SECTORDER_FLAGS = "";
-				TARGET_TEMP_DIR = "/Users/joakimwennergren/Desktop/Symbios/build-iOS/build/glfw.build/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw/src";
 				USE_HEADERMAP = NO;
 				WARNING_CFLAGS = ("$(inherited)");
 			};
 			name = MinSizeRel;
 		};
-		B67CE56E9C574A908E478A1C /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = ("","$(inherited)");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = ALL_BUILD;
-				SECTORDER_FLAGS = "";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = Release;
-		};
-		BA3C2D6269DA4636A0116147 /* MinSizeRel */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = ("","$(inherited)");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = update_mappings;
-				SECTORDER_FLAGS = "";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = MinSizeRel;
-		};
-		CDDD841ABA7B436F94A608E6 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = ("","$(inherited)");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = install;
-				SECTORDER_FLAGS = "";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = Debug;
-		};
-		D8522B30301F426CB61FBDDD /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = arm64;
-				"ARCHS[sdk=iphonesimulator*]" = arm64;
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGNING_REQUIRED = NO;
-				ENABLE_BITCODE = NO;
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator16.4.sdk;
-				SYMROOT = "/Users/joakimwennergren/Desktop/Symbios/build-iOS/build";
-				"VALID_ARCHS[sdk=iphonesimulator*]" = arm64;
-			};
-			name = Release;
-		};
-		EC0278C1ED3F4759B8FD7B86 /* MinSizeRel */ = {
+		058A8CFFEB0543039C146B49 /* RelWithDebInfo */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
@@ -1339,12 +769,13 @@ exit 0";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = ZERO_CHECK;
 				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw";
 				USE_HEADERMAP = NO;
 				WARNING_CFLAGS = ("$(inherited)");
 			};
-			name = MinSizeRel;
+			name = RelWithDebInfo;
 		};
-		ED7775FCC6C4457EBB6DB31D /* MinSizeRel */ = {
+		0A6603550DEE43BC8A0B5C7A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
@@ -1356,14 +787,102 @@ exit 0";
 				INSTALL_PATH = "";
 				OTHER_LDFLAGS = ("","$(inherited)");
 				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = docs;
+				PRODUCT_NAME = uninstall;
 				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw";
 				USE_HEADERMAP = NO;
 				WARNING_CFLAGS = ("$(inherited)");
 			};
-			name = MinSizeRel;
+			name = Release;
 		};
-		EE99988027BA4C75A2F5C266 /* MinSizeRel */ = {
+		0CB3D1A5F4894DB8A4D04146 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = update_mappings;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw/src";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Debug;
+		};
+		113B0D66C6A04F179DD2989B /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = uninstall;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		175BBF2052074F3DB971F8E9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = uninstall;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Debug;
+		};
+		1CFE985E50DA459BA94F1D52 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (arm64,x86_64);
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .a;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",_GLFW_COCOA,"$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Users/joakim/Desktop/Symbios/external/glfw/include,/Users/joakim/Desktop/Symbios/external/glfw/src,"/Users/joakim/Desktop/Symbios/build-iOS/external/glfw/src","$(inherited)");
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = STATIC;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = ("    -DNDEBUG -fPIC -Wall '-std=c99' ","$(inherited)");
+				OTHER_LIBTOOLFLAGS = ("");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = glfw3;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw/src";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Release;
+		};
+		389B339FC7E441448839B9D1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
@@ -1377,17 +896,37 @@ exit 0";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = install;
 				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Release;
+		};
+		4954A4AE345B4814BA1A1D3F /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = install;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw";
 				USE_HEADERMAP = NO;
 				WARNING_CFLAGS = ("$(inherited)");
 			};
 			name = MinSizeRel;
 		};
-		EF10408D9CB042DCB57A2AE1 /* RelWithDebInfo */ = {
+		5602B7C827E54D90B7CB4A8A /* RelWithDebInfo */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = arm64;
+				ARCHS = (arm64,x86_64);
 				COMBINE_HIDPI_IMAGES = YES;
-				CONFIGURATION_BUILD_DIR = "/Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/src/RelWithDebInfo${EFFECTIVE_PLATFORM_NAME}";
 				EXECUTABLE_PREFIX = lib;
 				EXECUTABLE_SUFFIX = .a;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -1395,7 +934,7 @@ exit 0";
 				GCC_OPTIMIZATION_LEVEL = 2;
 				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",_GLFW_COCOA,"$(inherited)");
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = (/Users/joakimwennergren/Desktop/Symbios/external/glfw/include,/Users/joakimwennergren/Desktop/Symbios/external/glfw/src,"/Users/joakimwennergren/Desktop/Symbios/build-iOS/external/glfw/src","$(inherited)");
+				HEADER_SEARCH_PATHS = (/Users/joakim/Desktop/Symbios/external/glfw/include,/Users/joakim/Desktop/Symbios/external/glfw/src,"/Users/joakim/Desktop/Symbios/build-iOS/external/glfw/src","$(inherited)");
 				INSTALL_PATH = "";
 				LIBRARY_STYLE = STATIC;
 				ONLY_ACTIVE_ARCH = NO;
@@ -1404,32 +943,13 @@ exit 0";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = glfw3;
 				SECTORDER_FLAGS = "";
-				TARGET_TEMP_DIR = "/Users/joakimwennergren/Desktop/Symbios/build-iOS/build/glfw.build/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw/src";
 				USE_HEADERMAP = NO;
 				WARNING_CFLAGS = ("$(inherited)");
 			};
 			name = RelWithDebInfo;
 		};
-		F1E16CA8A97E4EDB8BB0C366 /* MinSizeRel */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INSTALL_PATH = "";
-				OTHER_LDFLAGS = ("","$(inherited)");
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = uninstall;
-				SECTORDER_FLAGS = "";
-				USE_HEADERMAP = NO;
-				WARNING_CFLAGS = ("$(inherited)");
-			};
-			name = MinSizeRel;
-		};
-		F318E4B1DF6D4ED281187A2E /* RelWithDebInfo */ = {
+		598276CE2D0F482090E9EFC3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
@@ -1443,6 +963,354 @@ exit 0";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = ALL_BUILD;
 				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Release;
+		};
+		61BBF0D1A6D74E88B68495CD /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = uninstall;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		74A715AC3E504493863A20C6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Debug;
+		};
+		8454E1DE676D4F5CAA34936E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "arm64 x86_64";
+				"ARCHS[sdk=iphoneos*]" = arm64;
+				"ARCHS[sdk=iphonesimulator*]" = "x86_64 arm64";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGNING_REQUIRED = NO;
+				ENABLE_BITCODE = NO;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = iphoneos;
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw/build";
+				"VALID_ARCHS[sdk=iphoneos*]" = arm64;
+				"VALID_ARCHS[sdk=iphonesimulator*]" = "x86_64 arm64";
+			};
+			name = Release;
+		};
+		896982BA826140348D98FA93 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (arm64,x86_64);
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .a;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",_GLFW_COCOA,"$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (/Users/joakim/Desktop/Symbios/external/glfw/include,/Users/joakim/Desktop/Symbios/external/glfw/src,"/Users/joakim/Desktop/Symbios/build-iOS/external/glfw/src","$(inherited)");
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = STATIC;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = ("   -fPIC -Wall '-std=c99' ","$(inherited)");
+				OTHER_LIBTOOLFLAGS = ("");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = glfw3;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw/src";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Debug;
+		};
+		970775B327994502869E75F2 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		9F85CD67C2604988B11910C3 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		B7DFD89D0A174C739A535115 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = update_mappings;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw/src";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		B9843890B8AC4893ACB1E139 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		CE93DC0FF22E4E90B7F14857 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Release;
+		};
+		D18887D492A246A586E53C06 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "arm64 x86_64";
+				"ARCHS[sdk=iphoneos*]" = arm64;
+				"ARCHS[sdk=iphonesimulator*]" = "x86_64 arm64";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGNING_REQUIRED = NO;
+				ENABLE_BITCODE = NO;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = iphoneos;
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw/build";
+				"VALID_ARCHS[sdk=iphoneos*]" = arm64;
+				"VALID_ARCHS[sdk=iphonesimulator*]" = "x86_64 arm64";
+			};
+			name = RelWithDebInfo;
+		};
+		D98D927BF7694174BFE0E382 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = install;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Debug;
+		};
+		E1C16EE741154F42840D4993 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Debug;
+		};
+		E5B09596A4054A86A0FA934A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = update_mappings;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw/src";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Release;
+		};
+		E72A6B83896B4E559D1D5F1F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "arm64 x86_64";
+				"ARCHS[sdk=iphoneos*]" = arm64;
+				"ARCHS[sdk=iphonesimulator*]" = "x86_64 arm64";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGNING_REQUIRED = NO;
+				ENABLE_BITCODE = NO;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = iphoneos;
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw/build";
+				"VALID_ARCHS[sdk=iphoneos*]" = arm64;
+				"VALID_ARCHS[sdk=iphonesimulator*]" = "x86_64 arm64";
+			};
+			name = Debug;
+		};
+		ED948C92C54A4DC4B8799569 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "arm64 x86_64";
+				"ARCHS[sdk=iphoneos*]" = arm64;
+				"ARCHS[sdk=iphonesimulator*]" = "x86_64 arm64";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGNING_REQUIRED = NO;
+				ENABLE_BITCODE = NO;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = iphoneos;
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw/build";
+				"VALID_ARCHS[sdk=iphoneos*]" = arm64;
+				"VALID_ARCHS[sdk=iphonesimulator*]" = "x86_64 arm64";
+			};
+			name = MinSizeRel;
+		};
+		F0A2ACCBD64C495091D2E0A2 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = update_mappings;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw/src";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		FBB171ABD98C4C66972C028E /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = install;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/joakim/Desktop/Symbios/build-iOS/external/glfw";
 				USE_HEADERMAP = NO;
 				WARNING_CFLAGS = ("$(inherited)");
 			};
@@ -1451,95 +1319,84 @@ exit 0";
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0033170BE43B4BFF94214E5F /* Build configuration list for PBXAggregateTarget "docs" */ = {
+		134B2BF5223E4082ABCFE40A /* Build configuration list for PBXProject "GLFW" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7E11ECF326D540C58006460D /* Debug */,
-				644F2C4A35C4422BABBAFB22 /* Release */,
-				ED7775FCC6C4457EBB6DB31D /* MinSizeRel */,
-				2A78D9324CEB45D58131469E /* RelWithDebInfo */,
+				E72A6B83896B4E559D1D5F1F /* Debug */,
+				8454E1DE676D4F5CAA34936E /* Release */,
+				ED948C92C54A4DC4B8799569 /* MinSizeRel */,
+				D18887D492A246A586E53C06 /* RelWithDebInfo */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		0DA0890D75D94BD7B63D9A79 /* Build configuration list for PBXAggregateTarget "install" */ = {
+		4B9964F760854C398991E598 /* Build configuration list for PBXNativeTarget "glfw" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				CDDD841ABA7B436F94A608E6 /* Debug */,
-				3321EA5E8AC347539199F88C /* Release */,
-				EE99988027BA4C75A2F5C266 /* MinSizeRel */,
-				43EB3CCC8BF3434488D26DD1 /* RelWithDebInfo */,
+				896982BA826140348D98FA93 /* Debug */,
+				1CFE985E50DA459BA94F1D52 /* Release */,
+				0118716772CC499BBA430261 /* MinSizeRel */,
+				5602B7C827E54D90B7CB4A8A /* RelWithDebInfo */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		33AECD1C815441198E680BE0 /* Build configuration list for PBXProject "GLFW" */ = {
+		5C4A3D084082447D95C99827 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				446DBB8249E74DC39EC31BFF /* Debug */,
-				D8522B30301F426CB61FBDDD /* Release */,
-				5F3D660717514EDCABA9165F /* MinSizeRel */,
-				682541625D734BEF8417100B /* RelWithDebInfo */,
+				74A715AC3E504493863A20C6 /* Debug */,
+				598276CE2D0F482090E9EFC3 /* Release */,
+				B9843890B8AC4893ACB1E139 /* MinSizeRel */,
+				970775B327994502869E75F2 /* RelWithDebInfo */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		4AE2CB798DA9403294CA178C /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */ = {
+		769BD01B1C24449995864328 /* Build configuration list for PBXAggregateTarget "install" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				14A9A5BFA3AE474F84131562 /* Debug */,
-				8CD249F9FEB64E0EACB03BB5 /* Release */,
-				EC0278C1ED3F4759B8FD7B86 /* MinSizeRel */,
-				3CA2FFE99E0C4933A43A5760 /* RelWithDebInfo */,
+				D98D927BF7694174BFE0E382 /* Debug */,
+				389B339FC7E441448839B9D1 /* Release */,
+				4954A4AE345B4814BA1A1D3F /* MinSizeRel */,
+				FBB171ABD98C4C66972C028E /* RelWithDebInfo */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		BB27F71F497C477D80C3DBEE /* Build configuration list for PBXAggregateTarget "uninstall" */ = {
+		9CA84B51B4AF416781B7A0DF /* Build configuration list for PBXAggregateTarget "update_mappings" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				42B46962E9E141088D0F907E /* Debug */,
-				7C4B6B77E4CF4988B7DC7CA0 /* Release */,
-				F1E16CA8A97E4EDB8BB0C366 /* MinSizeRel */,
-				19F08309E73D441FB17E23DE /* RelWithDebInfo */,
+				0CB3D1A5F4894DB8A4D04146 /* Debug */,
+				E5B09596A4054A86A0FA934A /* Release */,
+				F0A2ACCBD64C495091D2E0A2 /* MinSizeRel */,
+				B7DFD89D0A174C739A535115 /* RelWithDebInfo */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		C3A6393BBF4F4122AD75DCA2 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */ = {
+		CFA545E9BB8B48BB9FA07E34 /* Build configuration list for PBXAggregateTarget "uninstall" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				224C0A91B9374F0B93D21857 /* Debug */,
-				B67CE56E9C574A908E478A1C /* Release */,
-				505DF0D50178433BA26AEA46 /* MinSizeRel */,
-				F318E4B1DF6D4ED281187A2E /* RelWithDebInfo */,
+				175BBF2052074F3DB971F8E9 /* Debug */,
+				0A6603550DEE43BC8A0B5C7A /* Release */,
+				61BBF0D1A6D74E88B68495CD /* MinSizeRel */,
+				113B0D66C6A04F179DD2989B /* RelWithDebInfo */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		C45E9D947A2A4B358A88F688 /* Build configuration list for PBXNativeTarget "glfw" */ = {
+		DCBA5D3FCEF7410A84E7DD85 /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5B734346DF9E45549844907B /* Debug */,
-				780224FE81C64DE2994C1FE2 /* Release */,
-				A0249F3DA3F042BE946CCF1B /* MinSizeRel */,
-				EF10408D9CB042DCB57A2AE1 /* RelWithDebInfo */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
-		E705595C9C55415882FFFC98 /* Build configuration list for PBXAggregateTarget "update_mappings" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				659D725139434C28A8A40722 /* Debug */,
-				4A8F81C43E064AA6BCB5DC32 /* Release */,
-				BA3C2D6269DA4636A0116147 /* MinSizeRel */,
-				31004C64298A4AD69B205479 /* RelWithDebInfo */,
+				E1C16EE741154F42840D4993 /* Debug */,
+				CE93DC0FF22E4E90B7F14857 /* Release */,
+				9F85CD67C2604988B11910C3 /* MinSizeRel */,
+				058A8CFFEB0543039C146B49 /* RelWithDebInfo */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = D9D54E3D5C3D4C17BB80B8D8 /* Project object */;
+	rootObject = 90E9AD09406A42518BCAA401 /* Project object */;
 }

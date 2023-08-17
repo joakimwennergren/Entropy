@@ -14,6 +14,8 @@
 #include <UIKit/UIKit.hpp>
 #include <MetalKit/MetalKit.hpp>
 
+#include "context.hpp"
+
 class MyMTKViewDelegate : public MTK::ViewDelegate
 {
 public:
@@ -64,7 +66,7 @@ MyMTKViewDelegate::~MyMTKViewDelegate()
 void MyMTKViewDelegate::drawInMTKView(MTK::View *pView)
 {
     //_pRenderer->draw(pView);
-    std::cout << "REndering!!!" << std::endl;
+    // std::cout << "REndering!!!" << std::endl;
 }
 
 MyAppDelegate::~MyAppDelegate()
@@ -100,41 +102,7 @@ bool MyAppDelegate::applicationDidFinishLaunching(UI::Application *pApp, NS::Val
 
     _pWindow->makeKeyAndVisible();
 
-    VkApplicationInfo appInfo{};
-    appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    appInfo.pApplicationName = "Hello Triangle";
-    appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-    appInfo.pEngineName = "No Engine";
-    appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-    appInfo.apiVersion = VK_API_VERSION_1_0;
-
-    VkInstanceCreateInfo createInfo{};
-    createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-    createInfo.pApplicationInfo = &appInfo;
-
-    uint32_t extensionCount = 0;
-    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
-
-    std::vector<VkExtensionProperties> extensions(extensionCount);
-
-    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
-
-    std::cout << "available extensions:\n";
-
-    for (const auto &extension : extensions)
-    {
-        std::cout << '\t' << extension.extensionName << '\n';
-    }
-
-    /*
-        createInfo.enabledExtensionCount = glfwExtensionCount;
-        createInfo.ppEnabledExtensionNames = glfwExtensions;
-
-        if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to create instance!");
-        }
-        */
+    auto context = Symbios::Core::Context();
 
     return true;
 }
