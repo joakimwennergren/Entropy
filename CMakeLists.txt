@@ -6,19 +6,19 @@ project(
     LANGUAGES CXX
 )
 
-if(WIN32 OR APPLE OR UNIX AND NOT XCODE)
+if(NOT XCODE)
     # Vulkan
     find_package(Vulkan REQUIRED)
 
     # Windowing on desktop
     add_subdirectory(external/glfw)
-
 endif()
 
 # Logging
 add_subdirectory(external/plog)
 
 add_executable(
+
     # Target
     Symbios
 )
@@ -33,8 +33,9 @@ target_sources(Symbios PRIVATE
     src/core/context/context.cpp
 )
 
-if(WIN32 OR APPLE OR UNIX AND NOT XCODE)
+if(NOT XCODE)
     target_include_directories(Symbios PRIVATE
+
         # Vulkan
         ${Vulkan_INCLUDE_DIRS}
     )
@@ -45,10 +46,6 @@ target_include_directories(Symbios PRIVATE
     # Config
     src
 
-    if(WIN32 OR APPLE OR UNIX AND NOT XCODE)
-
-    endif()
-
     # Core
     src/core/application
     src/core/context
@@ -57,28 +54,23 @@ target_include_directories(Symbios PRIVATE
     external/metal-cpp/
 )
 
-if(WIN32 OR APPLE OR UNIX AND NOT XCODE)
-    target_include_directories(Symbios PRIVATE
-        # Vulkan
-        ${Vulkan_INCLUDE_DIRS}
-    )
-endif()
-
 target_compile_features(Symbios PRIVATE cxx_std_17)
 
 target_link_libraries(Symbios
+
     # Logging
     plog
 )
 
-if(WIN32 OR APPLE OR UNIX AND NOT XCODE)
-target_link_libraries(Symbios
-    # Graphics API
-    ${Vulkan_LIBRARIES}
+if(NOT XCODE)
+    target_link_libraries(Symbios
 
-    # Windowing
-    glfw
-)
+        # Graphics API
+        ${Vulkan_LIBRARIES}
+
+        # Windowing
+        glfw
+    )
 endif()
 
 if(XCODE)

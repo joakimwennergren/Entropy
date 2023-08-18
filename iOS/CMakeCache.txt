@@ -226,8 +226,8 @@ CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 //Path to a program.
 CMAKE_STRIP:FILEPATH=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip
 
-//The CMake toolchain file
-CMAKE_TOOLCHAIN_FILE:FILEPATH=/Users/joakimwennergren/Desktop/Symbios/external/ios-cmake/ios.toolchain.cmake
+//No help, variable specified on the command line.
+CMAKE_TOOLCHAIN_FILE:UNINITIALIZED=../external/ios-cmake/ios.toolchain.cmake
 
 //If this value is on, makefiles will be generated without the
 // .SILENT directive, and all commands will be echoed to the console
@@ -274,6 +274,18 @@ Symbios_IS_TOP_LEVEL:STATIC=ON
 Symbios_SOURCE_DIR:STATIC=/Users/joakimwennergren/Desktop/Symbios
 
 UNIX:BOOL=ON
+
+//Path to a program.
+Vulkan_GLSLANG_VALIDATOR_EXECUTABLE:FILEPATH=/usr/local/bin/glslangValidator
+
+//Path to a program.
+Vulkan_GLSLC_EXECUTABLE:FILEPATH=/usr/local/bin/glslc
+
+//Path to a file.
+Vulkan_INCLUDE_DIR:PATH=/usr/local/include
+
+//Path to a library.
+Vulkan_LIBRARY:FILEPATH=Vulkan_LIBRARY-NOTFOUND
 
 //Path to a program.
 XCODEBUILD_EXECUTABLE:FILEPATH=/usr/bin/xcodebuild
@@ -343,7 +355,7 @@ CMAKE_FIND_ROOT_PATH_MODE_INCLUDE:INTERNAL=BOTH
 CMAKE_FIND_ROOT_PATH_MODE_LIBRARY:INTERNAL=BOTH
 CMAKE_FIND_ROOT_PATH_MODE_PACKAGE:INTERNAL=BOTH
 CMAKE_FIND_ROOT_PATH_MODE_PROGRAM:INTERNAL=BOTH
-CMAKE_FRAMEWORK_PATH:INTERNAL=/Library/PrivateFrameworks;/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.4.sdk/System/Library/Frameworks
+CMAKE_FRAMEWORK_PATH:INTERNAL=/Library/PrivateFrameworks;/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.4.sdk/System/Library/Frameworks;/Library/PrivateFrameworks;/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.4.sdk/System/Library/Frameworks;/Library/PrivateFrameworks;/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.4.sdk/System/Library/Frameworks;/Library/PrivateFrameworks;/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.4.sdk/System/Library/Frameworks;/Library/PrivateFrameworks;/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.4.sdk/System/Library/Frameworks;/Library/PrivateFrameworks;/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.4.sdk/System/Library/Frameworks
 //Name of generator.
 CMAKE_GENERATOR:INTERNAL=Xcode
 //Generator instance identifier.
@@ -378,8 +390,6 @@ CMAKE_INSTALL_LOCALEDIR-ADVANCED:INTERNAL=1
 CMAKE_INSTALL_LOCALSTATEDIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_INSTALL_MANDIR
 CMAKE_INSTALL_MANDIR-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_INSTALL_NAME_TOOL
-CMAKE_INSTALL_NAME_TOOL-ADVANCED:INTERNAL=1
 CMAKE_INSTALL_NAME_TOOL:INTERNAL=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/install_name_tool
 //ADVANCED property for variable: CMAKE_INSTALL_OLDINCLUDEDIR
 CMAKE_INSTALL_OLDINCLUDEDIR-ADVANCED:INTERNAL=1
@@ -460,6 +470,14 @@ PROJECT_Symbios_GUID_CMAKE:INTERNAL=FC3E943CC8CE4871AECA9AAF
 PROJECT_plog_GUID_CMAKE:INTERNAL=17258DB3F98844FBA653899D
 //Stored Xcode object GUID
 Symbios_GUID_CMAKE:INTERNAL=EFDD2B5B940C49E69689DA82
+//ADVANCED property for variable: Vulkan_GLSLANG_VALIDATOR_EXECUTABLE
+Vulkan_GLSLANG_VALIDATOR_EXECUTABLE-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: Vulkan_GLSLC_EXECUTABLE
+Vulkan_GLSLC_EXECUTABLE-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: Vulkan_INCLUDE_DIR
+Vulkan_INCLUDE_DIR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: Vulkan_LIBRARY
+Vulkan_LIBRARY-ADVANCED:INTERNAL=1
 XCODE_VERSION_INT:INTERNAL=14.3.1
 //Stored Xcode object GUID
 ZERO_CHECK_GUID_CMAKE:INTERNAL=99DC675F488D4EB2AB3BB7B7
