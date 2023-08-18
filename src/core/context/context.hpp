@@ -18,6 +18,9 @@
 
 #include <optional>
 #include <set>
+#include <cstdint>   // Necessary for uint32_t
+#include <limits>    // Necessary for std::numeric_limits
+#include <algorithm> // Necessary for std::clamp
 
 namespace Symbios
 {
@@ -44,6 +47,10 @@ namespace Symbios
 #if BUILD_FOR_IOS == true
             // Surface
             void CreateSurfaceiOS(CA::MetalLayer *layer);
+#endif
+
+#if BUILD_FOR_MACOS == true
+            void CreateSurfaceMacOS(GLFWwindow *window);
 #endif
 
         private:
@@ -75,6 +82,14 @@ namespace Symbios
             };
             QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
 
+            // SwapChain
+            struct SwapChainSupportDetails
+            {
+                VkSurfaceCapabilitiesKHR capabilities;
+                std::vector<VkSurfaceFormatKHR> formats;
+                std::vector<VkPresentModeKHR> presentModes;
+            };
+
         private:
             // Instance and Debugmessenger
             VkInstance _instance;
@@ -87,6 +102,19 @@ namespace Symbios
             // Queues
             VkQueue _graphicsQueue;
             VkQueue _presentQueue;
+
+            // SwapChain
+            VkSwapchainKHR swapChain;
+
+            const std::vector<const char *> deviceExtensions = {
+                VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+
+            bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
+            SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
+            VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats);
+            VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes);
+            VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities);
+            void CreateSwapChain();
 
             // Surface
             VkSurfaceKHR _surface;

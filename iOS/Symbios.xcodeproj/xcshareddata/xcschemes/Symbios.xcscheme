@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "EFDD2B5B940C49E69689DA82"
+               BlueprintIdentifier = "919698E92AEB443884CAA491"
                BuildableName = "Symbios.app"
                BlueprintName = "Symbios"
                ReferencedContainer = "container:iOS/Symbios.xcodeproj">
@@ -30,7 +30,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "EFDD2B5B940C49E69689DA82"
+            BlueprintIdentifier = "919698E92AEB443884CAA491"
             BuildableName = "Symbios.app"
             BlueprintName = "Symbios"
             ReferencedContainer = "container:iOS/Symbios.xcodeproj">
@@ -54,7 +54,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "EFDD2B5B940C49E69689DA82"
+            BlueprintIdentifier = "919698E92AEB443884CAA491"
             BuildableName = "Symbios.app"
             BlueprintName = "Symbios"
             ReferencedContainer = "container:iOS/Symbios.xcodeproj">
