@@ -1,5 +1,0 @@
-/Users/joakim/Desktop/Symbios/build-iOS/CMakeFiles/Symbios.dir
-/Users/joakim/Desktop/Symbios/build-iOS/CMakeFiles/ALL_BUILD.dir
-/Users/joakim/Desktop/Symbios/build-iOS/CMakeFiles/ZERO_CHECK.dir
-/Users/joakim/Desktop/Symbios/build-iOS/external/plog/CMakeFiles/ALL_BUILD.dir
-/Users/joakim/Desktop/Symbios/build-iOS/external/plog/CMakeFiles/ZERO_CHECK.dir

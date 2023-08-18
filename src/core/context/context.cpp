@@ -2,16 +2,18 @@
 
 using namespace Symbios::Core;
 
-Context::Context()
+Context::Context(CA::MetalLayer * layer)
 {
     this->CreateInstance();
+    this->CreateSurface(layer);
     this->PickPhysicalDevice();
 }
 
 Context::~Context()
 {
+    vkDestroySurfaceKHR(this->_instance, this->_surface, nullptr);
     vkDestroyInstance(this->_instance, nullptr);
-    //vkDestroyDevice(this->_device, nullptr); (crasch)
+    // vkDestroyDevice(this->_device, nullptr); (crasch)
 
 #if USE_DEBUG == true
     DestroyDebugUtilsMessengerEXT(_instance, _debugMessenger, nullptr);
@@ -229,6 +231,14 @@ Context::QueueFamilyIndices Context::FindQueueFamilies(VkPhysicalDevice device)
             indices.graphicsFamily = i;
         }
 
+        VkBool32 presentSupport = false;
+        vkGetPhysicalDeviceSurfaceSupportKHR(device, i, this->_surface, &presentSupport);
+
+        if (presentSupport)
+        {
+            indices.presentFamily = i;
+        }
+
         if (indices.isComplete())
         {
             break;
@@ -242,22 +252,34 @@ Context::QueueFamilyIndices Context::FindQueueFamilies(VkPhysicalDevice device)
 
 void Context::CreateLogicalDevice()
 {
-    QueueFamilyIndices indices = FindQueueFamilies(_physicalDevice);
+    QueueFamilyIndices indices = FindQueueFamilies(this->_physicalDevice);
+
+    std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+    std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(), indices.presentFamily.value()};
+
+    float queuePriority = 1.0f;
+    for (uint32_t queueFamily : uniqueQueueFamilies)
+    {
+        VkDeviceQueueCreateInfo queueCreateInfo{};
+        queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+        queueCreateInfo.queueFamilyIndex = queueFamily;
+        queueCreateInfo.queueCount = 1;
+        queueCreateInfo.pQueuePriorities = &queuePriority;
+        queueCreateInfos.push_back(queueCreateInfo);
+    }
 
     VkDeviceQueueCreateInfo queueCreateInfo{};
     queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
     queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
     queueCreateInfo.queueCount = 1;
-
-    float queuePriority = 1.0f;
     queueCreateInfo.pQueuePriorities = &queuePriority;
 
     VkPhysicalDeviceFeatures deviceFeatures{};
 
     VkDeviceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-    createInfo.pQueueCreateInfos = &queueCreateInfo;
-    createInfo.queueCreateInfoCount = 1;
+    createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
+    createInfo.pQueueCreateInfos = queueCreateInfos.data();
     createInfo.pEnabledFeatures = &deviceFeatures;
 
     if (vkCreateDevice(_physicalDevice, &createInfo, nullptr, &_device) != VK_SUCCESS)
@@ -265,5 +287,21 @@ void Context::CreateLogicalDevice()
         throw std::runtime_error("failed to create logical device!");
     }
 
-    vkGetDeviceQueue(_device, indices.graphicsFamily.value(), 0, &graphicsQueue);
+    vkGetDeviceQueue(this->_device, indices.graphicsFamily.value(), 0, &this->_graphicsQueue);
+    vkGetDeviceQueue(this->_device, indices.presentFamily.value(), 0, &this->_presentQueue);
+}
+
+void Context::CreateSurface(CA::MetalLayer * layer)
+{
+    VkIOSSurfaceCreateInfoMVK createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_IOS_SURFACE_CREATE_INFO_MVK;
+    createInfo.pNext = nullptr;
+    createInfo.flags = 0;
+    createInfo.pView = layer;
+
+    if (vkCreateIOSSurfaceMVK(this->_instance, &createInfo, nullptr, &this->_surface) != VK_SUCCESS)
+    {
+        PLOG_FATAL << "Could not create iOS surface!";
+        return;
+    }
 }

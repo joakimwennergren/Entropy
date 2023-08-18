@@ -30,7 +30,7 @@ Application::Application()
 #endif
 
     // Create Vulkan context
-    auto context = new Symbios::Core::Context();
+    auto context = new Symbios::Core::Context(nullptr);
     _context = std::make_shared<Symbios::Core::Context *>(context);
 }
 

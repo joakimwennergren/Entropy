@@ -1,5 +1,6 @@
 #pragma once
 
+#define VK_USE_PLATFORM_IOS_MVK
 #include <vulkan/vulkan.hpp>
 #include <plog/Log.h>
 #include "config.h"
@@ -7,6 +8,9 @@
 #include <iostream>
 
 #include <optional>
+#include <set>
+
+#include <MetalKit/MetalKit.hpp>
 
 namespace Symbios
 {
@@ -19,8 +23,11 @@ namespace Symbios
         class Context
         {
         public:
-            Context();
+            Context(CA::MetalLayer *layer);
             ~Context();
+
+            // Surface
+            void CreateSurface(CA::MetalLayer *layer);
 
         private:
             void CreateInstance();
@@ -42,9 +49,11 @@ namespace Symbios
             struct QueueFamilyIndices
             {
                 std::optional<uint32_t> graphicsFamily;
+                std::optional<uint32_t> presentFamily;
+
                 bool isComplete()
                 {
-                    return graphicsFamily.has_value();
+                    return graphicsFamily.has_value() && presentFamily.has_value();
                 }
             };
             QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
@@ -59,10 +68,11 @@ namespace Symbios
             VkDevice _device;
 
             // Queues
-            VkQueue graphicsQueue;
+            VkQueue _graphicsQueue;
+            VkQueue _presentQueue;
 
             // Surface
-            VkSurfaceKHR surface;
+            VkSurfaceKHR _surface;
         };
     }
 

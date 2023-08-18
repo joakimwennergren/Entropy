@@ -102,7 +102,10 @@ bool MyAppDelegate::applicationDidFinishLaunching(UI::Application *pApp, NS::Val
 
     _pWindow->makeKeyAndVisible();
 
-    auto context = Symbios::Core::Context();
+    CA::MetalLayer *layer;
+    layer = _pMtkView->currentDrawable()->layer();
+
+    auto context = Symbios::Core::Context(layer);
 
     return true;
 }
