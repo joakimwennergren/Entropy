@@ -31,6 +31,11 @@ target_sources(Symbios PRIVATE
     # Core
     src/core/application/application.cpp
     src/core/context/context.cpp
+
+    # Graphics
+    src/graphics/pipelines/default_pipeline.cpp
+    src/graphics/shaders/default_shader.cpp
+
 )
 
 if(NOT XCODE)
@@ -49,6 +54,10 @@ target_include_directories(Symbios PRIVATE
     # Core
     src/core/application
     src/core/context
+
+    # Graphics
+    src/graphics/pipelines
+    src/graphics/shaders
 
     # Metal-CPP
     external/metal-cpp/

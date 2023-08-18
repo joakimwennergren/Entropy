@@ -118,6 +118,13 @@ namespace Symbios
 
             // Surface
             VkSurfaceKHR _surface;
+
+            // Image Views
+            std::vector<VkImage> swapChainImages;
+            VkFormat swapChainImageFormat;
+            VkExtent2D swapChainExtent;
+            std::vector<VkImageView> swapChainImageViews;
+            void CreateImageViews();
         };
     }
 
