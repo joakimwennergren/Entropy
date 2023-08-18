@@ -1,0 +1,12 @@
+C:/Symbios/win/CMakeFiles/Symbios.dir
+C:/Symbios/win/CMakeFiles/INSTALL.dir
+C:/Symbios/win/CMakeFiles/ALL_BUILD.dir
+C:/Symbios/win/CMakeFiles/ZERO_CHECK.dir
+C:/Symbios/win/external/glfw/CMakeFiles/uninstall.dir
+C:/Symbios/win/external/glfw/CMakeFiles/INSTALL.dir
+C:/Symbios/win/external/glfw/CMakeFiles/ALL_BUILD.dir
+C:/Symbios/win/external/glfw/src/CMakeFiles/glfw.dir
+C:/Symbios/win/external/glfw/src/CMakeFiles/update_mappings.dir
+C:/Symbios/win/external/glfw/src/CMakeFiles/INSTALL.dir
+C:/Symbios/win/external/plog/CMakeFiles/INSTALL.dir
+C:/Symbios/win/external/plog/CMakeFiles/ALL_BUILD.dir

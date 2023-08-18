@@ -6,17 +6,19 @@ project(
     LANGUAGES CXX
 )
 
-# Windowing on desktop
-#add_subdirectory(external/glfw)
+if(WIN32)
+    # Vulkan
+    find_package(Vulkan REQUIRED)
+
+    # Windowing on desktop
+    add_subdirectory(external/glfw)
+
+endif()
 
 # Logging
 add_subdirectory(external/plog)
 
-# Vulkan
-#find_package(Vulkan REQUIRED)
-
 add_executable(
-
     # Target
     Symbios
 )
@@ -36,8 +38,10 @@ target_include_directories(Symbios PRIVATE
     # Config
     src
 
-    # Vulkan
-    ${Vulkan_INCLUDE_DIRS}
+    if(WIN32)
+        # Vulkan
+        ${Vulkan_INCLUDE_DIRS}
+    endif(WIN32)
 
     # Core
     src/core/application
@@ -47,15 +51,29 @@ target_include_directories(Symbios PRIVATE
     external/metal-cpp/
 )
 
+if(WIN32)
+    target_include_directories(Symbios PRIVATE
+        # Vulkan
+        ${Vulkan_INCLUDE_DIRS}
+    )
+endif(WIN32)
+
 target_compile_features(Symbios PRIVATE cxx_std_17)
 
 target_link_libraries(Symbios
-
-    ${Vulkan_LIBRARIES}
-    #glfw
+    # Logging
     plog
-
 )
+
+if(WIN32) 
+target_link_libraries(Symbios
+    # Graphics API
+    ${Vulkan_LIBRARIES}
+
+    # Windowing
+    glfw
+)
+endif(WIN32)
 
 if(XCODE)
     set_target_properties(Symbios PROPERTIES

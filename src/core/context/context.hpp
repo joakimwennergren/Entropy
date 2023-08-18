@@ -1,16 +1,23 @@
 #pragma once
 
+#include "config.h"
+
+#if BUILD_FOR_IOS == true
 #define VK_USE_PLATFORM_IOS_MVK
+#include <MetalKit/MetalKit.hpp>
+#endif
+
+#if BUILD_FOR_DESKTOP == true
+#include <GLFW/glfw3.h>
+#endif
+
 #include <vulkan/vulkan.hpp>
 #include <plog/Log.h>
-#include "config.h"
 
 #include <iostream>
 
 #include <optional>
 #include <set>
-
-#include <MetalKit/MetalKit.hpp>
 
 namespace Symbios
 {
@@ -23,11 +30,21 @@ namespace Symbios
         class Context
         {
         public:
+            Context() = default;
+
+#if BUILD_FOR_IOS == true
             Context(CA::MetalLayer *layer);
+#endif
+#if BUILD_FOR_DESKTOP == true
+            Context(GLFWwindow *window);
+#endif
+
             ~Context();
 
+#if BUILD_FOR_IOS == true
             // Surface
-            void CreateSurface(CA::MetalLayer *layer);
+            void CreateSurfaceiOS(CA::MetalLayer *layer);
+#endif
 
         private:
             void CreateInstance();

@@ -2,12 +2,22 @@
 
 using namespace Symbios::Core;
 
-Context::Context(CA::MetalLayer * layer)
+#if BUILD_FOR_IOS == true
+Context::Context(CA::MetalLayer *layer)
 {
     this->CreateInstance();
-    this->CreateSurface(layer);
+    this->CreateSurfaceiOS(layer);
     this->PickPhysicalDevice();
 }
+#endif
+
+#if BUILD_FOR_DESKTOP == true
+Context::Context(GLFWwindow *window)
+{
+    this->CreateInstance();
+    // this->PickPhysicalDevice();
+}
+#endif
 
 Context::~Context()
 {
@@ -291,7 +301,9 @@ void Context::CreateLogicalDevice()
     vkGetDeviceQueue(this->_device, indices.presentFamily.value(), 0, &this->_presentQueue);
 }
 
-void Context::CreateSurface(CA::MetalLayer * layer)
+#if BUILD_FOR_IOS == true
+
+void Context::CreateSurfaceiOS(CA::MetalLayer *layer)
 {
     VkIOSSurfaceCreateInfoMVK createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_IOS_SURFACE_CREATE_INFO_MVK;
@@ -305,3 +317,5 @@ void Context::CreateSurface(CA::MetalLayer * layer)
         return;
     }
 }
+
+#endif

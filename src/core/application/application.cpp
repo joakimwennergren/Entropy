@@ -27,11 +27,12 @@ Application::Application()
         glfwTerminate();
         return;
     }
-#endif
 
     // Create Vulkan context
-    auto context = new Symbios::Core::Context(nullptr);
+    auto context = new Symbios::Core::Context(_window);
     _context = std::make_shared<Symbios::Core::Context *>(context);
+
+#endif
 }
 
 /**
