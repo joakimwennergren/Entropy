@@ -6,7 +6,7 @@ project(
     LANGUAGES CXX
 )
 
-if(WIN32)
+if(WIN32 OR APPLE OR UNIX AND NOT XCODE)
     # Vulkan
     find_package(Vulkan REQUIRED)
 
@@ -33,15 +33,21 @@ target_sources(Symbios PRIVATE
     src/core/context/context.cpp
 )
 
+if(WIN32 OR APPLE OR UNIX AND NOT XCODE)
+    target_include_directories(Symbios PRIVATE
+        # Vulkan
+        ${Vulkan_INCLUDE_DIRS}
+    )
+endif()
+
 target_include_directories(Symbios PRIVATE
 
     # Config
     src
 
-    if(WIN32)
-        # Vulkan
-        ${Vulkan_INCLUDE_DIRS}
-    endif(WIN32)
+    if(WIN32 OR APPLE OR UNIX AND NOT XCODE)
+
+    endif()
 
     # Core
     src/core/application
@@ -51,12 +57,12 @@ target_include_directories(Symbios PRIVATE
     external/metal-cpp/
 )
 
-if(WIN32)
+if(WIN32 OR APPLE OR UNIX AND NOT XCODE)
     target_include_directories(Symbios PRIVATE
         # Vulkan
         ${Vulkan_INCLUDE_DIRS}
     )
-endif(WIN32)
+endif()
 
 target_compile_features(Symbios PRIVATE cxx_std_17)
 
@@ -65,7 +71,7 @@ target_link_libraries(Symbios
     plog
 )
 
-if(WIN32) 
+if(WIN32 OR APPLE OR UNIX AND NOT XCODE)
 target_link_libraries(Symbios
     # Graphics API
     ${Vulkan_LIBRARIES}
@@ -73,7 +79,7 @@ target_link_libraries(Symbios
     # Windowing
     glfw
 )
-endif(WIN32)
+endif()
 
 if(XCODE)
     set_target_properties(Symbios PROPERTIES
