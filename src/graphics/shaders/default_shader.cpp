@@ -2,11 +2,20 @@
 
 using namespace Symbios::Graphics::Shader;
 
-Default::Default(const std::string vert, const std::string frag, std::shared_ptr<Symbios::Core::Context> context)
+Default::Default(const std::string vert, const std::string frag, Symbios::Core::Context *context)
 {
     this->_context = context;
     this->_vertCode = this->ReadFile(vert);
     this->_fragCode = this->ReadFile(frag);
+
+    this->shaderModuleVert = this->BuildShader(this->_vertCode);
+    this->shaderModuleFrag = this->BuildShader(this->_fragCode);
+}
+
+Default::~Default()
+{
+    vkDestroyShaderModule(this->_context->GetLogicalDevice(), this->shaderModuleVert, nullptr);
+    vkDestroyShaderModule(this->_context->GetLogicalDevice(), this->shaderModuleFrag, nullptr);
 }
 
 std::vector<char> Default::ReadFile(std::string filename)
@@ -29,7 +38,7 @@ std::vector<char> Default::ReadFile(std::string filename)
     return buffer;
 }
 
-void Default::BuildShader(std::vector<char> code)
+VkShaderModule Default::BuildShader(std::vector<char> code)
 {
 
     VkShaderModuleCreateInfo createInfo{};
@@ -43,4 +52,6 @@ void Default::BuildShader(std::vector<char> code)
     {
         throw std::runtime_error("failed to create shader module!");
     }
+
+    return shaderModule;
 }

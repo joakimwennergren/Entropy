@@ -15,6 +15,9 @@
 #include <MetalKit/MetalKit.hpp>
 
 #include "context.hpp"
+#include "renderpass.hpp"
+#include "default_pipeline.hpp"
+#include "default_commandbuffer.hpp"
 
 class MyMTKViewDelegate : public MTK::ViewDelegate
 {
@@ -22,9 +25,15 @@ public:
     MyMTKViewDelegate(MTL::Device *pDevice);
     virtual ~MyMTKViewDelegate() override;
     virtual void drawInMTKView(MTK::View *pView) override;
+    Symbios::Graphics::CommandBuffers::Default *commandBuffer;
+    Symbios::Graphics::RenderPasses::Default *renderPass;
+    Symbios::Graphics::Pipeline::Default *pipeline;
+    Symbios::Core::Context *_context;
+    VkSemaphore imageAvailableSemaphore;
+    VkSemaphore renderFinishedSemaphore;
+    VkFence inFlightFence;
 
 private:
-    // Renderer *_pRenderer;
 };
 
 class MyAppDelegate : public UI::ApplicationDelegate
@@ -53,8 +62,7 @@ int main(int argc, const char **argv)
     _pAutoreleasePool->release();
 }
 
-MyMTKViewDelegate::MyMTKViewDelegate(MTL::Device *pDevice)
-    : MTK::ViewDelegate()
+MyMTKViewDelegate::MyMTKViewDelegate(MTL::Device *pDevice) : MTK::ViewDelegate()
 {
 }
 
@@ -65,8 +73,79 @@ MyMTKViewDelegate::~MyMTKViewDelegate()
 
 void MyMTKViewDelegate::drawInMTKView(MTK::View *pView)
 {
-    //_pRenderer->draw(pView);
-    // std::cout << "REndering!!!" << std::endl;
+    vkWaitForFences(_context->GetLogicalDevice(), 1, &inFlightFence, VK_TRUE, UINT64_MAX);
+
+    uint32_t imageIndex;
+    vkAcquireNextImageKHR(_context->GetLogicalDevice(), _context->GetSwapChain(), UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+
+    vkResetCommandBuffer(commandBuffer->GetCommandBuffer(), 0);
+
+    commandBuffer->Record(0, renderPass);
+
+    vkCmdBindPipeline(commandBuffer->GetCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipeline);
+
+    VkViewport viewport{};
+    viewport.x = 0.0f;
+    viewport.y = 0.0f;
+    viewport.width = static_cast<float>(_context->GetSwapChainExtent().width);
+    viewport.height = static_cast<float>(_context->GetSwapChainExtent().height);
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 1.0f;
+    vkCmdSetViewport(commandBuffer->GetCommandBuffer(), 0, 1, &viewport);
+
+    VkRect2D scissor{};
+    scissor.offset = {0, 0};
+    scissor.extent = _context->GetSwapChainExtent();
+    vkCmdSetScissor(commandBuffer->GetCommandBuffer(), 0, 1, &scissor);
+
+    vkCmdDraw(commandBuffer->GetCommandBuffer(), 3, 1, 0, 0);
+
+    vkCmdEndRenderPass(commandBuffer->GetCommandBuffer());
+
+    if (vkEndCommandBuffer(commandBuffer->GetCommandBuffer()) != VK_SUCCESS)
+    {
+        throw std::runtime_error("failed to record command buffer!");
+    }
+
+    auto cmd = commandBuffer->GetCommandBuffer();
+
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+    VkSemaphore waitSemaphores[] = {imageAvailableSemaphore};
+    VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pWaitSemaphores = waitSemaphores;
+    submitInfo.pWaitDstStageMask = waitStages;
+
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &cmd;
+
+    VkSemaphore signalSemaphores[] = {renderFinishedSemaphore};
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = signalSemaphores;
+
+    if (vkQueueSubmit(_context->_graphicsQueue, 1, &submitInfo, inFlightFence) != VK_SUCCESS)
+    {
+        throw std::runtime_error("failed to submit draw command buffer!");
+    }
+
+    VkPresentInfoKHR presentInfo{};
+    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+    presentInfo.waitSemaphoreCount = 1;
+    presentInfo.pWaitSemaphores = signalSemaphores;
+
+    VkSwapchainKHR swapChains[] = {_context->GetSwapChain()};
+    presentInfo.swapchainCount = 1;
+    presentInfo.pSwapchains = swapChains;
+    presentInfo.pImageIndices = &imageIndex;
+
+    presentInfo.pResults = nullptr; // Optional
+
+    vkQueuePresentKHR(_context->_presentQueue, &presentInfo);
+
+    vkResetFences(_context->GetLogicalDevice(), 1, &inFlightFence);
 }
 
 MyAppDelegate::~MyAppDelegate()
@@ -90,7 +169,7 @@ bool MyAppDelegate::applicationDidFinishLaunching(UI::Application *pApp, NS::Val
 
     _pMtkView = MTK::View::alloc()->init(frame, _pDevice);
     _pMtkView->setColorPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
-    _pMtkView->setClearColor(MTL::ClearColor::Make(1.0, 0.0, 0.0, 1.0));
+    _pMtkView->setClearColor(MTL::ClearColor::Make(1.0, 1.0, 0.0, 1.0));
 
     _pViewDelegate = new MyMTKViewDelegate(_pDevice);
     _pMtkView->setDelegate(_pViewDelegate);
@@ -105,7 +184,32 @@ bool MyAppDelegate::applicationDidFinishLaunching(UI::Application *pApp, NS::Val
     CA::MetalLayer *layer;
     layer = _pMtkView->currentDrawable()->layer();
 
-    auto context = Symbios::Core::Context(layer);
+    VkSemaphoreCreateInfo semaphoreInfo{};
+    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+    VkFenceCreateInfo fenceInfo{};
+    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+    auto context = new Symbios::Core::Context(layer, frame);
+
+    auto renderPass = new Symbios::Graphics::RenderPasses::Default(context);
+
+    auto pipeline = new Symbios::Graphics::Pipeline::Default(context, renderPass);
+
+    auto commandBuffer = new Symbios::Graphics::CommandBuffers::Default(context);
+
+    _pViewDelegate->_context = context;
+    _pViewDelegate->renderPass = renderPass;
+    _pViewDelegate->pipeline = pipeline;
+    _pViewDelegate->commandBuffer = commandBuffer;
+
+    if (vkCreateSemaphore(context->GetLogicalDevice(), &semaphoreInfo, nullptr, &_pViewDelegate->imageAvailableSemaphore) != VK_SUCCESS ||
+        vkCreateSemaphore(context->GetLogicalDevice(), &semaphoreInfo, nullptr, &_pViewDelegate->renderFinishedSemaphore) != VK_SUCCESS ||
+        vkCreateFence(context->GetLogicalDevice(), &fenceInfo, nullptr, &_pViewDelegate->inFlightFence) != VK_SUCCESS)
+    {
+        throw std::runtime_error("failed to create semaphores!");
+    }
 
     return true;
 }

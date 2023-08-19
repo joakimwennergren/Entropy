@@ -35,6 +35,9 @@ target_sources(Symbios PRIVATE
     # Graphics
     src/graphics/pipelines/default_pipeline.cpp
     src/graphics/shaders/default_shader.cpp
+    src/graphics/renderpasses/renderpass.cpp
+    src/graphics/commandbuffers/default_commandbuffer.cpp
+    src/graphics/renderers/default_renderer.cpp
 
 )
 
@@ -58,6 +61,9 @@ target_include_directories(Symbios PRIVATE
     # Graphics
     src/graphics/pipelines
     src/graphics/shaders
+    src/graphics/renderpasses
+    src/graphics/commandbuffers
+    src/graphics/renderers
 
     # Metal-CPP
     external/metal-cpp/

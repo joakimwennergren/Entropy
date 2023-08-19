@@ -15,21 +15,25 @@ namespace Symbios
             {
             public:
                 Default() = default;
-                Default(const std::string vert, const std::string frag, std::shared_ptr<Symbios::Core::Context> context);
+                Default(const std::string vert, const std::string frag, Symbios::Core::Context *context);
 
-                void BuildShader(std::vector<char> code);
+                ~Default();
 
                 // Getters
                 std::vector<char> GetVertCode() { return this->_vertCode; };
                 std::vector<char> GetFragCode() { return this->_fragCode; };
 
+                VkShaderModule shaderModuleVert;
+                VkShaderModule shaderModuleFrag;
+
             private:
                 std::vector<char> ReadFile(std::string filename);
+                VkShaderModule BuildShader(std::vector<char> code);
 
             private:
                 std::vector<char> _vertCode;
                 std::vector<char> _fragCode;
-                std::shared_ptr<Symbios::Core::Context> _context;
+                Symbios::Core::Context* _context;
             };
         }
     }

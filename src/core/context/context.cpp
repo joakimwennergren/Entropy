@@ -3,13 +3,13 @@
 using namespace Symbios::Core;
 
 #if BUILD_FOR_IOS == true
-Context::Context(CA::MetalLayer *layer)
+Context::Context(CA::MetalLayer *layer, CGRect frame)
 {
     this->CreateInstance();
     this->CreateSurfaceiOS(layer);
     this->PickPhysicalDevice();
     this->CreateLogicalDevice();
-    this->CreateSwapChain();
+    this->CreateSwapChain(frame);
     this->CreateImageViews();
     this->CreateImageViews();
 }
@@ -25,6 +25,7 @@ Context::Context(GLFWwindow *window)
 
 Context::~Context()
 {
+
     for (auto imageView : swapChainImageViews)
     {
         vkDestroyImageView(_device, imageView, nullptr);
@@ -432,7 +433,7 @@ VkPresentModeKHR Context::ChooseSwapPresentMode(const std::vector<VkPresentModeK
     return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-VkExtent2D Context::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities)
+VkExtent2D Context::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities, CGRect frame)
 {
     if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
     {
@@ -440,8 +441,8 @@ VkExtent2D Context::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilitie
     }
     else
     {
-        int width = 100;
-        int height = 100;
+        int width = frame.size.width;
+        int height = frame.size.height;
 
         VkExtent2D actualExtent = {
             static_cast<uint32_t>(width),
@@ -454,13 +455,13 @@ VkExtent2D Context::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilitie
     }
 }
 
-void Context::CreateSwapChain()
+void Context::CreateSwapChain(CGRect frame)
 {
     SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(_physicalDevice);
 
     VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
     VkPresentModeKHR presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);
-    VkExtent2D extent = ChooseSwapExtent(swapChainSupport.capabilities);
+    VkExtent2D extent = ChooseSwapExtent(swapChainSupport.capabilities, frame);
 
     uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
 

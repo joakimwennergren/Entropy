@@ -26,6 +26,7 @@ namespace Symbios
 {
     namespace Core
     {
+
         /**
          * @brief
          *
@@ -33,10 +34,8 @@ namespace Symbios
         class Context
         {
         public:
-            Context() = default;
-
 #if BUILD_FOR_IOS == true
-            Context(CA::MetalLayer *layer);
+            Context(CA::MetalLayer *layer, CGRect frame);
 #endif
 
 #if BUILD_FOR_MACOS == true || BUILD_FOR_WINDOWS == true || BUILD_FOR_LINUX == true
@@ -56,6 +55,28 @@ namespace Symbios
 
             // Getters
             VkDevice GetLogicalDevice() { return this->_device; };
+            VkSwapchainKHR GetSwapChain() { return this->swapChain; };
+            VkExtent2D GetSwapChainExtent() { return this->swapChainExtent; };
+            VkFormat GetSwapChainImageFormat() { return this->swapChainImageFormat; };
+            VkPhysicalDevice GetPhysicalDevice() { return this->_physicalDevice; };
+            std::vector<VkImageView> GetSwapChainImageViews() { return this->swapChainImageViews; };
+
+            // Queues
+            struct QueueFamilyIndices
+            {
+                std::optional<uint32_t> graphicsFamily;
+                std::optional<uint32_t> presentFamily;
+
+                bool isComplete()
+                {
+                    return graphicsFamily.has_value() && presentFamily.has_value();
+                }
+            };
+            QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
+
+            // Queues
+            VkQueue _graphicsQueue;
+            VkQueue _presentQueue;
 
         private:
             void CreateInstance();
@@ -72,19 +93,6 @@ namespace Symbios
 
             // Logical device
             void CreateLogicalDevice();
-
-            // Queues
-            struct QueueFamilyIndices
-            {
-                std::optional<uint32_t> graphicsFamily;
-                std::optional<uint32_t> presentFamily;
-
-                bool isComplete()
-                {
-                    return graphicsFamily.has_value() && presentFamily.has_value();
-                }
-            };
-            QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
 
             // SwapChain
             struct SwapChainSupportDetails
@@ -103,10 +111,6 @@ namespace Symbios
             VkPhysicalDevice _physicalDevice = VK_NULL_HANDLE;
             VkDevice _device;
 
-            // Queues
-            VkQueue _graphicsQueue;
-            VkQueue _presentQueue;
-
             // SwapChain
             VkSwapchainKHR swapChain;
 
@@ -117,8 +121,8 @@ namespace Symbios
             SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
             VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats);
             VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes);
-            VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities);
-            void CreateSwapChain();
+            VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities, CGRect frame);
+            void CreateSwapChain(CGRect frame);
 
             // Surface
             VkSurfaceKHR _surface;
