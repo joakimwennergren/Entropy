@@ -10,7 +10,7 @@ Application::Application()
     static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
     plog::init(plog::verbose, &consoleAppender);
 
-#if BUILD_FOR_DESKTOP == true
+#if BUILD_FOR_MACOS == true || BUILD_FOR_WINDOWS == true || BUILD_FOR_LINUX == true
     // Initialize GLFW
     if (!glfwInit())
     {
@@ -41,7 +41,7 @@ Application::Application()
  */
 Application::~Application()
 {
-#if BUILD_FOR_DESKTOP == true
+#if BUILD_FOR_MACOS == true || BUILD_FOR_WINDOWS == true || BUILD_FOR_LINUX == true
     glfwDestroyWindow(_window);
     glfwTerminate();
 #endif
@@ -54,7 +54,7 @@ Application::~Application()
  */
 void Application::Run()
 {
-#if BUILD_FOR_DESKTOP == true
+#if BUILD_FOR_MACOS == true || BUILD_FOR_WINDOWS == true || BUILD_FOR_LINUX == true
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(_window))
     {

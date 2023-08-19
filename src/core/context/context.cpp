@@ -15,11 +15,11 @@ Context::Context(CA::MetalLayer *layer)
 }
 #endif
 
-#if BUILD_FOR_DESKTOP == true
+#if BUILD_FOR_MACOS == true || BUILD_FOR_WINDOWS == true || BUILD_FOR_LINUX == true
 Context::Context(GLFWwindow *window)
 {
     this->CreateInstance();
-    this->PickPhysicalDevice();
+    // this->PickPhysicalDevice();
 }
 #endif
 

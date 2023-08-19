@@ -115,7 +115,7 @@ void MyAppDelegate::applicationWillTerminate(UI::Application *pApp)
 }
 #endif
 
-#if BUILD_FOR_DESKTOP == true
+#if BUILD_FOR_MACOS == true || BUILD_FOR_WINDOWS == true || BUILD_FOR_LINUX == true
 
 #include "application.hpp"
 

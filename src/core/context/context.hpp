@@ -7,7 +7,7 @@
 #include <MetalKit/MetalKit.hpp>
 #endif
 
-#if BUILD_FOR_DESKTOP == true
+#if BUILD_FOR_MACOS == true || BUILD_FOR_WINDOWS == true || BUILD_FOR_LINUX == true
 #include <GLFW/glfw3.h>
 #endif
 
@@ -38,7 +38,8 @@ namespace Symbios
 #if BUILD_FOR_IOS == true
             Context(CA::MetalLayer *layer);
 #endif
-#if BUILD_FOR_DESKTOP == true
+
+#if BUILD_FOR_MACOS == true || BUILD_FOR_WINDOWS == true || BUILD_FOR_LINUX == true
             Context(GLFWwindow *window);
 #endif
 

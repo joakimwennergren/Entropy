@@ -8,7 +8,7 @@
 #include <plog/Formatters/TxtFormatter.h>
 #include <plog/Appenders/ColorConsoleAppender.h>
 
-#if BUILD_FOR_DESKTOP == true
+#if BUILD_FOR_MACOS == true || BUILD_FOR_WINDOWS == true || BUILD_FOR_LINUX == true
 #include <GLFW/glfw3.h>
 #endif
 
@@ -30,11 +30,13 @@ public:
     void Run();
 
 private:
-#if BUILD_FOR_DESKTOP == true
+#if BUILD_FOR_MACOS == true || BUILD_FOR_WINDOWS == true || BUILD_FOR_LINUX == true
     GLFWwindow *_window;
 #endif
+
 #if BUILD_FOR_IOS == true
 
 #endif
+
     std::shared_ptr<Symbios::Core::Context *> _context;
 };

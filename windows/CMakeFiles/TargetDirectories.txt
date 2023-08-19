@@ -1,0 +1,12 @@
+C:/Users/Hemma/Desktop/Symbios/windows/CMakeFiles/Symbios.dir
+C:/Users/Hemma/Desktop/Symbios/windows/CMakeFiles/INSTALL.dir
+C:/Users/Hemma/Desktop/Symbios/windows/CMakeFiles/ALL_BUILD.dir
+C:/Users/Hemma/Desktop/Symbios/windows/CMakeFiles/ZERO_CHECK.dir
+C:/Users/Hemma/Desktop/Symbios/windows/external/glfw/CMakeFiles/uninstall.dir
+C:/Users/Hemma/Desktop/Symbios/windows/external/glfw/CMakeFiles/INSTALL.dir
+C:/Users/Hemma/Desktop/Symbios/windows/external/glfw/CMakeFiles/ALL_BUILD.dir
+C:/Users/Hemma/Desktop/Symbios/windows/external/glfw/src/CMakeFiles/glfw.dir
+C:/Users/Hemma/Desktop/Symbios/windows/external/glfw/src/CMakeFiles/update_mappings.dir
+C:/Users/Hemma/Desktop/Symbios/windows/external/glfw/src/CMakeFiles/INSTALL.dir
+C:/Users/Hemma/Desktop/Symbios/windows/external/plog/CMakeFiles/INSTALL.dir
+C:/Users/Hemma/Desktop/Symbios/windows/external/plog/CMakeFiles/ALL_BUILD.dir

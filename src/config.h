@@ -2,8 +2,12 @@
 
 #define USE_DEBUG false
 
+// Apple
+#define BUILD_FOR_MACOS false
 #define BUILD_FOR_IOS false
 
-#define BUILD_FOR_DESKTOP true
+// Windows
+#define BUILD_FOR_WINDOWS true
 
-#define BUILD_FOR_MACOS true
+// Linux
+#define BUILD_FOR_LINUX false

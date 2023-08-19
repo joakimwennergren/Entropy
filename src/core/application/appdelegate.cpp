@@ -1,1 +1,0 @@
-#include "appdelegate.hpp"
