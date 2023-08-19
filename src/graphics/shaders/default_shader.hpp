@@ -7,10 +7,8 @@
 
 namespace Symbios
 {
-
     namespace Graphics
     {
-
         namespace Shader
         {
             class Default
