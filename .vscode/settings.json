@@ -101,6 +101,13 @@
         "cwctype": "cpp",
         "variant": "cpp",
         "__nullptr": "cpp",
-        "__string": "cpp"
+        "__string": "cpp",
+        "cinttypes": "cpp",
+        "future": "cpp",
+        "regex": "cpp",
+        "typeindex": "cpp",
+        "valarray": "cpp",
+        "numeric": "cpp",
+        "random": "cpp"
     }
 }

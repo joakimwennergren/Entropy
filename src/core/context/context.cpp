@@ -344,6 +344,7 @@ void Context::CreateSurfaceiOS(CA::MetalLayer *layer)
 #if BUILD_FOR_MACOS == true
 void Context::CreateSurfaceMacOS(GLFWwindow *window)
 {
+    /*
     VkMetalSurfaceCreateInfoEXT createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_IOS_SURFACE_CREATE_INFO_MVK;
     createInfo.pNext = nullptr;
@@ -355,6 +356,7 @@ void Context::CreateSurfaceMacOS(GLFWwindow *window)
         PLOG_FATAL << "Could not create iOS surface!";
         return;
     }
+    */
 }
 #endif
 

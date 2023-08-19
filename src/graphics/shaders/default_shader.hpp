@@ -3,6 +3,8 @@
 #include <fstream>
 #include <vulkan/vulkan.hpp>
 
+#include "context.hpp"
+
 namespace Symbios
 {
 
@@ -15,9 +17,9 @@ namespace Symbios
             {
             public:
                 Default() = default;
-                Default(const std::string vert, const std::string frag);
+                Default(const std::string vert, const std::string frag, std::shared_ptr<Symbios::Core::Context> context);
 
-                void BuildShaders();
+                void BuildShader(std::vector<char> code);
 
                 // Getters
                 std::vector<char> GetVertCode() { return this->_vertCode; };
@@ -29,6 +31,7 @@ namespace Symbios
             private:
                 std::vector<char> _vertCode;
                 std::vector<char> _fragCode;
+                std::shared_ptr<Symbios::Core::Context> _context;
             };
         }
     }

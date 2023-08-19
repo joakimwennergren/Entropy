@@ -53,6 +53,9 @@ namespace Symbios
             void CreateSurfaceMacOS(GLFWwindow *window);
 #endif
 
+            // Getters
+            VkDevice GetLogicalDevice() { return this->_device; };
+
         private:
             void CreateInstance();
 

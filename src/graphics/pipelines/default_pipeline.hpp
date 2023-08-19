@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../shaders/default_shader.hpp"
+#include "context.hpp"
 
 namespace Symbios
 {
@@ -11,10 +12,11 @@ namespace Symbios
             class Default
             {
             public:
-                Default() = default;
+                Default(std::shared_ptr<Symbios::Core::Context> context);
 
             private:
                 std::unique_ptr<Symbios::Graphics::Shader::Default> _shader;
+                std::shared_ptr<Symbios::Core::Context> _context;
             };
         }
 

@@ -1,4 +1,4 @@
-# Install script for directory: /Users/joakim/Desktop/Symbios
+# Install script for directory: /Users/joakimwennergren/Desktop/Symbios
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,8 +39,8 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/Users/joakim/Desktop/Symbios/macOS/external/glfw/cmake_install.cmake")
-  include("/Users/joakim/Desktop/Symbios/macOS/external/plog/cmake_install.cmake")
+  include("/Users/joakimwennergren/Desktop/Symbios/macOS/external/glfw/cmake_install.cmake")
+  include("/Users/joakimwennergren/Desktop/Symbios/macOS/external/plog/cmake_install.cmake")
 
 endif()
 
@@ -52,5 +52,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/Users/joakim/Desktop/Symbios/macOS/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/Users/joakimwennergren/Desktop/Symbios/macOS/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

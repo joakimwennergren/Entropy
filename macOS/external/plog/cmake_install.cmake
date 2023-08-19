@@ -1,4 +1,4 @@
-# Install script for directory: /Users/joakim/Desktop/Symbios/external/plog
+# Install script for directory: /Users/joakimwennergren/Desktop/Symbios/external/plog
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
