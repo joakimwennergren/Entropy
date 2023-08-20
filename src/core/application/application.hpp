@@ -1,6 +1,9 @@
 #pragma once
 
 #include "context.hpp"
+#include "renderpass.hpp"
+#include "default_pipeline.hpp"
+#include "default_commandbuffer.hpp"
 #include "config.h"
 
 #include <plog/Log.h>
@@ -38,5 +41,15 @@ private:
 
 #endif
 
-    std::shared_ptr<Symbios::Core::Context *> _context;
+    Symbios::Core::Context* _context;
+    Symbios::Graphics::RenderPasses::Default *_renderPass;
+    Symbios::Graphics::Pipeline::Default *_pipeline;
+    Symbios::Graphics::CommandBuffers::Default *_commandBuffer;
+
+    VkSemaphore imageAvailableSemaphore;
+    VkSemaphore renderFinishedSemaphore;
+    VkFence inFlightFence;
+
+
+
 };

@@ -7,8 +7,17 @@
 #include <MetalKit/MetalKit.hpp>
 #endif
 
-#if BUILD_FOR_MACOS == true || BUILD_FOR_WINDOWS == true || BUILD_FOR_LINUX == true
+#if BUILD_FOR_MACOS == true || BUILD_FOR_LINUX == true
 #include <GLFW/glfw3.h>
+#endif
+
+#if BUILD_FOR_WINDOWS
+#define VK_USE_PLATFORM_WIN32_KHR
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
+#undef max
 #endif
 
 #include <vulkan/vulkan.hpp>
@@ -51,6 +60,10 @@ namespace Symbios
 
 #if BUILD_FOR_MACOS == true
             void CreateSurfaceMacOS(GLFWwindow *window);
+#endif
+
+#if BUILD_FOR_WINDOWS == true
+            void CreateSurfaceWindows(GLFWwindow *window);
 #endif
 
             // Getters
@@ -121,8 +134,16 @@ namespace Symbios
             SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
             VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats);
             VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes);
+
+#if BUILD_FOR_IOS == true
             VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities, CGRect frame);
             void CreateSwapChain(CGRect frame);
+#endif
+
+#if BUILD_FOR_WINDOWS == true
+            VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities, GLFWwindow *window);
+            void CreateSwapChain(GLFWwindow *window);
+#endif
 
             // Surface
             VkSurfaceKHR _surface;
