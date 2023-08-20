@@ -8,7 +8,7 @@ Default::Default(Symbios::Core::Context *context, Symbios::Graphics::RenderPasse
     _context = context;
 
     // Create Shader
-    auto shader = new Symbios::Graphics::Shader::Default("C:\\Users\\Hemma\\Desktop\\Symbios\\shaders\\basic\\vert.spv", "C:\\Users\\Hemma\\Desktop\\Symbios\\shaders\\basic\\frag.spv", context);
+    auto shader = new Symbios::Graphics::Shader::Default("/Users/joakim/Desktop/Symbios/shaders/basic/vert.spv", "/Users/joakim/Desktop/Symbios/shaders/basic/frag.spv", context);
     _shader = shader;
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
@@ -45,7 +45,7 @@ Default::Default(Symbios::Core::Context *context, Symbios::Graphics::RenderPasse
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
     inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     inputAssembly.primitiveRestartEnable = VK_FALSE;
-    
+
     VkViewport viewport{};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
