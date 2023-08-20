@@ -73,9 +73,9 @@ MyMTKViewDelegate::~MyMTKViewDelegate()
 
 void MyMTKViewDelegate::drawInMTKView(MTK::View *pView)
 {
-    
+
     pView->currentDrawable()->present();
-    
+
     vkWaitForFences(_context->GetLogicalDevice(), 1, &inFlightFence, VK_TRUE, UINT64_MAX);
 
     uint32_t imageIndex;
@@ -185,7 +185,7 @@ bool MyAppDelegate::applicationDidFinishLaunching(UI::Application *pApp, NS::Val
     _pWindow->makeKeyAndVisible();
 
     CA::MetalLayer *layer;
-    
+
     layer = _pMtkView->currentDrawable()->layer();
 
     VkSemaphoreCreateInfo semaphoreInfo{};
@@ -235,3 +235,8 @@ int main()
 }
 
 #endif
+
+int main()
+{
+    return 0;
+}

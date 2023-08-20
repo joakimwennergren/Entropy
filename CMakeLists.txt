@@ -1,10 +1,13 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.7)
 
 project(
     Symbios
     VERSION 0.0.1
     LANGUAGES CXX
 )
+
+
+
 
 if(NOT XCODE)
     # Vulkan
@@ -93,3 +96,13 @@ if(XCODE)
         XCODE_GENERATE_SCHEME ON
         XCODE_SCHEME_ENABLE_GPU_FRAME_CAPTURE_MODE "Metal")
 endif()
+
+if (WIN32)
+    set(CMAKE_BUILD_FOR_WINDOWS "true")
+endif (WIN32)
+
+if(APPLE)
+    set(CMAKE_BUILD_FOR_MACOS)
+endif()
+
+configure_file(config.h.in ${CMAKE_SOURCE_DIR}/config.h)
