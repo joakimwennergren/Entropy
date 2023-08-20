@@ -4,6 +4,8 @@
 #include "context.hpp"
 #include "renderpass.hpp"
 
+#include <iostream>
+
 namespace Symbios
 {
     namespace Graphics

@@ -55,7 +55,7 @@ void Default::Record(uint32_t imageIndex, Symbios::Graphics::RenderPasses::Defau
     renderPassInfo.renderArea.offset = {0, 0};
     renderPassInfo.renderArea.extent = _context->GetSwapChainExtent();
 
-    VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
+    VkClearValue clearColor = {{{0.0f, 1.0f, 0.0f, 1.0f}}};
     renderPassInfo.clearValueCount = 1;
     renderPassInfo.pClearValues = &clearColor;
 
