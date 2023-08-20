@@ -223,7 +223,7 @@ void MyAppDelegate::applicationWillTerminate(UI::Application *pApp)
 }
 #endif
 
-#if BUILD_FOR_MACOS == true || BUILD_FOR_WINDOWS == true || BUILD_FOR_LINUX == true
+#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS)
 
 #include "application.hpp"
 
@@ -235,8 +235,3 @@ int main()
 }
 
 #endif
-
-int main()
-{
-    return 0;
-}

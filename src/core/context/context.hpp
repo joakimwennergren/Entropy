@@ -2,16 +2,16 @@
 
 #include "config.h"
 
-#if BUILD_FOR_IOS == true
+#ifdef BUILD_FOR_IOS
 #define VK_USE_PLATFORM_IOS_MVK
 #include <MetalKit/MetalKit.hpp>
 #endif
 
-#if BUILD_FOR_MACOS == true || BUILD_FOR_LINUX == true
+#ifdef BUILD_FOR_MACOS
 #include <GLFW/glfw3.h>
 #endif
 
-#if BUILD_FOR_WINDOWS
+#ifdef BUILD_FOR_WINDOWS
 #define VK_USE_PLATFORM_WIN32_KHR
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -43,26 +43,30 @@ namespace Symbios
         class Context
         {
         public:
-#if BUILD_FOR_IOS == true
+#ifdef BUILD_FOR_IOS
             Context(CA::MetalLayer *layer, CGRect frame);
 #endif
 
-#if BUILD_FOR_MACOS == true || BUILD_FOR_WINDOWS == true || BUILD_FOR_LINUX == true
+#ifdef BUILD_FOR_MACOS
+            Context(GLFWwindow *window);
+#endif
+
+#ifdef BUILD_FOR_WINDOWS
             Context(GLFWwindow *window);
 #endif
 
             ~Context();
 
-#if BUILD_FOR_IOS == true
+#ifdef BUILD_FOR_IOS
             // Surface
             void CreateSurfaceiOS(CA::MetalLayer *layer);
 #endif
 
-#if BUILD_FOR_MACOS == true
+#ifdef BUILD_FOR_MACOS
             void CreateSurfaceMacOS(GLFWwindow *window);
 #endif
 
-#if BUILD_FOR_WINDOWS == true
+#ifdef BUILD_FOR_WINDOWS
             void CreateSurfaceWindows(GLFWwindow *window);
 #endif
 

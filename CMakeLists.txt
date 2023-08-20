@@ -6,9 +6,6 @@ project(
     LANGUAGES CXX
 )
 
-
-
-
 if(NOT XCODE)
     # Vulkan
     find_package(Vulkan REQUIRED)
@@ -41,7 +38,6 @@ target_sources(Symbios PRIVATE
     src/graphics/renderpasses/renderpass.cpp
     src/graphics/commandbuffers/default_commandbuffer.cpp
     src/graphics/renderers/default_renderer.cpp
-
 )
 
 if(NOT XCODE)
@@ -54,7 +50,6 @@ endif()
 
 target_include_directories(Symbios PRIVATE
 
-    # Config
     src
 
     # Core
@@ -97,12 +92,14 @@ if(XCODE)
         XCODE_SCHEME_ENABLE_GPU_FRAME_CAPTURE_MODE "Metal")
 endif()
 
-if (WIN32)
+if(WIN32)
     set(CMAKE_BUILD_FOR_WINDOWS "true")
-endif (WIN32)
+endif(WIN32)
 
 if(APPLE)
-    set(CMAKE_BUILD_FOR_MACOS)
+    if(NOT XCODE)
+        set(CMAKE_BUILD_FOR_MACOS "true")
+    endif()
 endif()
 
-configure_file(config.h.in ${CMAKE_SOURCE_DIR}/config.h)
+configure_file(config.h.in ${CMAKE_SOURCE_DIR}/src/config.h)

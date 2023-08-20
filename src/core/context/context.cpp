@@ -14,7 +14,7 @@ Context::Context(CA::MetalLayer *layer, CGRect frame)
 }
 #endif
 
-#if BUILD_FOR_MACOS == true || BUILD_FOR_WINDOWS == true || BUILD_FOR_LINUX == true
+#ifdef BUILD_FOR_WINDOWS
 Context::Context(GLFWwindow *window)
 {
     this->CreateInstance();
@@ -23,6 +23,18 @@ Context::Context(GLFWwindow *window)
     this->CreateLogicalDevice();
     this->CreateSwapChain(window);
     this->CreateImageViews();
+}
+#endif
+
+#ifdef BUILD_FOR_MACOS
+Context::Context(GLFWwindow *window)
+{
+    this->CreateInstance();
+    // this->CreateSurfaceWindows(window);
+    // this->PickPhysicalDevice();
+    // this->CreateLogicalDevice();
+    // this->CreateSwapChain(window);
+    // this->CreateImageViews();
 }
 #endif
 
@@ -345,7 +357,7 @@ void Context::CreateSurfaceiOS(CA::MetalLayer *layer)
 
 #endif
 
-#if BUILD_FOR_MACOS == true
+#ifdef BUILD_FOR_MACOS
 void Context::CreateSurfaceMacOS(GLFWwindow *window)
 {
     /*

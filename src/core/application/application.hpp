@@ -11,7 +11,7 @@
 #include <plog/Formatters/TxtFormatter.h>
 #include <plog/Appenders/ColorConsoleAppender.h>
 
-#if BUILD_FOR_MACOS == true || BUILD_FOR_WINDOWS == true || BUILD_FOR_LINUX == true
+#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS)
 #include <GLFW/glfw3.h>
 #endif
 
@@ -33,7 +33,7 @@ public:
     void Run();
 
 private:
-#if BUILD_FOR_MACOS == true || BUILD_FOR_WINDOWS == true || BUILD_FOR_LINUX == true
+#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS)
     GLFWwindow *_window;
 #endif
 
@@ -41,7 +41,7 @@ private:
 
 #endif
 
-    Symbios::Core::Context* _context;
+    Symbios::Core::Context *_context;
     Symbios::Graphics::RenderPasses::Default *_renderPass;
     Symbios::Graphics::Pipeline::Default *_pipeline;
     Symbios::Graphics::CommandBuffers::Default *_commandBuffer;
@@ -49,7 +49,4 @@ private:
     VkSemaphore imageAvailableSemaphore;
     VkSemaphore renderFinishedSemaphore;
     VkFence inFlightFence;
-
-
-
 };
