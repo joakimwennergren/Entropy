@@ -1,13 +1,13 @@
 #pragma once
 
 #include <plog/Log.h>
-#ifdef BUILD_FOR_IOS
-#include <CoreFoundation/CoreFoundation.h>
-#endif
 
 #include "../shaders/default_shader.hpp"
 #include "context.hpp"
 #include "renderpass.hpp"
+#include "filesystem.hpp"
+
+using namespace Symbios::Filesystem;
 
 namespace Symbios
 {

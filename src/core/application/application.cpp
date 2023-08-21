@@ -235,10 +235,10 @@ Application::Application()
         return;
     }
 
-    /*
-
     // Create Vulkan context
     _context = new Symbios::Core::Context(_window);
+
+    /*
 
     _renderPass = new Symbios::Graphics::RenderPasses::Default(_context);
 

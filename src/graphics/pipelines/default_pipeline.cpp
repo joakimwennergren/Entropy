@@ -2,34 +2,13 @@
 
 using namespace Symbios::Graphics::Pipeline;
 
-#ifdef BUILD_FOR_IOS
-std::string get_resources_dir()
-{
-
-    CFURLRef resourceURL = CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
-    char resourcePath[PATH_MAX];
-    if (CFURLGetFileSystemRepresentation(resourceURL, true,
-                                         (UInt8 *)resourcePath,
-                                         PATH_MAX))
-    {
-        if (resourceURL != NULL)
-        {
-            CFRelease(resourceURL);
-        }
-        return resourcePath;
-    }
-
-    return "";
-}
-#endif
-
 Default::Default(Symbios::Core::Context *context, Symbios::Graphics::RenderPasses::Default *renderPass)
 {
 
     _context = context;
 
     // Create Shader
-    auto shader = new Symbios::Graphics::Shader::Default(get_resources_dir() + "/vert.spv", get_resources_dir() + "/frag.spv", context);
+    auto shader = new Symbios::Graphics::Shader::Default(GetProjectBasePath() + "/shaders/basic/vert.spv", GetProjectBasePath() + "shaders/basic/frag.spv", context);
     _shader = shader;
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};

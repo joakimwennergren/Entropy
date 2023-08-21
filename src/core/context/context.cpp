@@ -116,8 +116,8 @@ void Context::CreateInstance()
         extensions.push_back(extension.extensionName);
     }
 
-#ifdef __APPLE__
-    //extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+#ifdef BUILD_FOR_MACOS
+    extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
 #endif //__APPLE__
 
 #ifdef USE_VALIDATION_LAYERS
@@ -144,7 +144,7 @@ void Context::CreateInstance()
     if (vkCreateInstance(&createInfo, nullptr, &this->_instance) != VK_SUCCESS)
     {
         PLOG_FATAL << "failed to create vulkan instance!";
-        return;
+        exit(EXIT_FAILURE);
     }
 
 #ifdef USE_VALIDATION_LAYERS
