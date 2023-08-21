@@ -1,12 +1,11 @@
 #pragma once
 
 #include <plog/Log.h>
+#include <CoreFoundation/CoreFoundation.h>
 
 #include "../shaders/default_shader.hpp"
 #include "context.hpp"
 #include "renderpass.hpp"
-
-
 
 namespace Symbios
 {

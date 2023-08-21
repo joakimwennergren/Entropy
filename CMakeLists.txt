@@ -29,9 +29,6 @@ add_executable(
 
 target_sources(Symbios PRIVATE
 
-    # Main entrypoint
-    src/main.cpp
-
     # Core
     src/core/application/application.cpp
     src/core/context/context.cpp
@@ -42,6 +39,9 @@ target_sources(Symbios PRIVATE
     src/graphics/renderpasses/renderpass.cpp
     src/graphics/commandbuffers/commandbuffer.cpp
     src/graphics/renderers/default_renderer.cpp
+
+    # Main entrypoint
+    src/main.cpp
 )
 
 if(NOT XCODE)

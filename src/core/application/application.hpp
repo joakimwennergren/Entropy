@@ -16,6 +16,7 @@
 #endif
 
 #ifdef BUILD_FOR_IOS
+
 #endif
 
 /**
@@ -37,10 +38,6 @@ private:
     GLFWwindow *_window;
 #endif
 
-#ifdef BUILD_FOR_IOS
-
-#endif
-
     Symbios::Core::Context *_context;
     Symbios::Graphics::RenderPasses::Default *_renderPass;
     Symbios::Graphics::Pipeline::Default *_pipeline;
@@ -49,4 +46,9 @@ private:
     VkSemaphore imageAvailableSemaphore;
     VkSemaphore renderFinishedSemaphore;
     VkFence inFlightFence;
+
+private:
+#ifdef BUILD_FOR_IOS
+    NS::AutoreleasePool *_autoreleasePool;
+#endif
 };
