@@ -2,7 +2,7 @@
 
 using namespace Symbios::Core;
 
-#if BUILD_FOR_IOS == true
+#ifdef BUILD_FOR_IOS
 Context::Context(CA::MetalLayer *layer, CGRect frame)
 {
     this->CreateInstance();
@@ -116,8 +116,12 @@ void Context::CreateInstance()
         extensions.push_back(extension.extensionName);
     }
 
+#ifdef __APPLE__
+    //extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+#endif //__APPLE__
+
 #ifdef USE_VALIDATION_LAYERS
-    //extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+    // extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 #endif
 
     createInfo.enabledExtensionCount = (uint32_t)extensions.size();
@@ -338,7 +342,7 @@ void Context::CreateLogicalDevice()
     vkGetDeviceQueue(this->_device, indices.presentFamily.value(), 0, &this->_presentQueue);
 }
 
-#if BUILD_FOR_IOS == true
+#ifdef BUILD_FOR_IOS
 
 void Context::CreateSurfaceiOS(CA::MetalLayer *layer)
 {
@@ -546,7 +550,7 @@ void Context::CreateSwapChain(GLFWwindow *window)
 }
 #endif
 
-#if BUILD_FOR_IOS == true
+#ifdef BUILD_FOR_IOS
 VkExtent2D Context::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities, CGRect frame)
 {
     if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())

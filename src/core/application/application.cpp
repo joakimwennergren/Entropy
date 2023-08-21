@@ -29,6 +29,8 @@ Application::Application()
         return;
     }
 
+    /*
+
     // Create Vulkan context
     _context = new Symbios::Core::Context(_window);
 
@@ -51,6 +53,7 @@ Application::Application()
     {
         throw std::runtime_error("failed to create semaphores!");
     }
+    */
 
 #endif
 }
@@ -78,7 +81,7 @@ void Application::Run()
 
     while (!glfwWindowShouldClose(_window))
     {
-
+        /*
         vkWaitForFences(_context->GetLogicalDevice(), 1, &inFlightFence, VK_TRUE, UINT64_MAX);
 
         uint32_t imageIndex;
@@ -149,7 +152,8 @@ void Application::Run()
         vkQueuePresentKHR(_context->_presentQueue, &presentInfo);
 
         //vkResetFences(_context->GetLogicalDevice(), 1, &inFlightFence);
-        
+        */
+
         glfwPollEvents();
     }
 #endif

@@ -17,10 +17,12 @@ endif()
 # Logging
 add_subdirectory(external/plog)
 
-# Networking
-add_subdirectory(external/poco)
+# Testing
+add_subdirectory(external/Catch2)
 
+# Networking
 add_executable(
+
     # Target
     Symbios
 )
@@ -77,7 +79,6 @@ target_link_libraries(Symbios
     plog
 
     # Networking
-    PocoFoundation
 )
 
 if(NOT XCODE)
@@ -91,16 +92,31 @@ if(NOT XCODE)
     )
 endif()
 
+# iOS Platform
 if(XCODE)
+    set(CMAKE_PLATFORM "BUILD_FOR_IOS")
     set_target_properties(Symbios PROPERTIES
         XCODE_GENERATE_SCHEME ON
         XCODE_SCHEME_ENABLE_GPU_FRAME_CAPTURE_MODE "Metal")
+    target_link_libraries(Symbios
+        "-framework foundation"
+        "-framework metal"
+        "-framework metalkit"
+        "-framework uikit"
+        "-framework iosurface"
+        "-framework coregraphics"
+        "-framework quartzcore"
+    )
+    include_directories(external/vulkan-headers)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 12.0)
 endif()
 
+# Windows platform
 if(WIN32)
     set(CMAKE_PLATFORM "BUILD_FOR_WINDOWS")
 endif(WIN32)
 
+# MacOS platform
 if(APPLE)
     if(NOT XCODE)
         set(CMAKE_PLATFORM "BUILD_FOR_MACOS")

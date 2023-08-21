@@ -8,7 +8,7 @@ Default::Default(Symbios::Core::Context *context, Symbios::Graphics::RenderPasse
     _context = context;
 
     // Create Shader
-    auto shader = new Symbios::Graphics::Shader::Default("C:\\Symbios\\shaders\\basic\\vert.spv", "C:\\Symbios\\shaders\\basic\\frag.spv", context);
+    auto shader = new Symbios::Graphics::Shader::Default("/Users/joakimwennergren/Desktop/Symbios/shaders/basic/vert.spv", "/Users/joakimwennergren/Desktop/Symbios/shaders/basic/frag.spv", context);
     _shader = shader;
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};

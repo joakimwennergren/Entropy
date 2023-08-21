@@ -17,7 +17,7 @@
 #include "context.hpp"
 #include "renderpass.hpp"
 #include "default_pipeline.hpp"
-#include "default_commandbuffer.hpp"
+#include "commandbuffer.hpp"
 
 class MyMTKViewDelegate : public MTK::ViewDelegate
 {
@@ -25,7 +25,7 @@ public:
     MyMTKViewDelegate(MTL::Device *pDevice);
     virtual ~MyMTKViewDelegate() override;
     virtual void drawInMTKView(MTK::View *pView) override;
-    Symbios::Graphics::CommandBuffers::Default *commandBuffer;
+    Symbios::Graphics::CommandBuffers::CommandBuffer *commandBuffer;
     Symbios::Graphics::RenderPasses::Default *renderPass;
     Symbios::Graphics::Pipeline::Default *pipeline;
     Symbios::Core::Context *_context;
@@ -201,7 +201,7 @@ bool MyAppDelegate::applicationDidFinishLaunching(UI::Application *pApp, NS::Val
 
     auto pipeline = new Symbios::Graphics::Pipeline::Default(context, renderPass);
 
-    auto commandBuffer = new Symbios::Graphics::CommandBuffers::Default(context);
+    auto commandBuffer = new Symbios::Graphics::CommandBuffers::CommandBuffer(context);
 
     _pViewDelegate->_context = context;
     _pViewDelegate->renderPass = renderPass;

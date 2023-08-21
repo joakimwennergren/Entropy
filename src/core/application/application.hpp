@@ -15,7 +15,7 @@
 #include <GLFW/glfw3.h>
 #endif
 
-#if BUILD_FOR_IOS == true
+#ifdef BUILD_FOR_IOS
 #endif
 
 /**
@@ -37,7 +37,7 @@ private:
     GLFWwindow *_window;
 #endif
 
-#if BUILD_FOR_IOS == true
+#ifdef BUILD_FOR_IOS
 
 #endif
 
