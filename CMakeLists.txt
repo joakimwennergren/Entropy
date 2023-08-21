@@ -17,6 +17,9 @@ endif()
 # Logging
 add_subdirectory(external/plog)
 
+# Networking
+add_subdirectory(external/poco)
+
 add_executable(
     # Target
     Symbios
@@ -72,6 +75,9 @@ target_link_libraries(Symbios
 
     # Logging
     plog
+
+    # Networking
+    PocoFoundation
 )
 
 if(NOT XCODE)
