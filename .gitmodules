@@ -7,3 +7,6 @@
 [submodule "ios-cmake"]
 	path = external/ios-cmake
 	url = https://github.com/leetal/ios-cmake.git
+[submodule "poco"]
+	path = external/poco
+	url = https://github.com/pocoproject/poco.git
