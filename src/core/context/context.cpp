@@ -335,7 +335,8 @@ void Context::CreateLogicalDevice()
 
     if (vkCreateDevice(_physicalDevice, &createInfo, nullptr, &_device) != VK_SUCCESS)
     {
-        throw std::runtime_error("failed to create logical device!");
+        PLOG_FATAL << "Failed to create a logical device!";
+        exit(1);
     }
 
     vkGetDeviceQueue(this->_device, indices.graphicsFamily.value(), 0, &this->_graphicsQueue);
