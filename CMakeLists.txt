@@ -40,6 +40,9 @@ target_sources(Symbios PRIVATE
     src/graphics/commandbuffers/commandbuffer.cpp
     src/graphics/renderers/default_renderer.cpp
 
+    # Filesystem
+    src/filesystem/filesystem.cpp
+
     # Main entrypoint
     src/main.cpp
 )
@@ -66,6 +69,9 @@ target_include_directories(Symbios PRIVATE
     src/graphics/renderpasses
     src/graphics/commandbuffers
     src/graphics/renderers
+
+    # Filesystem
+    src/filesystem
 
     # Metal-CPP
     external/metal-cpp/
@@ -123,4 +129,5 @@ if(APPLE)
     endif()
 endif()
 
+# Build config.hpp
 configure_file(config.h.in ${CMAKE_SOURCE_DIR}/src/config.hpp @ONLY)

@@ -2,6 +2,7 @@
 
 using namespace Symbios::Graphics::Pipeline;
 
+#ifdef BUILD_FOR_IOS
 std::string get_resources_dir()
 {
 
@@ -17,7 +18,10 @@ std::string get_resources_dir()
         }
         return resourcePath;
     }
+
+    return "";
 }
+#endif
 
 Default::Default(Symbios::Core::Context *context, Symbios::Graphics::RenderPasses::Default *renderPass)
 {
