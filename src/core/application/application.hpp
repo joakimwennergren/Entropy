@@ -4,7 +4,7 @@
 #include "renderpass.hpp"
 #include "default_pipeline.hpp"
 #include "commandbuffer.hpp"
-#include "config.h"
+#include "config.hpp"
 
 #include <plog/Log.h>
 #include <plog/Init.h>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "config.h"
+#include "config.hpp"
 
 #ifdef BUILD_FOR_IOS
 #define VK_USE_PLATFORM_IOS_MVK
@@ -43,7 +43,6 @@ namespace Symbios
         class Context
         {
         public:
-
 #ifdef BUILD_FOR_IOS
             Context(CA::MetalLayer *layer, CGRect frame);
 #endif

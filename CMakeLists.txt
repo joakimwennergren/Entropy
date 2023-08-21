@@ -18,7 +18,6 @@ endif()
 add_subdirectory(external/plog)
 
 add_executable(
-
     # Target
     Symbios
 )
@@ -102,4 +101,4 @@ if(APPLE)
     endif()
 endif()
 
-configure_file(config.h.in ${CMAKE_SOURCE_DIR}/src/config.h @ONLY)
+configure_file(config.h.in ${CMAKE_SOURCE_DIR}/src/config.hpp @ONLY)
