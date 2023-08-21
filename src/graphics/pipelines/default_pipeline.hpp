@@ -2,7 +2,7 @@
 
 #include <plog/Log.h>
 
-#include "../shaders/default_shader.hpp"
+#include "../shaders/shader.hpp"
 #include "context.hpp"
 #include "renderpass.hpp"
 #include "filesystem.hpp"
@@ -23,7 +23,7 @@ namespace Symbios
                 VkPipeline pipeline;
 
             private:
-                Symbios::Graphics::Shader::Default *_shader;
+                Symbios::Graphics::Shaders::Shader *_shader;
                 Symbios::Core::Context *_context;
                 VkPipelineLayout pipelineLayout;
             };

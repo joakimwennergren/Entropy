@@ -1,8 +1,8 @@
-#include "default_shader.hpp"
+#include "shader.hpp"
 
-using namespace Symbios::Graphics::Shader;
+using namespace Symbios::Graphics::Shaders;
 
-Default::Default(const std::string vert, const std::string frag, Symbios::Core::Context *context)
+Shader::Shader(const std::string vert, const std::string frag, Symbios::Core::Context *context)
 {
     this->_context = context;
 
@@ -16,19 +16,20 @@ Default::Default(const std::string vert, const std::string frag, Symbios::Core::
     }
 }
 
-Default::~Default()
+Shader::~Shader()
 {
     vkDestroyShaderModule(this->_context->GetLogicalDevice(), this->shaderModuleVert, nullptr);
     vkDestroyShaderModule(this->_context->GetLogicalDevice(), this->shaderModuleFrag, nullptr);
 }
 
-std::vector<char> Default::ReadFile(std::string filename)
+std::vector<char> Shader::ReadFile(std::string filename)
 {
     std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
     if (!file.is_open())
     {
         PLOG_FATAL << "Failed to open shader: " << filename;
+        exit(EXIT_FAILURE);
     }
 
     size_t fileSize = (size_t)file.tellg();
@@ -42,7 +43,7 @@ std::vector<char> Default::ReadFile(std::string filename)
     return buffer;
 }
 
-VkShaderModule Default::BuildShader(std::vector<char> code)
+VkShaderModule Shader::BuildShader(std::vector<char> code)
 {
 
     VkShaderModuleCreateInfo createInfo{};
@@ -55,6 +56,7 @@ VkShaderModule Default::BuildShader(std::vector<char> code)
     if (vkCreateShaderModule(this->_context->GetLogicalDevice(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
     {
         PLOG_FATAL << "failed to create shader module!";
+        exit(EXIT_FAILURE);
     }
 
     return shaderModule;

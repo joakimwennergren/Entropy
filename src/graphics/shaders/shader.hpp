@@ -10,15 +10,15 @@ namespace Symbios
 {
     namespace Graphics
     {
-        namespace Shader
+        namespace Shaders
         {
-            class Default
+            class Shader
             {
             public:
-                Default() = default;
-                Default(const std::string vert, const std::string frag, Symbios::Core::Context *context);
+                Shader() = default;
+                Shader(const std::string vert, const std::string frag, Symbios::Core::Context *context);
 
-                ~Default();
+                ~Shader();
 
                 // Getters
                 std::vector<char> GetVertCode() { return this->_vertCode; };

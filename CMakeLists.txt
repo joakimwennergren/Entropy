@@ -35,7 +35,7 @@ target_sources(Symbios PRIVATE
 
     # Graphics
     src/graphics/pipelines/default_pipeline.cpp
-    src/graphics/shaders/default_shader.cpp
+    src/graphics/shaders/shader.cpp
     src/graphics/renderpasses/renderpass.cpp
     src/graphics/commandbuffers/commandbuffer.cpp
     src/graphics/renderers/default_renderer.cpp
