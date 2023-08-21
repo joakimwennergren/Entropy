@@ -1,3 +1,5 @@
+#ifdef BUILD_FOR_IOS
+
 #define NS_PRIVATE_IMPLEMENTATION
 #define UI_PRIVATE_IMPLEMENTATION
 #define MTL_PRIVATE_IMPLEMENTATION
@@ -6,10 +8,6 @@
 #include <Metal/Metal.hpp>
 #include <UIKit/UIKit.hpp>
 #include <MetalKit/MetalKit.hpp>
-
-#include "application.hpp"
-
-#ifdef BUILD_FOR_IOS
 
 class MTKViewDelegate : public MTK::ViewDelegate
 {
@@ -44,7 +42,11 @@ private:
     MTL::Device *_pDevice;
     MTKViewDelegate *_pViewDelegate = nullptr;
 };
+#endif
 
+#include "application.hpp"
+
+#ifdef BUILD_FOR_IOS
 MTKViewDelegate::MTKViewDelegate(MTL::Device *pDevice) : MTK::ViewDelegate()
 {
 }
@@ -259,10 +261,10 @@ Application::Application()
     }
     */
 
+#endif
+
+#ifdef BUILD_FOR_IOS
     this->_autoreleasePool = NS::AutoreleasePool::alloc()->init();
-
-    // this->_autoreleasePool->release();
-
 #endif
 }
 
@@ -278,7 +280,7 @@ Application::~Application()
 #endif
 
 #ifdef BUILD_FOR_IOS
-
+    this->_autoreleasePool->release();
 #endif
 }
 

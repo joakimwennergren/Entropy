@@ -15,10 +15,6 @@
 #include <GLFW/glfw3.h>
 #endif
 
-#ifdef BUILD_FOR_IOS
-
-#endif
-
 /**
  * @brief Application class
  *
