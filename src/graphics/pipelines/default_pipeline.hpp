@@ -1,10 +1,12 @@
 #pragma once
 
+#include <plog/Log.h>
+
 #include "../shaders/default_shader.hpp"
 #include "context.hpp"
 #include "renderpass.hpp"
 
-#include <iostream>
+
 
 namespace Symbios
 {

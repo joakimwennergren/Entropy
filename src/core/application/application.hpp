@@ -3,7 +3,7 @@
 #include "context.hpp"
 #include "renderpass.hpp"
 #include "default_pipeline.hpp"
-#include "default_commandbuffer.hpp"
+#include "commandbuffer.hpp"
 #include "config.h"
 
 #include <plog/Log.h>
@@ -44,7 +44,7 @@ private:
     Symbios::Core::Context *_context;
     Symbios::Graphics::RenderPasses::Default *_renderPass;
     Symbios::Graphics::Pipeline::Default *_pipeline;
-    Symbios::Graphics::CommandBuffers::Default *_commandBuffer;
+    Symbios::Graphics::CommandBuffers::CommandBuffer *_commandBuffer;
 
     VkSemaphore imageAvailableSemaphore;
     VkSemaphore renderFinishedSemaphore;

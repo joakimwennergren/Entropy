@@ -8,7 +8,7 @@ Default::Default(Symbios::Core::Context *context, Symbios::Graphics::RenderPasse
     _context = context;
 
     // Create Shader
-    auto shader = new Symbios::Graphics::Shader::Default("/Users/joakim/Desktop/Symbios/shaders/basic/vert.spv", "/Users/joakim/Desktop/Symbios/shaders/basic/frag.spv", context);
+    auto shader = new Symbios::Graphics::Shader::Default("C:\\Symbios\\shaders\\basic\\vert.spv", "C:\\Symbios\\shaders\\basic\\frag.spv", context);
     _shader = shader;
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
@@ -125,7 +125,7 @@ Default::Default(Symbios::Core::Context *context, Symbios::Graphics::RenderPasse
 
     if (vkCreatePipelineLayout(context->GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
     {
-        throw std::runtime_error("failed to create pipeline layout!");
+        PLOG_FATAL << "Failed to create default pipeline layout!";
     }
 
     VkGraphicsPipelineCreateInfo pipelineInfo{};
@@ -152,7 +152,7 @@ Default::Default(Symbios::Core::Context *context, Symbios::Graphics::RenderPasse
 
     if (vkCreateGraphicsPipelines(_context->GetLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline) != VK_SUCCESS)
     {
-        throw std::runtime_error("failed to create graphics pipeline!");
+        PLOG_FATAL << "Failed to create default pipeline!";
     }
 }
 

@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <vulkan/vulkan.hpp>
+#include <plog/Log.h>
 
 #include "context.hpp"
 

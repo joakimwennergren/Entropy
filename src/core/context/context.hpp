@@ -43,6 +43,7 @@ namespace Symbios
         class Context
         {
         public:
+
 #ifdef BUILD_FOR_IOS
             Context(CA::MetalLayer *layer, CGRect frame);
 #endif
@@ -139,12 +140,12 @@ namespace Symbios
             VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats);
             VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes);
 
-#if BUILD_FOR_IOS == true
+#ifdef BUILD_FOR_IOS
             VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities, CGRect frame);
             void CreateSwapChain(CGRect frame);
 #endif
 
-#if BUILD_FOR_WINDOWS == true
+#ifdef BUILD_FOR_WINDOWS
             VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities, GLFWwindow *window);
             void CreateSwapChain(GLFWwindow *window);
 #endif
@@ -160,5 +161,4 @@ namespace Symbios
             void CreateImageViews();
         };
     }
-
 }

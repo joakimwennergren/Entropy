@@ -36,7 +36,7 @@ target_sources(Symbios PRIVATE
     src/graphics/pipelines/default_pipeline.cpp
     src/graphics/shaders/default_shader.cpp
     src/graphics/renderpasses/renderpass.cpp
-    src/graphics/commandbuffers/default_commandbuffer.cpp
+    src/graphics/commandbuffers/commandbuffer.cpp
     src/graphics/renderers/default_renderer.cpp
 )
 
@@ -93,13 +93,13 @@ if(XCODE)
 endif()
 
 if(WIN32)
-    set(CMAKE_BUILD_FOR_WINDOWS "true")
+    set(CMAKE_PLATFORM "BUILD_FOR_WINDOWS")
 endif(WIN32)
 
 if(APPLE)
     if(NOT XCODE)
-        set(CMAKE_BUILD_FOR_MACOS "true")
+        set(CMAKE_PLATFORM "BUILD_FOR_MACOS")
     endif()
 endif()
 
-configure_file(config.h.in ${CMAKE_SOURCE_DIR}/src/config.h)
+configure_file(config.h.in ${CMAKE_SOURCE_DIR}/src/config.h @ONLY)

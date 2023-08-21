@@ -36,7 +36,7 @@ Application::Application()
 
     _pipeline = new Symbios::Graphics::Pipeline::Default(_context, _renderPass);
 
-    _commandBuffer = new Symbios::Graphics::CommandBuffers::Default(_context);
+    _commandBuffer = new Symbios::Graphics::CommandBuffers::CommandBuffer(_context);
 
     VkSemaphoreCreateInfo semaphoreInfo{};
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -76,7 +76,6 @@ void Application::Run()
 {
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS)
 
-    /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(_window))
     {
 
@@ -109,10 +108,7 @@ void Application::Run()
 
         vkCmdEndRenderPass(_commandBuffer->GetCommandBuffer());
 
-        if (vkEndCommandBuffer(_commandBuffer->GetCommandBuffer()) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to record command buffer!");
-        }
+        _commandBuffer->EndRecording();
 
         auto cmd = _commandBuffer->GetCommandBuffer();
 
@@ -152,8 +148,8 @@ void Application::Run()
 
         vkQueuePresentKHR(_context->_presentQueue, &presentInfo);
 
-        vkResetFences(_context->GetLogicalDevice(), 1, &inFlightFence);
-        /* Poll for and process events */
+        //vkResetFences(_context->GetLogicalDevice(), 1, &inFlightFence);
+        
         glfwPollEvents();
     }
 #endif

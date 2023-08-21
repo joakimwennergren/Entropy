@@ -1,6 +1,6 @@
 #include "config.h"
 
-#if BUILD_FOR_IOS == true
+#ifdef BUILD_FOR_IOS
 
 #include <iostream>
 #include <vulkan/vulkan.hpp>

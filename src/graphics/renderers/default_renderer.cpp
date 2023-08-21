@@ -2,7 +2,7 @@
 
 using namespace Symbios::Graphics::Renderers;
 
-Default::Default(std::shared_ptr<Symbios::Core::Context> context, Symbios::Graphics::CommandBuffers::Default commandBuffer)
+Default::Default(Context *context, Symbios::Graphics::CommandBuffers::CommandBuffer commandBuffer)
 {
     this->_context = context;
 

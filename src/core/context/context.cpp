@@ -51,7 +51,7 @@ Context::~Context()
     vkDestroyInstance(this->_instance, nullptr);
     // vkDestroyDevice(this->_device, nullptr); (crasch)
 
-#if USE_DEBUG == true
+#ifdef USE_DEBUG
     DestroyDebugUtilsMessengerEXT(_instance, _debugMessenger, nullptr);
 #endif
 }
@@ -116,14 +116,14 @@ void Context::CreateInstance()
         extensions.push_back(extension.extensionName);
     }
 
-#if USE_DEBUG == true
-    extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+#ifdef USE_VALIDATION_LAYERS
+    //extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 #endif
 
     createInfo.enabledExtensionCount = (uint32_t)extensions.size();
     createInfo.ppEnabledExtensionNames = extensions.data();
 
-#if USE_DEBUG == true
+#ifdef USE_VALIDATION_LAYERS
     if (CheckValidationLayerSupport())
     {
         const std::vector<const char *> validationLayers = {
@@ -143,7 +143,7 @@ void Context::CreateInstance()
         return;
     }
 
-#if USE_DEBUG == true
+#ifdef USE_VALIDATION_LAYERS
     VkDebugUtilsMessengerCreateInfoEXT createInfoDebugMessenger{};
     createInfoDebugMessenger.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
     createInfoDebugMessenger.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
@@ -376,7 +376,7 @@ void Context::CreateSurfaceMacOS(GLFWwindow *window)
 }
 #endif
 
-#if BUILD_FOR_WINDOWS == true
+#ifdef BUILD_FOR_WINDOWS
 void Context::CreateSurfaceWindows(GLFWwindow *window)
 {
     VkWin32SurfaceCreateInfoKHR createInfo{};
@@ -463,7 +463,7 @@ VkPresentModeKHR Context::ChooseSwapPresentMode(const std::vector<VkPresentModeK
     return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-#if BUILD_FOR_WINDOWS == true
+#ifdef BUILD_FOR_WINDOWS
 VkExtent2D Context::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities, GLFWwindow *window)
 {
     if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())

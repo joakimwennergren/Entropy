@@ -1,3 +1,8 @@
 #pragma once
 
-#define BUILD_FOR_MACOS "${CMAKE_BUILD_FOR_MACOS}"
+// Platform
+#define @CMAKE_PLATFORM@
+
+// Debugging
+#define USE_DEBUG
+#define USE_VALIDATION_LAYERS
