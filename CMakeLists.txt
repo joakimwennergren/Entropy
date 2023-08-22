@@ -38,7 +38,7 @@ target_sources(Symbios PRIVATE
     src/graphics/shaders/shader.cpp
     src/graphics/renderpasses/renderpass.cpp
     src/graphics/commandbuffers/commandbuffer.cpp
-    src/graphics/renderers/default_renderer.cpp
+    src/graphics/renderers/renderer.cpp
 
     # Filesystem
     src/filesystem/filesystem.cpp

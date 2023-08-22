@@ -1,10 +1,8 @@
 #pragma once
 
-#include "context.hpp"
-#include "renderpass.hpp"
-#include "pipeline.hpp"
-#include "commandbuffer.hpp"
 #include "config.hpp"
+#include "context.hpp"
+#include "renderer.hpp"
 
 #include <plog/Log.h>
 #include <plog/Init.h>
@@ -30,18 +28,12 @@ public:
     void Run();
 
 private:
+    Symbios::Core::Context *_context;
+    Symbios::Graphics::Renderers::Renderer *_renderer;
+
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
     GLFWwindow *_window;
 #endif
-
-    Symbios::Core::Context *_context;
-    Symbios::Graphics::RenderPasses::RenderPass *_renderPass;
-    Symbios::Graphics::Pipelines::Pipeline *_pipeline;
-    Symbios::Graphics::CommandBuffers::CommandBuffer *_commandBuffer;
-
-    VkSemaphore imageAvailableSemaphore;
-    VkSemaphore renderFinishedSemaphore;
-    VkFence inFlightFence;
 
 private:
 #ifdef BUILD_FOR_IOS
