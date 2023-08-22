@@ -1,5 +1,15 @@
+/**
+ * @file commandbuffer.hpp
+ * @author Joakim Wennergren (joakim.wennergren@databeams.se)
+ * @brief
+ * @version 0.1
+ * @date 2023-08-22
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
 #pragma once
-#include <vulkan/vulkan.hpp>
+
 #include "context.hpp"
 
 using namespace Symbios::Core;
@@ -23,11 +33,15 @@ namespace Symbios
                  * @param context
                  */
 
-                CommandBuffer(){
+                CommandBuffer() = default;
 
-                };
+                /**
+                 * @brief Construct a new Command Buffer object
+                 *
+                 * @param context
+                 */
+                CommandBuffer(Context *context);
 
-                CommandBuffer(Symbios::Core::Context *context);
                 /**
                  * @brief Destroy the Command Buffer object
                  *
@@ -38,7 +52,6 @@ namespace Symbios
                  * @brief
                  *
                  * @param imageIndex
-                 * @param renderPass
                  */
                 void Record(uint32_t imageIndex);
 
@@ -57,7 +70,8 @@ namespace Symbios
 
             private:
                 Context *_context;
-                VkCommandPool _commandPool; // @todo should this be here??
+                // @todo should this be here??
+                VkCommandPool _commandPool;
                 VkCommandBuffer _commandBuffer;
             };
         }

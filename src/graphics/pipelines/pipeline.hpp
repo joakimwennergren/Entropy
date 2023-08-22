@@ -1,13 +1,25 @@
+/**
+ * @file pipeline.hpp
+ * @author Joakim Wennergren (joakim.wennergren@databeams.se)
+ * @brief
+ * @version 0.1
+ * @date 2023-08-22
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
 #pragma once
 
-#include <plog/Log.h>
-
-#include "../shaders/shader.hpp"
+#include "shader.hpp"
 #include "context.hpp"
 #include "renderpass.hpp"
 #include "filesystem.hpp"
 
+using namespace Symbios::Core;
 using namespace Symbios::Filesystem;
+using namespace Symbios::Graphics::Shaders;
+using namespace Symbios::Graphics::RenderPasses;
 
 namespace Symbios
 {
@@ -15,17 +27,39 @@ namespace Symbios
     {
         namespace Pipelines
         {
+            /**
+             * @brief
+             *
+             */
             class Pipeline
             {
             public:
+                /**
+                 * @brief Construct a new Pipeline object
+                 *
+                 * @param context
+                 * @param renderPass
+                 */
                 Pipeline(Symbios::Core::Context *context, Symbios::Graphics::RenderPasses::RenderPass *renderPass);
+
+                /**
+                 * @brief Destroy the Pipeline object
+                 *
+                 */
                 ~Pipeline();
-                VkPipeline pipeline;
+
+                /**
+                 * @brief Get the Pipeline object
+                 *
+                 * @return VkPipeline
+                 */
+                inline VkPipeline GetPipeline() { return this->_pipeline; };
 
             private:
-                Symbios::Graphics::Shaders::Shader *_shader;
-                Symbios::Core::Context *_context;
-                VkPipelineLayout pipelineLayout;
+                Context *_context;
+                Shader *_shader;
+                VkPipelineLayout _pipelineLayout;
+                VkPipeline _pipeline;
             };
         }
     }

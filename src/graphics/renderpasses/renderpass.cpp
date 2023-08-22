@@ -1,7 +1,23 @@
+/**
+ * @file renderpass.cpp
+ * @author Joakim Wennergren (joakim.wennergren@databeams.se)
+ * @brief
+ * @version 0.1
+ * @date 2023-08-22
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
 #include "renderpass.hpp"
 
 using namespace Symbios::Graphics::RenderPasses;
 
+/**
+ * @brief Construct a new Render Pass:: Render Pass object
+ *
+ * @param context
+ */
 RenderPass::RenderPass(Symbios::Core::Context *context)
 {
     this->_context = context;
@@ -48,12 +64,17 @@ RenderPass::RenderPass(Symbios::Core::Context *context)
 
     if (vkCreateRenderPass(context->GetLogicalDevice(), &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
     {
-        throw std::runtime_error("failed to create render pass!");
+        PLOG_ERROR << "failed to create render pass!";
+        exit(EXIT_FAILURE);
     }
 
     this->CreateFramebuffers();
 }
 
+/**
+ * @brief Destroy the Render Pass:: Render Pass object
+ *
+ */
 RenderPass::~RenderPass()
 {
     for (auto framebuffer : swapChainFramebuffers)
@@ -64,6 +85,12 @@ RenderPass::~RenderPass()
     vkDestroyRenderPass(_context->GetLogicalDevice(), renderPass, nullptr);
 }
 
+/**
+ * @brief
+ *
+ * @param commandBuffer
+ * @param imageIndex
+ */
 void RenderPass::Begin(Symbios::Graphics::CommandBuffers::CommandBuffer *commandBuffer, uint32_t imageIndex)
 {
     VkRenderPassBeginInfo renderPassInfo{};
@@ -81,11 +108,20 @@ void RenderPass::Begin(Symbios::Graphics::CommandBuffers::CommandBuffer *command
     vkCmdBeginRenderPass(commandBuffer->GetCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
 
+/**
+ * @brief
+ *
+ * @param commandBuffer
+ */
 void RenderPass::End(Symbios::Graphics::CommandBuffers::CommandBuffer *commandBuffer)
 {
     vkCmdEndRenderPass(commandBuffer->GetCommandBuffer());
 }
 
+/**
+ * @brief
+ *
+ */
 void RenderPass::CreateFramebuffers()
 {
     swapChainFramebuffers.resize(_context->GetSwapChainImageViews().size());
@@ -106,7 +142,8 @@ void RenderPass::CreateFramebuffers()
 
         if (vkCreateFramebuffer(_context->GetLogicalDevice(), &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS)
         {
-            throw std::runtime_error("failed to create framebuffer!");
+            PLOG_ERROR << "Failed to create framebuffer!";
+            exit(EXIT_FAILURE);
         }
     }
 }

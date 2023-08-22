@@ -2,13 +2,13 @@
 
 using namespace Symbios::Graphics::Pipelines;
 
-Pipeline::Pipeline(Symbios::Core::Context *context, Symbios::Graphics::RenderPasses::RenderPass *renderPass)
+Pipeline::Pipeline(Context *context, RenderPass *renderPass)
 {
-
+    // Store the context
     _context = context;
 
-    // Create Shader
-    auto shader = new Symbios::Graphics::Shaders::Shader(GetProjectBasePath() + "/vert.spv", GetProjectBasePath() + "/frag.spv", context);
+    // Create Shader and store it
+    auto shader = new Shaders::Shader(GetProjectBasePath() + "/shaders/basic/vert.spv", GetProjectBasePath() + "/shaders/basic/frag.spv", context);
     _shader = shader;
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
@@ -115,7 +115,7 @@ Pipeline::Pipeline(Symbios::Core::Context *context, Symbios::Graphics::RenderPas
     pipelineLayoutInfo.pushConstantRangeCount = 0;    // Optional
     pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
 
-    if (vkCreatePipelineLayout(context->GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
+    if (vkCreatePipelineLayout(context->GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &this->_pipelineLayout) != VK_SUCCESS)
     {
         PLOG_FATAL << "Failed to create default pipeline layout!";
         exit(EXIT_FAILURE);
@@ -135,7 +135,7 @@ Pipeline::Pipeline(Symbios::Core::Context *context, Symbios::Graphics::RenderPas
     pipelineInfo.pColorBlendState = &colorBlending;
     pipelineInfo.pDynamicState = &dynamicState;
 
-    pipelineInfo.layout = pipelineLayout;
+    pipelineInfo.layout = this->_pipelineLayout;
 
     pipelineInfo.renderPass = renderPass->GetRenderPass();
     pipelineInfo.subpass = 0;
@@ -143,7 +143,7 @@ Pipeline::Pipeline(Symbios::Core::Context *context, Symbios::Graphics::RenderPas
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
     pipelineInfo.basePipelineIndex = -1;              // Optional
 
-    if (vkCreateGraphicsPipelines(_context->GetLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline) != VK_SUCCESS)
+    if (vkCreateGraphicsPipelines(_context->GetLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &this->_pipeline) != VK_SUCCESS)
     {
         PLOG_FATAL << "Failed to create default pipeline!";
         exit(EXIT_FAILURE);
@@ -152,6 +152,6 @@ Pipeline::Pipeline(Symbios::Core::Context *context, Symbios::Graphics::RenderPas
 
 Pipeline::~Pipeline()
 {
-    vkDestroyPipeline(_context->GetLogicalDevice(), pipeline, nullptr);
-    vkDestroyPipelineLayout(_context->GetLogicalDevice(), pipelineLayout, nullptr);
+    vkDestroyPipeline(_context->GetLogicalDevice(), this->_pipeline, nullptr);
+    vkDestroyPipelineLayout(_context->GetLogicalDevice(), this->_pipelineLayout, nullptr);
 }

@@ -11,7 +11,7 @@ CommandBuffer::CommandBuffer(Context *context)
 {
     _context = context;
 
-    Symbios::Core::Context::QueueFamilyIndices queueFamilyIndices = _context->FindQueueFamilies(_context->GetPhysicalDevice());
+    Context::QueueFamilyIndices queueFamilyIndices = _context->FindQueueFamilies(_context->GetPhysicalDevice());
 
     VkCommandPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -21,6 +21,7 @@ CommandBuffer::CommandBuffer(Context *context)
     if (vkCreateCommandPool(_context->GetLogicalDevice(), &poolInfo, nullptr, &_commandPool) != VK_SUCCESS)
     {
         PLOG_ERROR << "Failed to create command pool!";
+        exit(EXIT_FAILURE);
     }
 
     VkCommandBufferAllocateInfo allocInfo{};
@@ -32,6 +33,7 @@ CommandBuffer::CommandBuffer(Context *context)
     if (vkAllocateCommandBuffers(_context->GetLogicalDevice(), &allocInfo, &_commandBuffer) != VK_SUCCESS)
     {
         PLOG_ERROR << "Failed to allocate command buffer!";
+        exit(EXIT_FAILURE);
     }
 }
 
@@ -60,7 +62,7 @@ void CommandBuffer::Record(uint32_t imageIndex)
     if (vkBeginCommandBuffer(_commandBuffer, &beginInfo) != VK_SUCCESS)
     {
         PLOG_ERROR << "Failed to begin recording command buffer!";
-        return;
+        exit(EXIT_FAILURE);
     }
 }
 
@@ -73,5 +75,6 @@ void CommandBuffer::EndRecording()
     if (vkEndCommandBuffer(_commandBuffer) != VK_SUCCESS)
     {
         PLOG_ERROR << "Failed to end recording command buffer!";
+        exit(EXIT_FAILURE);
     }
 }

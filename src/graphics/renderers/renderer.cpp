@@ -45,7 +45,7 @@ void Renderer::Render()
 
     _renderPass->Begin(_commandBuffer, imageIndex);
 
-    vkCmdBindPipeline(_commandBuffer->GetCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->pipeline);
+    vkCmdBindPipeline(_commandBuffer->GetCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipeline());
 
     VkViewport viewport{};
     viewport.x = 0.0f;
