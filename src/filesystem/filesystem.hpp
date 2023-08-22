@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <string>
 
 #ifdef BUILD_FOR_IOS
 #include <CoreFoundation/CoreFoundation.h>

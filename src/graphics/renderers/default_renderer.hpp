@@ -19,10 +19,8 @@ namespace Symbios
                 ~Default();
 
             private:
-                Context* _context;
+                Context *_context;
             };
         }
-
     }
-
 }

@@ -45,7 +45,6 @@ std::vector<char> Shader::ReadFile(std::string filename)
 
 VkShaderModule Shader::BuildShader(std::vector<char> code)
 {
-
     VkShaderModuleCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
     createInfo.codeSize = code.size();
