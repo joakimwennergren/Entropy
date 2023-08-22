@@ -36,7 +36,4 @@ private:
 #endif
 
 private:
-#ifdef BUILD_FOR_IOS
-    NS::AutoreleasePool *_autoreleasePool;
-#endif
 };

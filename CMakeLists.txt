@@ -44,7 +44,7 @@ target_sources(Symbios PRIVATE
     src/filesystem/filesystem.cpp
 
     # Main entrypoint
-    src/main.cpp
+    src/main.mm
 )
 
 if(NOT XCODE)
@@ -58,6 +58,7 @@ endif()
 target_include_directories(Symbios PRIVATE
 
     src
+    external
 
     # Core
     src/core/application
@@ -112,6 +113,9 @@ if(XCODE)
         "-framework iosurface"
         "-framework coregraphics"
         "-framework quartzcore"
+        "-framework CoreAudio"
+        "-framework AudioToolbox"
+        "-framework AVFoundation"
     )
     include_directories(external/vulkan-headers)
     set(CMAKE_OSX_DEPLOYMENT_TARGET 12.0)
