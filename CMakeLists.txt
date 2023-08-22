@@ -44,7 +44,7 @@ target_sources(Symbios PRIVATE
     src/filesystem/filesystem.cpp
 
     # Main entrypoint
-    src/main.mm
+    src/main.cpp
 )
 
 if(NOT XCODE)

@@ -4,10 +4,9 @@
 
 #ifdef BUILD_FOR_IOS
 #define VK_USE_PLATFORM_IOS_MVK
+#include <vulkan/vulkan.hpp>
 #include <MetalKit/MetalKit.hpp>
 #endif
-
-#include <vulkan/vulkan.hpp>
 
 #ifdef BUILD_FOR_MACOS
 #include <GLFW/glfw3.h>

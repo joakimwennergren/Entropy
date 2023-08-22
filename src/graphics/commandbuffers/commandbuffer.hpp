@@ -1,5 +1,5 @@
 #pragma once
-
+#include <vulkan/vulkan.hpp>
 #include "context.hpp"
 
 using namespace Symbios::Core;
@@ -23,8 +23,7 @@ namespace Symbios
                  * @param context
                  */
 
-                CommandBuffer()
-                {
+                CommandBuffer(){
 
                 };
 

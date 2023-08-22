@@ -13,39 +13,24 @@ namespace Symbios
     {
         static std::string GetProjectBasePath()
         {
+#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
             return std::filesystem::current_path().string() + "/../";
-        }
-
-#ifdef BUILD_FOR_MACOS
-        class MacOSFilesystem
-        {
-        };
 #endif
+
 #ifdef BUILD_FOR_IOS
-        class IOSFilesystem
-        {
-        public:
-            IOSFilesystem();
-
-            std::string get_resources_dir()
+            CFURLRef resourceURL = CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
+            char resourcePath[PATH_MAX];
+            if (CFURLGetFileSystemRepresentation(resourceURL, true,
+                                                 (UInt8 *)resourcePath,
+                                                 PATH_MAX))
             {
-                CFURLRef resourceURL = CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
-                char resourcePath[PATH_MAX];
-                if (CFURLGetFileSystemRepresentation(resourceURL, true,
-                                                     (UInt8 *)resourcePath,
-                                                     PATH_MAX))
+                if (resourceURL != NULL)
                 {
-                    if (resourceURL != NULL)
-                    {
-                        CFRelease(resourceURL);
-                    }
-                    return resourcePath;
+                    CFRelease(resourceURL);
                 }
-                return "";
+                return resourcePath;
             }
-
-        private:
-        };
 #endif
+        }
     }
 }

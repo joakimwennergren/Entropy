@@ -8,7 +8,7 @@ Pipeline::Pipeline(Symbios::Core::Context *context, Symbios::Graphics::RenderPas
     _context = context;
 
     // Create Shader
-    auto shader = new Symbios::Graphics::Shaders::Shader(GetProjectBasePath() + "shaders/basic/vert.spv", GetProjectBasePath() + "shaders/basic/frag.spv", context);
+    auto shader = new Symbios::Graphics::Shaders::Shader(GetProjectBasePath() + "/vert.spv", GetProjectBasePath() + "/frag.spv", context);
     _shader = shader;
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
