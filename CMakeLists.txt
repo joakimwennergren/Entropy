@@ -129,5 +129,8 @@ if(APPLE)
     endif()
 endif()
 
-# Build config.hpp
+if(LINUX) 
+    set(CMAKE_PLATFORM "BUILD_FOR_LINUX")
+endif()
+
 configure_file(config.h.in ${CMAKE_SOURCE_DIR}/src/config.hpp @ONLY)
