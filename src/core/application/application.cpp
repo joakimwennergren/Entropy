@@ -237,7 +237,6 @@ Application::Application()
 
     // Create Vulkan context
     _context = new Symbios::Core::Context(_window);
-    
 
     _renderPass = new Symbios::Graphics::RenderPasses::Default(_context);
 
@@ -258,7 +257,6 @@ Application::Application()
     {
         throw std::runtime_error("failed to create semaphores!");
     }
-
 
 #endif
 
@@ -294,6 +292,7 @@ void Application::Run()
 
     while (!glfwWindowShouldClose(_window))
     {
+        /*
         vkWaitForFences(_context->GetLogicalDevice(), 1, &inFlightFence, VK_TRUE, UINT64_MAX);
 
         uint32_t imageIndex;
@@ -364,7 +363,53 @@ void Application::Run()
         vkQueuePresentKHR(_context->_presentQueue, &presentInfo);
 
         //vkResetFences(_context->GetLogicalDevice(), 1, &inFlightFence);
+        */
 
+        vkWaitForFences(_context->GetLogicalDevice(), 1, &inFlightFence, VK_TRUE, UINT64_MAX);
+        vkResetFences(_context->GetLogicalDevice(), 1, &inFlightFence);
+
+        uint32_t imageIndex;
+        vkAcquireNextImageKHR(_context->GetLogicalDevice(), _context->GetSwapChain(), UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+
+        vkResetCommandBuffer(_commandBuffer->GetCommandBuffer(), /*VkCommandBufferResetFlagBits*/ 0);
+        _commandBuffer->Record(imageIndex, _renderPass);
+
+        VkSubmitInfo submitInfo{};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+        auto cmd = _commandBuffer->GetCommandBuffer();
+
+        VkSemaphore waitSemaphores[] = {imageAvailableSemaphore};
+        VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+        submitInfo.waitSemaphoreCount = 1;
+        submitInfo.pWaitSemaphores = waitSemaphores;
+        submitInfo.pWaitDstStageMask = waitStages;
+
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = &cmd;
+
+        VkSemaphore signalSemaphores[] = {renderFinishedSemaphore};
+        submitInfo.signalSemaphoreCount = 1;
+        submitInfo.pSignalSemaphores = signalSemaphores;
+
+        if (vkQueueSubmit(_context->_graphicsQueue, 1, &submitInfo, inFlightFence) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to submit draw command buffer!");
+        }
+
+        VkPresentInfoKHR presentInfo{};
+        presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+        presentInfo.waitSemaphoreCount = 1;
+        presentInfo.pWaitSemaphores = signalSemaphores;
+
+        VkSwapchainKHR swapChains[] = {_context->GetSwapChain()};
+        presentInfo.swapchainCount = 1;
+        presentInfo.pSwapchains = swapChains;
+
+        presentInfo.pImageIndices = &imageIndex;
+
+        vkQueuePresentKHR(_context->_presentQueue, &presentInfo);
         glfwPollEvents();
     }
 #endif
