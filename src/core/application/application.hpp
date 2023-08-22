@@ -19,12 +19,50 @@
 class Application
 {
 public:
-    Application();
-    ~Application();
+    Application()
+    {
+        // Initialize logger
+        static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
+        plog::init(plog::verbose, &consoleAppender);
+
+        // Initialize GLFW
+        if (!glfwInit())
+        {
+            PLOG_FATAL << "Could not initialize GLFW library!";
+            return;
+        }
+
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        // Create a windowed mode window
+        _window = glfwCreateWindow(640, 480, "Symbios dev application", NULL, NULL);
+
+        if (!_window)
+        {
+            PLOG_FATAL << "Could not create window!";
+            glfwTerminate();
+            return;
+        }
+
+        _context = new Symbios::Core::Context(_window);
+        _renderer = new Symbios::Graphics::Renderers::Renderer(_context);
+    }
+    ~Application()
+    {
+        glfwDestroyWindow(_window);
+        glfwTerminate();
+    }
 
 public:
     // virtual void Initialize() = 0;
-    void Run();
+    inline void Run()
+    {
+        while (!glfwWindowShouldClose(_window))
+        {
+            _renderer->Render();
+
+            glfwPollEvents();
+        }
+    }
 
 private:
     Symbios::Core::Context *_context;
@@ -50,7 +88,6 @@ public:
     }
     virtual ~MTKViewDelegate() override
     {
-        
     }
     inline virtual void drawInMTKView(MTK::View *pView) override
     {
@@ -69,7 +106,7 @@ public:
         // Initialize logger
         static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
         plog::init(plog::verbose, &consoleAppender);
-        
+
         this->_autoreleasePool = NS::AutoreleasePool::alloc()->init();
 
         UI::ApplicationMain(0, 0, this);
