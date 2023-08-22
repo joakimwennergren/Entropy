@@ -42,11 +42,11 @@ Context::Context(GLFWwindow *window)
 Context::Context(GLFWwindow *window)
 {
     this->CreateInstance();
-    // this->CreateSurfaceWindows(window);
-    // this->PickPhysicalDevice();
-    // this->CreateLogicalDevice();
-    // this->CreateSwapChain(window);
-    // this->CreateImageViews();
+    this->CreateSurfaceMacOS(window);
+    this->PickPhysicalDevice();
+    this->CreateLogicalDevice();
+    this->CreateSwapChain(window);
+    this->CreateImageViews();
 }
 #endif
 
@@ -129,7 +129,7 @@ void Context::CreateInstance()
     }
 
 #ifdef BUILD_FOR_MACOS
-    extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+    // extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
 #endif //__APPLE__
 
 #ifdef USE_VALIDATION_LAYERS
@@ -377,19 +377,10 @@ void Context::CreateSurfaceiOS(CA::MetalLayer *layer)
 #ifdef BUILD_FOR_MACOS
 void Context::CreateSurfaceMacOS(GLFWwindow *window)
 {
-    /*
-    VkMetalSurfaceCreateInfoEXT createInfo{};
-    createInfo.sType = VK_STRUCTURE_TYPE_IOS_SURFACE_CREATE_INFO_MVK;
-    createInfo.pNext = nullptr;
-    createInfo.flags = 0;
-    // createInfo.pLayer = layer;
-
-    if (vkCreateMetalSurfaceEXT(this->_instance, &createInfo, nullptr, &this->_surface) != VK_SUCCESS)
+    if (glfwCreateWindowSurface(this->_instance, window, nullptr, &this->_surface) != VK_SUCCESS)
     {
-        PLOG_FATAL << "Could not create iOS surface!";
-        return;
+        throw std::runtime_error("failed to create window surface!");
     }
-    */
 }
 #endif
 
@@ -490,7 +481,7 @@ VkPresentModeKHR Context::ChooseSwapPresentMode(const std::vector<VkPresentModeK
     return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-#if defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
+#if defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_MACOS)
 VkExtent2D Context::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities, GLFWwindow *window)
 {
     if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())

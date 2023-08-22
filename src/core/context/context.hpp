@@ -27,7 +27,6 @@
 #include <GLFW/glfw3.h>
 #endif
 
-
 #include <plog/Log.h>
 
 #include <iostream>
@@ -159,11 +158,7 @@ namespace Symbios
             void CreateSwapChain(CGRect frame);
 #endif
 
-#ifdef BUILD_FOR_WINDOWS
-            VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities, GLFWwindow *window);
-            void CreateSwapChain(GLFWwindow *window);
-#endif
-#ifdef BUILD_FOR_LINUX
+#if defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_MACOS)
             VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities, GLFWwindow *window);
             void CreateSwapChain(GLFWwindow *window);
 #endif
