@@ -34,7 +34,7 @@ target_sources(Symbios PRIVATE
     src/core/context/context.cpp
 
     # Graphics
-    src/graphics/pipelines/default_pipeline.cpp
+    src/graphics/pipelines/pipeline.cpp
     src/graphics/shaders/shader.cpp
     src/graphics/renderpasses/renderpass.cpp
     src/graphics/commandbuffers/commandbuffer.cpp

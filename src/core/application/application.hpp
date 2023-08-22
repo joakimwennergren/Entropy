@@ -2,7 +2,7 @@
 
 #include "context.hpp"
 #include "renderpass.hpp"
-#include "default_pipeline.hpp"
+#include "pipeline.hpp"
 #include "commandbuffer.hpp"
 #include "config.hpp"
 
@@ -35,8 +35,8 @@ private:
 #endif
 
     Symbios::Core::Context *_context;
-    Symbios::Graphics::RenderPasses::Default *_renderPass;
-    Symbios::Graphics::Pipeline::Default *_pipeline;
+    Symbios::Graphics::RenderPasses::RenderPass *_renderPass;
+    Symbios::Graphics::Pipelines::Pipeline *_pipeline;
     Symbios::Graphics::CommandBuffers::CommandBuffer *_commandBuffer;
 
     VkSemaphore imageAvailableSemaphore;

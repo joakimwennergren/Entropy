@@ -13,13 +13,13 @@ namespace Symbios
 {
     namespace Graphics
     {
-        namespace Pipeline
+        namespace Pipelines
         {
-            class Default
+            class Pipeline
             {
             public:
-                Default(Symbios::Core::Context *context, Symbios::Graphics::RenderPasses::Default *renderPass);
-                ~Default();
+                Pipeline(Symbios::Core::Context *context, Symbios::Graphics::RenderPasses::RenderPass *renderPass);
+                ~Pipeline();
                 VkPipeline pipeline;
 
             private:

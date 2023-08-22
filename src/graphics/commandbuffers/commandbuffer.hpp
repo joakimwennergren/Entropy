@@ -1,7 +1,6 @@
 #pragma once
 
 #include "context.hpp"
-#include "renderpass.hpp"
 
 using namespace Symbios::Core;
 
@@ -24,6 +23,11 @@ namespace Symbios
                  * @param context
                  */
 
+                CommandBuffer()
+                {
+
+                };
+
                 CommandBuffer(Symbios::Core::Context *context);
                 /**
                  * @brief Destroy the Command Buffer object
@@ -37,7 +41,7 @@ namespace Symbios
                  * @param imageIndex
                  * @param renderPass
                  */
-                void Record(uint32_t imageIndex, Symbios::Graphics::RenderPasses::Default *renderPass);
+                void Record(uint32_t imageIndex);
 
                 /**
                  * @brief

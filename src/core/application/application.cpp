@@ -238,9 +238,9 @@ Application::Application()
     // Create Vulkan context
     _context = new Symbios::Core::Context(_window);
 
-    _renderPass = new Symbios::Graphics::RenderPasses::Default(_context);
+    _renderPass = new Symbios::Graphics::RenderPasses::RenderPass(_context);
 
-    _pipeline = new Symbios::Graphics::Pipeline::Default(_context, _renderPass);
+    _pipeline = new Symbios::Graphics::Pipelines::Pipeline(_context, _renderPass);
 
     _commandBuffer = new Symbios::Graphics::CommandBuffers::CommandBuffer(_context);
 
@@ -372,7 +372,32 @@ void Application::Run()
         vkAcquireNextImageKHR(_context->GetLogicalDevice(), _context->GetSwapChain(), UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
 
         vkResetCommandBuffer(_commandBuffer->GetCommandBuffer(), /*VkCommandBufferResetFlagBits*/ 0);
-        _commandBuffer->Record(imageIndex, _renderPass);
+        
+        _commandBuffer->Record(imageIndex);
+
+            _renderPass->Begin(_commandBuffer, imageIndex);
+
+                vkCmdBindPipeline(_commandBuffer->GetCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->pipeline);
+
+                VkViewport viewport{};
+                viewport.x = 0.0f;
+                viewport.y = 0.0f;
+                viewport.width = (float) _context->GetSwapChainExtent().width;
+                viewport.height = (float) _context->GetSwapChainExtent().height;
+                viewport.minDepth = 0.0f;
+                viewport.maxDepth = 1.0f;
+                vkCmdSetViewport(_commandBuffer->GetCommandBuffer(), 0, 1, &viewport);
+
+                VkRect2D scissor{};
+                scissor.offset = {0, 0};
+                scissor.extent = _context->GetSwapChainExtent();
+                vkCmdSetScissor(_commandBuffer->GetCommandBuffer(), 0, 1, &scissor);
+
+                vkCmdDraw(_commandBuffer->GetCommandBuffer(), 3, 1, 0, 0);
+
+            _renderPass->End(_commandBuffer);
+
+        _commandBuffer->EndRecording();
 
         VkSubmitInfo submitInfo{};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;

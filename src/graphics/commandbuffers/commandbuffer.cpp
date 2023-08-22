@@ -50,7 +50,7 @@ CommandBuffer::~CommandBuffer()
  * @param imageIndex
  * @param renderPass
  */
-void CommandBuffer::Record(uint32_t imageIndex, Symbios::Graphics::RenderPasses::Default *renderPass)
+void CommandBuffer::Record(uint32_t imageIndex)
 {
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -62,20 +62,6 @@ void CommandBuffer::Record(uint32_t imageIndex, Symbios::Graphics::RenderPasses:
         PLOG_ERROR << "Failed to begin recording command buffer!";
         return;
     }
-
-    VkRenderPassBeginInfo renderPassInfo{};
-    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    renderPassInfo.renderPass = renderPass->GetRenderPass();
-    renderPassInfo.framebuffer = renderPass->swapChainFramebuffers[imageIndex];
-
-    renderPassInfo.renderArea.offset = {0, 0};
-    renderPassInfo.renderArea.extent = _context->GetSwapChainExtent();
-
-    VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
-    renderPassInfo.clearValueCount = 1;
-    renderPassInfo.pClearValues = &clearColor;
-
-    vkCmdBeginRenderPass(_commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
 
 /**

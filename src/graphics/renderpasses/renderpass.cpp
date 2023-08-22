@@ -2,7 +2,7 @@
 
 using namespace Symbios::Graphics::RenderPasses;
 
-Default::Default(Symbios::Core::Context *context)
+RenderPass::RenderPass(Symbios::Core::Context *context)
 {
     this->_context = context;
 
@@ -54,7 +54,7 @@ Default::Default(Symbios::Core::Context *context)
     this->CreateFramebuffers();
 }
 
-Default::~Default()
+RenderPass::~RenderPass()
 {
     for (auto framebuffer : swapChainFramebuffers)
     {
@@ -64,7 +64,29 @@ Default::~Default()
     vkDestroyRenderPass(_context->GetLogicalDevice(), renderPass, nullptr);
 }
 
-void Default::CreateFramebuffers()
+void RenderPass::Begin(Symbios::Graphics::CommandBuffers::CommandBuffer *commandBuffer, uint32_t imageIndex)
+{
+    VkRenderPassBeginInfo renderPassInfo{};
+    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    renderPassInfo.renderPass = renderPass;
+    renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex];
+
+    renderPassInfo.renderArea.offset = {0, 0};
+    renderPassInfo.renderArea.extent = _context->GetSwapChainExtent();
+
+    VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
+    renderPassInfo.clearValueCount = 1;
+    renderPassInfo.pClearValues = &clearColor;
+
+    vkCmdBeginRenderPass(commandBuffer->GetCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+}
+
+void RenderPass::End(Symbios::Graphics::CommandBuffers::CommandBuffer *commandBuffer)
+{
+    vkCmdEndRenderPass(commandBuffer->GetCommandBuffer());
+}
+
+void RenderPass::CreateFramebuffers()
 {
     swapChainFramebuffers.resize(_context->GetSwapChainImageViews().size());
 

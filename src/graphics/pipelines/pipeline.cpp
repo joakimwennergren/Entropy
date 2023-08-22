@@ -1,8 +1,8 @@
-#include "default_pipeline.hpp"
+#include "pipeline.hpp"
 
-using namespace Symbios::Graphics::Pipeline;
+using namespace Symbios::Graphics::Pipelines;
 
-Default::Default(Symbios::Core::Context *context, Symbios::Graphics::RenderPasses::Default *renderPass)
+Pipeline::Pipeline(Symbios::Core::Context *context, Symbios::Graphics::RenderPasses::RenderPass *renderPass)
 {
 
     _context = context;
@@ -150,7 +150,7 @@ Default::Default(Symbios::Core::Context *context, Symbios::Graphics::RenderPasse
     }
 }
 
-Default::~Default()
+Pipeline::~Pipeline()
 {
     vkDestroyPipeline(_context->GetLogicalDevice(), pipeline, nullptr);
     vkDestroyPipelineLayout(_context->GetLogicalDevice(), pipelineLayout, nullptr);

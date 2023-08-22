@@ -2,6 +2,7 @@
 
 #include <vulkan/vulkan.hpp>
 #include "context.hpp"
+#include "commandbuffer.hpp"
 
 namespace Symbios
 {
@@ -9,11 +10,15 @@ namespace Symbios
     {
         namespace RenderPasses
         {
-            class Default
+            class RenderPass
             {
             public:
-                Default(Symbios::Core::Context *context);
-                ~Default();
+                RenderPass(Symbios::Core::Context *context);
+                ~RenderPass();
+
+                void Begin(Symbios::Graphics::CommandBuffers::CommandBuffer *commandBuffer, uint32_t imageIndex);
+                void End(Symbios::Graphics::CommandBuffers::CommandBuffer *commandBuffer);
+
                 void CreateFramebuffers();
 
                 VkRenderPass GetRenderPass() { return this->renderPass; };
@@ -22,10 +27,7 @@ namespace Symbios
             private:
                 Symbios::Core::Context * _context;
                 VkRenderPass renderPass;
-                // FrameBuffers
             };
         }
-
     }
-
 }
