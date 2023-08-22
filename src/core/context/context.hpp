@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vulkan/vulkan.hpp>
+
 #include "config.hpp"
 
 #ifdef BUILD_FOR_IOS
@@ -20,7 +22,12 @@
 #undef max
 #endif
 
-#include <vulkan/vulkan.hpp>
+#ifdef BUILD_FOR_LINUX
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+#endif
+
+
 #include <plog/Log.h>
 
 #include <iostream>
@@ -55,6 +62,10 @@ namespace Symbios
             Context(GLFWwindow *window);
 #endif
 
+#ifdef BUILD_FOR_LINUX
+            Context(GLFWwindow *window);
+#endif
+
             ~Context();
 
 #ifdef BUILD_FOR_IOS
@@ -68,6 +79,10 @@ namespace Symbios
 
 #ifdef BUILD_FOR_WINDOWS
             void CreateSurfaceWindows(GLFWwindow *window);
+#endif
+
+#ifdef BUILD_FOR_LINUX
+            void CreateSurfaceLinux(GLFWwindow *window);
 #endif
 
             // Getters
@@ -145,6 +160,10 @@ namespace Symbios
 #endif
 
 #ifdef BUILD_FOR_WINDOWS
+            VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities, GLFWwindow *window);
+            void CreateSwapChain(GLFWwindow *window);
+#endif
+#ifdef BUILD_FOR_LINUX
             VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities, GLFWwindow *window);
             void CreateSwapChain(GLFWwindow *window);
 #endif

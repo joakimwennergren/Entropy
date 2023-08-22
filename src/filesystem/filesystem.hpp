@@ -13,7 +13,7 @@ namespace Symbios
     {
         static std::string GetProjectBasePath()
         {
-            return std::filesystem::current_path().string() + "../";
+            return std::filesystem::current_path().string() + "/../";
         }
 
 #ifdef BUILD_FOR_MACOS

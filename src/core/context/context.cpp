@@ -26,6 +26,18 @@ Context::Context(GLFWwindow *window)
 }
 #endif
 
+#ifdef BUILD_FOR_LINUX
+Context::Context(GLFWwindow *window)
+{
+    this->CreateInstance();
+    this->CreateSurfaceLinux(window);
+    this->PickPhysicalDevice();
+    this->CreateLogicalDevice();
+    this->CreateSwapChain(window);
+    this->CreateImageViews();
+}
+#endif
+
 #ifdef BUILD_FOR_MACOS
 Context::Context(GLFWwindow *window)
 {
@@ -396,6 +408,16 @@ void Context::CreateSurfaceWindows(GLFWwindow *window)
 }
 #endif
 
+#ifdef BUILD_FOR_LINUX
+void Context::CreateSurfaceLinux(GLFWwindow *window)
+{
+    if (glfwCreateWindowSurface(this->_instance, window, nullptr, &this->_surface) != VK_SUCCESS)
+    {
+        throw std::runtime_error("failed to create window surface!");
+    }
+}
+#endif
+
 bool Context::CheckDeviceExtensionSupport(VkPhysicalDevice device)
 {
     uint32_t extensionCount;
@@ -468,7 +490,7 @@ VkPresentModeKHR Context::ChooseSwapPresentMode(const std::vector<VkPresentModeK
     return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-#ifdef BUILD_FOR_WINDOWS
+#if defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
 VkExtent2D Context::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities, GLFWwindow *window)
 {
     if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())

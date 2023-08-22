@@ -11,7 +11,7 @@
 #include <plog/Formatters/TxtFormatter.h>
 #include <plog/Appenders/ColorConsoleAppender.h>
 
-#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS)
+#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
 #include <GLFW/glfw3.h>
 #endif
 
@@ -30,7 +30,7 @@ public:
     void Run();
 
 private:
-#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS)
+#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
     GLFWwindow *_window;
 #endif
 

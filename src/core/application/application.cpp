@@ -216,7 +216,7 @@ Application::Application()
     static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
     plog::init(plog::verbose, &consoleAppender);
 
-#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS)
+#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
     // Initialize GLFW
     if (!glfwInit())
     {
@@ -237,8 +237,7 @@ Application::Application()
 
     // Create Vulkan context
     _context = new Symbios::Core::Context(_window);
-
-    /*
+    
 
     _renderPass = new Symbios::Graphics::RenderPasses::Default(_context);
 
@@ -259,7 +258,7 @@ Application::Application()
     {
         throw std::runtime_error("failed to create semaphores!");
     }
-    */
+
 
 #endif
 
@@ -291,11 +290,10 @@ Application::~Application()
  */
 void Application::Run()
 {
-#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS)
+#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
 
     while (!glfwWindowShouldClose(_window))
     {
-        /*
         vkWaitForFences(_context->GetLogicalDevice(), 1, &inFlightFence, VK_TRUE, UINT64_MAX);
 
         uint32_t imageIndex;
@@ -366,7 +364,6 @@ void Application::Run()
         vkQueuePresentKHR(_context->_presentQueue, &presentInfo);
 
         //vkResetFences(_context->GetLogicalDevice(), 1, &inFlightFence);
-        */
 
         glfwPollEvents();
     }

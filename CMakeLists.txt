@@ -129,7 +129,7 @@ if(APPLE)
     endif()
 endif()
 
-if(LINUX) 
+if(UNIX AND NOT APPLE)
     set(CMAKE_PLATFORM "BUILD_FOR_LINUX")
 endif()
 
