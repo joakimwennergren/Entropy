@@ -9,6 +9,7 @@
 #endif
 
 #ifdef BUILD_FOR_MACOS
+#include <vulkan/vulkan.hpp>
 #include <GLFW/glfw3.h>
 #endif
 
@@ -22,6 +23,7 @@
 #endif
 
 #ifdef BUILD_FOR_LINUX
+#include <vulkan/vulkan.hpp>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #endif
