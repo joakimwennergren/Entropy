@@ -30,6 +30,7 @@ namespace Symbios
                 }
                 return resourcePath;
             }
+            return "";
 #endif
         }
     }
