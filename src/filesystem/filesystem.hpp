@@ -15,12 +15,13 @@ namespace Symbios
         {
 
 #ifdef BUILD_FOR_WINDOWS
-            return std::filesystem::current_path().string() + "\\..";
+            return "../../";
 #endif
+
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
             return std::filesystem::current_path()
                        .string() +
-                   "/..";
+                   "../";
 #endif
 
 #ifdef BUILD_FOR_IOS

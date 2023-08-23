@@ -62,7 +62,7 @@ RenderPass::RenderPass(Symbios::Core::Context *context)
     renderPassInfo.dependencyCount = 1;
     renderPassInfo.pDependencies = &dependency;
 
-    if (vkCreateRenderPass(context->GetLogicalDevice(), &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
+    if (vkCreateRenderPass(context->GetLogicalDevice(), &renderPassInfo, nullptr, &this->_renderPass) != VK_SUCCESS)
     {
         PLOG_ERROR << "failed to create render pass!";
         exit(EXIT_FAILURE);
@@ -77,12 +77,12 @@ RenderPass::RenderPass(Symbios::Core::Context *context)
  */
 RenderPass::~RenderPass()
 {
-    for (auto framebuffer : swapChainFramebuffers)
+    for (auto framebuffer : this->_swapChainFramebuffers)
     {
         vkDestroyFramebuffer(_context->GetLogicalDevice(), framebuffer, nullptr);
     }
 
-    vkDestroyRenderPass(_context->GetLogicalDevice(), renderPass, nullptr);
+    vkDestroyRenderPass(_context->GetLogicalDevice(), this->_renderPass, nullptr);
 }
 
 /**
@@ -95,8 +95,8 @@ void RenderPass::Begin(Symbios::Graphics::CommandBuffers::CommandBuffer *command
 {
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    renderPassInfo.renderPass = renderPass;
-    renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex];
+    renderPassInfo.renderPass = this->_renderPass;
+    renderPassInfo.framebuffer = this->_swapChainFramebuffers[imageIndex];
 
     renderPassInfo.renderArea.offset = {0, 0};
     renderPassInfo.renderArea.extent = _context->GetSwapChainExtent();
@@ -124,7 +124,7 @@ void RenderPass::End(Symbios::Graphics::CommandBuffers::CommandBuffer *commandBu
  */
 void RenderPass::CreateFramebuffers()
 {
-    swapChainFramebuffers.resize(_context->GetSwapChainImageViews().size());
+    this->_swapChainFramebuffers.resize(_context->GetSwapChainImageViews().size());
 
     for (size_t i = 0; i < _context->GetSwapChainImageViews().size(); i++)
     {
@@ -133,14 +133,14 @@ void RenderPass::CreateFramebuffers()
 
         VkFramebufferCreateInfo framebufferInfo{};
         framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-        framebufferInfo.renderPass = renderPass;
+        framebufferInfo.renderPass = this->_renderPass;
         framebufferInfo.attachmentCount = 1;
         framebufferInfo.pAttachments = attachments;
         framebufferInfo.width = _context->GetSwapChainExtent().width;
         framebufferInfo.height = _context->GetSwapChainExtent().height;
         framebufferInfo.layers = 1;
 
-        if (vkCreateFramebuffer(_context->GetLogicalDevice(), &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS)
+        if (vkCreateFramebuffer(_context->GetLogicalDevice(), &framebufferInfo, nullptr, &this->_swapChainFramebuffers[i]) != VK_SUCCESS)
         {
             PLOG_ERROR << "Failed to create framebuffer!";
             exit(EXIT_FAILURE);

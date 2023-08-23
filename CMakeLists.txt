@@ -20,7 +20,6 @@ add_subdirectory(external/plog)
 add_executable(Symbios)
 
 target_sources(Symbios PRIVATE
-
     # Main entrypoint
     src/main.cpp
 
@@ -33,11 +32,6 @@ target_sources(Symbios PRIVATE
     src/graphics/renderpasses/renderpass.cpp
     src/graphics/commandbuffers/commandbuffer.cpp
     src/graphics/renderers/renderer.cpp
-
-    # Filesystem
-    src/filesystem/filesystem.cpp
-
-
 )
 
 if(NOT XCODE)

@@ -4,6 +4,9 @@
 #include "context.hpp"
 #include "commandbuffer.hpp"
 
+using namespace Symbios::Core;
+using namespace Symbios::Graphics::CommandBuffers;
+
 namespace Symbios
 {
     namespace Graphics
@@ -13,20 +16,52 @@ namespace Symbios
             class RenderPass
             {
             public:
-                RenderPass(Symbios::Core::Context *context);
+                /**
+                 * @brief Construct a new Render Pass object
+                 *
+                 */
+                RenderPass() = default;
+
+                /**
+                 * @brief Construct a new Render Pass object
+                 *
+                 * @param context
+                 */
+                RenderPass(Context *context);
+
+                /**
+                 * @brief Destroy the Render Pass object
+                 *
+                 */
                 ~RenderPass();
 
-                void Begin(Symbios::Graphics::CommandBuffers::CommandBuffer *commandBuffer, uint32_t imageIndex);
-                void End(Symbios::Graphics::CommandBuffers::CommandBuffer *commandBuffer);
+                /**
+                 * @brief
+                 *
+                 * @param commandBuffer
+                 * @param imageIndex
+                 */
+                void Begin(CommandBuffer *commandBuffer, uint32_t imageIndex);
 
-                void CreateFramebuffers();
+                /**
+                 * @brief
+                 *
+                 * @param commandBuffer
+                 */
+                void End(CommandBuffer *commandBuffer);
 
-                VkRenderPass GetRenderPass() { return this->renderPass; };
-                std::vector<VkFramebuffer> swapChainFramebuffers;
+                /**
+                 * @brief Get the Render Pass object
+                 *
+                 * @return VkRenderPass
+                 */
+                VkRenderPass GetRenderPass() { return this->_renderPass; };
 
             private:
-                Symbios::Core::Context * _context;
-                VkRenderPass renderPass;
+                void CreateFramebuffers();
+                Context *_context;
+                VkRenderPass _renderPass;
+                std::vector<VkFramebuffer> _swapChainFramebuffers;
             };
         }
     }
