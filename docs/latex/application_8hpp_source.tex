@@ -1,0 +1,207 @@
+\hypertarget{application_8hpp_source}{}\doxysection{application.\+hpp}
+\label{application_8hpp_source}\index{src/core/application/application.hpp@{src/core/application/application.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 }
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}config.hpp"{}}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{context_8hpp}{context.hpp}}"{}}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include "{}renderer.hpp"{}}}
+\DoxyCodeLine{6 }
+\DoxyCodeLine{7 \textcolor{preprocessor}{\#include <plog/Log.h>}}
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#include <plog/Init.h>}}
+\DoxyCodeLine{9 \textcolor{preprocessor}{\#include <plog/Formatters/TxtFormatter.h>}}
+\DoxyCodeLine{10 \textcolor{preprocessor}{\#include <plog/Appenders/ColorConsoleAppender.h>}}
+\DoxyCodeLine{11 }
+\DoxyCodeLine{12 \textcolor{preprocessor}{\#if defined(BUILD\_FOR\_MACOS) || defined(BUILD\_FOR\_WINDOWS) || defined(BUILD\_FOR\_LINUX)}}
+\DoxyCodeLine{13 }
+\DoxyCodeLine{14 \textcolor{preprocessor}{\#include <GLFW/glfw3.h>}}
+\DoxyCodeLine{15 }
+\DoxyCodeLine{16 \textcolor{keyword}{using namespace }Symbios::Core;}
+\DoxyCodeLine{17 \textcolor{keyword}{using namespace }Symbios::Graphics::Renderers;}
+\DoxyCodeLine{18 }
+\DoxyCodeLine{19 \textcolor{keyword}{static} \textcolor{keywordtype}{void} framebufferResizeCallback(GLFWwindow *window, \textcolor{keywordtype}{int} width, \textcolor{keywordtype}{int} height);}
+\DoxyCodeLine{20 }
+\DoxyCodeLine{25 \textcolor{keyword}{class }Application}
+\DoxyCodeLine{26 \{}
+\DoxyCodeLine{27 \textcolor{keyword}{public}:}
+\DoxyCodeLine{32     Application()}
+\DoxyCodeLine{33     \{}
+\DoxyCodeLine{34         \textcolor{keyword}{static} plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;}
+\DoxyCodeLine{35         plog::init(plog::verbose, \&consoleAppender);}
+\DoxyCodeLine{36 }
+\DoxyCodeLine{37         \textcolor{keywordflow}{if} (!glfwInit())}
+\DoxyCodeLine{38         \{}
+\DoxyCodeLine{39             PLOG\_FATAL << \textcolor{stringliteral}{"{}Could not initialize GLFW library!"{}};}
+\DoxyCodeLine{40             exit(EXIT\_FAILURE);}
+\DoxyCodeLine{41         \}}
+\DoxyCodeLine{42 }
+\DoxyCodeLine{43         glfwWindowHint(GLFW\_CLIENT\_API, GLFW\_NO\_API);}
+\DoxyCodeLine{44         \_window = glfwCreateWindow(640, 480, \textcolor{stringliteral}{"{}Symbios dev application"{}}, NULL, NULL);}
+\DoxyCodeLine{45 }
+\DoxyCodeLine{46         \textcolor{keywordflow}{if} (!\_window)}
+\DoxyCodeLine{47         \{}
+\DoxyCodeLine{48             PLOG\_FATAL << \textcolor{stringliteral}{"{}Could not create window!"{}};}
+\DoxyCodeLine{49             glfwTerminate();}
+\DoxyCodeLine{50             exit(EXIT\_FAILURE);}
+\DoxyCodeLine{51         \}}
+\DoxyCodeLine{52         glfwSetWindowUserPointer(\_window, \textcolor{keyword}{this});}
+\DoxyCodeLine{53 }
+\DoxyCodeLine{54         glfwSetFramebufferSizeCallback(\_window, framebufferResizeCallback);}
+\DoxyCodeLine{55 }
+\DoxyCodeLine{56         \_context = std::make\_shared<Context>(\_window);}
+\DoxyCodeLine{57         \_renderer = std::make\_shared<Renderer>(\_context);}
+\DoxyCodeLine{58     \}}
+\DoxyCodeLine{59 }
+\DoxyCodeLine{64     \string~Application()}
+\DoxyCodeLine{65     \{}
+\DoxyCodeLine{66         glfwDestroyWindow(\_window);}
+\DoxyCodeLine{67         glfwTerminate();}
+\DoxyCodeLine{68     \}}
+\DoxyCodeLine{69 }
+\DoxyCodeLine{70     std::shared\_ptr<Renderer> GetRenderer() \{ \textcolor{keywordflow}{return} this-\/>\_renderer; \};}
+\DoxyCodeLine{71 }
+\DoxyCodeLine{72 \textcolor{keyword}{public}:}
+\DoxyCodeLine{77     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} Run()}
+\DoxyCodeLine{78     \{}
+\DoxyCodeLine{79         \textcolor{keywordflow}{while} (!glfwWindowShouldClose(\_window))}
+\DoxyCodeLine{80         \{}
+\DoxyCodeLine{81             glfwPollEvents();}
+\DoxyCodeLine{82             \_renderer-\/>Render();}
+\DoxyCodeLine{83         \}}
+\DoxyCodeLine{84     \}}
+\DoxyCodeLine{85 }
+\DoxyCodeLine{86 \textcolor{keyword}{private}:}
+\DoxyCodeLine{87     std::shared\_ptr<Context> \_context;}
+\DoxyCodeLine{88     std::shared\_ptr<Renderer> \_renderer;}
+\DoxyCodeLine{89     GLFWwindow *\_window;}
+\DoxyCodeLine{90 }
+\DoxyCodeLine{91 \textcolor{keyword}{private}:}
+\DoxyCodeLine{92 \};}
+\DoxyCodeLine{93 }
+\DoxyCodeLine{94 \textcolor{keyword}{static} \textcolor{keywordtype}{void} framebufferResizeCallback(GLFWwindow *window, \textcolor{keywordtype}{int} width, \textcolor{keywordtype}{int} height)}
+\DoxyCodeLine{95 \{}
+\DoxyCodeLine{96     \textcolor{keyword}{auto} app = \textcolor{keyword}{reinterpret\_cast<}Application *\textcolor{keyword}{>}(glfwGetWindowUserPointer(window));}
+\DoxyCodeLine{97     \textcolor{keywordflow}{if} (app != \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{98     \{}
+\DoxyCodeLine{99         app-\/>GetRenderer()-\/>FrameBufferResized();}
+\DoxyCodeLine{100     \}}
+\DoxyCodeLine{101 \}}
+\DoxyCodeLine{102 }
+\DoxyCodeLine{103 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{104 }
+\DoxyCodeLine{105 \textcolor{preprocessor}{\#ifdef BUILD\_FOR\_IOS}}
+\DoxyCodeLine{106 }
+\DoxyCodeLine{107 \textcolor{preprocessor}{\#include <Metal/Metal.hpp>}}
+\DoxyCodeLine{108 \textcolor{preprocessor}{\#include <UIKit/UIKit.hpp>}}
+\DoxyCodeLine{109 \textcolor{preprocessor}{\#include <MetalKit/MetalKit.hpp>}}
+\DoxyCodeLine{110 }
+\DoxyCodeLine{111 \textcolor{preprocessor}{\#include "{}renderer.hpp"{}}}
+\DoxyCodeLine{112 }
+\DoxyCodeLine{113 \textcolor{keyword}{using namespace }Symbios::Graphics::Renderers;}
+\DoxyCodeLine{114 }
+\DoxyCodeLine{115 \textcolor{keyword}{class }MTKViewDelegate : \textcolor{keyword}{public} MTK::ViewDelegate}
+\DoxyCodeLine{116 \{}
+\DoxyCodeLine{117 \textcolor{keyword}{public}:}
+\DoxyCodeLine{122     MTKViewDelegate() : MTK::ViewDelegate()}
+\DoxyCodeLine{123     \{}
+\DoxyCodeLine{124     \}}
+\DoxyCodeLine{125 }
+\DoxyCodeLine{126     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} SetRenderer(std::shared\_ptr<Renderer> renderer)}
+\DoxyCodeLine{127     \{}
+\DoxyCodeLine{128         \_renderer = renderer;}
+\DoxyCodeLine{129     \}}
+\DoxyCodeLine{130 }
+\DoxyCodeLine{135     \textcolor{keyword}{virtual} \string~MTKViewDelegate()\textcolor{keyword}{ override}}
+\DoxyCodeLine{136 \textcolor{keyword}{    }\{}
+\DoxyCodeLine{137     \}}
+\DoxyCodeLine{138 }
+\DoxyCodeLine{139 \textcolor{keyword}{private}:}
+\DoxyCodeLine{145     \textcolor{keyword}{inline} \textcolor{keyword}{virtual} \textcolor{keywordtype}{void} drawInMTKView(MTK::View *pView)\textcolor{keyword}{ override}}
+\DoxyCodeLine{146 \textcolor{keyword}{    }\{}
+\DoxyCodeLine{147         \_renderer-\/>Render();}
+\DoxyCodeLine{148     \}}
+\DoxyCodeLine{149 }
+\DoxyCodeLine{150     std::shared\_ptr<Renderer> \_renderer;}
+\DoxyCodeLine{151 \};}
+\DoxyCodeLine{152 }
+\DoxyCodeLine{153 \textcolor{keyword}{class }Application : \textcolor{keyword}{public} UI::ApplicationDelegate}
+\DoxyCodeLine{154 \{}
+\DoxyCodeLine{155 \textcolor{keyword}{public}:}
+\DoxyCodeLine{160     Application()}
+\DoxyCodeLine{161     \{}
+\DoxyCodeLine{162         \textcolor{keyword}{static} plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;}
+\DoxyCodeLine{163         plog::init(plog::verbose, \&consoleAppender);}
+\DoxyCodeLine{164 }
+\DoxyCodeLine{165         this-\/>\_autoreleasePool = NS::AutoreleasePool::alloc()-\/>init();}
+\DoxyCodeLine{166 }
+\DoxyCodeLine{167         UI::ApplicationMain(0, 0, \textcolor{keyword}{this});}
+\DoxyCodeLine{168     \}}
+\DoxyCodeLine{169 }
+\DoxyCodeLine{174     \string~Application()}
+\DoxyCodeLine{175     \{}
+\DoxyCodeLine{176         \_pMtkView-\/>release();}
+\DoxyCodeLine{177         \_pWindow-\/>release();}
+\DoxyCodeLine{178         \_pViewController-\/>release();}
+\DoxyCodeLine{179         \_pDevice-\/>release();}
+\DoxyCodeLine{180         \textcolor{keyword}{delete} \_pViewDelegate;}
+\DoxyCodeLine{181         this-\/>\_autoreleasePool-\/>release();}
+\DoxyCodeLine{182     \}}
+\DoxyCodeLine{183 }
+\DoxyCodeLine{192     \textcolor{keyword}{inline} \textcolor{keywordtype}{bool} applicationDidFinishLaunching(UI::Application *pApp, NS::Value *options)\textcolor{keyword}{ override}}
+\DoxyCodeLine{193 \textcolor{keyword}{    }\{}
+\DoxyCodeLine{194         CGRect frame = UI::Screen::mainScreen()-\/>bounds();}
+\DoxyCodeLine{195 }
+\DoxyCodeLine{196         \_pWindow = UI::Window::alloc()-\/>init(frame);}
+\DoxyCodeLine{197 }
+\DoxyCodeLine{198         \_pViewController = UI::ViewController::alloc()-\/>init(nil, nil);}
+\DoxyCodeLine{199 }
+\DoxyCodeLine{200         \_pDevice = MTL::CreateSystemDefaultDevice();}
+\DoxyCodeLine{201 }
+\DoxyCodeLine{202         \_pMtkView = MTK::View::alloc()-\/>init(frame, \_pDevice);}
+\DoxyCodeLine{203         \_pMtkView-\/>setColorPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm\_sRGB);}
+\DoxyCodeLine{204         \_pMtkView-\/>setClearColor(MTL::ClearColor::Make(1.0, 1.0, 1.0, 1.0));}
+\DoxyCodeLine{205 }
+\DoxyCodeLine{206         \_pViewDelegate = \textcolor{keyword}{new} MTKViewDelegate();}
+\DoxyCodeLine{207         \_pMtkView-\/>setDelegate(\_pViewDelegate);}
+\DoxyCodeLine{208 }
+\DoxyCodeLine{209         UI::View *mtkView = (UI::View *)\_pMtkView;}
+\DoxyCodeLine{210         mtkView-\/>setAutoresizingMask(UI::ViewAutoresizingFlexibleWidth | UI::ViewAutoresizingFlexibleHeight);}
+\DoxyCodeLine{211         \_pViewController-\/>view()-\/>addSubview(mtkView);}
+\DoxyCodeLine{212         \_pWindow-\/>setRootViewController(\_pViewController);}
+\DoxyCodeLine{213 }
+\DoxyCodeLine{214         \_pWindow-\/>makeKeyAndVisible();}
+\DoxyCodeLine{215 }
+\DoxyCodeLine{216         CA::MetalLayer *layer = \_pMtkView-\/>currentDrawable()-\/>layer();}
+\DoxyCodeLine{217 }
+\DoxyCodeLine{218         \_context = std::make\_shared<Context>(layer, frame);}
+\DoxyCodeLine{219 }
+\DoxyCodeLine{220         \textcolor{keyword}{auto} renderer = std::make\_shared<Renderer>(\_context);}
+\DoxyCodeLine{221 }
+\DoxyCodeLine{222         \_pViewDelegate-\/>SetRenderer(renderer);}
+\DoxyCodeLine{223 }
+\DoxyCodeLine{224         \textcolor{keywordflow}{return} \textcolor{keyword}{true};}
+\DoxyCodeLine{225     \}}
+\DoxyCodeLine{226 }
+\DoxyCodeLine{232     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} applicationWillTerminate(UI::Application *pApp)\textcolor{keyword}{ override}}
+\DoxyCodeLine{233 \textcolor{keyword}{    }\{}
+\DoxyCodeLine{234     \}}
+\DoxyCodeLine{235 }
+\DoxyCodeLine{236 \textcolor{keyword}{public}:}
+\DoxyCodeLine{241     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} Run()}
+\DoxyCodeLine{242     \{}
+\DoxyCodeLine{243     \}}
+\DoxyCodeLine{244 }
+\DoxyCodeLine{245 \textcolor{keyword}{private}:}
+\DoxyCodeLine{246     std::shared\_ptr<Context> \_context;}
+\DoxyCodeLine{247     UI::Window *\_pWindow = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{248     UI::ViewController *\_pViewController = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{249     MTK::View *\_pMtkView = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{250     MTL::Device *\_pDevice = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{251     MTKViewDelegate *\_pViewDelegate = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{252     NS::AutoreleasePool *\_autoreleasePool = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{253 \};}
+\DoxyCodeLine{254 }
+\DoxyCodeLine{255 \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

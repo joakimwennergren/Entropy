@@ -1,0 +1,196 @@
+\hypertarget{class_symbios_1_1_core_1_1_context}{}\doxysection{Symbios\+::Core\+::Context Class Reference}
+\label{class_symbios_1_1_core_1_1_context}\index{Symbios::Core::Context@{Symbios::Core::Context}}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{struct_symbios_1_1_core_1_1_context_1_1_queue_family_indices}{Queue\+Family\+Indices}}
+\item 
+struct \mbox{\hyperlink{struct_symbios_1_1_core_1_1_context_1_1_swap_chain_support_details}{Swap\+Chain\+Support\+Details}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_symbios_1_1_core_1_1_context_a77ffd54d32260f2caf6f4db46e73f80e}\label{class_symbios_1_1_core_1_1_context_a77ffd54d32260f2caf6f4db46e73f80e}} 
+{\bfseries Context} ()=default
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{class_symbios_1_1_core_1_1_context}{Context}} object. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_symbios_1_1_core_1_1_context_a2d34e4556448e40693f61d15e091b604}{$\sim$\+Context}} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{class_symbios_1_1_core_1_1_context}{Context}} object. \end{DoxyCompactList}\item 
+Vk\+Device \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_a9174dca2c287c141055cb0f196ec9d74}{Get\+Logical\+Device}} ()
+\begin{DoxyCompactList}\small\item\em Get the Logical Device object. \end{DoxyCompactList}\item 
+Vk\+Swapchain\+KHR \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_ac03b9907bca6f8705f89b60ead1fb75a}{Get\+Swap\+Chain}} ()
+\begin{DoxyCompactList}\small\item\em Get the Swap Chain object. \end{DoxyCompactList}\item 
+Vk\+Extent2D \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_a707c7a7bd5c6835dcced262dfdbb95d1}{Get\+Swap\+Chain\+Extent}} ()
+\begin{DoxyCompactList}\small\item\em Get the Swap Chain Extent object. \end{DoxyCompactList}\item 
+Vk\+Format \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_a928745782abdb5b536be1e1db28ed768}{Get\+Swap\+Chain\+Image\+Format}} ()
+\begin{DoxyCompactList}\small\item\em Get the Swap Chain Image Format object. \end{DoxyCompactList}\item 
+Vk\+Physical\+Device \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_acf30044fab3662021971d1c37dc6f4dd}{Get\+Physical\+Device}} ()
+\begin{DoxyCompactList}\small\item\em Get the Physical Device object. \end{DoxyCompactList}\item 
+std\+::vector$<$ Vk\+Image\+View $>$ \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_aed78e4e1b12b35ebd0237382ab3241b3}{Get\+Swap\+Chain\+Image\+Views}} ()
+\begin{DoxyCompactList}\small\item\em Get the Swap Chain Image Views object. \end{DoxyCompactList}\item 
+Vk\+Queue \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_a4ebeef7eaa8f9dfb925c7bf70e9b5372}{Get\+Graphics\+Queue}} ()
+\begin{DoxyCompactList}\small\item\em Get the Graphics Queue object. \end{DoxyCompactList}\item 
+Vk\+Queue \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_a882848b738af31e90580f13a32eb40d8}{Get\+Present\+Queue}} ()
+\begin{DoxyCompactList}\small\item\em Get the Present Queue object. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{struct_symbios_1_1_core_1_1_context_1_1_queue_family_indices}{Queue\+Family\+Indices}} \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_af168a04d351d0fb697543bb0eff522b2}{Find\+Queue\+Families}} (Vk\+Physical\+Device device)
+\item 
+void \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_a46ce9a99d0fe3f4cf08ad94ea6d20c6a}{Recreate\+Swap\+Chain}} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_symbios_1_1_core_1_1_context_a2d34e4556448e40693f61d15e091b604}\label{class_symbios_1_1_core_1_1_context_a2d34e4556448e40693f61d15e091b604}} 
+\index{Symbios::Core::Context@{Symbios::Core::Context}!````~Context@{$\sim$Context}}
+\index{````~Context@{$\sim$Context}!Symbios::Core::Context@{Symbios::Core::Context}}
+\doxysubsubsection{\texorpdfstring{$\sim$Context()}{~Context()}}
+{\footnotesize\ttfamily Context\+::$\sim$\+Context (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Destroy the \mbox{\hyperlink{class_symbios_1_1_core_1_1_context}{Context}} object. 
+
+Destroy the \mbox{\hyperlink{class_symbios_1_1_core_1_1_context}{Context}}\+:\+: \mbox{\hyperlink{class_symbios_1_1_core_1_1_context}{Context}} object. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_symbios_1_1_core_1_1_context_af168a04d351d0fb697543bb0eff522b2}\label{class_symbios_1_1_core_1_1_context_af168a04d351d0fb697543bb0eff522b2}} 
+\index{Symbios::Core::Context@{Symbios::Core::Context}!FindQueueFamilies@{FindQueueFamilies}}
+\index{FindQueueFamilies@{FindQueueFamilies}!Symbios::Core::Context@{Symbios::Core::Context}}
+\doxysubsubsection{\texorpdfstring{FindQueueFamilies()}{FindQueueFamilies()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{struct_symbios_1_1_core_1_1_context_1_1_queue_family_indices}{Context\+::\+Queue\+Family\+Indices}} Context\+::\+Find\+Queue\+Families (\begin{DoxyParamCaption}\item[{Vk\+Physical\+Device}]{device }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em device} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{struct_symbios_1_1_core_1_1_context_1_1_queue_family_indices}{Queue\+Family\+Indices}}
+\end{DoxyReturn}
+
+\begin{DoxyParams}{Parameters}
+{\em device} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{struct_symbios_1_1_core_1_1_context_1_1_queue_family_indices}{Context\+::\+Queue\+Family\+Indices}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_symbios_1_1_core_1_1_context_a4ebeef7eaa8f9dfb925c7bf70e9b5372}\label{class_symbios_1_1_core_1_1_context_a4ebeef7eaa8f9dfb925c7bf70e9b5372}} 
+\index{Symbios::Core::Context@{Symbios::Core::Context}!GetGraphicsQueue@{GetGraphicsQueue}}
+\index{GetGraphicsQueue@{GetGraphicsQueue}!Symbios::Core::Context@{Symbios::Core::Context}}
+\doxysubsubsection{\texorpdfstring{GetGraphicsQueue()}{GetGraphicsQueue()}}
+{\footnotesize\ttfamily Vk\+Queue Symbios\+::\+Core\+::\+Context\+::\+Get\+Graphics\+Queue (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the Graphics Queue object. 
+
+\begin{DoxyReturn}{Returns}
+Vk\+Queue 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_symbios_1_1_core_1_1_context_a9174dca2c287c141055cb0f196ec9d74}\label{class_symbios_1_1_core_1_1_context_a9174dca2c287c141055cb0f196ec9d74}} 
+\index{Symbios::Core::Context@{Symbios::Core::Context}!GetLogicalDevice@{GetLogicalDevice}}
+\index{GetLogicalDevice@{GetLogicalDevice}!Symbios::Core::Context@{Symbios::Core::Context}}
+\doxysubsubsection{\texorpdfstring{GetLogicalDevice()}{GetLogicalDevice()}}
+{\footnotesize\ttfamily Vk\+Device Symbios\+::\+Core\+::\+Context\+::\+Get\+Logical\+Device (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the Logical Device object. 
+
+\begin{DoxyReturn}{Returns}
+Vk\+Device 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_symbios_1_1_core_1_1_context_acf30044fab3662021971d1c37dc6f4dd}\label{class_symbios_1_1_core_1_1_context_acf30044fab3662021971d1c37dc6f4dd}} 
+\index{Symbios::Core::Context@{Symbios::Core::Context}!GetPhysicalDevice@{GetPhysicalDevice}}
+\index{GetPhysicalDevice@{GetPhysicalDevice}!Symbios::Core::Context@{Symbios::Core::Context}}
+\doxysubsubsection{\texorpdfstring{GetPhysicalDevice()}{GetPhysicalDevice()}}
+{\footnotesize\ttfamily Vk\+Physical\+Device Symbios\+::\+Core\+::\+Context\+::\+Get\+Physical\+Device (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the Physical Device object. 
+
+\begin{DoxyReturn}{Returns}
+Vk\+Physical\+Device 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_symbios_1_1_core_1_1_context_a882848b738af31e90580f13a32eb40d8}\label{class_symbios_1_1_core_1_1_context_a882848b738af31e90580f13a32eb40d8}} 
+\index{Symbios::Core::Context@{Symbios::Core::Context}!GetPresentQueue@{GetPresentQueue}}
+\index{GetPresentQueue@{GetPresentQueue}!Symbios::Core::Context@{Symbios::Core::Context}}
+\doxysubsubsection{\texorpdfstring{GetPresentQueue()}{GetPresentQueue()}}
+{\footnotesize\ttfamily Vk\+Queue Symbios\+::\+Core\+::\+Context\+::\+Get\+Present\+Queue (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the Present Queue object. 
+
+\begin{DoxyReturn}{Returns}
+Vk\+Queue 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_symbios_1_1_core_1_1_context_ac03b9907bca6f8705f89b60ead1fb75a}\label{class_symbios_1_1_core_1_1_context_ac03b9907bca6f8705f89b60ead1fb75a}} 
+\index{Symbios::Core::Context@{Symbios::Core::Context}!GetSwapChain@{GetSwapChain}}
+\index{GetSwapChain@{GetSwapChain}!Symbios::Core::Context@{Symbios::Core::Context}}
+\doxysubsubsection{\texorpdfstring{GetSwapChain()}{GetSwapChain()}}
+{\footnotesize\ttfamily Vk\+Swapchain\+KHR Symbios\+::\+Core\+::\+Context\+::\+Get\+Swap\+Chain (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the Swap Chain object. 
+
+\begin{DoxyReturn}{Returns}
+Vk\+Swapchain\+KHR 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_symbios_1_1_core_1_1_context_a707c7a7bd5c6835dcced262dfdbb95d1}\label{class_symbios_1_1_core_1_1_context_a707c7a7bd5c6835dcced262dfdbb95d1}} 
+\index{Symbios::Core::Context@{Symbios::Core::Context}!GetSwapChainExtent@{GetSwapChainExtent}}
+\index{GetSwapChainExtent@{GetSwapChainExtent}!Symbios::Core::Context@{Symbios::Core::Context}}
+\doxysubsubsection{\texorpdfstring{GetSwapChainExtent()}{GetSwapChainExtent()}}
+{\footnotesize\ttfamily Vk\+Extent2D Symbios\+::\+Core\+::\+Context\+::\+Get\+Swap\+Chain\+Extent (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the Swap Chain Extent object. 
+
+\begin{DoxyReturn}{Returns}
+Vk\+Extent2D 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_symbios_1_1_core_1_1_context_a928745782abdb5b536be1e1db28ed768}\label{class_symbios_1_1_core_1_1_context_a928745782abdb5b536be1e1db28ed768}} 
+\index{Symbios::Core::Context@{Symbios::Core::Context}!GetSwapChainImageFormat@{GetSwapChainImageFormat}}
+\index{GetSwapChainImageFormat@{GetSwapChainImageFormat}!Symbios::Core::Context@{Symbios::Core::Context}}
+\doxysubsubsection{\texorpdfstring{GetSwapChainImageFormat()}{GetSwapChainImageFormat()}}
+{\footnotesize\ttfamily Vk\+Format Symbios\+::\+Core\+::\+Context\+::\+Get\+Swap\+Chain\+Image\+Format (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the Swap Chain Image Format object. 
+
+\begin{DoxyReturn}{Returns}
+Vk\+Format 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_symbios_1_1_core_1_1_context_aed78e4e1b12b35ebd0237382ab3241b3}\label{class_symbios_1_1_core_1_1_context_aed78e4e1b12b35ebd0237382ab3241b3}} 
+\index{Symbios::Core::Context@{Symbios::Core::Context}!GetSwapChainImageViews@{GetSwapChainImageViews}}
+\index{GetSwapChainImageViews@{GetSwapChainImageViews}!Symbios::Core::Context@{Symbios::Core::Context}}
+\doxysubsubsection{\texorpdfstring{GetSwapChainImageViews()}{GetSwapChainImageViews()}}
+{\footnotesize\ttfamily std\+::vector$<$ Vk\+Image\+View $>$ Symbios\+::\+Core\+::\+Context\+::\+Get\+Swap\+Chain\+Image\+Views (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the Swap Chain Image Views object. 
+
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$\+Vk\+Image\+View$>$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_symbios_1_1_core_1_1_context_a46ce9a99d0fe3f4cf08ad94ea6d20c6a}\label{class_symbios_1_1_core_1_1_context_a46ce9a99d0fe3f4cf08ad94ea6d20c6a}} 
+\index{Symbios::Core::Context@{Symbios::Core::Context}!RecreateSwapChain@{RecreateSwapChain}}
+\index{RecreateSwapChain@{RecreateSwapChain}!Symbios::Core::Context@{Symbios::Core::Context}}
+\doxysubsubsection{\texorpdfstring{RecreateSwapChain()}{RecreateSwapChain()}}
+{\footnotesize\ttfamily void Context\+::\+Recreate\+Swap\+Chain (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em window} & \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/core/context/\mbox{\hyperlink{context_8hpp}{context.\+hpp}}\item 
+src/core/context/context.\+cpp\end{DoxyCompactItemize}

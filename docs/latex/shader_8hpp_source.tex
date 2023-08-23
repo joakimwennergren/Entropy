@@ -1,0 +1,52 @@
+\hypertarget{shader_8hpp_source}{}\doxysection{shader.\+hpp}
+\label{shader_8hpp_source}\index{src/graphics/shaders/shader.hpp@{src/graphics/shaders/shader.hpp}}
+\mbox{\hyperlink{shader_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 }
+\DoxyCodeLine{12 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{13 }
+\DoxyCodeLine{14 \textcolor{preprocessor}{\#include <fstream>}}
+\DoxyCodeLine{15 }
+\DoxyCodeLine{16 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{context_8hpp}{context.hpp}}"{}}}
+\DoxyCodeLine{17 }
+\DoxyCodeLine{18 \textcolor{keyword}{using namespace }Symbios::Core;}
+\DoxyCodeLine{19 }
+\DoxyCodeLine{20 \textcolor{keyword}{namespace }Symbios}
+\DoxyCodeLine{21 \{}
+\DoxyCodeLine{22     \textcolor{keyword}{namespace }Graphics}
+\DoxyCodeLine{23     \{}
+\DoxyCodeLine{24         \textcolor{keyword}{namespace }Shaders}
+\DoxyCodeLine{25         \{}
+\DoxyCodeLine{26             \textcolor{keyword}{class }\mbox{\hyperlink{class_symbios_1_1_graphics_1_1_shaders_1_1_shader}{Shader}}}
+\DoxyCodeLine{27             \{}
+\DoxyCodeLine{28             \textcolor{keyword}{public}:}
+\DoxyCodeLine{33                 \mbox{\hyperlink{class_symbios_1_1_graphics_1_1_shaders_1_1_shader_a04ba275e8052a6a88b75958bb3685bba}{Shader}}() = \textcolor{keywordflow}{default};}
+\DoxyCodeLine{41                 \mbox{\hyperlink{class_symbios_1_1_graphics_1_1_shaders_1_1_shader_a04ba275e8052a6a88b75958bb3685bba}{Shader}}(std::shared\_ptr<Context> context, \textcolor{keyword}{const} std::string vert, \textcolor{keyword}{const} std::string frag);}
+\DoxyCodeLine{42 }
+\DoxyCodeLine{47                 \mbox{\hyperlink{class_symbios_1_1_graphics_1_1_shaders_1_1_shader_aff01df87e8a102f270b5b135a295e59d}{\string~Shader}}();}
+\DoxyCodeLine{48 }
+\DoxyCodeLine{54                 \textcolor{keyword}{inline} std::vector<char> \mbox{\hyperlink{class_symbios_1_1_graphics_1_1_shaders_1_1_shader_a8bb312ee9ca22db84d3971a7bcbafc40}{GetVertCode}}() \{ \textcolor{keywordflow}{return} this-\/>\_vertCode; \};}
+\DoxyCodeLine{55 }
+\DoxyCodeLine{61                 \textcolor{keyword}{inline} std::vector<char> \mbox{\hyperlink{class_symbios_1_1_graphics_1_1_shaders_1_1_shader_a02af2cc4e5a7328261c8d62d2dbbdaec}{GetFragCode}}() \{ \textcolor{keywordflow}{return} this-\/>\_fragCode; \};}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{68                 \textcolor{keyword}{inline} VkShaderModule \mbox{\hyperlink{class_symbios_1_1_graphics_1_1_shaders_1_1_shader_aac5677f72dad75258c75ecb04ea5eb41}{GetVertShaderModule}}() \{ \textcolor{keywordflow}{return} this-\/>\_shaderModuleVert; \};}
+\DoxyCodeLine{69 }
+\DoxyCodeLine{75                 \textcolor{keyword}{inline} VkShaderModule \mbox{\hyperlink{class_symbios_1_1_graphics_1_1_shaders_1_1_shader_a1def24e432042d25fd5af94a7b88e2d3}{GetFragShaderModule}}() \{ \textcolor{keywordflow}{return} this-\/>\_shaderModuleFrag; \};}
+\DoxyCodeLine{76 }
+\DoxyCodeLine{77             \textcolor{keyword}{private}:}
+\DoxyCodeLine{84                 std::vector<char> ReadFile(std::string filename);}
+\DoxyCodeLine{85 }
+\DoxyCodeLine{92                 VkShaderModule BuildShader(std::vector<char> code);}
+\DoxyCodeLine{93 }
+\DoxyCodeLine{94             \textcolor{keyword}{private}:}
+\DoxyCodeLine{95                 std::shared\_ptr<Context> \_context;}
+\DoxyCodeLine{96                 std::vector<char> \_vertCode;}
+\DoxyCodeLine{97                 std::vector<char> \_fragCode;}
+\DoxyCodeLine{98                 VkShaderModule \_shaderModuleVert;}
+\DoxyCodeLine{99                 VkShaderModule \_shaderModuleFrag;}
+\DoxyCodeLine{100             \};}
+\DoxyCodeLine{101         \}}
+\DoxyCodeLine{102     \}}
+\DoxyCodeLine{103 \}}
+
+\end{DoxyCode}

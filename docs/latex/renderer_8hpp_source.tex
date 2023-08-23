@@ -1,0 +1,68 @@
+\hypertarget{renderer_8hpp_source}{}\doxysection{renderer.\+hpp}
+\label{renderer_8hpp_source}\index{src/graphics/renderers/renderer.hpp@{src/graphics/renderers/renderer.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 }
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{context_8hpp}{context.hpp}}"{}}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}renderpass.hpp"{}}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{pipeline_8hpp}{pipeline.hpp}}"{}}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#include "{}vertex.hpp"{}}}
+\DoxyCodeLine{7 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{buffer_8hpp}{buffer.hpp}}"{}}}
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{commandbuffer_8hpp}{commandbuffer.hpp}}"{}}}
+\DoxyCodeLine{9 }
+\DoxyCodeLine{10 \textcolor{keyword}{using namespace }Symbios::Core;}
+\DoxyCodeLine{11 \textcolor{keyword}{using namespace }Symbios::Graphics::Buffers;}
+\DoxyCodeLine{12 \textcolor{keyword}{using namespace }Symbios::Graphics::Pipelines;}
+\DoxyCodeLine{13 \textcolor{keyword}{using namespace }Symbios::Graphics::RenderPasses;}
+\DoxyCodeLine{14 \textcolor{keyword}{using namespace }Symbios::Graphics::CommandBuffers;}
+\DoxyCodeLine{15 }
+\DoxyCodeLine{16 \textcolor{keyword}{namespace }Symbios}
+\DoxyCodeLine{17 \{}
+\DoxyCodeLine{18     \textcolor{keyword}{namespace }Graphics}
+\DoxyCodeLine{19     \{}
+\DoxyCodeLine{20         \textcolor{keyword}{namespace }Renderers}
+\DoxyCodeLine{21         \{}
+\DoxyCodeLine{22             \textcolor{keyword}{class }\mbox{\hyperlink{class_symbios_1_1_graphics_1_1_renderers_1_1_renderer}{Renderer}}}
+\DoxyCodeLine{23             \{}
+\DoxyCodeLine{24             \textcolor{keyword}{public}:}
+\DoxyCodeLine{29                 \mbox{\hyperlink{class_symbios_1_1_graphics_1_1_renderers_1_1_renderer_a59b6797142476bc0c0b5634cd1473fce}{Renderer}}() = \textcolor{keywordflow}{default};}
+\DoxyCodeLine{35                 \mbox{\hyperlink{class_symbios_1_1_graphics_1_1_renderers_1_1_renderer_a59b6797142476bc0c0b5634cd1473fce}{Renderer}}(std::shared\_ptr<Context> context);}
+\DoxyCodeLine{36 }
+\DoxyCodeLine{41                 \textcolor{keywordtype}{void} Render();}
+\DoxyCodeLine{42 }
+\DoxyCodeLine{47                 \mbox{\hyperlink{class_symbios_1_1_graphics_1_1_renderers_1_1_renderer}{\string~Renderer}}();}
+\DoxyCodeLine{48 }
+\DoxyCodeLine{53                 \textcolor{keywordtype}{void} FrameBufferResized() \{ this-\/>\_framebufferResized = \textcolor{keyword}{true}; \};}
+\DoxyCodeLine{54 }
+\DoxyCodeLine{55             \textcolor{keyword}{private}:}
+\DoxyCodeLine{56                 std::shared\_ptr<Context> \_context;}
+\DoxyCodeLine{57                 std::shared\_ptr<RenderPass> \_renderPass;}
+\DoxyCodeLine{58                 std::vector<std::shared\_ptr<CommandBuffer>> \_commandBuffers;}
+\DoxyCodeLine{59 }
+\DoxyCodeLine{60                 std::unique\_ptr<Pipeline> \_pipeline;}
+\DoxyCodeLine{61 }
+\DoxyCodeLine{62                 std::vector<VkSemaphore> \_imageAvailableSemaphores;}
+\DoxyCodeLine{63                 std::vector<VkSemaphore> \_renderFinishedSemaphores;}
+\DoxyCodeLine{64                 std::vector<VkFence> \_inFlightFences;}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66                 uint32\_t \_currentFrame = 0;}
+\DoxyCodeLine{67                 \textcolor{keywordtype}{bool} \_framebufferResized = \textcolor{keyword}{false};}
+\DoxyCodeLine{68 }
+\DoxyCodeLine{69                 \mbox{\hyperlink{class_symbios_1_1_graphics_1_1_buffers_1_1_buffer}{Buffer}} *\_vertexBuffer;}
+\DoxyCodeLine{70 }
+\DoxyCodeLine{71                 \textcolor{keyword}{const} std::vector<Vertex> vertices = \{}
+\DoxyCodeLine{72                     \{\{-\/1.0, -\/1.0, 0.0f\}, \{1.0f, 1.0f, 1.0f\}\},}
+\DoxyCodeLine{73                     \{\{1.0, -\/1.0, 0.0f\}, \{1.0f, 1.0f, 1.0f\}\},}
+\DoxyCodeLine{74                     \{\{1.0, 1.0, 0.0f\}, \{1.0f, 1.0f, 1.0f\}\},}
+\DoxyCodeLine{75 }
+\DoxyCodeLine{76                     \{\{-\/1.0, -\/1.0, 0.0f\}, \{1.0f, 1.0f, 1.0f\}\},}
+\DoxyCodeLine{77                     \{\{1.0, 1.0, 0.0f\}, \{1.0f, 1.0f, 1.0f\}\},}
+\DoxyCodeLine{78                     \{\{-\/1.0, 1.0, 0.0f\}, \{1.0f, 1.0f, 1.0f\}\},}
+\DoxyCodeLine{79                 \};}
+\DoxyCodeLine{80             \};}
+\DoxyCodeLine{81         \}}
+\DoxyCodeLine{82     \}}
+\DoxyCodeLine{83 \}}
+
+\end{DoxyCode}

@@ -13,7 +13,7 @@
 
 #include <vulkan/vulkan.hpp>
 #include "context.hpp"
-#include "vertex.hpp"
+
 using namespace Symbios::Core;
 
 namespace Symbios

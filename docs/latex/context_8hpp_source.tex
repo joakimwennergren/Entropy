@@ -1,0 +1,198 @@
+\hypertarget{context_8hpp_source}{}\doxysection{context.\+hpp}
+\label{context_8hpp_source}\index{src/core/context/context.hpp@{src/core/context/context.hpp}}
+\mbox{\hyperlink{context_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 }
+\DoxyCodeLine{11 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{12 }
+\DoxyCodeLine{13 \textcolor{preprocessor}{\#include "{}config.hpp"{}}}
+\DoxyCodeLine{14 }
+\DoxyCodeLine{15 \textcolor{preprocessor}{\#ifdef BUILD\_FOR\_IOS}}
+\DoxyCodeLine{16 \textcolor{preprocessor}{\#define VK\_USE\_PLATFORM\_IOS\_MVK}}
+\DoxyCodeLine{17 \textcolor{preprocessor}{\#include <vulkan/vulkan.hpp>}}
+\DoxyCodeLine{18 \textcolor{preprocessor}{\#include <MetalKit/MetalKit.hpp>}}
+\DoxyCodeLine{19 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{20 }
+\DoxyCodeLine{21 \textcolor{preprocessor}{\#ifdef BUILD\_FOR\_MACOS}}
+\DoxyCodeLine{22 \textcolor{preprocessor}{\#include <vulkan/vulkan.hpp>}}
+\DoxyCodeLine{23 \textcolor{preprocessor}{\#include <GLFW/glfw3.h>}}
+\DoxyCodeLine{24 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{25 }
+\DoxyCodeLine{26 \textcolor{preprocessor}{\#ifdef BUILD\_FOR\_WINDOWS}}
+\DoxyCodeLine{27 \textcolor{preprocessor}{\#define VK\_USE\_PLATFORM\_WIN32\_KHR}}
+\DoxyCodeLine{28 \textcolor{preprocessor}{\#define GLFW\_INCLUDE\_VULKAN}}
+\DoxyCodeLine{29 \textcolor{preprocessor}{\#include <GLFW/glfw3.h>}}
+\DoxyCodeLine{30 \textcolor{preprocessor}{\#define GLFW\_EXPOSE\_NATIVE\_WIN32}}
+\DoxyCodeLine{31 \textcolor{preprocessor}{\#include <GLFW/glfw3native.h>}}
+\DoxyCodeLine{32 \textcolor{preprocessor}{\#undef max}}
+\DoxyCodeLine{33 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{34 }
+\DoxyCodeLine{35 \textcolor{preprocessor}{\#ifdef BUILD\_FOR\_LINUX}}
+\DoxyCodeLine{36 \textcolor{preprocessor}{\#include <vulkan/vulkan.hpp>}}
+\DoxyCodeLine{37 \textcolor{preprocessor}{\#define GLFW\_INCLUDE\_NONE}}
+\DoxyCodeLine{38 \textcolor{preprocessor}{\#include <GLFW/glfw3.h>}}
+\DoxyCodeLine{39 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{40 }
+\DoxyCodeLine{41 \textcolor{preprocessor}{\#include <plog/Log.h>}}
+\DoxyCodeLine{42 }
+\DoxyCodeLine{43 \textcolor{comment}{// @todo iOS needs version 13.0 for theese?}}
+\DoxyCodeLine{44 \textcolor{preprocessor}{\#include <cstdint>}   \textcolor{comment}{// Necessary for uint32\_t}}
+\DoxyCodeLine{45 \textcolor{preprocessor}{\#include <limits>}    \textcolor{comment}{// Necessary for std::numeric\_limits}}
+\DoxyCodeLine{46 \textcolor{preprocessor}{\#include <algorithm>} \textcolor{comment}{// Necessary for std::clamp}}
+\DoxyCodeLine{47 \textcolor{preprocessor}{\#include <optional>}}
+\DoxyCodeLine{48 \textcolor{preprocessor}{\#include <set>}}
+\DoxyCodeLine{49 }
+\DoxyCodeLine{50 \textcolor{keyword}{namespace }Symbios}
+\DoxyCodeLine{51 \{}
+\DoxyCodeLine{52     \textcolor{keyword}{namespace }Core}
+\DoxyCodeLine{53     \{}
+\DoxyCodeLine{54 }
+\DoxyCodeLine{59         \textcolor{keyword}{class }\mbox{\hyperlink{class_symbios_1_1_core_1_1_context}{Context}}}
+\DoxyCodeLine{60         \{}
+\DoxyCodeLine{61         \textcolor{keyword}{public}:}
+\DoxyCodeLine{66             \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_a77ffd54d32260f2caf6f4db46e73f80e}{Context}}() = \textcolor{keywordflow}{default};}
+\DoxyCodeLine{67 }
+\DoxyCodeLine{72             \textcolor{keyword}{struct }\mbox{\hyperlink{struct_symbios_1_1_core_1_1_context_1_1_queue_family_indices}{QueueFamilyIndices}}}
+\DoxyCodeLine{73             \{}
+\DoxyCodeLine{74                 std::optional<uint32\_t> graphicsFamily;}
+\DoxyCodeLine{75                 std::optional<uint32\_t> presentFamily;}
+\DoxyCodeLine{76 }
+\DoxyCodeLine{77                 \textcolor{keywordtype}{bool} isComplete()}
+\DoxyCodeLine{78                 \{}
+\DoxyCodeLine{79                     \textcolor{keywordflow}{return} graphicsFamily.has\_value() \&\& presentFamily.has\_value();}
+\DoxyCodeLine{80                 \}}
+\DoxyCodeLine{81             \};}
+\DoxyCodeLine{82 }
+\DoxyCodeLine{87             \textcolor{keyword}{struct }\mbox{\hyperlink{struct_symbios_1_1_core_1_1_context_1_1_swap_chain_support_details}{SwapChainSupportDetails}}}
+\DoxyCodeLine{88             \{}
+\DoxyCodeLine{89                 VkSurfaceCapabilitiesKHR capabilities;}
+\DoxyCodeLine{90                 std::vector<VkSurfaceFormatKHR> formats;}
+\DoxyCodeLine{91                 std::vector<VkPresentModeKHR> presentModes;}
+\DoxyCodeLine{92             \};}
+\DoxyCodeLine{93 }
+\DoxyCodeLine{94 \textcolor{preprocessor}{\#ifdef BUILD\_FOR\_IOS}}
+\DoxyCodeLine{101             \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_a77ffd54d32260f2caf6f4db46e73f80e}{Context}}(CA::MetalLayer *layer, CGRect frame);}
+\DoxyCodeLine{102 }
+\DoxyCodeLine{108             \textcolor{keywordtype}{void} CreateSurfaceiOS(CA::MetalLayer *layer);}
+\DoxyCodeLine{109 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{110 }
+\DoxyCodeLine{111 \textcolor{preprocessor}{\#ifdef BUILD\_FOR\_MACOS}}
+\DoxyCodeLine{117             \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_a77ffd54d32260f2caf6f4db46e73f80e}{Context}}(GLFWwindow *window);}
+\DoxyCodeLine{118 }
+\DoxyCodeLine{124             \textcolor{keywordtype}{void} CreateSurfaceMacOS(GLFWwindow *window);}
+\DoxyCodeLine{125 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{126 }
+\DoxyCodeLine{127 \textcolor{preprocessor}{\#ifdef BUILD\_FOR\_WINDOWS}}
+\DoxyCodeLine{133             \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_a77ffd54d32260f2caf6f4db46e73f80e}{Context}}(GLFWwindow *window);}
+\DoxyCodeLine{134 }
+\DoxyCodeLine{140             \textcolor{keywordtype}{void} CreateSurfaceWindows(GLFWwindow *window);}
+\DoxyCodeLine{141 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{142 }
+\DoxyCodeLine{143 \textcolor{preprocessor}{\#ifdef BUILD\_FOR\_LINUX}}
+\DoxyCodeLine{149             \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_a77ffd54d32260f2caf6f4db46e73f80e}{Context}}(GLFWwindow *window);}
+\DoxyCodeLine{150 }
+\DoxyCodeLine{156             \textcolor{keywordtype}{void} CreateSurfaceLinux(GLFWwindow *window);}
+\DoxyCodeLine{157 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{158 }
+\DoxyCodeLine{163             \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_a2d34e4556448e40693f61d15e091b604}{\string~Context}}();}
+\DoxyCodeLine{164 }
+\DoxyCodeLine{170             VkDevice \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_a9174dca2c287c141055cb0f196ec9d74}{GetLogicalDevice}}() \{ \textcolor{keywordflow}{return} this-\/>\_device; \};}
+\DoxyCodeLine{171 }
+\DoxyCodeLine{177             VkSwapchainKHR \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_ac03b9907bca6f8705f89b60ead1fb75a}{GetSwapChain}}() \{ \textcolor{keywordflow}{return} this-\/>\_swapChain; \};}
+\DoxyCodeLine{178 }
+\DoxyCodeLine{184             VkExtent2D \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_a707c7a7bd5c6835dcced262dfdbb95d1}{GetSwapChainExtent}}() \{ \textcolor{keywordflow}{return} this-\/>\_swapChainExtent; \};}
+\DoxyCodeLine{185 }
+\DoxyCodeLine{191             VkFormat \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_a928745782abdb5b536be1e1db28ed768}{GetSwapChainImageFormat}}() \{ \textcolor{keywordflow}{return} this-\/>\_swapChainImageFormat; \};}
+\DoxyCodeLine{192 }
+\DoxyCodeLine{198             VkPhysicalDevice \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_acf30044fab3662021971d1c37dc6f4dd}{GetPhysicalDevice}}() \{ \textcolor{keywordflow}{return} this-\/>\_physicalDevice; \};}
+\DoxyCodeLine{199 }
+\DoxyCodeLine{205             std::vector<VkImageView> \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_aed78e4e1b12b35ebd0237382ab3241b3}{GetSwapChainImageViews}}() \{ \textcolor{keywordflow}{return} this-\/>\_swapChainImageViews; \};}
+\DoxyCodeLine{206 }
+\DoxyCodeLine{212             VkQueue \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_a4ebeef7eaa8f9dfb925c7bf70e9b5372}{GetGraphicsQueue}}() \{ \textcolor{keywordflow}{return} this-\/>\_graphicsQueue; \};}
+\DoxyCodeLine{213 }
+\DoxyCodeLine{219             VkQueue \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_a882848b738af31e90580f13a32eb40d8}{GetPresentQueue}}() \{ \textcolor{keywordflow}{return} this-\/>\_presentQueue; \};}
+\DoxyCodeLine{220 }
+\DoxyCodeLine{227             QueueFamilyIndices \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_af168a04d351d0fb697543bb0eff522b2}{FindQueueFamilies}}(VkPhysicalDevice device);}
+\DoxyCodeLine{228 }
+\DoxyCodeLine{234             \textcolor{keywordtype}{void} \mbox{\hyperlink{class_symbios_1_1_core_1_1_context_a46ce9a99d0fe3f4cf08ad94ea6d20c6a}{RecreateSwapChain}}();}
+\DoxyCodeLine{235 }
+\DoxyCodeLine{236         \textcolor{keyword}{private}:}
+\DoxyCodeLine{241             \textcolor{keywordtype}{void} CreateInstance();}
+\DoxyCodeLine{242 }
+\DoxyCodeLine{249             \textcolor{keywordtype}{bool} CheckValidationLayerSupport();}
+\DoxyCodeLine{250 }
+\DoxyCodeLine{260             VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, \textcolor{keyword}{const} VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo, \textcolor{keyword}{const} VkAllocationCallbacks *pAllocator, VkDebugUtilsMessengerEXT *pDebugMessenger);}
+\DoxyCodeLine{261 }
+\DoxyCodeLine{269             \textcolor{keywordtype}{void} DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, \textcolor{keyword}{const} VkAllocationCallbacks *pAllocator);}
+\DoxyCodeLine{270 }
+\DoxyCodeLine{275             \textcolor{keywordtype}{void} PickPhysicalDevice();}
+\DoxyCodeLine{276 }
+\DoxyCodeLine{284             \textcolor{keywordtype}{bool} IsDeviceSuitable(VkPhysicalDevice device);}
+\DoxyCodeLine{285 }
+\DoxyCodeLine{290             \textcolor{keywordtype}{void} CreateLogicalDevice();}
+\DoxyCodeLine{291 }
+\DoxyCodeLine{296             \textcolor{keywordtype}{void} CreateImageViews();}
+\DoxyCodeLine{297 }
+\DoxyCodeLine{305             \textcolor{keywordtype}{bool} CheckDeviceExtensionSupport(VkPhysicalDevice device);}
+\DoxyCodeLine{306 }
+\DoxyCodeLine{313             SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);}
+\DoxyCodeLine{314 }
+\DoxyCodeLine{321             VkSurfaceFormatKHR ChooseSwapSurfaceFormat(\textcolor{keyword}{const} std::vector<VkSurfaceFormatKHR> \&availableFormats);}
+\DoxyCodeLine{322 }
+\DoxyCodeLine{329             VkPresentModeKHR ChooseSwapPresentMode(\textcolor{keyword}{const} std::vector<VkPresentModeKHR> \&availablePresentModes);}
+\DoxyCodeLine{330 }
+\DoxyCodeLine{331 \textcolor{preprocessor}{\#ifdef BUILD\_FOR\_IOS}}
+\DoxyCodeLine{339             VkExtent2D ChooseSwapExtent(\textcolor{keyword}{const} VkSurfaceCapabilitiesKHR \&capabilities, CGRect frame);}
+\DoxyCodeLine{340 }
+\DoxyCodeLine{346             \textcolor{keywordtype}{void} CreateSwapChain(CGRect frame);}
+\DoxyCodeLine{347 }
+\DoxyCodeLine{348 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{349 }
+\DoxyCodeLine{350 \textcolor{preprocessor}{\#if defined(BUILD\_FOR\_WINDOWS) || defined(BUILD\_FOR\_LINUX) || defined(BUILD\_FOR\_MACOS)}}
+\DoxyCodeLine{358             VkExtent2D ChooseSwapExtent(\textcolor{keyword}{const} VkSurfaceCapabilitiesKHR \&capabilities, GLFWwindow *window);}
+\DoxyCodeLine{359 }
+\DoxyCodeLine{365             \textcolor{keywordtype}{void} CreateSwapChain(GLFWwindow *window);}
+\DoxyCodeLine{366 }
+\DoxyCodeLine{367 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{368 }
+\DoxyCodeLine{369             \textcolor{keyword}{const} std::vector<const char *> deviceExtensions = \{}
+\DoxyCodeLine{370                 VK\_KHR\_SWAPCHAIN\_EXTENSION\_NAME\};}
+\DoxyCodeLine{371 }
+\DoxyCodeLine{372             \textcolor{keyword}{const} std::vector<const char *> validationLayers = \{}
+\DoxyCodeLine{373                 \textcolor{stringliteral}{"{}VK\_LAYER\_KHRONOS\_validation"{}}\};}
+\DoxyCodeLine{374 }
+\DoxyCodeLine{375             VkSurfaceKHR \_surface;}
+\DoxyCodeLine{376 }
+\DoxyCodeLine{377             std::vector<VkImage> \_swapChainImages;}
+\DoxyCodeLine{378             VkFormat \_swapChainImageFormat;}
+\DoxyCodeLine{379             VkExtent2D \_swapChainExtent;}
+\DoxyCodeLine{380             std::vector<VkImageView> \_swapChainImageViews;}
+\DoxyCodeLine{381 }
+\DoxyCodeLine{382             \textcolor{comment}{// Instance and Debugmessenger}}
+\DoxyCodeLine{383             VkInstance \_instance;}
+\DoxyCodeLine{384             VkDebugUtilsMessengerEXT \_debugMessenger;}
+\DoxyCodeLine{385 }
+\DoxyCodeLine{386             \textcolor{comment}{// Devices}}
+\DoxyCodeLine{387             VkPhysicalDevice \_physicalDevice = VK\_NULL\_HANDLE;}
+\DoxyCodeLine{388             VkDevice \_device;}
+\DoxyCodeLine{389 }
+\DoxyCodeLine{390             \textcolor{comment}{// SwapChain}}
+\DoxyCodeLine{391             VkSwapchainKHR \_swapChain;}
+\DoxyCodeLine{392 }
+\DoxyCodeLine{393             \textcolor{comment}{// Queues}}
+\DoxyCodeLine{394             VkQueue \_graphicsQueue;}
+\DoxyCodeLine{395             VkQueue \_presentQueue;}
+\DoxyCodeLine{396 }
+\DoxyCodeLine{397 \textcolor{preprocessor}{\#if defined(BUILD\_FOR\_WINDOWS) || defined(BUILD\_FOR\_LINUX) || defined(BUILD\_FOR\_MACOS)}}
+\DoxyCodeLine{398             GLFWwindow *\_window;}
+\DoxyCodeLine{399 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{400 }
+\DoxyCodeLine{401 \textcolor{preprocessor}{\#ifdef BUILD\_FOR\_IOS}}
+\DoxyCodeLine{402             CA::MetalLayer *\_layer;}
+\DoxyCodeLine{403             CGRect \_frame;}
+\DoxyCodeLine{404 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{405         \};}
+\DoxyCodeLine{406     \}}
+\DoxyCodeLine{407 \}}
+
+\end{DoxyCode}
