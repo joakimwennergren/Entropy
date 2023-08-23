@@ -8,8 +8,11 @@ Pipeline::Pipeline(std::shared_ptr<Context> context, std::shared_ptr<RenderPass>
     _context = context;
 
     // Create Shader and store it
-
+#ifdef BUILD_FOR_IOS
+    _shader = std::make_unique<Shader>(context, Filesystem::GetProjectBasePath() + "/vert.spv", Filesystem::GetProjectBasePath() + "/frag.spv");
+#else
     _shader = std::make_unique<Shader>(context, Filesystem::GetProjectBasePath() + "/shaders/basic/vert.spv", Filesystem::GetProjectBasePath() + "/shaders/basic/frag.spv");
+#endif
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;

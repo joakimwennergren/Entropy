@@ -1,3 +1,5 @@
+#include "config.hpp"
+
 #ifdef BUILD_FOR_IOS
 #define NS_PRIVATE_IMPLEMENTATION
 #define UI_PRIVATE_IMPLEMENTATION

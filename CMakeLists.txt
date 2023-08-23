@@ -20,8 +20,6 @@ add_subdirectory(external/plog)
 add_executable(Symbios)
 
 target_sources(Symbios PRIVATE
-    # Main entrypoint
-    src/main.cpp
 
     # Core
     src/core/context/context.cpp
@@ -32,6 +30,9 @@ target_sources(Symbios PRIVATE
     src/graphics/renderpasses/renderpass.cpp
     src/graphics/commandbuffers/commandbuffer.cpp
     src/graphics/renderers/renderer.cpp
+
+    # Main entrypoint
+    src/main.cpp
 )
 
 if(NOT XCODE)
@@ -65,8 +66,6 @@ target_include_directories(Symbios PRIVATE
 
     # Metal-CPP
     external/metal-cpp/
-
-    ${TEST_SOURCES}
 )
 
 target_compile_features(Symbios PRIVATE cxx_std_17)

@@ -92,6 +92,10 @@ private:
 #include <UIKit/UIKit.hpp>
 #include <MetalKit/MetalKit.hpp>
 
+#include "renderer.hpp"
+
+using namespace Symbios::Graphics::Renderers;
+
 class MTKViewDelegate : public MTK::ViewDelegate
 {
 public:
@@ -101,6 +105,11 @@ public:
      */
     MTKViewDelegate() : MTK::ViewDelegate()
     {
+    }
+
+    inline void SetRenderer(std::shared_ptr<Renderer> renderer)
+    {
+        _renderer = renderer;
     }
 
     /**
@@ -122,7 +131,7 @@ private:
         _renderer->Render();
     }
 
-    Symbios::Graphics::Renderers::Renderer *_renderer;
+    std::shared_ptr<Renderer> _renderer;
 };
 
 class Application : public UI::ApplicationDelegate
@@ -192,9 +201,9 @@ public:
 
         _context = std::make_shared<Context>(layer, frame);
 
-        _renderer = new Symbios::Graphics::Renderers::Renderer(context);
+        auto renderer = std::make_shared<Renderer>(_context);
 
-        _pViewDelegate->_renderer = _renderer;
+        _pViewDelegate->SetRenderer(renderer);
 
         return true;
     }
@@ -219,12 +228,12 @@ public:
 
 private:
     std::shared_ptr<Context> _context;
-    UI::Window *_pWindow;
-    UI::ViewController *_pViewController;
-    MTK::View *_pMtkView;
-    MTL::Device *_pDevice;
+    UI::Window *_pWindow = nullptr;
+    UI::ViewController *_pViewController = nullptr;
+    MTK::View *_pMtkView = nullptr;
+    MTL::Device *_pDevice = nullptr;
     MTKViewDelegate *_pViewDelegate = nullptr;
-    NS::AutoreleasePool *_autoreleasePool;
+    NS::AutoreleasePool *_autoreleasePool = nullptr;
 };
 
 #endif
