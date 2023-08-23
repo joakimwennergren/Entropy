@@ -11,10 +11,16 @@ namespace Symbios
 {
     namespace Filesystem
     {
-        static std::string GetProjectBasePath()
+        inline static std::string GetProjectBasePath()
         {
-#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
-            return std::filesystem::current_path().string() + "/..";
+
+#ifdef BUILD_FOR_WINDOWS
+            return std::filesystem::current_path().string() + "\\..";
+#endif
+#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
+            return std::filesystem::current_path()
+                       .string() +
+                   "/..";
 #endif
 
 #ifdef BUILD_FOR_IOS
@@ -30,8 +36,9 @@ namespace Symbios
                 }
                 return resourcePath;
             }
-            return "";
 #endif
+
+            return "";
         }
     }
 }

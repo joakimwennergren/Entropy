@@ -8,7 +8,7 @@ Pipeline::Pipeline(Context *context, RenderPass *renderPass)
     _context = context;
 
     // Create Shader and store it
-    auto shader = new Shaders::Shader("C:\\Symbios\\shaders\\basic\\vert.spv", "C:\\Symbios\\shaders\\basic\\frag.spv", context);
+    auto shader = new Shaders::Shader(Filesystem::GetProjectBasePath() + "/shaders/basic/vert.spv", Filesystem::GetProjectBasePath() + "/shaders/basic/frag.spv", context);
     _shader = shader;
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};

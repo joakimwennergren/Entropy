@@ -17,16 +17,12 @@ endif()
 # Logging
 add_subdirectory(external/plog)
 
-
-
-# Networking
-add_executable(
-
-    # Target
-    Symbios
-)
+add_executable(Symbios)
 
 target_sources(Symbios PRIVATE
+
+    # Main entrypoint
+    src/main.cpp
 
     # Core
     src/core/context/context.cpp
@@ -41,8 +37,7 @@ target_sources(Symbios PRIVATE
     # Filesystem
     src/filesystem/filesystem.cpp
 
-    # Main entrypoint
-    src/main.cpp
+
 )
 
 if(NOT XCODE)

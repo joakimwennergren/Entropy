@@ -3,6 +3,12 @@
 using namespace Symbios::Core;
 
 #ifdef BUILD_FOR_IOS
+/**
+ * @brief Construct a new Context:: Context object
+ *
+ * @param layer
+ * @param frame
+ */
 Context::Context(CA::MetalLayer *layer, CGRect frame)
 {
     this->CreateInstance();
@@ -15,6 +21,11 @@ Context::Context(CA::MetalLayer *layer, CGRect frame)
 #endif
 
 #ifdef BUILD_FOR_WINDOWS
+/**
+ * @brief Construct a new Context:: Context object
+ *
+ * @param window
+ */
 Context::Context(GLFWwindow *window)
 {
     this->CreateInstance();
@@ -27,6 +38,11 @@ Context::Context(GLFWwindow *window)
 #endif
 
 #ifdef BUILD_FOR_LINUX
+/**
+ * @brief Construct a new Context:: Context object
+ *
+ * @param window
+ */
 Context::Context(GLFWwindow *window)
 {
     this->CreateInstance();
@@ -39,6 +55,11 @@ Context::Context(GLFWwindow *window)
 #endif
 
 #ifdef BUILD_FOR_MACOS
+/**
+ * @brief Construct a new Context:: Context object
+ *
+ * @param window
+ */
 Context::Context(GLFWwindow *window)
 {
     this->CreateInstance();
@@ -50,24 +71,25 @@ Context::Context(GLFWwindow *window)
 }
 #endif
 
+/**
+ * @brief Destroy the Context:: Context object
+ *
+ */
 Context::~Context()
 {
-
     for (auto imageView : swapChainImageViews)
     {
         vkDestroyImageView(_device, imageView, nullptr);
     }
-
     vkDestroySwapchainKHR(this->_device, swapChain, nullptr);
     vkDestroySurfaceKHR(this->_instance, this->_surface, nullptr);
     vkDestroyInstance(this->_instance, nullptr);
-    // vkDestroyDevice(this->_device, nullptr); (crasch)
-
-#ifdef USE_DEBUG
+    vkDestroyDevice(this->_device, nullptr);
+#ifdef USE_VALIDATION_LAYERS
     DestroyDebugUtilsMessengerEXT(_instance, _debugMessenger, nullptr);
 #endif
 }
-
+#ifdef USE_VALIDATION_LAYERS
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
     VkDebugUtilsMessageTypeFlagsEXT messageType,
@@ -97,7 +119,12 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 
     return VK_FALSE;
 }
+#endif
 
+/**
+ * @brief
+ *
+ */
 void Context::CreateInstance()
 {
     VkApplicationInfo appInfo{};
@@ -164,7 +191,8 @@ void Context::CreateInstance()
 
     if (CreateDebugUtilsMessengerEXT(this->_instance, &createInfoDebugMessenger, nullptr, &_debugMessenger) != VK_SUCCESS)
     {
-        throw std::runtime_error("failed to set up debug messenger!");
+        PLOG_FATAL << "failed to set up debug messenger!";
+        exit(EXIT_FAILURE);
     }
 #endif
 }
@@ -199,6 +227,15 @@ bool Context::CheckValidationLayerSupport()
     return true;
 }
 
+/**
+ * @brief
+ *
+ * @param instance
+ * @param pCreateInfo
+ * @param pAllocator
+ * @param pDebugMessenger
+ * @return VkResult
+ */
 VkResult Context::CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo, const VkAllocationCallbacks *pAllocator, VkDebugUtilsMessengerEXT *pDebugMessenger)
 {
     auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
@@ -212,6 +249,13 @@ VkResult Context::CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebu
     }
 }
 
+/**
+ * @brief
+ *
+ * @param instance
+ * @param debugMessenger
+ * @param pAllocator
+ */
 void Context::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks *pAllocator)
 {
     auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
@@ -221,6 +265,10 @@ void Context::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMes
     }
 }
 
+/**
+ * @brief
+ *
+ */
 void Context::PickPhysicalDevice()
 {
     uint32_t deviceCount = 0;
@@ -229,7 +277,7 @@ void Context::PickPhysicalDevice()
     if (deviceCount == 0)
     {
         PLOG_FATAL << "Failed to find GPUs with Vulkan support!";
-        return;
+        exit(EXIT_FAILURE);
     }
 
     std::vector<VkPhysicalDevice> devices(deviceCount);
@@ -246,10 +294,18 @@ void Context::PickPhysicalDevice()
 
     if (_physicalDevice == VK_NULL_HANDLE)
     {
-        throw std::runtime_error("failed to find a suitable GPU!");
+        PLOG_FATAL << "Failed to find a suitable GPU";
+        exit(EXIT_FAILURE);
     }
 }
 
+/**
+ * @brief
+ *
+ * @param device
+ * @return true
+ * @return false
+ */
 bool Context::IsDeviceSuitable(VkPhysicalDevice device)
 {
     QueueFamilyIndices indices = FindQueueFamilies(device);
@@ -266,6 +322,12 @@ bool Context::IsDeviceSuitable(VkPhysicalDevice device)
     return indices.isComplete() && extensionsSupported && swapChainAdequate;
 }
 
+/**
+ * @brief
+ *
+ * @param device
+ * @return Context::QueueFamilyIndices
+ */
 Context::QueueFamilyIndices Context::FindQueueFamilies(VkPhysicalDevice device)
 {
     QueueFamilyIndices indices;
@@ -303,6 +365,10 @@ Context::QueueFamilyIndices Context::FindQueueFamilies(VkPhysicalDevice device)
     return indices;
 }
 
+/**
+ * @brief
+ *
+ */
 void Context::CreateLogicalDevice()
 {
     QueueFamilyIndices indices = FindQueueFamilies(this->_physicalDevice);
@@ -348,7 +414,11 @@ void Context::CreateLogicalDevice()
 }
 
 #ifdef BUILD_FOR_IOS
-
+/**
+ * @brief
+ *
+ * @param layer
+ */
 void Context::CreateSurfaceiOS(CA::MetalLayer *layer)
 {
     VkIOSSurfaceCreateInfoMVK createInfo{};
@@ -360,23 +430,34 @@ void Context::CreateSurfaceiOS(CA::MetalLayer *layer)
     if (vkCreateIOSSurfaceMVK(this->_instance, &createInfo, nullptr, &this->_surface) != VK_SUCCESS)
     {
         PLOG_FATAL << "Could not create iOS surface!";
-        return;
+        exit(EXIT_FAILURE);
     }
 }
 
 #endif
 
 #ifdef BUILD_FOR_MACOS
+/**
+ * @brief
+ *
+ * @param window
+ */
 void Context::CreateSurfaceMacOS(GLFWwindow *window)
 {
     if (glfwCreateWindowSurface(this->_instance, window, nullptr, &this->_surface) != VK_SUCCESS)
     {
-        throw std::runtime_error("failed to create window surface!");
+        PLOG_FATAL << "Could not create MacOS surface!";
+        exit(EXIT_FAILURE);
     }
 }
 #endif
 
 #ifdef BUILD_FOR_WINDOWS
+/**
+ * @brief
+ *
+ * @param window
+ */
 void Context::CreateSurfaceWindows(GLFWwindow *window)
 {
     VkWin32SurfaceCreateInfoKHR createInfo{};
@@ -386,21 +467,35 @@ void Context::CreateSurfaceWindows(GLFWwindow *window)
 
     if (vkCreateWin32SurfaceKHR(this->_instance, &createInfo, nullptr, &this->_surface) != VK_SUCCESS)
     {
-        throw std::runtime_error("failed to create window surface!");
+        PLOG_FATAL << "Could not create Windows surface!";
+        exit(EXIT_FAILURE);
     }
 }
 #endif
 
 #ifdef BUILD_FOR_LINUX
+/**
+ * @brief
+ *
+ * @param window
+ */
 void Context::CreateSurfaceLinux(GLFWwindow *window)
 {
     if (glfwCreateWindowSurface(this->_instance, window, nullptr, &this->_surface) != VK_SUCCESS)
     {
-        throw std::runtime_error("failed to create window surface!");
+        PLOG_FATAL << "Could not create linux surface!";
+        exit(EXIT_FAILURE);
     }
 }
 #endif
 
+/**
+ * @brief
+ *
+ * @param device
+ * @return true
+ * @return false
+ */
 bool Context::CheckDeviceExtensionSupport(VkPhysicalDevice device)
 {
     uint32_t extensionCount;
@@ -419,6 +514,12 @@ bool Context::CheckDeviceExtensionSupport(VkPhysicalDevice device)
     return requiredExtensions.empty();
 }
 
+/**
+ * @brief
+ *
+ * @param device
+ * @return Context::SwapChainSupportDetails
+ */
 Context::SwapChainSupportDetails Context::QuerySwapChainSupport(VkPhysicalDevice device)
 {
 
@@ -447,6 +548,12 @@ Context::SwapChainSupportDetails Context::QuerySwapChainSupport(VkPhysicalDevice
     return details;
 }
 
+/**
+ * @brief
+ *
+ * @param availableFormats
+ * @return VkSurfaceFormatKHR
+ */
 VkSurfaceFormatKHR Context::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats)
 {
     for (const auto &availableFormat : availableFormats)
@@ -460,6 +567,12 @@ VkSurfaceFormatKHR Context::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceF
     return availableFormats[0];
 }
 
+/**
+ * @brief
+ *
+ * @param availablePresentModes
+ * @return VkPresentModeKHR
+ */
 VkPresentModeKHR Context::ChooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes)
 {
     for (const auto &availablePresentMode : availablePresentModes)
@@ -474,6 +587,13 @@ VkPresentModeKHR Context::ChooseSwapPresentMode(const std::vector<VkPresentModeK
 }
 
 #if defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_MACOS)
+/**
+ * @brief
+ *
+ * @param capabilities
+ * @param window
+ * @return VkExtent2D
+ */
 VkExtent2D Context::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities, GLFWwindow *window)
 {
     if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
@@ -496,6 +616,11 @@ VkExtent2D Context::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilitie
     }
 }
 
+/**
+ * @brief
+ *
+ * @param window
+ */
 void Context::CreateSwapChain(GLFWwindow *window)
 {
     SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(_physicalDevice);
@@ -544,7 +669,8 @@ void Context::CreateSwapChain(GLFWwindow *window)
 
     if (vkCreateSwapchainKHR(_device, &createInfo, nullptr, &swapChain) != VK_SUCCESS)
     {
-        throw std::runtime_error("failed to create swap chain!");
+        PLOG_FATAL << "Failed to create swapchain";
+        exit(EXIT_FAILURE);
     }
 
     vkGetSwapchainImagesKHR(_device, swapChain, &imageCount, nullptr);
@@ -557,6 +683,13 @@ void Context::CreateSwapChain(GLFWwindow *window)
 #endif
 
 #ifdef BUILD_FOR_IOS
+/**
+ * @brief
+ *
+ * @param capabilities
+ * @param frame
+ * @return VkExtent2D
+ */
 VkExtent2D Context::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities, CGRect frame)
 {
     if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
@@ -579,6 +712,11 @@ VkExtent2D Context::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilitie
     }
 }
 
+/**
+ * @brief
+ *
+ * @param frame
+ */
 void Context::CreateSwapChain(CGRect frame)
 {
     SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(_physicalDevice);
@@ -627,7 +765,8 @@ void Context::CreateSwapChain(CGRect frame)
 
     if (vkCreateSwapchainKHR(_device, &createInfo, nullptr, &swapChain) != VK_SUCCESS)
     {
-        throw std::runtime_error("failed to create swap chain!");
+        PLOG_FATAL << "Failed to create swapchain!";
+        exit(EXIT_FAILURE);
     }
 
     vkGetSwapchainImagesKHR(_device, swapChain, &imageCount, nullptr);
@@ -639,6 +778,10 @@ void Context::CreateSwapChain(CGRect frame)
 }
 #endif
 
+/**
+ * @brief
+ *
+ */
 void Context::CreateImageViews()
 {
     swapChainImageViews.resize(swapChainImages.size());
@@ -665,7 +808,8 @@ void Context::CreateImageViews()
 
         if (vkCreateImageView(_device, &createInfo, nullptr, &swapChainImageViews[i]) != VK_SUCCESS)
         {
-            throw std::runtime_error("failed to create image views!");
+            PLOG_FATAL << "Failed to create image views!";
+            exit(EXIT_FAILURE);
         }
     }
 }
