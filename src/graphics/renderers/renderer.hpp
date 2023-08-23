@@ -43,6 +43,12 @@ namespace Symbios
                  */
                 ~Renderer();
 
+                /**
+                 * @brief
+                 *
+                 */
+                void FrameBufferResized() { this->_framebufferResized = true; };
+
             private:
                 std::shared_ptr<Context> _context;
                 std::shared_ptr<RenderPass> _renderPass;
@@ -50,11 +56,12 @@ namespace Symbios
 
                 std::unique_ptr<Pipeline> _pipeline;
 
-                std::vector<VkSemaphore> imageAvailableSemaphores;
-                std::vector<VkSemaphore> renderFinishedSemaphores;
-                std::vector<VkFence> inFlightFences;
+                std::vector<VkSemaphore> _imageAvailableSemaphores;
+                std::vector<VkSemaphore> _renderFinishedSemaphores;
+                std::vector<VkFence> _inFlightFences;
 
                 uint32_t _currentFrame = 0;
+                bool _framebufferResized = false;
             };
         }
     }

@@ -11,6 +11,8 @@ using namespace Symbios::Core;
  */
 Context::Context(CA::MetalLayer *layer, CGRect frame)
 {
+    this->_layer = layer;
+    this->_frame = frame;
     this->CreateInstance();
     this->CreateSurfaceiOS(layer);
     this->PickPhysicalDevice();
@@ -28,6 +30,8 @@ Context::Context(CA::MetalLayer *layer, CGRect frame)
  */
 Context::Context(GLFWwindow *window)
 {
+    this->_window = window;
+
     this->CreateInstance();
     this->CreateSurfaceWindows(window);
     this->PickPhysicalDevice();
@@ -45,6 +49,8 @@ Context::Context(GLFWwindow *window)
  */
 Context::Context(GLFWwindow *window)
 {
+    this->_window = window;
+
     this->CreateInstance();
     this->CreateSurfaceLinux(window);
     this->PickPhysicalDevice();
@@ -62,6 +68,8 @@ Context::Context(GLFWwindow *window)
  */
 Context::Context(GLFWwindow *window)
 {
+    this->_window = window;
+
     this->CreateInstance();
     this->CreateSurfaceMacOS(window);
     this->PickPhysicalDevice();
@@ -77,11 +85,11 @@ Context::Context(GLFWwindow *window)
  */
 Context::~Context()
 {
-    for (auto imageView : swapChainImageViews)
+    for (auto imageView : _swapChainImageViews)
     {
         vkDestroyImageView(_device, imageView, nullptr);
     }
-    vkDestroySwapchainKHR(this->_device, swapChain, nullptr);
+    vkDestroySwapchainKHR(this->_device, _swapChain, nullptr);
     vkDestroyDevice(this->_device, nullptr);
     vkDestroySurfaceKHR(this->_instance, this->_surface, nullptr);
     vkDestroyInstance(this->_instance, nullptr);
@@ -621,6 +629,51 @@ VkExtent2D Context::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilitie
  *
  * @param window
  */
+void Context::RecreateSwapChain()
+{
+#if defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_MACOS)
+    int width = 0, height = 0;
+    glfwGetFramebufferSize(_window, &width, &height);
+    while (width == 0 || height == 0)
+    {
+        glfwGetFramebufferSize(_window, &width, &height);
+        glfwWaitEvents();
+    }
+#endif
+
+    vkDeviceWaitIdle(_device);
+
+    // @todo destroy all renderPasses???
+    // for (size_t i = 0; i < swapChainFramebuffers.size(); i++)
+    //{
+    //    vkDestroyFramebuffer(device, swapChainFramebuffers[i], nullptr);
+    //}
+
+    for (size_t i = 0; i < _swapChainImageViews.size(); i++)
+    {
+        vkDestroyImageView(_device, _swapChainImageViews[i], nullptr);
+    }
+
+    vkDestroySwapchainKHR(_device, _swapChain, nullptr);
+
+#if defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_MACOS)
+    CreateSwapChain(_window);
+#endif
+
+#ifdef BUILD_FOR_IOS
+    CreateSwapChain(_layer, _frame);
+#endif
+
+    CreateImageViews();
+
+    // @todo rebuild renderPasses?? :(
+}
+
+/**
+ * @brief
+ *
+ * @param window
+ */
 void Context::CreateSwapChain(GLFWwindow *window)
 {
     SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(_physicalDevice);
@@ -667,18 +720,18 @@ void Context::CreateSwapChain(GLFWwindow *window)
     createInfo.clipped = VK_TRUE;
     createInfo.oldSwapchain = VK_NULL_HANDLE;
 
-    if (vkCreateSwapchainKHR(_device, &createInfo, nullptr, &swapChain) != VK_SUCCESS)
+    if (vkCreateSwapchainKHR(_device, &createInfo, nullptr, &_swapChain) != VK_SUCCESS)
     {
         PLOG_FATAL << "Failed to create swapchain";
         exit(EXIT_FAILURE);
     }
 
-    vkGetSwapchainImagesKHR(_device, swapChain, &imageCount, nullptr);
-    swapChainImages.resize(imageCount);
-    vkGetSwapchainImagesKHR(_device, swapChain, &imageCount, swapChainImages.data());
+    vkGetSwapchainImagesKHR(_device, _swapChain, &imageCount, nullptr);
+    _swapChainImages.resize(imageCount);
+    vkGetSwapchainImagesKHR(_device, _swapChain, &imageCount, _swapChainImages.data());
 
-    swapChainImageFormat = surfaceFormat.format;
-    swapChainExtent = extent;
+    _swapChainImageFormat = surfaceFormat.format;
+    _swapChainExtent = extent;
 }
 #endif
 
@@ -784,16 +837,16 @@ void Context::CreateSwapChain(CGRect frame)
  */
 void Context::CreateImageViews()
 {
-    swapChainImageViews.resize(swapChainImages.size());
+    _swapChainImageViews.resize(_swapChainImages.size());
 
-    for (size_t i = 0; i < swapChainImages.size(); i++)
+    for (size_t i = 0; i < _swapChainImages.size(); i++)
     {
         VkImageViewCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-        createInfo.image = swapChainImages[i];
+        createInfo.image = _swapChainImages[i];
 
         createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-        createInfo.format = swapChainImageFormat;
+        createInfo.format = _swapChainImageFormat;
 
         createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
         createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
@@ -806,7 +859,7 @@ void Context::CreateImageViews()
         createInfo.subresourceRange.baseArrayLayer = 0;
         createInfo.subresourceRange.layerCount = 1;
 
-        if (vkCreateImageView(_device, &createInfo, nullptr, &swapChainImageViews[i]) != VK_SUCCESS)
+        if (vkCreateImageView(_device, &createInfo, nullptr, &_swapChainImageViews[i]) != VK_SUCCESS)
         {
             PLOG_FATAL << "Failed to create image views!";
             exit(EXIT_FAILURE);

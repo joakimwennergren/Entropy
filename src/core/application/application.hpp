@@ -16,6 +16,8 @@
 using namespace Symbios::Core;
 using namespace Symbios::Graphics::Renderers;
 
+static void framebufferResizeCallback(GLFWwindow *window, int width, int height);
+
 /**
  * @brief Application class
  *
@@ -47,9 +49,12 @@ public:
             glfwTerminate();
             exit(EXIT_FAILURE);
         }
+        glfwSetWindowUserPointer(_window, this);
+
+        glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
 
         _context = std::make_shared<Context>(_window);
-        _renderer = std::make_unique<Renderer>(_context);
+        _renderer = std::make_shared<Renderer>(_context);
     }
 
     /**
@@ -61,6 +66,8 @@ public:
         glfwDestroyWindow(_window);
         glfwTerminate();
     }
+
+    std::shared_ptr<Renderer> GetRenderer() { return this->_renderer; };
 
 public:
     /**
@@ -78,11 +85,20 @@ public:
 
 private:
     std::shared_ptr<Context> _context;
-    std::unique_ptr<Renderer> _renderer;
+    std::shared_ptr<Renderer> _renderer;
     GLFWwindow *_window;
 
 private:
 };
+
+static void framebufferResizeCallback(GLFWwindow *window, int width, int height)
+{
+    auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
+    if (app != nullptr)
+    {
+        app->GetRenderer()->FrameBufferResized();
+    }
+}
 
 #endif
 

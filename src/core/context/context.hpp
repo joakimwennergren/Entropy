@@ -174,21 +174,21 @@ namespace Symbios
              *
              * @return VkSwapchainKHR
              */
-            VkSwapchainKHR GetSwapChain() { return this->swapChain; };
+            VkSwapchainKHR GetSwapChain() { return this->_swapChain; };
 
             /**
              * @brief Get the Swap Chain Extent object
              *
              * @return VkExtent2D
              */
-            VkExtent2D GetSwapChainExtent() { return this->swapChainExtent; };
+            VkExtent2D GetSwapChainExtent() { return this->_swapChainExtent; };
 
             /**
              * @brief Get the Swap Chain Image Format object
              *
              * @return VkFormat
              */
-            VkFormat GetSwapChainImageFormat() { return this->swapChainImageFormat; };
+            VkFormat GetSwapChainImageFormat() { return this->_swapChainImageFormat; };
 
             /**
              * @brief Get the Physical Device object
@@ -202,7 +202,21 @@ namespace Symbios
              *
              * @return std::vector<VkImageView>
              */
-            std::vector<VkImageView> GetSwapChainImageViews() { return this->swapChainImageViews; };
+            std::vector<VkImageView> GetSwapChainImageViews() { return this->_swapChainImageViews; };
+
+            /**
+             * @brief Get the Graphics Queue object
+             *
+             * @return VkQueue
+             */
+            VkQueue GetGraphicsQueue() { return this->_graphicsQueue; };
+
+            /**
+             * @brief Get the Present Queue object
+             *
+             * @return VkQueue
+             */
+            VkQueue GetPresentQueue() { return this->_presentQueue; };
 
             /**
              * @brief
@@ -212,9 +226,12 @@ namespace Symbios
              */
             QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
 
-            // Queues
-            VkQueue _graphicsQueue;
-            VkQueue _presentQueue;
+            /**
+             * @brief
+             *
+             * @param window
+             */
+            void RecreateSwapChain();
 
         private:
             /**
@@ -327,6 +344,7 @@ namespace Symbios
              * @param frame
              */
             void CreateSwapChain(CGRect frame);
+
 #endif
 
 #if defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_MACOS)
@@ -345,6 +363,7 @@ namespace Symbios
              * @param window
              */
             void CreateSwapChain(GLFWwindow *window);
+
 #endif
 
             const std::vector<const char *> deviceExtensions = {
@@ -355,10 +374,10 @@ namespace Symbios
 
             VkSurfaceKHR _surface;
 
-            std::vector<VkImage> swapChainImages;
-            VkFormat swapChainImageFormat;
-            VkExtent2D swapChainExtent;
-            std::vector<VkImageView> swapChainImageViews;
+            std::vector<VkImage> _swapChainImages;
+            VkFormat _swapChainImageFormat;
+            VkExtent2D _swapChainExtent;
+            std::vector<VkImageView> _swapChainImageViews;
 
             // Instance and Debugmessenger
             VkInstance _instance;
@@ -369,7 +388,20 @@ namespace Symbios
             VkDevice _device;
 
             // SwapChain
-            VkSwapchainKHR swapChain;
+            VkSwapchainKHR _swapChain;
+
+            // Queues
+            VkQueue _graphicsQueue;
+            VkQueue _presentQueue;
+
+#if defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_MACOS)
+            GLFWwindow *_window;
+#endif
+
+#ifdef BUILD_FOR_IOS
+            CA::MetalLayer *_layer;
+            CGRect _frame;
+#endif
         };
     }
 }
