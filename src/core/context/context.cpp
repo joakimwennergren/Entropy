@@ -629,51 +629,6 @@ VkExtent2D Context::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilitie
  *
  * @param window
  */
-void Context::RecreateSwapChain()
-{
-#if defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_MACOS)
-    int width = 0, height = 0;
-    glfwGetFramebufferSize(_window, &width, &height);
-    while (width == 0 || height == 0)
-    {
-        glfwGetFramebufferSize(_window, &width, &height);
-        glfwWaitEvents();
-    }
-#endif
-
-    vkDeviceWaitIdle(_device);
-
-    // @todo destroy all renderPasses???
-    // for (size_t i = 0; i < swapChainFramebuffers.size(); i++)
-    //{
-    //    vkDestroyFramebuffer(device, swapChainFramebuffers[i], nullptr);
-    //}
-
-    for (size_t i = 0; i < _swapChainImageViews.size(); i++)
-    {
-        vkDestroyImageView(_device, _swapChainImageViews[i], nullptr);
-    }
-
-    vkDestroySwapchainKHR(_device, _swapChain, nullptr);
-
-#if defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_MACOS)
-    CreateSwapChain(_window);
-#endif
-
-#ifdef BUILD_FOR_IOS
-    CreateSwapChain(_layer, _frame);
-#endif
-
-    CreateImageViews();
-
-    // @todo rebuild renderPasses?? :(
-}
-
-/**
- * @brief
- *
- * @param window
- */
 void Context::CreateSwapChain(GLFWwindow *window)
 {
     SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(_physicalDevice);
@@ -734,6 +689,51 @@ void Context::CreateSwapChain(GLFWwindow *window)
     _swapChainExtent = extent;
 }
 #endif
+
+/**
+ * @brief
+ *
+ * @param window
+ */
+void Context::RecreateSwapChain()
+{
+#if defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_MACOS)
+    int width = 0, height = 0;
+    glfwGetFramebufferSize(_window, &width, &height);
+    while (width == 0 || height == 0)
+    {
+        glfwGetFramebufferSize(_window, &width, &height);
+        glfwWaitEvents();
+    }
+#endif
+
+    vkDeviceWaitIdle(_device);
+
+    // @todo destroy all renderPasses???
+    // for (size_t i = 0; i < swapChainFramebuffers.size(); i++)
+    //{
+    //    vkDestroyFramebuffer(device, swapChainFramebuffers[i], nullptr);
+    //}
+
+    for (size_t i = 0; i < _swapChainImageViews.size(); i++)
+    {
+        vkDestroyImageView(_device, _swapChainImageViews[i], nullptr);
+    }
+
+    vkDestroySwapchainKHR(_device, _swapChain, nullptr);
+
+#if defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_MACOS)
+    CreateSwapChain(_window);
+#endif
+
+#ifdef BUILD_FOR_IOS
+    CreateSwapChain(_frame);
+#endif
+
+    CreateImageViews();
+
+    // @todo rebuild renderPasses?? :(
+}
 
 #ifdef BUILD_FOR_IOS
 /**
@@ -816,18 +816,18 @@ void Context::CreateSwapChain(CGRect frame)
     createInfo.clipped = VK_TRUE;
     createInfo.oldSwapchain = VK_NULL_HANDLE;
 
-    if (vkCreateSwapchainKHR(_device, &createInfo, nullptr, &swapChain) != VK_SUCCESS)
+    if (vkCreateSwapchainKHR(_device, &createInfo, nullptr, &_swapChain) != VK_SUCCESS)
     {
         PLOG_FATAL << "Failed to create swapchain!";
         exit(EXIT_FAILURE);
     }
 
-    vkGetSwapchainImagesKHR(_device, swapChain, &imageCount, nullptr);
-    swapChainImages.resize(imageCount);
-    vkGetSwapchainImagesKHR(_device, swapChain, &imageCount, swapChainImages.data());
+    vkGetSwapchainImagesKHR(_device, _swapChain, &imageCount, nullptr);
+    _swapChainImages.resize(imageCount);
+    vkGetSwapchainImagesKHR(_device, _swapChain, &imageCount, _swapChainImages.data());
 
-    swapChainImageFormat = surfaceFormat.format;
-    swapChainExtent = extent;
+    _swapChainImageFormat = surfaceFormat.format;
+    _swapChainExtent = extent;
 }
 #endif
 

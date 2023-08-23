@@ -20,6 +20,9 @@ add_subdirectory(external/plog)
 # GLM
 add_subdirectory(external/glm)
 
+# Audio
+add_subdirectory(external/portaudio)
+
 add_executable(Symbios)
 
 target_sources(Symbios PRIVATE
@@ -93,6 +96,9 @@ if(NOT XCODE)
 
         # Windowing
         glfw
+
+        # Audio
+        PortAudio
     )
 endif()
 
