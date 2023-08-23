@@ -21,7 +21,7 @@ namespace Symbios
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
             return std::filesystem::current_path()
                        .string() +
-                   "../";
+                   "/..";
 #endif
 
 #ifdef BUILD_FOR_IOS
