@@ -46,13 +46,15 @@ namespace Symbios
             private:
                 std::shared_ptr<Context> _context;
                 std::shared_ptr<RenderPass> _renderPass;
-                std::shared_ptr<CommandBuffer> _commandBuffer;
+                std::vector<std::shared_ptr<CommandBuffer>> _commandBuffers;
 
                 std::unique_ptr<Pipeline> _pipeline;
 
-                VkSemaphore imageAvailableSemaphore;
-                VkSemaphore renderFinishedSemaphore;
-                VkFence inFlightFence;
+                std::vector<VkSemaphore> imageAvailableSemaphores;
+                std::vector<VkSemaphore> renderFinishedSemaphores;
+                std::vector<VkFence> inFlightFences;
+
+                uint32_t _currentFrame = 0;
             };
         }
     }
