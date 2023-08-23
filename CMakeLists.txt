@@ -17,6 +17,9 @@ endif()
 # Logging
 add_subdirectory(external/plog)
 
+# GLM
+add_subdirectory(external/glm)
+
 add_executable(Symbios)
 
 target_sources(Symbios PRIVATE
@@ -60,6 +63,7 @@ target_include_directories(Symbios PRIVATE
     src/graphics/renderpasses
     src/graphics/commandbuffers
     src/graphics/renderers
+    src/graphics/data
 
     # Filesystem
     src/filesystem
