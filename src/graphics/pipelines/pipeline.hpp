@@ -40,7 +40,7 @@ namespace Symbios
                  * @param context
                  * @param renderPass
                  */
-                Pipeline(Symbios::Core::Context *context, Symbios::Graphics::RenderPasses::RenderPass *renderPass);
+                Pipeline(Context *context, RenderPass *renderPass);
 
                 /**
                  * @brief Destroy the Pipeline object
@@ -57,7 +57,7 @@ namespace Symbios
 
             private:
                 Context *_context;
-                Shader *_shader;
+                std::unique_ptr<Shader> _shader;
                 VkPipelineLayout _pipelineLayout;
                 VkPipeline _pipeline;
             };

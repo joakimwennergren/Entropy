@@ -49,7 +49,7 @@ public:
         }
 
         _context = new Context(_window);
-        _renderer = new Renderer(_context);
+        _renderer = std::make_unique<Renderer>(_context);
     }
 
     /**
@@ -77,8 +77,8 @@ public:
     }
 
 private:
-    Symbios::Core::Context *_context;
-    Symbios::Graphics::Renderers::Renderer *_renderer;
+    Context *_context;
+    std::unique_ptr<Renderer> _renderer;
     GLFWwindow *_window;
 
 private:

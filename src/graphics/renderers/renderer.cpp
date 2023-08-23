@@ -8,7 +8,7 @@ Renderer::Renderer(Context *context)
 
     _renderPass = new Symbios::Graphics::RenderPasses::RenderPass(_context);
 
-    _pipeline = new Symbios::Graphics::Pipelines::Pipeline(_context, _renderPass);
+    _pipeline = std::make_unique<Pipeline>(_context, _renderPass);
 
     _commandBuffer = new Symbios::Graphics::CommandBuffers::CommandBuffer(_context);
 
@@ -25,10 +25,6 @@ Renderer::Renderer(Context *context)
     {
         throw std::runtime_error("failed to create semaphores!");
     }
-}
-
-Renderer::~Renderer()
-{
 }
 
 void Renderer::Render()

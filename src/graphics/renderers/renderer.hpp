@@ -6,7 +6,9 @@
 #include "commandbuffer.hpp"
 
 using namespace Symbios::Core;
-using namespace Symbios::Graphics;
+using namespace Symbios::Graphics::Pipelines;
+using namespace Symbios::Graphics::RenderPasses;
+using namespace Symbios::Graphics::CommandBuffers;
 
 namespace Symbios
 {
@@ -18,15 +20,13 @@ namespace Symbios
             {
             public:
                 Renderer(Context *context);
-                ~Renderer();
-
                 void Render();
 
             private:
                 Context *_context;
-                Symbios::Graphics::RenderPasses::RenderPass *_renderPass;
-                Symbios::Graphics::Pipelines::Pipeline *_pipeline;
-                Symbios::Graphics::CommandBuffers::CommandBuffer *_commandBuffer;
+                RenderPass *_renderPass;
+                std::unique_ptr<Pipeline> _pipeline;
+                CommandBuffer *_commandBuffer;
 
                 VkSemaphore imageAvailableSemaphore;
                 VkSemaphore renderFinishedSemaphore;

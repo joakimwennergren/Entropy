@@ -8,8 +8,8 @@ Pipeline::Pipeline(Context *context, RenderPass *renderPass)
     _context = context;
 
     // Create Shader and store it
-    auto shader = new Shaders::Shader(Filesystem::GetProjectBasePath() + "/shaders/basic/vert.spv", Filesystem::GetProjectBasePath() + "/shaders/basic/frag.spv", context);
-    _shader = shader;
+
+    _shader = std::make_unique<Shader>(Filesystem::GetProjectBasePath() + "/shaders/basic/vert.spv", Filesystem::GetProjectBasePath() + "/shaders/basic/frag.spv", context);
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
