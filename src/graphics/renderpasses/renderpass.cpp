@@ -18,7 +18,7 @@ using namespace Symbios::Graphics::RenderPasses;
  *
  * @param context
  */
-RenderPass::RenderPass(Symbios::Core::Context *context)
+RenderPass::RenderPass(std::shared_ptr<Context> context)
 {
     this->_context = context;
 
@@ -91,7 +91,7 @@ RenderPass::~RenderPass()
  * @param commandBuffer
  * @param imageIndex
  */
-void RenderPass::Begin(Symbios::Graphics::CommandBuffers::CommandBuffer *commandBuffer, uint32_t imageIndex)
+void RenderPass::Begin(std::shared_ptr<CommandBuffer> commandBuffer, uint32_t imageIndex)
 {
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -113,7 +113,7 @@ void RenderPass::Begin(Symbios::Graphics::CommandBuffers::CommandBuffer *command
  *
  * @param commandBuffer
  */
-void RenderPass::End(Symbios::Graphics::CommandBuffers::CommandBuffer *commandBuffer)
+void RenderPass::End(std::shared_ptr<CommandBuffer> commandBuffer)
 {
     vkCmdEndRenderPass(commandBuffer->GetCommandBuffer());
 }

@@ -19,14 +19,36 @@ namespace Symbios
             class Renderer
             {
             public:
-                Renderer(Context *context);
+                /**
+                 * @brief Construct a new Renderer object
+                 *
+                 */
+                Renderer() = default;
+                /**
+                 * @brief Construct a new Renderer object
+                 *
+                 * @param context
+                 */
+                Renderer(std::shared_ptr<Context> context);
+
+                /**
+                 * @brief
+                 *
+                 */
                 void Render();
 
+                /**
+                 * @brief
+                 *
+                 */
+                ~Renderer();
+
             private:
-                Context *_context;
-                RenderPass *_renderPass;
+                std::shared_ptr<Context> _context;
+                std::shared_ptr<RenderPass> _renderPass;
+                std::shared_ptr<CommandBuffer> _commandBuffer;
+
                 std::unique_ptr<Pipeline> _pipeline;
-                CommandBuffer *_commandBuffer;
 
                 VkSemaphore imageAvailableSemaphore;
                 VkSemaphore renderFinishedSemaphore;

@@ -31,7 +31,6 @@ namespace Symbios
                  *
                  */
                 Shader() = default;
-
                 /**
                  * @brief Construct a new Shader object
                  *
@@ -39,7 +38,7 @@ namespace Symbios
                  * @param frag
                  * @param context
                  */
-                Shader(const std::string vert, const std::string frag, Symbios::Core::Context *context);
+                Shader(std::shared_ptr<Context> context, const std::string vert, const std::string frag);
 
                 /**
                  * @brief Destroy the Shader object
@@ -93,7 +92,7 @@ namespace Symbios
                 VkShaderModule BuildShader(std::vector<char> code);
 
             private:
-                Context *_context;
+                std::shared_ptr<Context> _context;
                 std::vector<char> _vertCode;
                 std::vector<char> _fragCode;
                 VkShaderModule _shaderModuleVert;

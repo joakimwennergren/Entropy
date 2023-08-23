@@ -27,7 +27,7 @@ namespace Symbios
                  *
                  * @param context
                  */
-                RenderPass(Context *context);
+                RenderPass(std::shared_ptr<Context> context);
 
                 /**
                  * @brief Destroy the Render Pass object
@@ -41,14 +41,14 @@ namespace Symbios
                  * @param commandBuffer
                  * @param imageIndex
                  */
-                void Begin(CommandBuffer *commandBuffer, uint32_t imageIndex);
+                void Begin(std::shared_ptr<CommandBuffer> commandBuffer, uint32_t imageIndex);
 
                 /**
                  * @brief
                  *
                  * @param commandBuffer
                  */
-                void End(CommandBuffer *commandBuffer);
+                void End(std::shared_ptr<CommandBuffer> commandBuffer);
 
                 /**
                  * @brief Get the Render Pass object
@@ -59,7 +59,7 @@ namespace Symbios
 
             private:
                 void CreateFramebuffers();
-                Context *_context;
+                std::shared_ptr<Context> _context;
                 VkRenderPass _renderPass;
                 std::vector<VkFramebuffer> _swapChainFramebuffers;
             };

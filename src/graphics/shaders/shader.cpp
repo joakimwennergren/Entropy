@@ -2,7 +2,7 @@
 
 using namespace Symbios::Graphics::Shaders;
 
-Shader::Shader(const std::string vert, const std::string frag, Context *context)
+Shader::Shader(std::shared_ptr<Context> context, const std::string vert, const std::string frag)
 {
     this->_context = context;
 

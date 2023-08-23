@@ -60,6 +60,12 @@ namespace Symbios
         {
         public:
             /**
+             * @brief Construct a new Context object
+             *
+             */
+            Context() = default;
+
+            /**
              * @brief
              *
              */

@@ -82,9 +82,9 @@ Context::~Context()
         vkDestroyImageView(_device, imageView, nullptr);
     }
     vkDestroySwapchainKHR(this->_device, swapChain, nullptr);
+    vkDestroyDevice(this->_device, nullptr);
     vkDestroySurfaceKHR(this->_instance, this->_surface, nullptr);
     vkDestroyInstance(this->_instance, nullptr);
-    vkDestroyDevice(this->_device, nullptr);
 #ifdef USE_VALIDATION_LAYERS
     DestroyDebugUtilsMessengerEXT(_instance, _debugMessenger, nullptr);
 #endif

@@ -7,7 +7,7 @@ using namespace Symbios::Graphics::CommandBuffers;
  *
  * @param context
  */
-CommandBuffer::CommandBuffer(Context *context)
+CommandBuffer::CommandBuffer(std::shared_ptr<Context> context)
 {
     _context = context;
 

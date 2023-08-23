@@ -40,7 +40,7 @@ namespace Symbios
                  *
                  * @param context
                  */
-                CommandBuffer(Context *context);
+                CommandBuffer(std::shared_ptr<Context> context);
 
                 /**
                  * @brief Destroy the Command Buffer object
@@ -69,7 +69,7 @@ namespace Symbios
                 VkCommandBuffer GetCommandBuffer() { return this->_commandBuffer; };
 
             private:
-                Context *_context;
+                std::shared_ptr<Context> _context;
                 // @todo should this be here??
                 VkCommandPool _commandPool;
                 VkCommandBuffer _commandBuffer;

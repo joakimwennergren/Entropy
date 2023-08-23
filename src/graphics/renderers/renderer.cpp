@@ -2,15 +2,15 @@
 
 using namespace Symbios::Graphics::Renderers;
 
-Renderer::Renderer(Context *context)
+Renderer::Renderer(std::shared_ptr<Context> context)
 {
     _context = context;
 
-    _renderPass = new Symbios::Graphics::RenderPasses::RenderPass(_context);
+    _renderPass = std::make_shared<RenderPass>(_context);
 
     _pipeline = std::make_unique<Pipeline>(_context, _renderPass);
 
-    _commandBuffer = new Symbios::Graphics::CommandBuffers::CommandBuffer(_context);
+    _commandBuffer = std::make_shared<CommandBuffer>(_context);
 
     VkSemaphoreCreateInfo semaphoreInfo{};
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -25,6 +25,13 @@ Renderer::Renderer(Context *context)
     {
         throw std::runtime_error("failed to create semaphores!");
     }
+}
+
+Renderer::~Renderer()
+{
+    vkDestroySemaphore(_context->GetLogicalDevice(), renderFinishedSemaphore, nullptr);
+    vkDestroySemaphore(_context->GetLogicalDevice(), imageAvailableSemaphore, nullptr);
+    vkDestroyFence(_context->GetLogicalDevice(), inFlightFence, nullptr);
 }
 
 void Renderer::Render()

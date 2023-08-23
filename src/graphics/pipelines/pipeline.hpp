@@ -37,10 +37,16 @@ namespace Symbios
                 /**
                  * @brief Construct a new Pipeline object
                  *
+                 */
+                Pipeline() = default;
+
+                /**
+                 * @brief Construct a new Pipeline object
+                 *
                  * @param context
                  * @param renderPass
                  */
-                Pipeline(Context *context, RenderPass *renderPass);
+                Pipeline(std::shared_ptr<Context> context, std::shared_ptr<RenderPass> renderPass);
 
                 /**
                  * @brief Destroy the Pipeline object
@@ -56,7 +62,7 @@ namespace Symbios
                 inline VkPipeline GetPipeline() { return this->_pipeline; };
 
             private:
-                Context *_context;
+                std::shared_ptr<Context> _context;
                 std::unique_ptr<Shader> _shader;
                 VkPipelineLayout _pipelineLayout;
                 VkPipeline _pipeline;

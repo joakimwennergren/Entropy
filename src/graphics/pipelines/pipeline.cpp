@@ -2,14 +2,14 @@
 
 using namespace Symbios::Graphics::Pipelines;
 
-Pipeline::Pipeline(Context *context, RenderPass *renderPass)
+Pipeline::Pipeline(std::shared_ptr<Context> context, std::shared_ptr<RenderPass> renderPass)
 {
     // Store the context
     _context = context;
 
     // Create Shader and store it
 
-    _shader = std::make_unique<Shader>(Filesystem::GetProjectBasePath() + "/shaders/basic/vert.spv", Filesystem::GetProjectBasePath() + "/shaders/basic/frag.spv", context);
+    _shader = std::make_unique<Shader>(context, Filesystem::GetProjectBasePath() + "/shaders/basic/vert.spv", Filesystem::GetProjectBasePath() + "/shaders/basic/frag.spv");
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;

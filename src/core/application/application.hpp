@@ -48,7 +48,7 @@ public:
             exit(EXIT_FAILURE);
         }
 
-        _context = new Context(_window);
+        _context = std::make_shared<Context>(_window);
         _renderer = std::make_unique<Renderer>(_context);
     }
 
@@ -77,7 +77,7 @@ public:
     }
 
 private:
-    Context *_context;
+    std::shared_ptr<Context> _context;
     std::unique_ptr<Renderer> _renderer;
     GLFWwindow *_window;
 
@@ -190,9 +190,9 @@ public:
 
         CA::MetalLayer *layer = _pMtkView->currentDrawable()->layer();
 
-        auto context = new Symbios::Core::Context(layer, frame);
+        _context = std::make_shared<Context>(layer, frame);
 
-        auto _renderer = new Symbios::Graphics::Renderers::Renderer(context);
+        _renderer = new Symbios::Graphics::Renderers::Renderer(context);
 
         _pViewDelegate->_renderer = _renderer;
 
@@ -218,7 +218,7 @@ public:
     }
 
 private:
-    Context *_context;
+    std::shared_ptr<Context> _context;
     UI::Window *_pWindow;
     UI::ViewController *_pViewController;
     MTK::View *_pMtkView;
