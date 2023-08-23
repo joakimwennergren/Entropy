@@ -33,6 +33,7 @@ target_sources(Symbios PRIVATE
     src/graphics/renderpasses/renderpass.cpp
     src/graphics/commandbuffers/commandbuffer.cpp
     src/graphics/renderers/renderer.cpp
+    src/graphics/buffers/buffer.cpp
 
     # Main entrypoint
     src/main.cpp
@@ -64,6 +65,7 @@ target_include_directories(Symbios PRIVATE
     src/graphics/commandbuffers
     src/graphics/renderers
     src/graphics/data
+    src/graphics/buffers
 
     # Filesystem
     src/filesystem
@@ -79,7 +81,8 @@ target_link_libraries(Symbios
     # Logging
     plog
 
-    # Networking
+    # GLM
+    glm
 )
 
 if(NOT XCODE)
