@@ -37,6 +37,10 @@ Renderer::Renderer(std::shared_ptr<Context> context)
             exit(EXIT_FAILURE);
         }
     }
+
+    // @todo temp!!!
+    _vertexBuffer = new Buffer();
+    _vertexBuffer->New<std::vector<Vertex>>(_context, vertices);
 }
 
 Renderer::~Renderer()
@@ -100,7 +104,11 @@ void Renderer::Render()
     scissor.extent = _context->GetSwapChainExtent();
     vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissor);
 
-    vkCmdDraw(currentCmdBuffer, 3, 1, 0, 0);
+    VkBuffer vertexBuffers[] = {_vertexBuffer->GetBuffer()};
+    VkDeviceSize offsets[] = {0};
+    vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
+
+    vkCmdDraw(currentCmdBuffer, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
 
     _renderPass->End(_commandBuffers[_currentFrame]);
 

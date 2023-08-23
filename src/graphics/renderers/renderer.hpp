@@ -3,9 +3,12 @@
 #include "context.hpp"
 #include "renderpass.hpp"
 #include "pipeline.hpp"
+#include "vertex.hpp"
+#include "buffer.hpp"
 #include "commandbuffer.hpp"
 
 using namespace Symbios::Core;
+using namespace Symbios::Graphics::Buffers;
 using namespace Symbios::Graphics::Pipelines;
 using namespace Symbios::Graphics::RenderPasses;
 using namespace Symbios::Graphics::CommandBuffers;
@@ -62,6 +65,13 @@ namespace Symbios
 
                 uint32_t _currentFrame = 0;
                 bool _framebufferResized = false;
+
+                Buffer *_vertexBuffer;
+
+                const std::vector<Vertex> vertices = {
+                    {{0.0f, -0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+                    {{0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+                    {{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}}};
             };
         }
     }
