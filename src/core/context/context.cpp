@@ -126,16 +126,11 @@ void Context::CreateInstance()
 
     for (const auto &extension : extensionProps)
     {
-        std::cout << extension.extensionName << std::endl;
         extensions.push_back(extension.extensionName);
     }
 
 #ifdef BUILD_FOR_MACOS
-    // extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-#endif //__APPLE__
-
-#ifdef USE_VALIDATION_LAYERS
-    // extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+    extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
 #endif
 
     createInfo.enabledExtensionCount = (uint32_t)extensions.size();
@@ -144,8 +139,6 @@ void Context::CreateInstance()
 #ifdef USE_VALIDATION_LAYERS
     if (CheckValidationLayerSupport())
     {
-        const std::vector<const char *> validationLayers = {
-            "VK_LAYER_KHRONOS_validation"};
         createInfo.enabledLayerCount = (uint32_t)validationLayers.size();
         createInfo.ppEnabledLayerNames = validationLayers.data();
     }
@@ -178,9 +171,6 @@ void Context::CreateInstance()
 
 bool Context::CheckValidationLayerSupport()
 {
-    const std::vector<const char *> validationLayers = {
-        "VK_LAYER_KHRONOS_validation"};
-
     uint32_t layerCount;
     vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 

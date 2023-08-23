@@ -10,7 +10,11 @@
 #include <plog/Appenders/ColorConsoleAppender.h>
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
+
 #include <GLFW/glfw3.h>
+
+using namespace Symbios::Core;
+using namespace Symbios::Graphics::Renderers;
 
 /**
  * @brief Application class
@@ -19,33 +23,39 @@
 class Application
 {
 public:
+    /**
+     * @brief Construct a new Application object
+     *
+     */
     Application()
     {
-        // Initialize logger
         static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
         plog::init(plog::verbose, &consoleAppender);
 
-        // Initialize GLFW
         if (!glfwInit())
         {
             PLOG_FATAL << "Could not initialize GLFW library!";
-            return;
+            exit(EXIT_FAILURE);
         }
 
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        // Create a windowed mode window
         _window = glfwCreateWindow(640, 480, "Symbios dev application", NULL, NULL);
 
         if (!_window)
         {
             PLOG_FATAL << "Could not create window!";
             glfwTerminate();
-            return;
+            exit(EXIT_FAILURE);
         }
 
-        _context = new Symbios::Core::Context(_window);
-        _renderer = new Symbios::Graphics::Renderers::Renderer(_context);
+        _context = new Context(_window);
+        _renderer = new Renderer(_context);
     }
+
+    /**
+     * @brief Destroy the Application object
+     *
+     */
     ~Application()
     {
         glfwDestroyWindow(_window);
@@ -53,14 +63,16 @@ public:
     }
 
 public:
-    // virtual void Initialize() = 0;
+    /**
+     * @brief
+     *
+     */
     inline void Run()
     {
         while (!glfwWindowShouldClose(_window))
         {
-            _renderer->Render();
-
             glfwPollEvents();
+            _renderer->Render();
         }
     }
 
@@ -83,27 +95,45 @@ private:
 class MTKViewDelegate : public MTK::ViewDelegate
 {
 public:
-    MTKViewDelegate(MTL::Device *pDevice) : MTK::ViewDelegate()
+    /**
+     * @brief Construct a new MTKViewDelegate object
+     *
+     */
+    MTKViewDelegate() : MTK::ViewDelegate()
     {
     }
+
+    /**
+     * @brief Destroy the MTKViewDelegate object
+     *
+     */
     virtual ~MTKViewDelegate() override
     {
     }
+
+private:
+    /**
+     * @brief
+     *
+     * @param pView
+     */
     inline virtual void drawInMTKView(MTK::View *pView) override
     {
         _renderer->Render();
     }
-    Symbios::Graphics::Renderers::Renderer *_renderer;
 
-private:
+    Symbios::Graphics::Renderers::Renderer *_renderer;
 };
 
 class Application : public UI::ApplicationDelegate
 {
 public:
+    /**
+     * @brief Construct a new Application object
+     *
+     */
     Application()
     {
-        // Initialize logger
         static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
         plog::init(plog::verbose, &consoleAppender);
 
@@ -111,6 +141,11 @@ public:
 
         UI::ApplicationMain(0, 0, this);
     }
+
+    /**
+     * @brief Destroy the Application object
+     *
+     */
     ~Application()
     {
         _pMtkView->release();
@@ -121,6 +156,14 @@ public:
         this->_autoreleasePool->release();
     }
 
+    /**
+     * @brief
+     *
+     * @param pApp
+     * @param options
+     * @return true
+     * @return false
+     */
     inline bool applicationDidFinishLaunching(UI::Application *pApp, NS::Value *options) override
     {
         CGRect frame = UI::Screen::mainScreen()->bounds();
@@ -135,7 +178,7 @@ public:
         _pMtkView->setColorPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
         _pMtkView->setClearColor(MTL::ClearColor::Make(1.0, 1.0, 1.0, 1.0));
 
-        _pViewDelegate = new MTKViewDelegate(_pDevice);
+        _pViewDelegate = new MTKViewDelegate();
         _pMtkView->setDelegate(_pViewDelegate);
 
         UI::View *mtkView = (UI::View *)_pMtkView;
@@ -145,9 +188,7 @@ public:
 
         _pWindow->makeKeyAndVisible();
 
-        CA::MetalLayer *layer;
-
-        layer = _pMtkView->currentDrawable()->layer();
+        CA::MetalLayer *layer = _pMtkView->currentDrawable()->layer();
 
         auto context = new Symbios::Core::Context(layer, frame);
 
@@ -157,20 +198,27 @@ public:
 
         return true;
     }
+
+    /**
+     * @brief
+     *
+     * @param pApp
+     */
     inline void applicationWillTerminate(UI::Application *pApp) override
     {
     }
 
 public:
-    // virtual void Initialize() = 0;
+    /**
+     * @brief
+     *
+     */
     inline void Run()
     {
     }
 
 private:
-    Symbios::Core::Context *_context;
-
-private:
+    Context *_context;
     UI::Window *_pWindow;
     UI::ViewController *_pViewController;
     MTK::View *_pMtkView;

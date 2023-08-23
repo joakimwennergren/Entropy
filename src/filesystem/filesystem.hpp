@@ -14,7 +14,7 @@ namespace Symbios
         static std::string GetProjectBasePath()
         {
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
-            return std::filesystem::current_path().string() + "/../";
+            return std::filesystem::current_path().string() + "/..";
 #endif
 
 #ifdef BUILD_FOR_IOS

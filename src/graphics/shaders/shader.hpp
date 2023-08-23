@@ -1,10 +1,21 @@
+/**
+ * @file shader.hpp
+ * @author Joakim Wennergren (joakim.wennergren@databeams.se)
+ * @brief
+ * @version 0.1
+ * @date 2023-08-22
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
 #pragma once
 
 #include <fstream>
-#include <vulkan/vulkan.hpp>
-#include <plog/Log.h>
 
 #include "context.hpp"
+
+using namespace Symbios::Core;
 
 namespace Symbios
 {
@@ -15,26 +26,78 @@ namespace Symbios
             class Shader
             {
             public:
+                /**
+                 * @brief Construct a new Shader object
+                 *
+                 */
                 Shader() = default;
+
+                /**
+                 * @brief Construct a new Shader object
+                 *
+                 * @param vert
+                 * @param frag
+                 * @param context
+                 */
                 Shader(const std::string vert, const std::string frag, Symbios::Core::Context *context);
 
+                /**
+                 * @brief Destroy the Shader object
+                 *
+                 */
                 ~Shader();
 
-                // Getters
-                std::vector<char> GetVertCode() { return this->_vertCode; };
-                std::vector<char> GetFragCode() { return this->_fragCode; };
+                /**
+                 * @brief Get the Vert Code object
+                 *
+                 * @return std::vector<char>
+                 */
+                inline std::vector<char> GetVertCode() { return this->_vertCode; };
 
-                VkShaderModule shaderModuleVert;
-                VkShaderModule shaderModuleFrag;
+                /**
+                 * @brief Get the Frag Code object
+                 *
+                 * @return std::vector<char>
+                 */
+                inline std::vector<char> GetFragCode() { return this->_fragCode; };
+
+                /**
+                 * @brief Get the Vert Shader Module object
+                 *
+                 * @return VkShaderModule
+                 */
+                inline VkShaderModule GetVertShaderModule() { return this->_shaderModuleVert; };
+
+                /**
+                 * @brief Get the Frag Shader Module object
+                 *
+                 * @return VkShaderModule
+                 */
+                inline VkShaderModule GetFragShaderModule() { return this->_shaderModuleFrag; };
 
             private:
+                /**
+                 * @brief
+                 *
+                 * @param filename
+                 * @return std::vector<char>
+                 */
                 std::vector<char> ReadFile(std::string filename);
+
+                /**
+                 * @brief
+                 *
+                 * @param code
+                 * @return VkShaderModule
+                 */
                 VkShaderModule BuildShader(std::vector<char> code);
 
             private:
+                Context *_context;
                 std::vector<char> _vertCode;
                 std::vector<char> _fragCode;
-                Symbios::Core::Context* _context;
+                VkShaderModule _shaderModuleVert;
+                VkShaderModule _shaderModuleFrag;
             };
         }
     }

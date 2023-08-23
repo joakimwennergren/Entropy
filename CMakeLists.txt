@@ -17,8 +17,7 @@ endif()
 # Logging
 add_subdirectory(external/plog)
 
-# Testing
-add_subdirectory(external/Catch2)
+
 
 # Networking
 add_executable(
@@ -30,7 +29,6 @@ add_executable(
 target_sources(Symbios PRIVATE
 
     # Core
-    src/core/application/application.cpp
     src/core/context/context.cpp
 
     # Graphics
@@ -55,6 +53,8 @@ if(NOT XCODE)
     )
 endif()
 
+file(GLOB_RECURSE TEST_SOURCES "tests/*.cpp")
+
 target_include_directories(Symbios PRIVATE
 
     src
@@ -76,6 +76,8 @@ target_include_directories(Symbios PRIVATE
 
     # Metal-CPP
     external/metal-cpp/
+
+    ${TEST_SOURCES}
 )
 
 target_compile_features(Symbios PRIVATE cxx_std_17)

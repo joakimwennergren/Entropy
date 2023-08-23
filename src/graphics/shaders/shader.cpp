@@ -2,7 +2,7 @@
 
 using namespace Symbios::Graphics::Shaders;
 
-Shader::Shader(const std::string vert, const std::string frag, Symbios::Core::Context *context)
+Shader::Shader(const std::string vert, const std::string frag, Context *context)
 {
     this->_context = context;
 
@@ -11,15 +11,15 @@ Shader::Shader(const std::string vert, const std::string frag, Symbios::Core::Co
 
     if (this->_vertCode.size() > 0 && this->_fragCode.size() > 0)
     {
-        this->shaderModuleVert = this->BuildShader(this->_vertCode);
-        this->shaderModuleFrag = this->BuildShader(this->_fragCode);
+        this->_shaderModuleVert = this->BuildShader(this->_vertCode);
+        this->_shaderModuleFrag = this->BuildShader(this->_fragCode);
     }
 }
 
 Shader::~Shader()
 {
-    vkDestroyShaderModule(this->_context->GetLogicalDevice(), this->shaderModuleVert, nullptr);
-    vkDestroyShaderModule(this->_context->GetLogicalDevice(), this->shaderModuleFrag, nullptr);
+    vkDestroyShaderModule(this->_context->GetLogicalDevice(), this->_shaderModuleVert, nullptr);
+    vkDestroyShaderModule(this->_context->GetLogicalDevice(), this->_shaderModuleFrag, nullptr);
 }
 
 std::vector<char> Shader::ReadFile(std::string filename)
