@@ -38,9 +38,12 @@ Renderer::Renderer(std::shared_ptr<Context> context)
         }
     }
 
-    // @todo temp!!!
-    _vertexBuffer = new Buffer();
-    _vertexBuffer->New<std::vector<Vertex>>(_context, vertices);
+    // Create buffers @todo temp!!!
+    _vertexBuffer = std::make_unique<Buffer>();
+    _vertexBuffer->CreateVertexBuffer(vertices);
+
+    _indexBuffer = std::make_unique<Buffer>();
+    _indexBuffer->CreateIndexBufferUint16(indices);
 }
 
 Renderer::~Renderer()
@@ -108,7 +111,9 @@ void Renderer::Render()
     VkDeviceSize offsets[] = {0};
     vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
 
-    vkCmdDraw(currentCmdBuffer, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
+    vkCmdBindIndexBuffer(currentCmdBuffer, _indexBuffer->GetBuffer(), 0, VK_INDEX_TYPE_UINT16);
+
+    vkCmdDrawIndexed(currentCmdBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 
     _renderPass->End(_commandBuffers[_currentFrame]);
 

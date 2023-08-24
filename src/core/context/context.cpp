@@ -19,6 +19,7 @@ Context::Context(CA::MetalLayer *layer, CGRect frame)
     this->CreateLogicalDevice();
     this->CreateSwapChain(frame);
     this->CreateImageViews();
+    this->CreateCommandPool();
 }
 #endif
 
@@ -38,6 +39,7 @@ Context::Context(GLFWwindow *window)
     this->CreateLogicalDevice();
     this->CreateSwapChain(window);
     this->CreateImageViews();
+    this->CreateCommandPool();
 }
 #endif
 
@@ -57,6 +59,7 @@ Context::Context(GLFWwindow *window)
     this->CreateLogicalDevice();
     this->CreateSwapChain(window);
     this->CreateImageViews();
+    this->CreateCommandPool();
 }
 #endif
 
@@ -76,6 +79,7 @@ Context::Context(GLFWwindow *window)
     this->CreateLogicalDevice();
     this->CreateSwapChain(window);
     this->CreateImageViews();
+    this->CreateCommandPool();
 }
 #endif
 
@@ -85,6 +89,8 @@ Context::Context(GLFWwindow *window)
  */
 Context::~Context()
 {
+    vkDestroyCommandPool(_device, _commandPool, nullptr);
+
     for (auto imageView : _swapChainImageViews)
     {
         vkDestroyImageView(_device, imageView, nullptr);
@@ -864,5 +870,21 @@ void Context::CreateImageViews()
             PLOG_FATAL << "Failed to create image views!";
             exit(EXIT_FAILURE);
         }
+    }
+}
+
+void Context::CreateCommandPool()
+{
+    Context::QueueFamilyIndices queueFamilyIndices = FindQueueFamilies(_physicalDevice);
+
+    VkCommandPoolCreateInfo poolInfo{};
+    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
+
+    if (vkCreateCommandPool(_device, &poolInfo, nullptr, &_commandPool) != VK_SUCCESS)
+    {
+        PLOG_ERROR << "Failed to create command pool!";
+        exit(EXIT_FAILURE);
     }
 }

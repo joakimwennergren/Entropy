@@ -219,6 +219,13 @@ namespace Symbios
             VkQueue GetPresentQueue() { return this->_presentQueue; };
 
             /**
+             * @brief Get the Command Pool object
+             *
+             * @return VkCommandPool
+             */
+            VkCommandPool GetCommandPool() { return this->_commandPool; };
+
+            /**
              * @brief
              *
              * @param device
@@ -328,6 +335,12 @@ namespace Symbios
              */
             VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes);
 
+            /**
+             * @brief Create a Command Pool object
+             *
+             */
+            void CreateCommandPool();
+
 #ifdef BUILD_FOR_IOS
             /**
              * @brief
@@ -393,6 +406,9 @@ namespace Symbios
             // Queues
             VkQueue _graphicsQueue;
             VkQueue _presentQueue;
+
+            // CommandBuffer Pool
+            VkCommandPool _commandPool;
 
 #if defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_MACOS)
             GLFWwindow *_window;

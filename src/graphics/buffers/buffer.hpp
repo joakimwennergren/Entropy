@@ -13,6 +13,7 @@
 
 #include <vulkan/vulkan.hpp>
 #include "context.hpp"
+#include "vertex.hpp"
 
 using namespace Symbios::Core;
 
@@ -30,52 +31,66 @@ namespace Symbios
             class Buffer
             {
             public:
+                /**
+                 * @brief Construct a new Buffer object
+                 *
+                 */
                 Buffer() = default;
+
+                /**
+                 * @brief Destroy the Buffer object
+                 *
+                 */
                 ~Buffer();
 
-                template <typename T>
-                inline void New(std::shared_ptr<Context> context, T data)
-                {
+                /**
+                 * @brief Create a Vertex Buffer object
+                 *
+                 */
+                void CreateVertexBuffer(std::vector<Vertex> vertices);
 
-                    _context = context;
+                /**
+                 * @brief Create a Index Buffer object
+                 *
+                 */
+                void CreateIndexBufferUint16(std::vector<uint16_t> indices);
 
-                    VkBufferCreateInfo bufferInfo{};
-                    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-                    bufferInfo.size = sizeof(data[0]) * data.size();
-                    bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-                    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+                /**
+                 * @brief
+                 *
+                 * @param srcBuffer
+                 * @param dstBuffer
+                 * @param size
+                 */
+                void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
-                    if (vkCreateBuffer(_context->GetLogicalDevice(), &bufferInfo, nullptr, &_buffer) != VK_SUCCESS)
-                    {
-                        PLOG_ERROR << "Failed to create buffer!";
-                        exit(EXIT_FAILURE);
-                    }
-
-                    VkMemoryRequirements memRequirements;
-                    vkGetBufferMemoryRequirements(_context->GetLogicalDevice(), _buffer, &memRequirements);
-
-                    VkMemoryAllocateInfo allocInfo{};
-                    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-                    allocInfo.allocationSize = memRequirements.size;
-                    allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-
-                    if (vkAllocateMemory(_context->GetLogicalDevice(), &allocInfo, nullptr, &_bufferMemory) != VK_SUCCESS)
-                    {
-                        PLOG_ERROR << "Failed to allocate buffer memory!";
-                        exit(EXIT_FAILURE);
-                    }
-
-                    vkBindBufferMemory(_context->GetLogicalDevice(), _buffer, _bufferMemory, 0);
-
-                    void *datatemp;
-                    vkMapMemory(_context->GetLogicalDevice(), _bufferMemory, 0, bufferInfo.size, 0, &datatemp);
-                    memcpy(datatemp, data.data(), (size_t)bufferInfo.size);
-                    vkUnmapMemory(_context->GetLogicalDevice(), _bufferMemory);
-                }
-
+                /**
+                 * @brief Get the Buffer object
+                 *
+                 * @return VkBuffer
+                 */
                 inline VkBuffer GetBuffer() { return this->_buffer; };
 
             private:
+                /**
+                 * @brief Create a Buffer object
+                 *
+                 * @param size
+                 * @param usage
+                 * @param properties
+                 * @param buffer
+                 * @param bufferMemory
+                 */
+                void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory);
+
+                /**
+                 * @brief
+                 *
+                 * @param typeFilter
+                 * @param properties
+                 * @return uint32_t
+                 */
+
                 uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
                 std::shared_ptr<Context> _context;
                 VkBuffer _buffer;
