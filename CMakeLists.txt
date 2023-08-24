@@ -12,6 +12,10 @@ if(NOT XCODE)
 
     # Windowing on desktop
     add_subdirectory(external/glfw)
+
+    # Audio
+    add_subdirectory(external/openal-soft)  
+
 endif()
 
 # Logging
@@ -20,8 +24,7 @@ add_subdirectory(external/plog)
 # GLM
 add_subdirectory(external/glm)
 
-# Audio
-add_subdirectory(external/openal-soft)
+
 
 add_executable(Symbios)
 
@@ -87,8 +90,6 @@ target_link_libraries(Symbios
     # GLM
     glm
 
-    # Audio
-    OpenAL
 )
 
 if(NOT XCODE)
@@ -101,6 +102,7 @@ if(NOT XCODE)
         glfw
 
         # Audio
+        OpenAL
     )
 endif()
 
@@ -118,12 +120,11 @@ if(XCODE)
         "-framework iosurface"
         "-framework coregraphics"
         "-framework quartzcore"
-        #"-framework CoreAudio"
-        #"-framework AudioToolbox"
-        #"-framework AVFoundation"
+        "-framework coreaudio"
+        "-framework audiotoolbox"
+        "-framework avfoundation"
     )
     include_directories(external/vulkan-headers)
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 12.0)
 endif()
 
 # Windows platform

@@ -11,7 +11,6 @@
 #pragma once
 
 #include "config.hpp"
-#include "mvpuniform.hpp"
 
 #ifdef BUILD_FOR_IOS
 #define VK_USE_PLATFORM_IOS_MVK
@@ -47,6 +46,8 @@
 #include <algorithm> // Necessary for std::clamp
 #include <optional>
 #include <set>
+
+#include "mvpuniform.hpp"
 
 namespace Symbios
 {
