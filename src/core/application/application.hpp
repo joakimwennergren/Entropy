@@ -49,6 +49,7 @@ public:
             glfwTerminate();
             exit(EXIT_FAILURE);
         }
+
         glfwSetWindowUserPointer(_window, this);
 
         glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);

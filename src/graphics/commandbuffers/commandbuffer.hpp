@@ -70,7 +70,7 @@ namespace Symbios
 
             private:
                 std::shared_ptr<Context> _context;
-                // @todo should this be here??
+                // @todo should this be here?? don't think so..
                 VkCommandPool _commandPool;
                 VkCommandBuffer _commandBuffer;
             };

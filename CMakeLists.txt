@@ -21,7 +21,7 @@ add_subdirectory(external/plog)
 add_subdirectory(external/glm)
 
 # Audio
-add_subdirectory(external/portaudio)
+add_subdirectory(external/openal-soft)
 
 add_executable(Symbios)
 
@@ -86,6 +86,9 @@ target_link_libraries(Symbios
 
     # GLM
     glm
+
+    # Audio
+    OpenAL
 )
 
 if(NOT XCODE)
@@ -98,7 +101,6 @@ if(NOT XCODE)
         glfw
 
         # Audio
-        PortAudio
     )
 endif()
 
