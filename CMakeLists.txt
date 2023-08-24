@@ -118,9 +118,9 @@ if(XCODE)
         "-framework iosurface"
         "-framework coregraphics"
         "-framework quartzcore"
-        "-framework CoreAudio"
-        "-framework AudioToolbox"
-        "-framework AVFoundation"
+        #"-framework CoreAudio"
+        #"-framework AudioToolbox"
+        #"-framework AVFoundation"
     )
     include_directories(external/vulkan-headers)
     set(CMAKE_OSX_DEPLOYMENT_TARGET 12.0)
