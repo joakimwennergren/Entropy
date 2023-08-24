@@ -11,6 +11,7 @@
 #pragma once
 
 #include "config.hpp"
+#include "mvpuniform.hpp"
 
 #ifdef BUILD_FOR_IOS
 #define VK_USE_PLATFORM_IOS_MVK
@@ -226,12 +227,26 @@ namespace Symbios
             VkCommandPool GetCommandPool() { return this->_commandPool; };
 
             /**
+             * @brief Get the Descriptor Sets object
+             *
+             * @return std::vector<VkDescriptorSet>
+             */
+            inline std::vector<VkDescriptorSet> GetDescriptorSets() { return this->_descriptorSets; };
+
+            /**
              * @brief
              *
              * @param device
              * @return QueueFamilyIndices
              */
             QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
+
+            /**
+             * @brief Create a Descriptor Sets object
+             *
+             * @param uniformBuffers
+             */
+            void CreateDescriptorSets(std::vector<VkBuffer> uniformBuffers);
 
             /**
              * @brief
@@ -341,6 +356,18 @@ namespace Symbios
              */
             void CreateCommandPool();
 
+            /**
+             * @brief
+             *
+             */
+            void CreateDescriptorPool();
+
+            /**
+             * @brief Construct a new void Create Descriptor Set Layout object
+             *
+             */
+            void CreateDescriptorSetLayout();
+
 #ifdef BUILD_FOR_IOS
             /**
              * @brief
@@ -407,8 +434,12 @@ namespace Symbios
             VkQueue _graphicsQueue;
             VkQueue _presentQueue;
 
-            // CommandBuffer Pool
+            // Pools
             VkCommandPool _commandPool;
+            VkDescriptorPool _descriptorPool;
+
+            VkDescriptorSetLayout _descriptorSetLayout;
+            std::vector<VkDescriptorSet> _descriptorSets;
 
 #if defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_MACOS)
             GLFWwindow *_window;

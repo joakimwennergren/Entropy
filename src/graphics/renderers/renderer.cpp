@@ -44,10 +44,31 @@ Renderer::Renderer(std::shared_ptr<Context> context)
 
     _indexBuffer = std::make_unique<Buffer>(_context);
     _indexBuffer->CreateIndexBufferUint16(indices);
+
+    VkDeviceSize bufferSize = sizeof(UniformBufferObject);
+
+    uniformBuffers.resize(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+    uniformBuffersMemory.resize(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+    uniformBuffersMapped.resize(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+
+    for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
+    {
+        Buffer::CreateBuffer(_context, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffers[i], uniformBuffersMemory[i]);
+
+        vkMapMemory(_context->GetLogicalDevice(), uniformBuffersMemory[i], 0, bufferSize, 0, &uniformBuffersMapped[i]);
+    }
+
+    _context->CreateDescriptorSets(uniformBuffers);
 }
 
 Renderer::~Renderer()
 {
+    for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
+    {
+        vkDestroyBuffer(_context->GetLogicalDevice(), uniformBuffers[i], nullptr);
+        vkFreeMemory(_context->GetLogicalDevice(), uniformBuffersMemory[i], nullptr);
+    }
+
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
         vkDestroySemaphore(_context->GetLogicalDevice(), _renderFinishedSemaphores[i], nullptr);
@@ -73,6 +94,8 @@ void Renderer::Render()
         _context->RecreateSwapChain();
 
         _renderPass = std::make_shared<RenderPass>(_context);
+
+        _framebufferResized = false;
 
         return;
     }
@@ -113,11 +136,17 @@ void Renderer::Render()
 
     vkCmdBindIndexBuffer(currentCmdBuffer, _indexBuffer->GetBuffer(), 0, VK_INDEX_TYPE_UINT16);
 
+    auto currentDescriptorSet = _context->GetDescriptorSets()[_currentFrame];
+
+    vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 0, nullptr);
+
     vkCmdDrawIndexed(currentCmdBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 
     _renderPass->End(_commandBuffers[_currentFrame]);
 
     _commandBuffers[_currentFrame]->EndRecording();
+
+    UpdateUniforms(_currentFrame);
 
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -156,4 +185,23 @@ void Renderer::Render()
     vkQueuePresentKHR(_context->GetPresentQueue(), &presentInfo);
 
     _currentFrame = (_currentFrame + 1) % MAX_CONCURRENT_FRAMES_IN_FLIGHT;
+}
+
+void Renderer::UpdateUniforms(uint32_t currentImage)
+{
+    static auto startTime = std::chrono::high_resolution_clock::now();
+
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
+    UniformBufferObject ubo{};
+    ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+    ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+    ubo.proj = glm::perspective(glm::radians(45.0f), _context->GetSwapChainExtent().width / (float)_context->GetSwapChainExtent().height, 0.1f, 10.0f);
+
+    ubo.proj[1][1] *= -1;
+
+    memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
 }

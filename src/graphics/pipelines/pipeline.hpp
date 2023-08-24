@@ -62,11 +62,19 @@ namespace Symbios
                  */
                 inline VkPipeline GetPipeline() { return this->_pipeline; };
 
+                /**
+                 * @brief Get the Pipeline Layout object
+                 *
+                 * @return VkPipelineLayout
+                 */
+                inline VkPipelineLayout GetPipelineLayout() { return this->_pipelineLayout; };
+
             private:
                 std::shared_ptr<Context> _context;
                 std::unique_ptr<Shader> _shader;
                 VkPipelineLayout _pipelineLayout;
                 VkPipeline _pipeline;
+                VkDescriptorSetLayout _descriptorSetLayout;
             };
         }
     }

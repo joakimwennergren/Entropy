@@ -20,6 +20,8 @@ Context::Context(CA::MetalLayer *layer, CGRect frame)
     this->CreateSwapChain(frame);
     this->CreateImageViews();
     this->CreateCommandPool();
+    this->CreateDescriptorPool();
+    this->CreateDescriptorSetLayout();
 }
 #endif
 
@@ -40,6 +42,8 @@ Context::Context(GLFWwindow *window)
     this->CreateSwapChain(window);
     this->CreateImageViews();
     this->CreateCommandPool();
+    this->CreateDescriptorPool();
+    this->CreateDescriptorSetLayout();
 }
 #endif
 
@@ -60,6 +64,8 @@ Context::Context(GLFWwindow *window)
     this->CreateSwapChain(window);
     this->CreateImageViews();
     this->CreateCommandPool();
+    this->CreateDescriptorPool();
+    this->CreateDescriptorSetLayout();
 }
 #endif
 
@@ -80,6 +86,8 @@ Context::Context(GLFWwindow *window)
     this->CreateSwapChain(window);
     this->CreateImageViews();
     this->CreateCommandPool();
+    this->CreateDescriptorPool();
+    this->CreateDescriptorSetLayout();
 }
 #endif
 
@@ -89,6 +97,9 @@ Context::Context(GLFWwindow *window)
  */
 Context::~Context()
 {
+    vkDestroyDescriptorPool(_device, _descriptorPool, nullptr);
+    vkDestroyDescriptorSetLayout(_device, _descriptorSetLayout, nullptr);
+
     vkDestroyCommandPool(_device, _commandPool, nullptr);
 
     for (auto imageView : _swapChainImageViews)
@@ -713,7 +724,7 @@ void Context::RecreateSwapChain()
     }
 #endif
 
-    vkDeviceWaitIdle(_device);
+    // vkDeviceWaitIdle(_device);
 
     // @todo destroy all renderPasses???
     // for (size_t i = 0; i < swapChainFramebuffers.size(); i++)
@@ -737,8 +748,6 @@ void Context::RecreateSwapChain()
 #endif
 
     CreateImageViews();
-
-    // @todo rebuild renderPasses?? :(
 }
 
 #ifdef BUILD_FOR_IOS
@@ -886,5 +895,78 @@ void Context::CreateCommandPool()
     {
         PLOG_ERROR << "Failed to create command pool!";
         exit(EXIT_FAILURE);
+    }
+}
+
+void Context::CreateDescriptorPool()
+{
+    VkDescriptorPoolSize poolSize{};
+    poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    poolSize.descriptorCount = static_cast<uint32_t>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+
+    VkDescriptorPoolCreateInfo poolInfo{};
+    poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    poolInfo.poolSizeCount = 1;
+    poolInfo.pPoolSizes = &poolSize;
+    poolInfo.maxSets = static_cast<uint32_t>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+
+    if (vkCreateDescriptorPool(_device, &poolInfo, nullptr, &_descriptorPool) != VK_SUCCESS)
+    {
+        throw std::runtime_error("failed to create descriptor pool!");
+    }
+}
+
+void Context::CreateDescriptorSetLayout()
+{
+    VkDescriptorSetLayoutBinding uboLayoutBinding{};
+    uboLayoutBinding.binding = 0;
+    uboLayoutBinding.descriptorCount = 1;
+    uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    uboLayoutBinding.pImmutableSamplers = nullptr;
+    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+    VkDescriptorSetLayoutCreateInfo layoutInfo{};
+    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    layoutInfo.bindingCount = 1;
+    layoutInfo.pBindings = &uboLayoutBinding;
+
+    if (vkCreateDescriptorSetLayout(_device, &layoutInfo, nullptr, &_descriptorSetLayout) != VK_SUCCESS)
+    {
+        throw std::runtime_error("failed to create descriptor set layout!");
+    }
+}
+
+void Context::CreateDescriptorSets(std::vector<VkBuffer> uniformBuffers)
+{
+    std::vector<VkDescriptorSetLayout> layouts(MAX_CONCURRENT_FRAMES_IN_FLIGHT, _descriptorSetLayout);
+    VkDescriptorSetAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocInfo.descriptorPool = _descriptorPool;
+    allocInfo.descriptorSetCount = static_cast<uint32_t>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+    allocInfo.pSetLayouts = layouts.data();
+
+    _descriptorSets.resize(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+    if (vkAllocateDescriptorSets(_device, &allocInfo, _descriptorSets.data()) != VK_SUCCESS)
+    {
+        throw std::runtime_error("failed to allocate descriptor sets!");
+    }
+
+    for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
+    {
+        VkDescriptorBufferInfo bufferInfo{};
+        bufferInfo.buffer = uniformBuffers[i];
+        bufferInfo.offset = 0;
+        bufferInfo.range = sizeof(UniformBufferObject);
+
+        VkWriteDescriptorSet descriptorWrite{};
+        descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrite.dstSet = _descriptorSets[i];
+        descriptorWrite.dstBinding = 0;
+        descriptorWrite.dstArrayElement = 0;
+        descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        descriptorWrite.descriptorCount = 1;
+        descriptorWrite.pBufferInfo = &bufferInfo;
+
+        vkUpdateDescriptorSets(_device, 1, &descriptorWrite, 0, nullptr);
     }
 }

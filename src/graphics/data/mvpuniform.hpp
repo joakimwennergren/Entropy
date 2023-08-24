@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include <vulkan/vulkan.hpp>
 
-struct MatrixUniforms
+struct UniformBufferObject
 {
     glm::mat4 model;
     glm::mat4 view;

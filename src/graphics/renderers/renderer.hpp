@@ -1,11 +1,18 @@
 #pragma once
 
+#define GLM_FORCE_RADIANS
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include <chrono>
+
 #include "context.hpp"
 #include "renderpass.hpp"
 #include "pipeline.hpp"
 #include "vertex.hpp"
 #include "buffer.hpp"
 #include "commandbuffer.hpp"
+#include "mvpuniform.hpp"
 
 using namespace Symbios::Core;
 using namespace Symbios::Graphics::Buffers;
@@ -53,6 +60,7 @@ namespace Symbios
                 void FrameBufferResized() { this->_framebufferResized = true; };
 
             private:
+                void UpdateUniforms(uint32_t currentImage);
                 std::shared_ptr<Context> _context;
                 std::shared_ptr<RenderPass> _renderPass;
                 std::vector<std::shared_ptr<CommandBuffer>> _commandBuffers;
@@ -68,10 +76,10 @@ namespace Symbios
                 bool _framebufferResized = false;
 
                 const std::vector<Vertex> vertices = {
-                    {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}},
-                    {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}},
-                    {{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}},
-                    {{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}}};
+                    {{-0.5f, -0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+                    {{0.5f, -0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+                    {{0.5f, 0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}},
+                    {{-0.5f, 0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}}};
 
                 const std::vector<uint16_t> indices = {
                     0, 1, 2, 2, 3, 0};
@@ -80,6 +88,10 @@ namespace Symbios
 
                 std::unique_ptr<Buffer> _vertexBuffer;
                 std::unique_ptr<Buffer> _indexBuffer;
+
+                std::vector<VkBuffer> uniformBuffers;
+                std::vector<VkDeviceMemory> uniformBuffersMemory;
+                std::vector<void *> uniformBuffersMapped;
             };
         }
     }

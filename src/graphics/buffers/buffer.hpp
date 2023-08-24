@@ -78,7 +78,6 @@ namespace Symbios
                  */
                 inline VkBuffer GetBuffer() { return this->_buffer; };
 
-            private:
                 /**
                  * @brief Create a Buffer object
                  *
@@ -88,7 +87,7 @@ namespace Symbios
                  * @param buffer
                  * @param bufferMemory
                  */
-                void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory);
+                static void CreateBuffer(std::shared_ptr<Context> _context, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory);
 
                 /**
                  * @brief
@@ -98,7 +97,9 @@ namespace Symbios
                  * @return uint32_t
                  */
 
-                uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+                static uint32_t FindMemoryType(std::shared_ptr<Context> _context, uint32_t typeFilter, VkMemoryPropertyFlags properties);
+
+            private:
                 std::shared_ptr<Context> _context;
                 VkBuffer _buffer;
                 VkDeviceMemory _bufferMemory;

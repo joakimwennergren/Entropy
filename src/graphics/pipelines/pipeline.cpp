@@ -7,6 +7,23 @@ Pipeline::Pipeline(std::shared_ptr<Context> context, std::shared_ptr<RenderPass>
     // Store the context
     _context = context;
 
+    VkDescriptorSetLayoutBinding uboLayoutBinding{};
+    uboLayoutBinding.binding = 0;
+    uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    uboLayoutBinding.descriptorCount = 1;
+    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    uboLayoutBinding.pImmutableSamplers = nullptr; // Optional
+
+    VkDescriptorSetLayoutCreateInfo layoutInfo{};
+    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    layoutInfo.bindingCount = 1;
+    layoutInfo.pBindings = &uboLayoutBinding;
+
+    if (vkCreateDescriptorSetLayout(_context->GetLogicalDevice(), &layoutInfo, nullptr, &_descriptorSetLayout) != VK_SUCCESS)
+    {
+        throw std::runtime_error("failed to create descriptor set layout!");
+    }
+
     // Create Shader and store it
 #ifdef BUILD_FOR_IOS
     _shader = std::make_unique<Shader>(context, Filesystem::GetProjectBasePath() + "/vert.spv", Filesystem::GetProjectBasePath() + "/frag.spv");
@@ -78,7 +95,7 @@ Pipeline::Pipeline(std::shared_ptr<Context> context, std::shared_ptr<RenderPass>
     rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
     rasterizer.lineWidth = 1.0f;
     rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-    rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+    rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
     rasterizer.depthBiasEnable = VK_FALSE;
     rasterizer.depthBiasConstantFactor = 0.0f; // Optional
     rasterizer.depthBiasClamp = 0.0f;          // Optional
@@ -116,8 +133,8 @@ Pipeline::Pipeline(std::shared_ptr<Context> context, std::shared_ptr<RenderPass>
 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = 0;            // Optional
-    pipelineLayoutInfo.pSetLayouts = nullptr;         // Optional
+    pipelineLayoutInfo.setLayoutCount = 1;
+    pipelineLayoutInfo.pSetLayouts = &_descriptorSetLayout;
     pipelineLayoutInfo.pushConstantRangeCount = 0;    // Optional
     pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
 
@@ -158,6 +175,7 @@ Pipeline::Pipeline(std::shared_ptr<Context> context, std::shared_ptr<RenderPass>
 
 Pipeline::~Pipeline()
 {
+    vkDestroyDescriptorSetLayout(_context->GetLogicalDevice(), this->_descriptorSetLayout, nullptr);
     vkDestroyPipeline(_context->GetLogicalDevice(), this->_pipeline, nullptr);
     vkDestroyPipelineLayout(_context->GetLogicalDevice(), this->_pipelineLayout, nullptr);
 }
