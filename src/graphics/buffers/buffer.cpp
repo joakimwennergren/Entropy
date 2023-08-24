@@ -2,6 +2,11 @@
 
 using namespace Symbios::Graphics::Buffers;
 
+Buffer::Buffer(std::shared_ptr<Context> context)
+{
+    _context = context;
+}
+
 Buffer::~Buffer()
 {
     vkDestroyBuffer(_context->GetLogicalDevice(), _buffer, nullptr);

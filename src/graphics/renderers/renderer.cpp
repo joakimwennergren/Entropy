@@ -39,10 +39,10 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     }
 
     // Create buffers @todo temp!!!
-    _vertexBuffer = std::make_unique<Buffer>();
+    _vertexBuffer = std::make_unique<Buffer>(_context);
     _vertexBuffer->CreateVertexBuffer(vertices);
 
-    _indexBuffer = std::make_unique<Buffer>();
+    _indexBuffer = std::make_unique<Buffer>(_context);
     _indexBuffer->CreateIndexBufferUint16(indices);
 }
 

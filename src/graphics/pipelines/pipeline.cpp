@@ -11,7 +11,7 @@ Pipeline::Pipeline(std::shared_ptr<Context> context, std::shared_ptr<RenderPass>
 #ifdef BUILD_FOR_IOS
     _shader = std::make_unique<Shader>(context, Filesystem::GetProjectBasePath() + "/vert.spv", Filesystem::GetProjectBasePath() + "/frag.spv");
 #else
-    _shader = std::make_unique<Shader>(context, Filesystem::GetProjectBasePath() + "/shaders/basic/vert.spv", Filesystem::GetProjectBasePath() + "/shaders/basic/frag.spv");
+    _shader = std::make_unique<Shader>(context, "C:\\Users\\Hemma\\Desktop\\Symbios\\shaders\\basic\\vert.spv", "C:\\Users\\Hemma\\Desktop\\Symbios\\shaders\\basic\\frag.spv");
 #endif
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};

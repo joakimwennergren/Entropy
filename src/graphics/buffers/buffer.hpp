@@ -38,6 +38,13 @@ namespace Symbios
                 Buffer() = default;
 
                 /**
+                 * @brief Construct a new Buffer object
+                 *
+                 * @param context
+                 */
+                Buffer(std::shared_ptr<Context> context);
+
+                /**
                  * @brief Destroy the Buffer object
                  *
                  */
