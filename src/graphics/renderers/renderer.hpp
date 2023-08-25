@@ -13,9 +13,11 @@
 #include "buffer.hpp"
 #include "commandbuffer.hpp"
 #include "mvpuniform.hpp"
+#include "texture.hpp"
 
 using namespace Symbios::Core;
 using namespace Symbios::Graphics::Buffers;
+using namespace Symbios::Graphics::Textures;
 using namespace Symbios::Graphics::Pipelines;
 using namespace Symbios::Graphics::RenderPasses;
 using namespace Symbios::Graphics::CommandBuffers;
@@ -76,22 +78,24 @@ namespace Symbios
                 bool _framebufferResized = false;
 
                 const std::vector<Vertex> vertices = {
-                    {{-0.5f, -0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}},
-                    {{0.5f, -0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}},
-                    {{0.5f, 0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}},
-                    {{-0.5f, 0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}}};
+                    {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+                    {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+                    {{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+                    {{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
 
                 const std::vector<uint16_t> indices = {
                     0, 1, 2, 2, 3, 0};
 
                 // Buffers
-
                 std::unique_ptr<Buffer> _vertexBuffer;
                 std::unique_ptr<Buffer> _indexBuffer;
 
                 std::vector<VkBuffer> uniformBuffers;
                 std::vector<VkDeviceMemory> uniformBuffersMemory;
                 std::vector<void *> uniformBuffersMapped;
+
+                // textures
+                std::unique_ptr<Texture> _texture;
             };
         }
     }

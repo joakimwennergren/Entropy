@@ -58,7 +58,11 @@ Renderer::Renderer(std::shared_ptr<Context> context)
         vkMapMemory(_context->GetLogicalDevice(), uniformBuffersMemory[i], 0, bufferSize, 0, &uniformBuffersMapped[i]);
     }
 
-    _context->CreateDescriptorSets(uniformBuffers);
+    _texture = std::make_unique<Texture>(_context);
+
+    _texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/splash.png");
+
+    _context->CreateDescriptorSets(uniformBuffers, _texture->GetImageView());
 }
 
 Renderer::~Renderer()
@@ -110,7 +114,7 @@ void Renderer::Render()
 
     vkResetCommandBuffer(currentCmdBuffer, /*VkCommandBufferResetFlagBits*/ 0);
 
-    _commandBuffers[_currentFrame]->Record(imageIndex);
+    _commandBuffers[_currentFrame]->Record();
 
     _renderPass->Begin(_commandBuffers[_currentFrame], imageIndex);
 

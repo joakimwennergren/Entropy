@@ -51,9 +51,15 @@ namespace Symbios
                 /**
                  * @brief
                  *
+                 */
+                void RecordOnce();
+
+                /**
+                 * @brief
+                 *
                  * @param imageIndex
                  */
-                void Record(uint32_t imageIndex);
+                void Record();
 
                 /**
                  * @brief

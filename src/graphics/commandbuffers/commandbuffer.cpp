@@ -35,10 +35,23 @@ CommandBuffer::~CommandBuffer()
 /**
  * @brief
  *
+ */
+void CommandBuffer::RecordOnce()
+{
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+    vkBeginCommandBuffer(_commandBuffer, &beginInfo);
+}
+
+/**
+ * @brief
+ *
  * @param imageIndex
  * @param renderPass
  */
-void CommandBuffer::Record(uint32_t imageIndex)
+void CommandBuffer::Record()
 {
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;

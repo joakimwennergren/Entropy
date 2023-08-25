@@ -40,6 +40,7 @@ target_sources(Symbios PRIVATE
     src/graphics/commandbuffers/commandbuffer.cpp
     src/graphics/renderers/renderer.cpp
     src/graphics/buffers/buffer.cpp
+    src/graphics/textures/texture.cpp
 
     # Main entrypoint
     src/main.cpp
@@ -72,6 +73,7 @@ target_include_directories(Symbios PRIVATE
     src/graphics/renderers
     src/graphics/data
     src/graphics/buffers
+    src/graphics/textures
 
     # Filesystem
     src/filesystem

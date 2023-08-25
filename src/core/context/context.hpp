@@ -247,7 +247,7 @@ namespace Symbios
              *
              * @param uniformBuffers
              */
-            void CreateDescriptorSets(std::vector<VkBuffer> uniformBuffers);
+            void CreateDescriptorSets(std::vector<VkBuffer> uniformBuffers, VkImageView imageView);
 
             /**
              * @brief
@@ -255,6 +255,15 @@ namespace Symbios
              * @param window
              */
             void RecreateSwapChain();
+
+            /**
+             * @brief Create a Image View object
+             *
+             * @param image
+             * @param format
+             * @return VkImageView
+             */
+            VkImageView CreateImageView(VkImage image, VkFormat format);
 
         private:
             /**
@@ -369,6 +378,18 @@ namespace Symbios
              */
             void CreateDescriptorSetLayout();
 
+            /**
+             * @brief Create a Texture Image View object
+             *
+             */
+            void CreateTextureImageView();
+
+            /**
+             * @brief Create a Texture Sampler object
+             *
+             */
+            void CreateTextureSampler();
+
 #ifdef BUILD_FOR_IOS
             /**
              * @brief
@@ -438,6 +459,13 @@ namespace Symbios
             // Pools
             VkCommandPool _commandPool;
             VkDescriptorPool _descriptorPool;
+
+            // TextureViews
+            VkImageView _textureImageView;
+            VkImage _textureImage;
+
+            // Texture samplers
+            VkSampler _textureSampler;
 
             VkDescriptorSetLayout _descriptorSetLayout;
             std::vector<VkDescriptorSet> _descriptorSets;
