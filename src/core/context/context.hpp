@@ -252,6 +252,15 @@ namespace Symbios
             /**
              * @brief
              *
+             * @param typeFilter
+             * @param properties
+             * @return uint32_t
+             */
+            uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+
+            /**
+             * @brief
+             *
              * @param window
              */
             void RecreateSwapChain();

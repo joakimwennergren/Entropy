@@ -68,6 +68,12 @@ namespace Symbios
                 void EndRecording();
 
                 /**
+                 * @brief
+                 *
+                 */
+                void EndRecordingOnce();
+
+                /**
                  * @brief Get the Command Buffer object
                  *
                  * @return VkCommandBuffer

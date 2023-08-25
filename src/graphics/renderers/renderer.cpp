@@ -59,9 +59,7 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     }
 
     _texture = std::make_unique<Texture>(_context);
-
-    _texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/splash.png");
-
+    _texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/texture.jpg");
     _context->CreateDescriptorSets(uniformBuffers, _texture->GetImageView());
 }
 

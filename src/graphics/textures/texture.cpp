@@ -29,59 +29,63 @@ void Texture::CreateTextureImage(std::string path)
         throw std::runtime_error("failed to load texture image!");
     }
 
-    Buffer::CreateBuffer(_context, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, _stagingBuffer, _stagingBufferMemory);
+    VkBuffer stagingBuffer;
+    VkDeviceMemory stagingBufferMemory;
+    Buffer::CreateBuffer(_context, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
     void *data;
-    vkMapMemory(_context->GetLogicalDevice(), _stagingBufferMemory, 0, imageSize, 0, &data);
+    vkMapMemory(_context->GetLogicalDevice(), stagingBufferMemory, 0, imageSize, 0, &data);
     memcpy(data, pixels, static_cast<size_t>(imageSize));
-    vkUnmapMemory(_context->GetLogicalDevice(), _stagingBufferMemory);
+    vkUnmapMemory(_context->GetLogicalDevice(), stagingBufferMemory);
 
     stbi_image_free(pixels);
 
+    CreateImage(texWidth, texHeight, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _textureImage, _textureImageMemory);
+
+    TransitionImageLayout(_textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    CopyBufferToImage(stagingBuffer, _textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+    TransitionImageLayout(_textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+    vkDestroyBuffer(_context->GetLogicalDevice(), stagingBuffer, nullptr);
+    vkFreeMemory(_context->GetLogicalDevice(), stagingBufferMemory, nullptr);
+}
+
+void Texture::CreateImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory)
+{
     VkImageCreateInfo imageInfo{};
     imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
     imageInfo.imageType = VK_IMAGE_TYPE_2D;
-    imageInfo.extent.width = static_cast<uint32_t>(texWidth);
-    imageInfo.extent.height = static_cast<uint32_t>(texHeight);
+    imageInfo.extent.width = width;
+    imageInfo.extent.height = height;
     imageInfo.extent.depth = 1;
     imageInfo.mipLevels = 1;
     imageInfo.arrayLayers = 1;
-    imageInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
-    imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+    imageInfo.format = format;
+    imageInfo.tiling = tiling;
     imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    imageInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-    imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    imageInfo.usage = usage;
     imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-    imageInfo.flags = 0; // Optional
+    imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-    if (vkCreateImage(_context->GetLogicalDevice(), &imageInfo, nullptr, &_textureImage) != VK_SUCCESS)
+    if (vkCreateImage(_context->GetLogicalDevice(), &imageInfo, nullptr, &image) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create image!");
     }
 
     VkMemoryRequirements memRequirements;
-    vkGetImageMemoryRequirements(_context->GetLogicalDevice(), _textureImage, &memRequirements);
+    vkGetImageMemoryRequirements(_context->GetLogicalDevice(), image, &memRequirements);
 
     VkMemoryAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex = Buffer::FindMemoryType(_context, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    allocInfo.memoryTypeIndex = _context->FindMemoryType(memRequirements.memoryTypeBits, properties);
 
-    if (vkAllocateMemory(_context->GetLogicalDevice(), &allocInfo, nullptr, &_textureImageMemory) != VK_SUCCESS)
+    if (vkAllocateMemory(_context->GetLogicalDevice(), &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to allocate image memory!");
     }
 
-    vkBindImageMemory(_context->GetLogicalDevice(), _textureImage, _textureImageMemory, 0);
-
-    TransitionImageLayout(_textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    CopyBufferToImage(_stagingBuffer, _textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
-    TransitionImageLayout(_textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-    vkDestroyBuffer(_context->GetLogicalDevice(), _stagingBuffer, nullptr);
-    vkFreeMemory(_context->GetLogicalDevice(), _stagingBufferMemory, nullptr);
-
-    _context->CreateImageView(_textureImage, VK_FORMAT_R8G8B8A8_SRGB);
+    vkBindImageMemory(_context->GetLogicalDevice(), image, imageMemory, 0);
 }
 
 void Texture::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
@@ -133,7 +137,7 @@ void Texture::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayou
         0, nullptr,
         1, &barrier);
 
-    _commandBuffer->EndRecording();
+    _commandBuffer->EndRecordingOnce();
 }
 
 void Texture::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
@@ -156,5 +160,5 @@ void Texture::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, 
 
     vkCmdCopyBufferToImage(_commandBuffer->GetCommandBuffer(), buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
-    _commandBuffer->EndRecording();
+    _commandBuffer->EndRecordingOnce();
 }

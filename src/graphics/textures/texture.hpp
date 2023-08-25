@@ -27,6 +27,8 @@ namespace Symbios
 
                 void CreateTextureImage(std::string path);
 
+                void CreateImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory);
+
                 /**
                  * @brief Get the Image View object
                  *
