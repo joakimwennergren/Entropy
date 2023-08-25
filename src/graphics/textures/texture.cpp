@@ -48,6 +48,10 @@ void Texture::CreateTextureImage(std::string path)
 
     vkDestroyBuffer(_context->GetLogicalDevice(), stagingBuffer, nullptr);
     vkFreeMemory(_context->GetLogicalDevice(), stagingBufferMemory, nullptr);
+
+    _imageView = _context->CreateImageView(_textureImage, VK_FORMAT_R8G8B8A8_SRGB);
+
+
 }
 
 void Texture::CreateImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory)

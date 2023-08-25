@@ -235,6 +235,13 @@ namespace Symbios
             inline std::vector<VkDescriptorSet> GetDescriptorSets() { return this->_descriptorSets; };
 
             /**
+             * @brief Get the Descriptor Set Layouts object
+             * 
+             * @return VkDescriptorSetLayout 
+             */
+            inline VkDescriptorSetLayout GetDescriptorSetLayouts() { return this->_descriptorSetLayout;};
+
+            /**
              * @brief
              *
              * @param device

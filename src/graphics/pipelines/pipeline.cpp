@@ -7,28 +7,18 @@ Pipeline::Pipeline(std::shared_ptr<Context> context, std::shared_ptr<RenderPass>
     // Store the context
     _context = context;
 
-    VkDescriptorSetLayoutBinding uboLayoutBinding{};
-    uboLayoutBinding.binding = 0;
-    uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    uboLayoutBinding.descriptorCount = 1;
-    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-    uboLayoutBinding.pImmutableSamplers = nullptr; // Optional
+    _renderPass = renderPass;
+    
 
-    VkDescriptorSetLayoutCreateInfo layoutInfo{};
-    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-    layoutInfo.bindingCount = 1;
-    layoutInfo.pBindings = &uboLayoutBinding;
+}
 
-    if (vkCreateDescriptorSetLayout(_context->GetLogicalDevice(), &layoutInfo, nullptr, &_descriptorSetLayout) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to create descriptor set layout!");
-    }
-
-    // Create Shader and store it
+void Pipeline::Build()
+{
+        // Create Shader and store it
 #ifdef BUILD_FOR_IOS
-    _shader = std::make_unique<Shader>(context, Filesystem::GetProjectBasePath() + "/vert.spv", Filesystem::GetProjectBasePath() + "/frag.spv");
+    _shader = std::make_unique<Shader>(_context, Filesystem::GetProjectBasePath() + "/vert.spv", Filesystem::GetProjectBasePath() + "/frag.spv");
 #else
-    _shader = std::make_unique<Shader>(context, Filesystem::GetProjectBasePath() + "/shaders/basic/vert.spv", Filesystem::GetProjectBasePath() + "/shaders/basic/frag.spv");
+    _shader = std::make_unique<Shader>(_context, Filesystem::GetProjectBasePath() + "/shaders/basic/vert.spv", Filesystem::GetProjectBasePath() + "/shaders/basic/frag.spv");
 #endif
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
@@ -72,14 +62,14 @@ Pipeline::Pipeline(std::shared_ptr<Context> context, std::shared_ptr<RenderPass>
     VkViewport viewport{};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
-    viewport.width = (float)context->GetSwapChainExtent().width;
-    viewport.height = (float)context->GetSwapChainExtent().height;
+    viewport.width = (float)_context->GetSwapChainExtent().width;
+    viewport.height = (float)_context->GetSwapChainExtent().height;
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
 
     VkRect2D scissor{};
     scissor.offset = {0, 0};
-    scissor.extent = context->GetSwapChainExtent();
+    scissor.extent = _context->GetSwapChainExtent();
 
     VkPipelineViewportStateCreateInfo viewportState{};
     viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -131,14 +121,16 @@ Pipeline::Pipeline(std::shared_ptr<Context> context, std::shared_ptr<RenderPass>
     colorBlending.blendConstants[2] = 0.0f; // Optional
     colorBlending.blendConstants[3] = 0.0f; // Optional
 
+    auto descriptorSetLayout = _context->GetDescriptorSetLayouts();
+
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipelineLayoutInfo.setLayoutCount = 1;
-    pipelineLayoutInfo.pSetLayouts = &_descriptorSetLayout;
+    pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
     pipelineLayoutInfo.pushConstantRangeCount = 0;    // Optional
     pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
 
-    if (vkCreatePipelineLayout(context->GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &this->_pipelineLayout) != VK_SUCCESS)
+    if (vkCreatePipelineLayout(_context->GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &this->_pipelineLayout) != VK_SUCCESS)
     {
         PLOG_FATAL << "Failed to create default pipeline layout!";
         exit(EXIT_FAILURE);
@@ -160,7 +152,7 @@ Pipeline::Pipeline(std::shared_ptr<Context> context, std::shared_ptr<RenderPass>
 
     pipelineInfo.layout = this->_pipelineLayout;
 
-    pipelineInfo.renderPass = renderPass->GetRenderPass();
+    pipelineInfo.renderPass = _renderPass->GetRenderPass();
     pipelineInfo.subpass = 0;
 
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional

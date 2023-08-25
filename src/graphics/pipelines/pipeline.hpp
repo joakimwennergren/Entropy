@@ -50,6 +50,12 @@ namespace Symbios
                 Pipeline(std::shared_ptr<Context> context, std::shared_ptr<RenderPass> renderPass);
 
                 /**
+                 * @brief 
+                 * 
+                 */
+                void Build();
+
+                /**
                  * @brief Destroy the Pipeline object
                  *
                  */
@@ -72,6 +78,7 @@ namespace Symbios
             private:
                 std::shared_ptr<Context> _context;
                 std::unique_ptr<Shader> _shader;
+                std::shared_ptr<RenderPass> _renderPass;
                 VkPipelineLayout _pipelineLayout;
                 VkPipeline _pipeline;
                 VkDescriptorSetLayout _descriptorSetLayout;

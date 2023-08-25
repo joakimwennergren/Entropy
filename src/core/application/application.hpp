@@ -8,6 +8,7 @@
 #include <plog/Init.h>
 #include <plog/Formatters/TxtFormatter.h>
 #include <plog/Appenders/ColorConsoleAppender.h>
+#include "plog/Initializers/RollingFileInitializer.h"
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
 
@@ -31,8 +32,9 @@ public:
      */
     Application()
     {
-        static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
-        plog::init(plog::verbose, &consoleAppender);
+        plog::init(plog::debug, "debug.txt"); // Step2: initialize the logger
+        //static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
+        //plog::init(plog::verbose, &consoleAppender);
 
         if (!glfwInit())
         {
