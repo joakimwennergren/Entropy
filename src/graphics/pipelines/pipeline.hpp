@@ -50,8 +50,8 @@ namespace Symbios
                 Pipeline(std::shared_ptr<Context> context, std::shared_ptr<RenderPass> renderPass);
 
                 /**
-                 * @brief 
-                 * 
+                 * @brief
+                 *
                  */
                 void Build();
 
@@ -79,9 +79,10 @@ namespace Symbios
                 std::shared_ptr<Context> _context;
                 std::unique_ptr<Shader> _shader;
                 std::shared_ptr<RenderPass> _renderPass;
-                VkPipelineLayout _pipelineLayout;
-                VkPipeline _pipeline;
-                VkDescriptorSetLayout _descriptorSetLayout;
+
+                VkPipelineLayout _pipelineLayout = nullptr;
+                VkPipeline _pipeline = nullptr;
+                VkDescriptorSetLayout _descriptorSetLayout = nullptr;
             };
         }
     }

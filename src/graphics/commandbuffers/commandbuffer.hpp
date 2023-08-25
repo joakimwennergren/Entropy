@@ -51,12 +51,6 @@ namespace Symbios
                 /**
                  * @brief
                  *
-                 */
-                void RecordOnce();
-
-                /**
-                 * @brief
-                 *
                  * @param imageIndex
                  */
                 void Record();
@@ -66,6 +60,12 @@ namespace Symbios
                  *
                  */
                 void EndRecording();
+
+                /**
+                 * @brief
+                 *
+                 */
+                void RecordOnce();
 
                 /**
                  * @brief

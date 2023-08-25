@@ -8,13 +8,11 @@ Pipeline::Pipeline(std::shared_ptr<Context> context, std::shared_ptr<RenderPass>
     _context = context;
 
     _renderPass = renderPass;
-    
-
 }
 
 void Pipeline::Build()
 {
-        // Create Shader and store it
+    // Create Shader and store it
 #ifdef BUILD_FOR_IOS
     _shader = std::make_unique<Shader>(_context, Filesystem::GetProjectBasePath() + "/vert.spv", Filesystem::GetProjectBasePath() + "/frag.spv");
 #else

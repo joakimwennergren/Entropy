@@ -78,14 +78,12 @@ void CommandBuffer::EndRecording()
     }
 }
 
+/**
+ * @brief
+ *
+ */
 void CommandBuffer::EndRecordingOnce()
 {
-
-    if (vkEndCommandBuffer(_commandBuffer) != VK_SUCCESS)
-    {
-        PLOG_ERROR << "Failed to end recording command buffer!";
-        exit(EXIT_FAILURE);
-    }
 
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -94,4 +92,10 @@ void CommandBuffer::EndRecordingOnce()
 
     vkQueueSubmit(_context->GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
     vkQueueWaitIdle(_context->GetGraphicsQueue());
+
+    if (vkEndCommandBuffer(_commandBuffer) != VK_SUCCESS)
+    {
+        PLOG_ERROR << "Failed to end recording command buffer!";
+        exit(EXIT_FAILURE);
+    }
 }

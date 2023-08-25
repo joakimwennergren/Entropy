@@ -2,17 +2,33 @@
 
 using namespace Symbios::Graphics::Buffers;
 
+/**
+ * @brief Construct a new Buffer:: Buffer object
+ *
+ * @param context
+ */
 Buffer::Buffer(std::shared_ptr<Context> context)
 {
     _context = context;
 }
 
+/**
+ * @brief Destroy the Buffer:: Buffer object
+ *
+ */
 Buffer::~Buffer()
 {
     vkDestroyBuffer(_context->GetLogicalDevice(), _buffer, nullptr);
     vkFreeMemory(_context->GetLogicalDevice(), _bufferMemory, nullptr);
 }
 
+/**
+ * @brief
+ *
+ * @param srcBuffer
+ * @param dstBuffer
+ * @param size
+ */
 void Buffer::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
 {
     VkCommandBufferAllocateInfo allocInfo{};
@@ -47,6 +63,11 @@ void Buffer::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize siz
     vkFreeCommandBuffers(_context->GetLogicalDevice(), _context->GetCommandPool(), 1, &commandBuffer);
 }
 
+/**
+ * @brief
+ *
+ * @param vertices
+ */
 void Buffer::CreateVertexBuffer(std::vector<Vertex> vertices)
 {
 
@@ -69,6 +90,11 @@ void Buffer::CreateVertexBuffer(std::vector<Vertex> vertices)
     vkFreeMemory(_context->GetLogicalDevice(), stagingBufferMemory, nullptr);
 }
 
+/**
+ * @brief
+ *
+ * @param indices
+ */
 void Buffer::CreateIndexBufferUint16(std::vector<uint16_t> indices)
 {
     VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
@@ -90,6 +116,16 @@ void Buffer::CreateIndexBufferUint16(std::vector<uint16_t> indices)
     vkFreeMemory(_context->GetLogicalDevice(), stagingBufferMemory, nullptr);
 }
 
+/**
+ * @brief
+ *
+ * @param _context
+ * @param size
+ * @param usage
+ * @param properties
+ * @param buffer
+ * @param bufferMemory
+ */
 void Buffer::CreateBuffer(std::shared_ptr<Context> _context, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory)
 {
     VkBufferCreateInfo bufferInfo{};
@@ -119,6 +155,14 @@ void Buffer::CreateBuffer(std::shared_ptr<Context> _context, VkDeviceSize size, 
     vkBindBufferMemory(_context->GetLogicalDevice(), buffer, bufferMemory, 0);
 }
 
+/**
+ * @brief
+ *
+ * @param _context
+ * @param typeFilter
+ * @param properties
+ * @return uint32_t
+ */
 uint32_t Buffer::FindMemoryType(std::shared_ptr<Context> _context, uint32_t typeFilter, VkMemoryPropertyFlags properties)
 {
     VkPhysicalDeviceMemoryProperties memProperties;
