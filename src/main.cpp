@@ -25,11 +25,7 @@ public:
 
 int main()
 {
-    auto game = new Game();
-
-    game->Run();
-
-    delete game;
-
+    Game game;
+    game.Run();
     return 0;
 }
