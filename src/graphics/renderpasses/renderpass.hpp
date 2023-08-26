@@ -51,6 +51,12 @@ namespace Symbios
                 void End(std::shared_ptr<CommandBuffer> commandBuffer);
 
                 /**
+                 * @brief
+                 *
+                 */
+                void RecreateFrameBuffers();
+
+                /**
                  * @brief Get the Render Pass object
                  *
                  * @return VkRenderPass

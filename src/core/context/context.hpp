@@ -236,10 +236,10 @@ namespace Symbios
 
             /**
              * @brief Get the Descriptor Set Layouts object
-             * 
-             * @return VkDescriptorSetLayout 
+             *
+             * @return VkDescriptorSetLayout
              */
-            inline VkDescriptorSetLayout GetDescriptorSetLayouts() { return this->_descriptorSetLayout;};
+            inline VkDescriptorSetLayout GetDescriptorSetLayouts() { return this->_descriptorSetLayout; };
 
             /**
              * @brief
@@ -444,8 +444,14 @@ namespace Symbios
 
 #endif
 
+#ifdef BUILD_FOR_MACOS
+            const std::vector<const char *> deviceExtensions = {
+                VK_KHR_SWAPCHAIN_EXTENSION_NAME, "VK_KHR_portability_subset"};
+
+#else
             const std::vector<const char *> deviceExtensions = {
                 VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+#endif
 
             const std::vector<const char *> validationLayers = {
                 "VK_LAYER_KHRONOS_validation"};

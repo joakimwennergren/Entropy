@@ -80,9 +80,9 @@ namespace Symbios
                 std::unique_ptr<Shader> _shader;
                 std::shared_ptr<RenderPass> _renderPass;
 
-                VkPipelineLayout _pipelineLayout = nullptr;
-                VkPipeline _pipeline = nullptr;
-                VkDescriptorSetLayout _descriptorSetLayout = nullptr;
+                VkPipelineLayout _pipelineLayout;
+                VkPipeline _pipeline;
+                VkDescriptorSetLayout _descriptorSetLayout;
             };
         }
     }

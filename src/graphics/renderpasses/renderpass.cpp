@@ -147,3 +147,13 @@ void RenderPass::CreateFramebuffers()
         }
     }
 }
+
+void RenderPass::RecreateFrameBuffers()
+{
+    for (auto framebuffer : this->_swapChainFramebuffers)
+    {
+        vkDestroyFramebuffer(_context->GetLogicalDevice(), framebuffer, nullptr);
+    }
+
+    this->CreateFramebuffers();
+}

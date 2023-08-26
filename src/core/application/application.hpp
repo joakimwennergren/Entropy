@@ -32,9 +32,9 @@ public:
      */
     Application()
     {
-        plog::init(plog::debug, "debug.txt"); // Step2: initialize the logger
-        //static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
-        //plog::init(plog::verbose, &consoleAppender);
+        // plog::init(plog::debug, "debug.txt"); // Step2: initialize the logger
+        static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
+        plog::init(plog::verbose, &consoleAppender);
 
         if (!glfwInit())
         {

@@ -1,7 +1,7 @@
 #pragma once
 
 // Platform
-#define @CMAKE_PLATFORM @
+#define @CMAKE_PLATFORM@
 
 // Debugging
 #define USE_DEBUG

@@ -24,13 +24,12 @@ void Texture::CreateTextureImage(std::string path)
     int texWidth, texHeight, texChannels;
     stbi_uc *pixels = stbi_load(path.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
 
-    PLOG_ERROR << stbi_failure_reason();
-
     VkDeviceSize imageSize = texWidth * texHeight * 4;
 
     if (!pixels)
     {
-        throw std::runtime_error("failed to load texture image!");
+        PLOG_ERROR << stbi_failure_reason();
+        exit(EXIT_FAILURE);
     }
 
     VkBuffer stagingBuffer;

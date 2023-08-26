@@ -84,20 +84,35 @@ Renderer::~Renderer()
 void Renderer::Render()
 {
 
-    auto currentCmdBuffer = _commandBuffers[_currentFrame]->GetCommandBuffer();
-
-    vkWaitForFences(_context->GetLogicalDevice(), 1, &_inFlightFences[_currentFrame], VK_TRUE, UINT64_MAX);
-
     uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(_context->GetLogicalDevice(), _context->GetSwapChain(), UINT64_MAX, _imageAvailableSemaphores[_currentFrame], VK_NULL_HANDLE, &imageIndex);
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || _framebufferResized)
     {
-        _renderPass.reset();
-
         _context->RecreateSwapChain();
 
-        _renderPass = std::make_shared<RenderPass>(_context);
+        _imageAvailableSemaphores.clear();
+
+        VkSemaphoreCreateInfo semaphoreInfo{};
+        semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+        VkFenceCreateInfo fenceInfo{};
+        fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+        fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+        for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
+        {
+            if (vkCreateSemaphore(_context->GetLogicalDevice(), &semaphoreInfo, nullptr, &_imageAvailableSemaphores[i]) != VK_SUCCESS ||
+                vkCreateSemaphore(_context->GetLogicalDevice(), &semaphoreInfo, nullptr, &_renderFinishedSemaphores[i]) != VK_SUCCESS ||
+                vkCreateFence(_context->GetLogicalDevice(), &fenceInfo, nullptr, &_inFlightFences[i]) != VK_SUCCESS)
+            {
+
+                PLOG_ERROR << "failed to create synchronization objects for a frame!";
+                exit(EXIT_FAILURE);
+            }
+        }
+
+        _renderPass->RecreateFrameBuffers();
 
         _framebufferResized = false;
 
@@ -105,14 +120,18 @@ void Renderer::Render()
     }
     else if (result != VK_SUCCESS)
     {
-        PLOG_ERROR << "failed to acquire swap chain image!";
+        PLOG_ERROR << "Failed to acquire swap chain image!";
         exit(EXIT_FAILURE);
     }
+
+    auto currentCmdBuffer = _commandBuffers[_currentFrame]->GetCommandBuffer();
+
+    vkWaitForFences(_context->GetLogicalDevice(), 1, &_inFlightFences[_currentFrame], VK_TRUE, UINT64_MAX);
 
     // Only reset the fence if we are submitting work
     vkResetFences(_context->GetLogicalDevice(), 1, &_inFlightFences[_currentFrame]);
 
-    vkResetCommandBuffer(currentCmdBuffer, /*VkCommandBufferResetFlagBits*/ 0);
+    vkResetCommandBuffer(currentCmdBuffer, 0);
 
     _commandBuffers[_currentFrame]->Record();
 
