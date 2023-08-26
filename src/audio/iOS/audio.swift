@@ -1,12 +1,9 @@
 import AVFoundation
-
 var player: AVAudioPlayer?
 
 @_cdecl("say_hello")
 func playSound() {
 
-
-    
     print("")
 
 
@@ -22,4 +19,3 @@ func playSound() {
         print(error.localizedDescription)
     }
 }
-

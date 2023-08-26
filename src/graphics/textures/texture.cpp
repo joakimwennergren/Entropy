@@ -1,4 +1,5 @@
 #define STB_IMAGE_IMPLEMENTATION
+#define STBI_FAILURE_USERMSG
 #include <stb_image.h>
 
 #include "texture.hpp"
@@ -22,6 +23,9 @@ void Texture::CreateTextureImage(std::string path)
 {
     int texWidth, texHeight, texChannels;
     stbi_uc *pixels = stbi_load(path.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+
+    PLOG_ERROR << stbi_failure_reason();
+
     VkDeviceSize imageSize = texWidth * texHeight * 4;
 
     if (!pixels)
@@ -50,8 +54,6 @@ void Texture::CreateTextureImage(std::string path)
     vkFreeMemory(_context->GetLogicalDevice(), stagingBufferMemory, nullptr);
 
     _imageView = _context->CreateImageView(_textureImage, VK_FORMAT_R8G8B8A8_SRGB);
-
-
 }
 
 void Texture::CreateImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory)
