@@ -67,17 +67,20 @@ Renderer::Renderer(std::shared_ptr<Context> context)
 
 Renderer::~Renderer()
 {
-    for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
-    {
-        vkDestroyBuffer(_context->GetLogicalDevice(), uniformBuffers[i], nullptr);
-        vkFreeMemory(_context->GetLogicalDevice(), uniformBuffersMemory[i], nullptr);
-    }
+
+    vkDeviceWaitIdle(_context->GetLogicalDevice());
 
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
         vkDestroySemaphore(_context->GetLogicalDevice(), _renderFinishedSemaphores[i], nullptr);
         vkDestroySemaphore(_context->GetLogicalDevice(), _imageAvailableSemaphores[i], nullptr);
         vkDestroyFence(_context->GetLogicalDevice(), _inFlightFences[i], nullptr);
+    }
+
+    for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
+    {
+        vkDestroyBuffer(_context->GetLogicalDevice(), uniformBuffers[i], nullptr);
+        vkFreeMemory(_context->GetLogicalDevice(), uniformBuffersMemory[i], nullptr);
     }
 }
 
@@ -91,7 +94,10 @@ void Renderer::Render()
     {
         _context->RecreateSwapChain();
 
-        _imageAvailableSemaphores.clear();
+        for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
+        {
+            vkDestroySemaphore(_context->GetLogicalDevice(), _imageAvailableSemaphores[i], nullptr);
+        }
 
         VkSemaphoreCreateInfo semaphoreInfo{};
         semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -102,11 +108,8 @@ void Renderer::Render()
 
         for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
         {
-            if (vkCreateSemaphore(_context->GetLogicalDevice(), &semaphoreInfo, nullptr, &_imageAvailableSemaphores[i]) != VK_SUCCESS ||
-                vkCreateSemaphore(_context->GetLogicalDevice(), &semaphoreInfo, nullptr, &_renderFinishedSemaphores[i]) != VK_SUCCESS ||
-                vkCreateFence(_context->GetLogicalDevice(), &fenceInfo, nullptr, &_inFlightFences[i]) != VK_SUCCESS)
+            if (vkCreateSemaphore(_context->GetLogicalDevice(), &semaphoreInfo, nullptr, &_imageAvailableSemaphores[i]) != VK_SUCCESS)
             {
-
                 PLOG_ERROR << "failed to create synchronization objects for a frame!";
                 exit(EXIT_FAILURE);
             }

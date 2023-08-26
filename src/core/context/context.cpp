@@ -740,12 +740,6 @@ void Context::RecreateSwapChain()
 
     vkDeviceWaitIdle(_device);
 
-    // @todo destroy all renderPasses???
-    // for (size_t i = 0; i < swapChainFramebuffers.size(); i++)
-    //{
-    //    vkDestroyFramebuffer(device, swapChainFramebuffers[i], nullptr);
-    //}
-
     for (size_t i = 0; i < _swapChainImageViews.size(); i++)
     {
         vkDestroyImageView(_device, _swapChainImageViews[i], nullptr);

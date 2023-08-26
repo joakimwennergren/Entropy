@@ -84,7 +84,6 @@ void CommandBuffer::EndRecording()
  */
 void CommandBuffer::EndRecordingOnce()
 {
-
     if (vkEndCommandBuffer(_commandBuffer) != VK_SUCCESS)
     {
         PLOG_ERROR << "Failed to end recording command buffer!";

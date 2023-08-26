@@ -15,13 +15,21 @@
 
 // extern "C" void say_hello();
 
+class Game : public Application
+{
+public:
+    Game() : Application()
+    {
+    }
+};
+
 int main()
 {
+    auto game = new Game();
 
-    // say_hello();
+    game->Run();
 
-    Application app;
-    app.Run();
+    delete game;
 
     return 0;
 }
