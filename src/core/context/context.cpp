@@ -132,7 +132,6 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
     void *pUserData)
 {
-
     if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT)
     {
         PLOG_DEBUG << pCallbackData->pMessage;
@@ -886,7 +885,6 @@ void Context::CreateCommandPool()
 
 void Context::CreateDescriptorPool()
 {
-
     std::array<VkDescriptorPoolSize, 2> poolSizes{};
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);

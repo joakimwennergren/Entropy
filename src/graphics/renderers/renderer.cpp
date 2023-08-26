@@ -59,7 +59,7 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     }
 
     _texture = std::make_unique<Texture>(_context);
-    _texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/ivysaur.png");
+    _texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/ivysaur.png");
     _context->CreateDescriptorSets(uniformBuffers, _texture->GetImageView());
 
     _pipeline->Build();
@@ -221,16 +221,15 @@ void Renderer::UpdateUniforms(uint32_t currentImage)
     float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
     UniformBufferObject ubo{};
-    ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 1.0f));
+    ubo.model = glm::mat4(1.0f);
+    ubo.model = glm::translate(glm::mat4(1.0), glm::vec3(sin(time) * 0.3 + 0.5, cos(time) * 0.25 - 0.5, 0.0));
+    ubo.model = glm::scale(ubo.model, glm::vec3(0.25, 0.25, 0.25));
+    ubo.model = glm::rotate(ubo.model, glm::radians(time * 90.0f), glm::vec3(0.0, 0.0, 1.0));
 
-    // ubo.model = glm::mat4(1.0f);
     ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    // ubo.proj = glm::ortho(0.0F, (float)_context->GetSwapChainExtent().width, (float)_context->GetSwapChainExtent().height, 0.0F);
-    //  ubo.proj[1][1] *= -1;
-    //   ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
-    ubo.proj = glm::perspective(glm::radians(45.0f), _context->GetSwapChainExtent().width / (float)_context->GetSwapChainExtent().height, 0.1f, 10.0f);
-
+    float aspect = (float)_context->GetSwapChainExtent().width / (float)_context->GetSwapChainExtent().height;
+    ubo.proj = glm::ortho(0.0f, aspect, 0.0f, 1.0f, 0.0f, 100.0f);
     ubo.proj[1][1] *= -1;
 
     memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));

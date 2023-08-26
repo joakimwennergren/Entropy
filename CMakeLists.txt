@@ -35,6 +35,7 @@ target_sources(Symbios PRIVATE
     src/graphics/renderers/renderer.cpp
     src/graphics/buffers/buffer.cpp
     src/graphics/textures/texture.cpp
+    src/graphics/utilities/utilities.cpp
 
     # Main entrypoint
     src/main.cpp
@@ -68,7 +69,9 @@ target_include_directories(Symbios PRIVATE
     src/graphics/data
     src/graphics/buffers
     src/graphics/textures
+    src/graphics/utilitites
 
+    # Audio
     src/audio/
 
     # Filesystem

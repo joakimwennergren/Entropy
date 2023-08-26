@@ -1,9 +1,8 @@
 #pragma once
 
-
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
-
 
 #include <chrono>
 
@@ -38,6 +37,7 @@ namespace Symbios
                  *
                  */
                 Renderer() = default;
+
                 /**
                  * @brief Construct a new Renderer object
                  *
@@ -80,9 +80,9 @@ namespace Symbios
                 bool _framebufferResized = false;
 
                 const std::vector<Vertex> vertices = {
-                    {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-                    {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-                    {{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+                    {{-0.5f, -0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+                    {{0.5f, -0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
+                    {{0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
                     {{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
 
                 const std::vector<uint16_t> indices = {
