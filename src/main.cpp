@@ -13,8 +13,14 @@
 
 #include "application.hpp"
 
+extern "C" void say_hello();
+
 int main()
 {
+    
+    say_hello();
+
+
     Application app;
     app.Run();
 

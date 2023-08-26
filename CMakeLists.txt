@@ -12,10 +12,6 @@ if(NOT XCODE)
 
     # Windowing on desktop
     add_subdirectory(external/glfw)
-
-    # Audio
-    add_subdirectory(external/openal-soft)  
-
 endif()
 
 # Logging
@@ -23,8 +19,6 @@ add_subdirectory(external/plog)
 
 # GLM
 add_subdirectory(external/glm)
-
-
 
 add_executable(Symbios)
 
@@ -75,6 +69,8 @@ target_include_directories(Symbios PRIVATE
     src/graphics/buffers
     src/graphics/textures
 
+    src/audio/
+
     # Filesystem
     src/filesystem
 
@@ -91,7 +87,6 @@ target_link_libraries(Symbios
 
     # GLM
     glm
-
 )
 
 if(NOT XCODE)
@@ -102,9 +97,6 @@ if(NOT XCODE)
 
         # Windowing
         glfw
-
-        # Audio
-        OpenAL
     )
 endif()
 
