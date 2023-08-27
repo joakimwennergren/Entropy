@@ -59,7 +59,7 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     }
 
     _texture = std::make_unique<Texture>(_context);
-    _texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/ivysaur.png");
+    _texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/ivysaur.png");
     _context->CreateDescriptorSets(uniformBuffers, _texture->GetImageView());
 
     _pipeline->Build();
