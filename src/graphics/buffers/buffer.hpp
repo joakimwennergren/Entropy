@@ -14,8 +14,12 @@
 #include <vulkan/vulkan.hpp>
 #include "context.hpp"
 #include "vertex.hpp"
+#include "utilities.hpp"
+#include "commandbuffer.hpp"
 
 using namespace Symbios::Core;
+using namespace Symbios::Graphics::Utilities;
+using namespace Symbios::Graphics::CommandBuffers;
 
 namespace Symbios
 {
@@ -40,7 +44,7 @@ namespace Symbios
                 /**
                  * @brief Construct a new Buffer object
                  *
-                 * @param context
+                 * @param context Vulkan context
                  */
                 Buffer(std::shared_ptr<Context> context);
 
@@ -63,21 +67,13 @@ namespace Symbios
                 void CreateIndexBufferUint16(std::vector<uint16_t> indices);
 
                 /**
-                 * @brief
-                 *
-                 * @param srcBuffer
-                 * @param dstBuffer
-                 * @param size
-                 */
-                void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-
-                /**
-                 * @brief Get the Buffer object
+                 * @brief Get the vulkan buffer
                  *
                  * @return VkBuffer
                  */
-                inline VkBuffer GetBuffer() { return this->_buffer; };
+                inline VkBuffer GetVulkanBuffer() { return this->_buffer; };
 
+            protected:
                 /**
                  * @brief Create a Buffer object
                  *
@@ -92,17 +88,24 @@ namespace Symbios
                 /**
                  * @brief
                  *
-                 * @param typeFilter
-                 * @param properties
-                 * @return uint32_t
+                 * @param srcBuffer
+                 * @param dstBuffer
+                 * @param size
                  */
-
-                static uint32_t FindMemoryType(std::shared_ptr<Context> _context, uint32_t typeFilter, VkMemoryPropertyFlags properties);
+                void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
             private:
+                // Vulkan context
                 std::shared_ptr<Context> _context;
+
+                // Vulkan buffer
                 VkBuffer _buffer;
+
+                // Buffer in device memory
                 VkDeviceMemory _bufferMemory;
+
+                // ??
+                void *_mappedMemory;
             };
         }
     }

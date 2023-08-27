@@ -37,6 +37,7 @@ target_sources(Symbios PRIVATE
     src/graphics/commandbuffers/commandbuffer.cpp
     src/graphics/renderers/renderer.cpp
     src/graphics/buffers/buffer.cpp
+    src/graphics/buffers/vertexbuffer.cpp
     src/graphics/textures/texture.cpp
     src/graphics/utilities/utilities.cpp
     src/graphics/primitives/2d/quad.cpp
@@ -73,7 +74,7 @@ target_include_directories(Symbios PRIVATE
     src/graphics/data
     src/graphics/buffers
     src/graphics/textures
-    src/graphics/utilitites
+    src/graphics/utilities
     src/graphics/primitives/2d
     src/graphics/primitives/3d
 

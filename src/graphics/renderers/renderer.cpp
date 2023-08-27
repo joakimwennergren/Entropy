@@ -238,11 +238,11 @@ void Renderer::Render()
 
         // vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &dynamicOffset);
 
-        VkBuffer vertexBuffers[] = {glyph->vertexBuffer->GetBuffer()};
+        VkBuffer vertexBuffers[] = {glyph->vertexBuffer->GetVulkanBuffer()};
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
 
-        vkCmdBindIndexBuffer(currentCmdBuffer, glyph->indexBuffer->GetBuffer(), 0, VK_INDEX_TYPE_UINT16);
+        vkCmdBindIndexBuffer(currentCmdBuffer, glyph->indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT16);
 
         UniformBufferObject ubo{};
         ubo.model = glm::mat4(1.0f);
