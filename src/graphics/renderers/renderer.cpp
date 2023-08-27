@@ -64,11 +64,18 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     }
 
     // Create buffers @todo temp!!!
+    for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
+    {
+        _uniformBuffers.push_back(new UniformBuffer(_context, sizeof(UniformBufferObject)));
+    }
+
+    /*
     VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 
     uniformBuffers.resize(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
     uniformBuffersMemory.resize(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
     uniformBuffersMapped.resize(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+
 
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
@@ -76,15 +83,18 @@ Renderer::Renderer(std::shared_ptr<Context> context)
 
         vkMapMemory(_context->GetLogicalDevice(), uniformBuffersMemory[i], 0, bufferSize, 0, &uniformBuffersMapped[i]);
     }
+    */
 
     // @todo this isnt necessary..
     _pipeline->Build();
 
     _quad = std::make_unique<Quad>(_context);
+    _quad->position = glm::vec3(0.5, -0.5, 0.0);
     _quad->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/ivysaur.png");
 
     srand(static_cast<unsigned>(time(0)));
 
+    /*
     for (int i = 0; i < 4; i++)
     {
         float x = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
@@ -95,6 +105,7 @@ Renderer::Renderer(std::shared_ptr<Context> context)
         glyph->position = glm::vec3(x, y * -1, 0.0);
         _text.push_back(glyph);
     }
+    */
 
     // @temp dynamic UBO
     // Calculate required alignment based on minimum device offset alignment
@@ -110,12 +121,21 @@ Renderer::Renderer(std::shared_ptr<Context> context)
         dynamicAlignment = (dynamicAlignment + minUboAlignment - 1) & ~(minUboAlignment - 1);
     }
 
-    size_t bufferSizeUbo = 10 * dynamicAlignment;
-    _instanceUbo.model = (glm::mat4 *)alignedAlloc(bufferSizeUbo, dynamicAlignment);
+    // size_t bufferSizeUbo = 10 * dynamicAlignment;
+    //_instanceUbo.model = (glm::mat4 *)alignedAlloc(bufferSizeUbo, dynamicAlignment);
 
     //_texture = std::make_unique<Texture>(_context);
     //_texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/ivysaur.png");
-    _context->CreateDescriptorSets(uniformBuffers, _quad->texture->GetImageView());
+
+    std::vector<VkBuffer> rawUniformBuffers;
+
+    for (int i = 0; i < _uniformBuffers.size(); i++)
+    {
+        auto rawBuffer = _uniformBuffers[i]->GetVulkanBuffer();
+        rawUniformBuffers.push_back(rawBuffer);
+    }
+
+    _context->CreateDescriptorSets(rawUniformBuffers, _quad->texture->GetImageView());
 
     hb_buffer_t *buf;
     buf = hb_buffer_create();
@@ -144,17 +164,10 @@ Renderer::~Renderer()
         vkDestroySemaphore(_context->GetLogicalDevice(), _imageAvailableSemaphores[i], nullptr);
         vkDestroyFence(_context->GetLogicalDevice(), _inFlightFences[i], nullptr);
     }
-
-    for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
-    {
-        vkDestroyBuffer(_context->GetLogicalDevice(), uniformBuffers[i], nullptr);
-        vkFreeMemory(_context->GetLogicalDevice(), uniformBuffersMemory[i], nullptr);
-    }
 }
 
 void Renderer::Render()
 {
-
     uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(_context->GetLogicalDevice(), _context->GetSwapChain(), UINT64_MAX, _imageAvailableSemaphores[_currentFrame], VK_NULL_HANDLE, &imageIndex);
 
@@ -229,38 +242,34 @@ void Renderer::Render()
 
     uint32_t modelCnt = 0;
 
-    for (auto glyph : _text)
-    {
+    // One dynamic offset per dynamic descriptor to offset into the ubo containing all model matrices
+    // uint32_t dynamicOffset = modelCnt * static_cast<uint32_t>(dynamicAlignment);
+    // Bind the descriptor set for rendering a mesh using the dynamic offset
 
-        // One dynamic offset per dynamic descriptor to offset into the ubo containing all model matrices
-        // uint32_t dynamicOffset = modelCnt * static_cast<uint32_t>(dynamicAlignment);
-        // Bind the descriptor set for rendering a mesh using the dynamic offset
+    // vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &dynamicOffset);
 
-        // vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &dynamicOffset);
+    VkBuffer vertexBuffers[] = {_quad->vertexBuffer->GetVulkanBuffer()};
+    VkDeviceSize offsets[] = {0};
+    vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
 
-        VkBuffer vertexBuffers[] = {glyph->vertexBuffer->GetVulkanBuffer()};
-        VkDeviceSize offsets[] = {0};
-        vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
+    vkCmdBindIndexBuffer(currentCmdBuffer, _quad->indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT16);
 
-        vkCmdBindIndexBuffer(currentCmdBuffer, glyph->indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT16);
+    UniformBufferObject ubo{};
+    ubo.model = glm::mat4(1.0f);
+    ubo.model = glm::translate(glm::mat4(1.0), _quad->position);
+    ubo.model = glm::scale(ubo.model, glm::vec3(0.25, 0.25, 0.25));
 
-        UniformBufferObject ubo{};
-        ubo.model = glm::mat4(1.0f);
-        ubo.model = glm::translate(glm::mat4(1.0), glyph->position);
-        ubo.model = glm::scale(ubo.model, glm::vec3(0.25, 0.25, 0.25));
+    ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-        ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    float aspect = (float)_context->GetSwapChainExtent().width / (float)_context->GetSwapChainExtent().height;
+    ubo.proj = glm::ortho(0.0f, aspect, 0.0f, 1.0f, 0.0f, 100.0f);
+    ubo.proj[1][1] *= -1;
 
-        float aspect = (float)_context->GetSwapChainExtent().width / (float)_context->GetSwapChainExtent().height;
-        ubo.proj = glm::ortho(0.0f, aspect, 0.0f, 1.0f, 0.0f, 100.0f);
-        ubo.proj[1][1] *= -1;
+    memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));
 
-        memcpy(uniformBuffersMapped[_currentFrame], &ubo, sizeof(ubo));
+    vkCmdDrawIndexed(currentCmdBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 
-        vkCmdDrawIndexed(currentCmdBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
-
-        modelCnt++;
-    }
+    modelCnt++;
 
     _renderPass->End(_commandBuffers[_currentFrame]);
 

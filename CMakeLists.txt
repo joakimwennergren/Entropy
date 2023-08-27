@@ -38,6 +38,9 @@ target_sources(Symbios PRIVATE
     src/graphics/renderers/renderer.cpp
     src/graphics/buffers/buffer.cpp
     src/graphics/buffers/vertexbuffer.cpp
+    src/graphics/buffers/indexbuffer.cpp
+    src/graphics/buffers/uniformbuffer.cpp
+    src/graphics/buffers/stagedbuffer.cpp
     src/graphics/textures/texture.cpp
     src/graphics/utilities/utilities.cpp
     src/graphics/primitives/2d/quad.cpp

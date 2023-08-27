@@ -35,25 +35,18 @@ void Texture::CreateTextureImage(std::string path)
         exit(EXIT_FAILURE);
     }
 
-    VkBuffer stagingBuffer;
-    VkDeviceMemory stagingBufferMemory;
-    Buffer::CreateBuffer(_context, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
-
-    void *data;
-    vkMapMemory(_context->GetLogicalDevice(), stagingBufferMemory, 0, imageSize, 0, &data);
-    memcpy(data, pixels, static_cast<size_t>(imageSize));
-    vkUnmapMemory(_context->GetLogicalDevice(), stagingBufferMemory);
+    StagedBuffer buffer(_context, imageSize, pixels);
 
     stbi_image_free(pixels);
 
-    CreateImage(texWidth, texHeight, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _textureImage, _textureImageMemory);
+    auto mem = buffer.GetBufferMemory();
+    auto buf = buffer.GetVulkanBuffer();
+
+    CreateImage(texWidth, texHeight, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _textureImage, mem);
 
     TransitionImageLayout(_textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    CopyBufferToImage(stagingBuffer, _textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+    CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
     TransitionImageLayout(_textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-    vkDestroyBuffer(_context->GetLogicalDevice(), stagingBuffer, nullptr);
-    vkFreeMemory(_context->GetLogicalDevice(), stagingBufferMemory, nullptr);
 
     _imageView = _context->CreateImageView(_textureImage, VK_FORMAT_R8G8B8A8_SRGB);
 }

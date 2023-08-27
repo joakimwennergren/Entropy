@@ -18,6 +18,8 @@
 #include "quad.hpp"
 #include "instance.hpp"
 
+#include "uniformbuffer.hpp"
+
 #include <hb.h>
 
 using namespace Symbios::Core;
@@ -102,11 +104,11 @@ namespace Symbios
                 std::vector<void *> uniformBuffersMapped;
 
                 // textures
-                std::unique_ptr<Texture> _texture;
+                // std::unique_ptr<Texture> _texture;
 
                 std::unique_ptr<Quad> _quad;
 
-                std::vector<Quad *> _text;
+                // std::vector<Quad *> _text;
 
                 InstanceUBO _instanceUbo;
                 std::vector<VkBuffer> uniformBuffersInstances;
@@ -114,14 +116,17 @@ namespace Symbios
 
                 VkDeviceMemory _uniformBufferInstanceMemory;
                 VkDeviceMemory _uniformBufferInstanceMemory2;
-                void * mem1;
-                void * mem2;
+                void *mem1;
+                void *mem2;
                 uint32_t dynamicAlignment;
 
                 // Text shaping
                 unsigned int glyph_count;
                 hb_glyph_info_t *glyph_info;
                 hb_glyph_position_t *glyph_pos;
+
+                // @refactored buffers!!
+                std::vector<UniformBuffer *> _uniformBuffers;
             };
         }
     }

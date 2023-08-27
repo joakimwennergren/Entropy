@@ -73,6 +73,20 @@ namespace Symbios
                  */
                 inline VkBuffer GetVulkanBuffer() { return this->_buffer; };
 
+                /**
+                 * @brief Get the Buffer Memory object
+                 *
+                 * @return VkDeviceMemory
+                 */
+                inline VkDeviceMemory GetBufferMemory() { return this->_bufferMemory; };
+
+                /**
+                 * @brief Get the Mapped Memory object
+                 *
+                 * @return void*
+                 */
+                inline void *GetMappedMemory() { return this->_mappedMemory; };
+
             protected:
                 /**
                  * @brief Create a Buffer object
@@ -94,7 +108,6 @@ namespace Symbios
                  */
                 void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
-            private:
                 // Vulkan context
                 std::shared_ptr<Context> _context;
 

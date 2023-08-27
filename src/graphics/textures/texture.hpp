@@ -6,6 +6,8 @@
 #include "buffer.hpp"
 #include "commandbuffer.hpp"
 
+#include "stagedbuffer.hpp"
+
 using namespace Symbios::Core;
 using namespace Symbios::Graphics::Buffers;
 using namespace Symbios::Graphics::CommandBuffers;

@@ -1,5 +1,5 @@
 /**
- * @file vertexbuffer.hpp
+ * @file uniformbuffer.hpp
  * @author Joakim Wennergren (joakim.wennergren@databeams.se)
  * @brief
  * @version 0.1
@@ -29,27 +29,27 @@ namespace Symbios
              *
              */
 
-            class VertexBuffer : protected Buffer
+            class UniformBuffer : public Buffer
             {
             public:
                 /**
                  * @brief Construct a new Buffer object
                  *
                  */
-                VertexBuffer() = default;
+                UniformBuffer() = default;
 
                 /**
                  * @brief Construct a new Buffer object
                  *
                  * @param context Vulkan context
                  */
-                VertexBuffer(std::shared_ptr<Context> context);
+                UniformBuffer(std::shared_ptr<Context> context, VkDeviceSize bufferSize);
 
                 /**
                  * @brief Destroy the Buffer object
                  *
                  */
-                ~VertexBuffer();
+                ~UniformBuffer();
 
             private:
             };
