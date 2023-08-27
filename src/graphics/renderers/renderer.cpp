@@ -88,9 +88,21 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     // @todo this isnt necessary..
     _pipeline->Build();
 
-    _quad = std::make_unique<Quad>(_context);
-    _quad->position = glm::vec3(0.5, -0.5, 0.0);
-    _quad->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/ivysaur.png");
+    auto ivy = new Quad(_context);
+    ivy->position = glm::vec3(0.5, -0.5, 0.0);
+    ivy->texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/ivysaur.png");
+
+    auto ivy2 = new Quad(_context);
+    ivy2->position = glm::vec3(0.5, -0.2, 0.0);
+    ivy2->texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/link.png");
+
+    auto ivy3 = new Quad(_context);
+    ivy3->position = glm::vec3(0.8, -0.2, 0.0);
+    ivy3->texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/lionheart.png");
+
+    _sprites.push_back(ivy);
+    _sprites.push_back(ivy2);
+    _sprites.push_back(ivy3);
 
     srand(static_cast<unsigned>(time(0)));
 
@@ -127,16 +139,15 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     //_texture = std::make_unique<Texture>(_context);
     //_texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/ivysaur.png");
 
-    std::vector<VkBuffer> rawUniformBuffers;
-
     for (int i = 0; i < _uniformBuffers.size(); i++)
     {
         auto rawBuffer = _uniformBuffers[i]->GetVulkanBuffer();
         rawUniformBuffers.push_back(rawBuffer);
     }
 
-    _context->CreateDescriptorSets(rawUniformBuffers, _quad->texture->GetImageView());
+    _context->CreateDescriptorSets(rawUniformBuffers, ivy3->texture->GetImageView());
 
+    /*
     hb_buffer_t *buf;
     buf = hb_buffer_create();
     hb_buffer_add_utf8(buf, "Test", -1, 0, -1);
@@ -146,11 +157,12 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     hb_buffer_set_script(buf, HB_SCRIPT_LATIN);
     hb_buffer_set_language(buf, hb_language_from_string("en", -1));
 
-    hb_blob_t *blob = hb_blob_create_from_file("/Users/joakim/Desktop/Symbios/resources/fonts/quick-kiss-font/QuickKissPersonalUse-PxlZ.ttf"); /* or hb_blob_create_from_file_or_fail() */
+    hb_blob_t *blob = hb_blob_create_from_file("/Users/joakim/Desktop/Symbios/resources/fonts/quick-kiss-font/QuickKissPersonalUse-PxlZ.ttf");
     hb_face_t *face = hb_face_create(blob, 0);
     hb_font_t *font = hb_font_create(face);
 
     hb_shape(font, buf, NULL, 0);
+    */
 }
 
 Renderer::~Renderer()
@@ -237,39 +249,49 @@ void Renderer::Render()
     scissor.extent = _context->GetSwapChainExtent();
     vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissor);
 
-    auto currentDescriptorSet = _context->GetDescriptorSets()[_currentFrame];
-    vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 0, nullptr);
-
     uint32_t modelCnt = 0;
 
-    // One dynamic offset per dynamic descriptor to offset into the ubo containing all model matrices
-    // uint32_t dynamicOffset = modelCnt * static_cast<uint32_t>(dynamicAlignment);
-    // Bind the descriptor set for rendering a mesh using the dynamic offset
+    for (auto sprite : _sprites)
+    {
 
-    // vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &dynamicOffset);
+        // One dynamic offset per dynamic descriptor to offset into the ubo containing all model matrices
+        // uint32_t dynamicOffset = modelCnt * static_cast<uint32_t>(dynamicAlignment);
+        // Bind the descriptor set for rendering a mesh using the dynamic offset
 
-    VkBuffer vertexBuffers[] = {_quad->vertexBuffer->GetVulkanBuffer()};
-    VkDeviceSize offsets[] = {0};
-    vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
+        // vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &dynamicOffset);
 
-    vkCmdBindIndexBuffer(currentCmdBuffer, _quad->indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT16);
+        auto currentDescriptorSet = _context->GetDescriptorSets()[_currentFrame];
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 0, nullptr);
 
-    UniformBufferObject ubo{};
-    ubo.model = glm::mat4(1.0f);
-    ubo.model = glm::translate(glm::mat4(1.0), _quad->position);
-    ubo.model = glm::scale(ubo.model, glm::vec3(0.25, 0.25, 0.25));
+        VkBuffer vertexBuffers[] = {sprite->vertexBuffer->GetVulkanBuffer()};
+        VkDeviceSize offsets[] = {0};
+        vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
 
-    ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        vkCmdBindIndexBuffer(currentCmdBuffer, sprite->indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT16);
 
-    float aspect = (float)_context->GetSwapChainExtent().width / (float)_context->GetSwapChainExtent().height;
-    ubo.proj = glm::ortho(0.0f, aspect, 0.0f, 1.0f, 0.0f, 100.0f);
-    ubo.proj[1][1] *= -1;
+        UniformBufferObject ubo{};
+        ubo.model = glm::mat4(1.0f);
+        ubo.model = glm::translate(glm::mat4(1.0), sprite->position);
+        ubo.model = glm::scale(ubo.model, glm::vec3(0.25, 0.25, 0.25));
 
-    memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));
+        InstancePushConstants constants;
+        constants.modelMatrix = ubo.model;
 
-    vkCmdDrawIndexed(currentCmdBuffer, _quad->GetIndices().size(), 1, 0, 0, 0);
+        // upload the matrix to the GPU via push constants
+        vkCmdPushConstants(currentCmdBuffer, _pipeline->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(InstancePushConstants), &constants);
 
-    modelCnt++;
+        ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+        float aspect = (float)_context->GetSwapChainExtent().width / (float)_context->GetSwapChainExtent().height;
+        ubo.proj = glm::ortho(0.0f, aspect, 0.0f, 1.0f, 0.0f, 100.0f);
+        ubo.proj[1][1] *= -1;
+
+        memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));
+
+        vkCmdDrawIndexed(currentCmdBuffer, sprite->GetIndices().size(), 1, 0, 0, 0);
+
+        modelCnt++;
+    }
 
     _renderPass->End(_commandBuffers[_currentFrame]);
 

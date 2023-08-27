@@ -282,6 +282,8 @@ namespace Symbios
              */
             VkImageView CreateImageView(VkImage image, VkFormat format);
 
+            void Test(std::vector<VkBuffer> uniformBuffers, VkImageView imageView);
+
         private:
             /**
              * @brief Create a Instance object

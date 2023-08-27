@@ -17,6 +17,7 @@
 #include "filesystem.hpp"
 #include "quad.hpp"
 #include "instance.hpp"
+#include "instance_pushcontants.hpp"
 
 #include "uniformbuffer.hpp"
 
@@ -85,7 +86,8 @@ namespace Symbios
 
                 bool _framebufferResized = false;
 
-                std::unique_ptr<Quad> _quad;
+                std::vector<Quad *> _sprites;
+                std::vector<VkBuffer> rawUniformBuffers;
 
                 InstanceUBO _instanceUbo;
                 std::vector<VkBuffer> uniformBuffersInstances;

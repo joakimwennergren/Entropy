@@ -16,7 +16,7 @@ void Pipeline::Build()
 #ifdef BUILD_FOR_IOS
     _shader = std::make_unique<Shader>(_context, Filesystem::GetProjectBasePath() + "/vert.spv", Filesystem::GetProjectBasePath() + "/frag.spv");
 #else
-    _shader = std::make_unique<Shader>(_context, "/Users/joakim/Desktop/Symbios/shaders/basic/vert.spv", "/Users/joakim/Desktop/Symbios/shaders/basic/frag.spv");
+    _shader = std::make_unique<Shader>(_context, "/Users/joakimwennergren/Desktop/Symbios/shaders/basic/vert.spv", "/Users/joakimwennergren/Desktop/Symbios/shaders/basic/frag.spv");
 #endif
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
@@ -124,12 +124,21 @@ void Pipeline::Build()
 
     auto descriptorSetLayout = _context->GetDescriptorSetLayouts();
 
+    // setup push constants
+    VkPushConstantRange push_constant;
+    // this push constant range starts at the beginning
+    push_constant.offset = 0;
+    // this push constant range takes up the size of a MeshPushConstants struct
+    push_constant.size = sizeof(InstancePushConstants);
+    // this push constant range is accessible only in the vertex shader
+    push_constant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipelineLayoutInfo.setLayoutCount = 1;
     pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
-    pipelineLayoutInfo.pushConstantRangeCount = 0;    // Optional
-    pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
+    pipelineLayoutInfo.pPushConstantRanges = &push_constant;
+    pipelineLayoutInfo.pushConstantRangeCount = 1;
 
     if (vkCreatePipelineLayout(_context->GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &this->_pipelineLayout) != VK_SUCCESS)
     {
