@@ -267,7 +267,7 @@ void Renderer::Render()
 
     memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));
 
-    vkCmdDrawIndexed(currentCmdBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+    vkCmdDrawIndexed(currentCmdBuffer, _quad->GetIndices().size(), 1, 0, 0, 0);
 
     modelCnt++;
 
@@ -312,25 +312,4 @@ void Renderer::Render()
     vkQueuePresentKHR(_context->GetPresentQueue(), &presentInfo);
 
     _currentFrame = (_currentFrame + 1) % MAX_CONCURRENT_FRAMES_IN_FLIGHT;
-}
-
-void Renderer::UpdateUniforms(uint32_t currentImage)
-{
-    static auto startTime = std::chrono::high_resolution_clock::now();
-
-    auto currentTime = std::chrono::high_resolution_clock::now();
-    float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-
-    UniformBufferObject ubo{};
-    ubo.model = glm::mat4(1.0f);
-    ubo.model = glm::translate(glm::mat4(1.0), glm::vec3(0.5, -0.5, 0.0));
-    ubo.model = glm::scale(ubo.model, glm::vec3(0.25, 0.25, 0.25));
-
-    ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-    float aspect = (float)_context->GetSwapChainExtent().width / (float)_context->GetSwapChainExtent().height;
-    ubo.proj = glm::ortho(0.0f, aspect, 0.0f, 1.0f, 0.0f, 100.0f);
-    ubo.proj[1][1] *= -1;
-
-    memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
 }

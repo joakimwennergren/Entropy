@@ -29,7 +29,7 @@ namespace Symbios
              *
              */
 
-            class VertexBuffer : protected Buffer
+            class VertexBuffer : public Buffer
             {
             public:
                 /**
@@ -43,7 +43,7 @@ namespace Symbios
                  *
                  * @param context Vulkan context
                  */
-                VertexBuffer(std::shared_ptr<Context> context);
+                VertexBuffer(std::shared_ptr<Context> context, std::vector<Vertex> vertices);
 
                 /**
                  * @brief Destroy the Buffer object

@@ -77,33 +77,6 @@ void Buffer::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize siz
 /**
  * @brief
  *
- * @param vertices
- */
-void Buffer::CreateVertexBuffer(std::vector<Vertex> vertices)
-{
-
-    VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
-
-    VkBuffer stagingBuffer;
-    VkDeviceMemory stagingBufferMemory;
-    CreateBuffer(_context, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
-
-    void *data;
-    vkMapMemory(_context->GetLogicalDevice(), stagingBufferMemory, 0, bufferSize, 0, &data);
-    memcpy(data, vertices.data(), (size_t)bufferSize);
-    vkUnmapMemory(_context->GetLogicalDevice(), stagingBufferMemory);
-
-    CreateBuffer(_context, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _buffer, _bufferMemory);
-
-    CopyBuffer(stagingBuffer, _buffer, bufferSize);
-
-    vkDestroyBuffer(_context->GetLogicalDevice(), stagingBuffer, nullptr);
-    vkFreeMemory(_context->GetLogicalDevice(), stagingBufferMemory, nullptr);
-}
-
-/**
- * @brief
- *
  * @param indices
  */
 void Buffer::CreateIndexBufferUint16(std::vector<uint16_t> indices)

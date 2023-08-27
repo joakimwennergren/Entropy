@@ -55,12 +55,6 @@ namespace Symbios
                 ~Buffer();
 
                 /**
-                 * @brief Create a Vertex Buffer object
-                 *
-                 */
-                void CreateVertexBuffer(std::vector<Vertex> vertices);
-
-                /**
                  * @brief Create a Index Buffer object
                  *
                  */
@@ -100,11 +94,11 @@ namespace Symbios
                 static void CreateBuffer(std::shared_ptr<Context> _context, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory);
 
                 /**
-                 * @brief
+                 * @brief Copy One Buffer into another
                  *
-                 * @param srcBuffer
-                 * @param dstBuffer
-                 * @param size
+                 * @param srcBuffer VkBuffer source
+                 * @param dstBuffer VkBuffer destination
+                 * @param size srcBuffer size
                  */
                 void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
@@ -117,7 +111,7 @@ namespace Symbios
                 // Buffer in device memory
                 VkDeviceMemory _bufferMemory;
 
-                // ??
+                // Mapped memory towards GPU?
                 void *_mappedMemory;
             };
         }

@@ -9,8 +9,7 @@ Quad::Quad(std::shared_ptr<Context> context)
     texture = std::make_unique<Texture>(_context);
 
     // Create buffers @todo temp!!!
-    vertexBuffer = std::make_unique<Buffer>(context);
-    vertexBuffer->CreateVertexBuffer(_vertices);
+    vertexBuffer = std::make_unique<VertexBuffer>(_context, _vertices);
 
     indexBuffer = std::make_unique<Buffer>(context);
     indexBuffer->CreateIndexBufferUint16(_indices);
