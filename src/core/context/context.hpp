@@ -48,6 +48,7 @@
 #include <set>
 
 #include "mvpuniform.hpp"
+#include "instance.hpp"
 
 namespace Symbios
 {
@@ -491,6 +492,8 @@ namespace Symbios
 
             VkDescriptorSetLayout _descriptorSetLayout;
             std::vector<VkDescriptorSet> _descriptorSets;
+
+            VkDescriptorSet _uboInstanceDS;
 
 #if defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_MACOS)
             GLFWwindow *_window;

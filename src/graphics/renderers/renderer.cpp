@@ -2,6 +2,31 @@
 
 using namespace Symbios::Graphics::Renderers;
 
+// Wrapper functions for aligned memory allocation
+// There is currently no standard for this in C++ that works across all platforms and vendors, so we abstract this
+// @todo put this in utils!!
+void *alignedAlloc(size_t size, size_t alignment)
+{
+    void *data = nullptr;
+#if defined(_MSC_VER) || defined(__MINGW32__)
+    data = _aligned_malloc(size, alignment);
+#else
+    int res = posix_memalign(&data, alignment, size);
+    if (res != 0)
+        data = nullptr;
+#endif
+    return data;
+}
+
+void alignedFree(void *data)
+{
+#if defined(_MSC_VER) || defined(__MINGW32__)
+    _aligned_free(data);
+#else
+    free(data);
+#endif
+}
+
 Renderer::Renderer(std::shared_ptr<Context> context)
 {
     _context = context;
@@ -39,12 +64,6 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     }
 
     // Create buffers @todo temp!!!
-    _vertexBuffer = std::make_unique<Buffer>(_context);
-    _vertexBuffer->CreateVertexBuffer(vertices);
-
-    _indexBuffer = std::make_unique<Buffer>(_context);
-    _indexBuffer->CreateIndexBufferUint16(indices);
-
     VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 
     uniformBuffers.resize(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
@@ -58,11 +77,60 @@ Renderer::Renderer(std::shared_ptr<Context> context)
         vkMapMemory(_context->GetLogicalDevice(), uniformBuffersMemory[i], 0, bufferSize, 0, &uniformBuffersMapped[i]);
     }
 
-    _texture = std::make_unique<Texture>(_context);
-    _texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/ivysaur.png");
-    _context->CreateDescriptorSets(uniformBuffers, _texture->GetImageView());
-
+    // @todo this isnt necessary..
     _pipeline->Build();
+
+    _quad = std::make_unique<Quad>(_context);
+    _quad->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/ivysaur.png");
+
+    srand(static_cast<unsigned>(time(0)));
+
+    for (int i = 0; i < 4; i++)
+    {
+        float x = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        float y = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        float z = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        auto glyph = new Quad(_context);
+        glyph->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/ivysaur.png");
+        glyph->position = glm::vec3(x, y * -1, 0.0);
+        _text.push_back(glyph);
+    }
+
+    // @temp dynamic UBO
+    // Calculate required alignment based on minimum device offset alignment
+
+    VkPhysicalDeviceProperties properties;
+    vkGetPhysicalDeviceProperties(_context->GetPhysicalDevice(), &properties);
+    size_t minUboAlignment = properties.limits.minUniformBufferOffsetAlignment;
+
+    dynamicAlignment = sizeof(glm::mat4);
+
+    if (minUboAlignment > 0)
+    {
+        dynamicAlignment = (dynamicAlignment + minUboAlignment - 1) & ~(minUboAlignment - 1);
+    }
+
+    size_t bufferSizeUbo = 10 * dynamicAlignment;
+    _instanceUbo.model = (glm::mat4 *)alignedAlloc(bufferSizeUbo, dynamicAlignment);
+
+    //_texture = std::make_unique<Texture>(_context);
+    //_texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/ivysaur.png");
+    _context->CreateDescriptorSets(uniformBuffers, _quad->texture->GetImageView());
+
+    hb_buffer_t *buf;
+    buf = hb_buffer_create();
+    hb_buffer_add_utf8(buf, "Test", -1, 0, -1);
+
+    // If you know the direction, script, and language
+    hb_buffer_set_direction(buf, HB_DIRECTION_LTR);
+    hb_buffer_set_script(buf, HB_SCRIPT_LATIN);
+    hb_buffer_set_language(buf, hb_language_from_string("en", -1));
+
+    hb_blob_t *blob = hb_blob_create_from_file("/Users/joakim/Desktop/Symbios/resources/fonts/quick-kiss-font/QuickKissPersonalUse-PxlZ.ttf"); /* or hb_blob_create_from_file_or_fail() */
+    hb_face_t *face = hb_face_create(blob, 0);
+    hb_font_t *font = hb_font_create(face);
+
+    hb_shape(font, buf, NULL, 0);
 }
 
 Renderer::~Renderer()
@@ -156,23 +224,47 @@ void Renderer::Render()
     scissor.extent = _context->GetSwapChainExtent();
     vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissor);
 
-    VkBuffer vertexBuffers[] = {_vertexBuffer->GetBuffer()};
-    VkDeviceSize offsets[] = {0};
-    vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
-
-    vkCmdBindIndexBuffer(currentCmdBuffer, _indexBuffer->GetBuffer(), 0, VK_INDEX_TYPE_UINT16);
-
     auto currentDescriptorSet = _context->GetDescriptorSets()[_currentFrame];
-
     vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 0, nullptr);
 
-    vkCmdDrawIndexed(currentCmdBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+    uint32_t modelCnt = 0;
+
+    for (auto glyph : _text)
+    {
+
+        // One dynamic offset per dynamic descriptor to offset into the ubo containing all model matrices
+        // uint32_t dynamicOffset = modelCnt * static_cast<uint32_t>(dynamicAlignment);
+        // Bind the descriptor set for rendering a mesh using the dynamic offset
+
+        // vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &dynamicOffset);
+
+        VkBuffer vertexBuffers[] = {glyph->vertexBuffer->GetBuffer()};
+        VkDeviceSize offsets[] = {0};
+        vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
+
+        vkCmdBindIndexBuffer(currentCmdBuffer, glyph->indexBuffer->GetBuffer(), 0, VK_INDEX_TYPE_UINT16);
+
+        UniformBufferObject ubo{};
+        ubo.model = glm::mat4(1.0f);
+        ubo.model = glm::translate(glm::mat4(1.0), glyph->position);
+        ubo.model = glm::scale(ubo.model, glm::vec3(0.25, 0.25, 0.25));
+
+        ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+        float aspect = (float)_context->GetSwapChainExtent().width / (float)_context->GetSwapChainExtent().height;
+        ubo.proj = glm::ortho(0.0f, aspect, 0.0f, 1.0f, 0.0f, 100.0f);
+        ubo.proj[1][1] *= -1;
+
+        memcpy(uniformBuffersMapped[_currentFrame], &ubo, sizeof(ubo));
+
+        vkCmdDrawIndexed(currentCmdBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+
+        modelCnt++;
+    }
 
     _renderPass->End(_commandBuffers[_currentFrame]);
 
     _commandBuffers[_currentFrame]->EndRecording();
-
-    UpdateUniforms(_currentFrame);
 
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -222,9 +314,8 @@ void Renderer::UpdateUniforms(uint32_t currentImage)
 
     UniformBufferObject ubo{};
     ubo.model = glm::mat4(1.0f);
-    ubo.model = glm::translate(glm::mat4(1.0), glm::vec3(sin(time) * 0.3 + 0.5, cos(time) * 0.25 - 0.5, 0.0));
+    ubo.model = glm::translate(glm::mat4(1.0), glm::vec3(0.5, -0.5, 0.0));
     ubo.model = glm::scale(ubo.model, glm::vec3(0.25, 0.25, 0.25));
-    ubo.model = glm::rotate(ubo.model, glm::radians(time * 90.0f), glm::vec3(0.0, 0.0, 1.0));
 
     ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 

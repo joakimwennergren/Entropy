@@ -19,3 +19,6 @@
 [submodule "yoga"]
 	path = external/yoga
 	url = https://github.com/facebook/yoga.git
+[submodule "harfbuzz"]
+	path = external/harfbuzz
+	url = https://github.com/harfbuzz/harfbuzz.git

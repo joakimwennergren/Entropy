@@ -15,6 +15,10 @@
 #include "mvpuniform.hpp"
 #include "texture.hpp"
 #include "filesystem.hpp"
+#include "quad.hpp"
+#include "instance.hpp"
+
+#include <hb.h>
 
 using namespace Symbios::Core;
 using namespace Symbios::Graphics::Buffers;
@@ -22,6 +26,7 @@ using namespace Symbios::Graphics::Textures;
 using namespace Symbios::Graphics::Pipelines;
 using namespace Symbios::Graphics::RenderPasses;
 using namespace Symbios::Graphics::CommandBuffers;
+using namespace Symbios::Graphics::Primitives;
 
 namespace Symbios
 {
@@ -98,6 +103,25 @@ namespace Symbios
 
                 // textures
                 std::unique_ptr<Texture> _texture;
+
+                std::unique_ptr<Quad> _quad;
+
+                std::vector<Quad *> _text;
+
+                InstanceUBO _instanceUbo;
+                std::vector<VkBuffer> uniformBuffersInstances;
+                VkBuffer buf1, buf2;
+
+                VkDeviceMemory _uniformBufferInstanceMemory;
+                VkDeviceMemory _uniformBufferInstanceMemory2;
+                void * mem1;
+                void * mem2;
+                uint32_t dynamicAlignment;
+
+                // Text shaping
+                unsigned int glyph_count;
+                hb_glyph_info_t *glyph_info;
+                hb_glyph_position_t *glyph_pos;
             };
         }
     }

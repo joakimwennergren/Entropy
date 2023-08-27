@@ -20,6 +20,9 @@ add_subdirectory(external/plog)
 # GLM
 add_subdirectory(external/glm)
 
+# Text shaping
+add_subdirectory(external/harfbuzz)
+
 add_executable(Symbios)
 
 target_sources(Symbios PRIVATE
@@ -36,6 +39,7 @@ target_sources(Symbios PRIVATE
     src/graphics/buffers/buffer.cpp
     src/graphics/textures/texture.cpp
     src/graphics/utilities/utilities.cpp
+    src/graphics/primitives/2d/quad.cpp
 
     # Main entrypoint
     src/main.cpp
@@ -70,6 +74,8 @@ target_include_directories(Symbios PRIVATE
     src/graphics/buffers
     src/graphics/textures
     src/graphics/utilitites
+    src/graphics/primitives/2d
+    src/graphics/primitives/3d
 
     # Audio
     src/audio/
@@ -90,6 +96,9 @@ target_link_libraries(Symbios
 
     # GLM
     glm
+
+    # Text shaping
+    harfbuzz
 )
 
 if(NOT XCODE)

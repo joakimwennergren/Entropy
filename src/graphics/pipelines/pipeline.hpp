@@ -16,6 +16,7 @@
 #include "renderpass.hpp"
 #include "filesystem.hpp"
 #include "vertex.hpp"
+#include "instance.hpp"
 
 using namespace Symbios::Core;
 using namespace Symbios::Filesystem;
