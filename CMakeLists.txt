@@ -23,9 +23,6 @@ add_subdirectory(external/glm)
 # Text shaping
 add_subdirectory(external/harfbuzz)
 
-# Scripting
-
-
 add_executable(Symbios)
 
 target_sources(Symbios PRIVATE
@@ -47,6 +44,9 @@ target_sources(Symbios PRIVATE
     src/graphics/textures/texture.cpp
     src/graphics/utilities/utilities.cpp
     src/graphics/primitives/2d/quad.cpp
+
+    # Scripting
+    src/scripting/state/state.cpp
 
     # Main entrypoint
     src/main.cpp
@@ -89,6 +89,9 @@ target_include_directories(Symbios PRIVATE
 
     # Filesystem
     src/filesystem
+
+    # Scripting
+    src/scripting/state
 
     # Metal-CPP
     external/metal-cpp/

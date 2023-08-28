@@ -27,6 +27,16 @@ void alignedFree(void *data)
 #endif
 }
 
+// *** define C++ function ***
+static int MyCppFunction(lua_State *L) // Lua callable functions must be this format
+{
+    const int num = (int)lua_tonumber(L, 1); // get first param from stack
+    const char *str = lua_tostring(L, 2);    // get second param from stack
+    std::cout << "Hello from C++!" << std::endl;
+    std::cout << "num = " << num << ", str = " << str << std::endl;
+    return 0; // how many params we're passing to Lua
+}
+
 Renderer::Renderer(std::shared_ptr<Context> context)
 {
     _context = context;
@@ -85,6 +95,8 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     }
     */
 
+    lua_register(Singleton::GetInstance("test")->GetState(), "CallMyCppFunction", MyCppFunction); // register our C++ function with Lua
+
     // @todo this isnt necessary..
     _pipeline->Build();
 
@@ -95,22 +107,25 @@ Renderer::Renderer(std::shared_ptr<Context> context)
 
     auto ivy2 = new Quad(_context);
     ivy2->position = glm::vec3(0.5, -0.2, 0.0);
+    ivy2->scale = glm::vec3(0.2, 0.2, 0.0);
     ivy2->textureId = 1;
     ivy2->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/link.png");
 
     auto ivy3 = new Quad(_context);
-    ivy3->position = glm::vec3(0.8, -0.2, 0.0);
+    ivy3->position = glm::vec3(1.0, -0.2, 0.0);
     ivy3->textureId = 2;
+    ivy3->scale = glm::vec3(0.5, 0.5, 0.0);
     ivy3->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/lionheart.png");
 
-    auto pane = new Quad(_context);
-    pane->color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+    pane = new Quad(_context);
+    pane->color = glm::vec4(1.0f, 1.0f, 1.0f, 0.4f);
+    pane->scale = glm::vec3(4.0, 2.0, 0.0);
     pane->position = glm::vec3(0.0, 0.0, 0.0);
 
+    _sprites.push_back(pane);
     _sprites.push_back(ivy);
     _sprites.push_back(ivy2);
     _sprites.push_back(ivy3);
-    _sprites.push_back(pane);
 
     srand(static_cast<unsigned>(time(0)));
 
@@ -193,6 +208,8 @@ Renderer::Renderer(std::shared_ptr<Context> context)
 
     hb_shape(font, buf, NULL, 0);
     */
+
+    srand(static_cast<unsigned>(time(0)));
 }
 
 Renderer::~Renderer()
@@ -210,6 +227,19 @@ Renderer::~Renderer()
 
 void Renderer::Render()
 {
+
+    time2 += 0.1;
+
+    if (time2 >= 2.0)
+    {
+        float r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        float g = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        float b = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+
+        pane->color = glm::vec4(r, g, b, 0.4f);
+        time2 = 0;
+    }
+
     uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(_context->GetLogicalDevice(), _context->GetSwapChain(), UINT64_MAX, _imageAvailableSemaphores[_currentFrame], VK_NULL_HANDLE, &imageIndex);
 
@@ -302,7 +332,8 @@ void Renderer::Render()
 
         auto model = glm::mat4(1.0f);
         model = glm::translate(glm::mat4(1.0), sprite->position);
-        model = glm::scale(model, glm::vec3(0.25, 0.25, 0.25));
+
+        model = glm::scale(model, sprite->scale);
 
         InstancePushConstants constants;
         constants.modelMatrix = model;

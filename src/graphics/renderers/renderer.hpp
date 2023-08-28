@@ -20,16 +20,19 @@
 #include "instance_pushcontants.hpp"
 
 #include "uniformbuffer.hpp"
+#include "state.hpp"
 
 #include <hb.h>
+#include <iostream>
 
 using namespace Symbios::Core;
+using namespace Symbios::Scripting::States;
 using namespace Symbios::Graphics::Buffers;
 using namespace Symbios::Graphics::Textures;
 using namespace Symbios::Graphics::Pipelines;
+using namespace Symbios::Graphics::Primitives;
 using namespace Symbios::Graphics::RenderPasses;
 using namespace Symbios::Graphics::CommandBuffers;
-using namespace Symbios::Graphics::Primitives;
 
 namespace Symbios
 {
@@ -99,6 +102,8 @@ namespace Symbios
                 void *mem2;
                 VkDeviceSize dynamicAlignment;
 
+                Quad *pane;
+                float time2;
                 // Text shaping
                 unsigned int glyph_count;
                 hb_glyph_info_t *glyph_info;

@@ -53,6 +53,8 @@ namespace Symbios
                 std::unique_ptr<VertexBuffer> vertexBuffer;
                 std::unique_ptr<Buffer> indexBuffer;
                 glm::vec3 position;
+                glm::vec3 rotation;
+                glm::vec3 scale = glm::vec3(1.0);
                 int textureId = -1;
                 glm::vec4 color;
 
