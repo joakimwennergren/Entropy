@@ -6,5 +6,6 @@
 struct InstancePushConstants
 {
     glm::mat4 modelMatrix;
+    glm::vec4 color;
     int textureId;
 };

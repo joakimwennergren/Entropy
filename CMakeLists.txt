@@ -23,6 +23,9 @@ add_subdirectory(external/glm)
 # Text shaping
 add_subdirectory(external/harfbuzz)
 
+# Scripting
+
+
 add_executable(Symbios)
 
 target_sources(Symbios PRIVATE
@@ -89,6 +92,9 @@ target_include_directories(Symbios PRIVATE
 
     # Metal-CPP
     external/metal-cpp/
+
+    # Lua
+    external/lua-5.4.6/src
 )
 
 target_compile_features(Symbios PRIVATE cxx_std_17)
@@ -103,6 +109,9 @@ target_link_libraries(Symbios
 
     # Text shaping
     harfbuzz
+
+    # Scripting
+    /Users/joakim/Desktop/Symbios/external/lua-5.4.6/src/liblua.a
 )
 
 if(NOT XCODE)

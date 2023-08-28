@@ -90,19 +90,27 @@ Renderer::Renderer(std::shared_ptr<Context> context)
 
     auto ivy = new Quad(_context);
     ivy->position = glm::vec3(0.5, -0.5, 0.0);
-    ivy->texture->CreateTextureImage("C:\\Symbios\\resources\\textures\\ivysaur.png");
+    ivy->textureId = 0;
+    ivy->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/ivysaur.png");
 
     auto ivy2 = new Quad(_context);
     ivy2->position = glm::vec3(0.5, -0.2, 0.0);
-    ivy2->texture->CreateTextureImage("C:\\Symbios\\resources\\textures\\link.png");
+    ivy2->textureId = 1;
+    ivy2->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/link.png");
 
     auto ivy3 = new Quad(_context);
     ivy3->position = glm::vec3(0.8, -0.2, 0.0);
-    ivy3->texture->CreateTextureImage("C:\\Symbios\\resources\\textures\\lionheart.png");
+    ivy3->textureId = 2;
+    ivy3->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/lionheart.png");
+
+    auto pane = new Quad(_context);
+    pane->color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+    pane->position = glm::vec3(0.0, 0.0, 0.0);
 
     _sprites.push_back(ivy);
     _sprites.push_back(ivy2);
     _sprites.push_back(ivy3);
+    _sprites.push_back(pane);
 
     srand(static_cast<unsigned>(time(0)));
 
@@ -145,7 +153,29 @@ Renderer::Renderer(std::shared_ptr<Context> context)
         rawUniformBuffers.push_back(rawBuffer);
     }
 
-    _context->CreateDescriptorSets(rawUniformBuffers, ivy3->texture->GetImageView());
+    // every item in descriptorImageInfos needs an imageview...
+    _context->descriptorImageInfos.resize(16);
+
+    _context->descriptorImageInfos[0].sampler = _context->_textureSampler;
+    _context->descriptorImageInfos[0].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    _context->descriptorImageInfos[0].imageView = ivy->texture->GetImageView();
+
+    _context->descriptorImageInfos[1].sampler = _context->_textureSampler;
+    _context->descriptorImageInfos[1].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    _context->descriptorImageInfos[1].imageView = ivy2->texture->GetImageView();
+
+    _context->descriptorImageInfos[2].sampler = _context->_textureSampler;
+    _context->descriptorImageInfos[2].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    _context->descriptorImageInfos[2].imageView = ivy3->texture->GetImageView();
+
+    for (int i = 3; i < 16; i++)
+    {
+        _context->descriptorImageInfos[i].sampler = _context->_textureSampler;
+        _context->descriptorImageInfos[i].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        _context->descriptorImageInfos[i].imageView = ivy3->texture->GetImageView();
+    }
+
+    _context->CreateDescriptorSets(rawUniformBuffers, _context->descriptorImageInfos);
 
     /*
     hb_buffer_t *buf;
@@ -253,7 +283,6 @@ void Renderer::Render()
 
     for (auto sprite : _sprites)
     {
-        _context->Test(rawUniformBuffers, sprite->texture->GetImageView());
         // One dynamic offset per dynamic descriptor to offset into the ubo containing all model matrices
         // uint32_t dynamicOffset = modelCnt * static_cast<uint32_t>(dynamicAlignment);
         // Bind the descriptor set for rendering a mesh using the dynamic offset
@@ -270,12 +299,19 @@ void Renderer::Render()
         vkCmdBindIndexBuffer(currentCmdBuffer, sprite->indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT16);
 
         UniformBufferObject ubo{};
-        ubo.model = glm::mat4(1.0f);
-        ubo.model = glm::translate(glm::mat4(1.0), sprite->position);
-        ubo.model = glm::scale(ubo.model, glm::vec3(0.25, 0.25, 0.25));
+
+        auto model = glm::mat4(1.0f);
+        model = glm::translate(glm::mat4(1.0), sprite->position);
+        model = glm::scale(model, glm::vec3(0.25, 0.25, 0.25));
 
         InstancePushConstants constants;
-        constants.modelMatrix = ubo.model;
+        constants.modelMatrix = model;
+        constants.color = sprite->color;
+
+        if (sprite->texture != nullptr)
+        {
+            constants.textureId = sprite->textureId;
+        }
 
         // upload the matrix to the GPU via push constants
         vkCmdPushConstants(currentCmdBuffer, _pipeline->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(InstancePushConstants), &constants);

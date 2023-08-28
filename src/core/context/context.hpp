@@ -255,7 +255,7 @@ namespace Symbios
              *
              * @param uniformBuffers
              */
-            void CreateDescriptorSets(std::vector<VkBuffer> uniformBuffers, VkImageView imageView);
+            void CreateDescriptorSets(std::vector<VkBuffer> uniformBuffers, std::vector<VkDescriptorImageInfo> descriptorImageInfos);
 
             /**
              * @brief
@@ -283,7 +283,9 @@ namespace Symbios
             VkImageView CreateImageView(VkImage image, VkFormat format);
 
             void Test(std::vector<VkBuffer> uniformBuffers, VkImageView imageView);
-            VkDescriptorImageInfo descriptorImageInfos[TEXTURE_ARRAY_SIZE];
+            std::vector<VkDescriptorImageInfo> descriptorImageInfos;
+            // Texture samplers
+            VkSampler _textureSampler;
 
         private:
             /**
@@ -489,9 +491,6 @@ namespace Symbios
             // TextureViews
             VkImageView _textureImageView;
             VkImage _textureImage;
-
-            // Texture samplers
-            VkSampler _textureSampler;
 
             VkDescriptorSetLayout _descriptorSetLayout;
             std::vector<VkDescriptorSet> _descriptorSets;

@@ -1,0 +1,1 @@
+print(CallMyCppFunction(1, "TEST"))
