@@ -10,6 +10,8 @@ layout(binding=0)uniform UniformBufferObject{
 layout(push_constant)uniform constants
 {
     mat4 modelMatrix;
+    int textureId;
+    
 }PushConstants;
 
 layout(location=0)in vec3 inPosition;

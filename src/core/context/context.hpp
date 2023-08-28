@@ -283,6 +283,7 @@ namespace Symbios
             VkImageView CreateImageView(VkImage image, VkFormat format);
 
             void Test(std::vector<VkBuffer> uniformBuffers, VkImageView imageView);
+            VkDescriptorImageInfo descriptorImageInfos[TEXTURE_ARRAY_SIZE];
 
         private:
             /**

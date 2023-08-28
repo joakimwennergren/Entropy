@@ -97,7 +97,7 @@ namespace Symbios
                 VkDeviceMemory _uniformBufferInstanceMemory2;
                 void *mem1;
                 void *mem2;
-                uint32_t dynamicAlignment;
+                VkDeviceSize dynamicAlignment;
 
                 // Text shaping
                 unsigned int glyph_count;

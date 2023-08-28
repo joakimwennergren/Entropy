@@ -885,7 +885,7 @@ void Context::CreateCommandPool()
 
 void Context::CreateDescriptorPool()
 {
-    std::array<VkDescriptorPoolSize, 2> poolSizes{};
+    std::array<VkDescriptorPoolSize, 3> poolSizes{};
 
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
@@ -893,16 +893,14 @@ void Context::CreateDescriptorPool()
     poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
 
-    /*
-    poolSizes[2].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
-    poolSizes[2].descriptorCount = static_cast<uint32_t>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
-    */
+    poolSizes[2].type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+    poolSizes[2].descriptorCount = 8;
 
     VkDescriptorPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
     poolInfo.pPoolSizes = poolSizes.data();
-    poolInfo.maxSets = 2;
+    poolInfo.maxSets = 3;
 
     if (vkCreateDescriptorPool(_device, &poolInfo, nullptr, &_descriptorPool) != VK_SUCCESS)
     {
@@ -926,14 +924,12 @@ void Context::CreateDescriptorSetLayout()
     samplerLayoutBinding.pImmutableSamplers = nullptr;
     samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-    /*
-    VkDescriptorSetLayoutBinding instanceUboLayoutBinding{};
-    instanceUboLayoutBinding.binding = 2;
-    instanceUboLayoutBinding.descriptorCount = 1;
-    instanceUboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
-    instanceUboLayoutBinding.pImmutableSamplers = nullptr;
-    instanceUboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-    */
+    VkDescriptorSetLayoutBinding texturesLayoutBinding{};
+    texturesLayoutBinding.binding = 2;
+    texturesLayoutBinding.descriptorCount = 8;
+    texturesLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+    texturesLayoutBinding.pImmutableSamplers = nullptr;
+    texturesLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
     std::array<VkDescriptorSetLayoutBinding, 2> bindings = {uboLayoutBinding, samplerLayoutBinding, /*instanceUboLayoutBinding*/};
     VkDescriptorSetLayoutCreateInfo layoutInfo{};
@@ -961,7 +957,7 @@ void Context::Test(std::vector<VkBuffer> uniformBuffers, VkImageView imageView)
         imageInfo.imageView = imageView;
         imageInfo.sampler = _textureSampler;
 
-        std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
+        std::array<VkWriteDescriptorSet, 3> descriptorWrites{};
 
         descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[0].dstSet = _descriptorSets[i];
@@ -978,6 +974,15 @@ void Context::Test(std::vector<VkBuffer> uniformBuffers, VkImageView imageView)
         descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         descriptorWrites[1].descriptorCount = 1;
         descriptorWrites[1].pImageInfo = &imageInfo;
+
+        descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[2].dstBinding = 2;
+        descriptorWrites[2].dstArrayElement = 0;
+        descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+        descriptorWrites[2].descriptorCount = TEXTURE_ARRAY_SIZE;
+        descriptorWrites[2].pBufferInfo = 0;
+        descriptorWrites[2].dstSet = _descriptorSets[i];
+        descriptorWrites[2].pImageInfo = descriptorImageInfos;
 
         vkUpdateDescriptorSets(_device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
     }
@@ -998,6 +1003,13 @@ void Context::CreateDescriptorSets(std::vector<VkBuffer> uniformBuffers, VkImage
     if (vkAllocateDescriptorSets(_device, &allocInfo, _descriptorSets.data()) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to allocate descriptor sets!");
+    }
+
+    for (uint32_t i = 0; i < TEXTURE_ARRAY_SIZE; ++i)
+    {
+        descriptorImageInfos[i].sampler = _textureSampler;
+        descriptorImageInfos[i].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        descriptorImageInfos[i].imageView = imageView;
     }
 
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)

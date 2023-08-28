@@ -90,15 +90,15 @@ Renderer::Renderer(std::shared_ptr<Context> context)
 
     auto ivy = new Quad(_context);
     ivy->position = glm::vec3(0.5, -0.5, 0.0);
-    ivy->texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/ivysaur.png");
+    ivy->texture->CreateTextureImage("C:\\Symbios\\resources\\textures\\ivysaur.png");
 
     auto ivy2 = new Quad(_context);
     ivy2->position = glm::vec3(0.5, -0.2, 0.0);
-    ivy2->texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/link.png");
+    ivy2->texture->CreateTextureImage("C:\\Symbios\\resources\\textures\\link.png");
 
     auto ivy3 = new Quad(_context);
     ivy3->position = glm::vec3(0.8, -0.2, 0.0);
-    ivy3->texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/lionheart.png");
+    ivy3->texture->CreateTextureImage("C:\\Symbios\\resources\\textures\\lionheart.png");
 
     _sprites.push_back(ivy);
     _sprites.push_back(ivy2);
@@ -124,7 +124,7 @@ Renderer::Renderer(std::shared_ptr<Context> context)
 
     VkPhysicalDeviceProperties properties;
     vkGetPhysicalDeviceProperties(_context->GetPhysicalDevice(), &properties);
-    size_t minUboAlignment = properties.limits.minUniformBufferOffsetAlignment;
+    VkDeviceSize minUboAlignment = properties.limits.minUniformBufferOffsetAlignment;
 
     dynamicAlignment = sizeof(glm::mat4);
 
@@ -139,7 +139,7 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     //_texture = std::make_unique<Texture>(_context);
     //_texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/ivysaur.png");
 
-    for (int i = 0; i < _uniformBuffers.size(); i++)
+    for (unsigned int i = 0; i < _uniformBuffers.size(); i++)
     {
         auto rawBuffer = _uniformBuffers[i]->GetVulkanBuffer();
         rawUniformBuffers.push_back(rawBuffer);
@@ -253,7 +253,7 @@ void Renderer::Render()
 
     for (auto sprite : _sprites)
     {
-
+        _context->Test(rawUniformBuffers, sprite->texture->GetImageView());
         // One dynamic offset per dynamic descriptor to offset into the ubo containing all model matrices
         // uint32_t dynamicOffset = modelCnt * static_cast<uint32_t>(dynamicAlignment);
         // Bind the descriptor set for rendering a mesh using the dynamic offset
