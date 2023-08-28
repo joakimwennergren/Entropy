@@ -3,6 +3,7 @@
 #include "config.hpp"
 #include "context.hpp"
 #include "renderer.hpp"
+#include "state.hpp"
 
 #include <plog/Log.h>
 #include <plog/Init.h>
@@ -35,6 +36,8 @@ public:
         // plog::init(plog::debug, "debug.txt"); // Step2: initialize the logger
         static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
         plog::init(plog::verbose, &consoleAppender);
+
+        srand(static_cast<unsigned>(time(0)));
 
         if (!glfwInit())
         {

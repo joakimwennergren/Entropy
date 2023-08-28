@@ -21,3 +21,25 @@ uint32_t Utility::FindMemoryTypeIndex(std::shared_ptr<Context> _context, uint32_
     PLOG_ERROR << "Failed to find memory type index!";
     exit(EXIT_FAILURE);
 }
+
+void *Utility::AlignedAlloc(size_t size, size_t alignment)
+{
+    void *data = nullptr;
+#if defined(_MSC_VER) || defined(__MINGW32__)
+    data = _aligned_malloc(size, alignment);
+#else
+    int res = posix_memalign(&data, alignment, size);
+    if (res != 0)
+        data = nullptr;
+#endif
+    return data;
+}
+
+void Utility::AlignedFree(void *data)
+{
+#if defined(_MSC_VER) || defined(__MINGW32__)
+    _aligned_free(data);
+#else
+    free(data);
+#endif
+}

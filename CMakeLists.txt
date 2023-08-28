@@ -114,7 +114,7 @@ target_link_libraries(Symbios
     harfbuzz
 
     # Scripting
-    /Users/joakim/Desktop/Symbios/external/lua-5.4.6/src/liblua.a
+    /Users/joakimwennergren/Desktop/Symbios/external/lua-5.4.6/src/liblua.a
 )
 
 if(NOT XCODE)

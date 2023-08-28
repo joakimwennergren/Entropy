@@ -1,1 +1,1 @@
-print(CallMyCppFunction(1, "TEST"))
+print("Hello from lua!")

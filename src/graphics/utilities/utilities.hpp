@@ -37,6 +37,23 @@ namespace Symbios
                  * @return uint32_t Index of matched property
                  */
                 static uint32_t FindMemoryTypeIndex(std::shared_ptr<Context> _context, uint32_t typeFilter, VkMemoryPropertyFlags properties);
+
+                /**
+                 * @brief Wrapper functions for aligned memory allocation
+                 * There is currently no standard for this in C++ that works across all platforms and vendors, so we abstract this
+                 * @param size
+                 * @param alignment
+                 * @return void*
+                 */
+
+                static void *AlignedAlloc(size_t size, size_t alignment);
+
+                /**
+                 * @brief
+                 *
+                 * @param data
+                 */
+                void AlignedFree(void *data);
             };
         }
     }

@@ -2,48 +2,18 @@
 
 using namespace Symbios::Graphics::Renderers;
 
-// Wrapper functions for aligned memory allocation
-// There is currently no standard for this in C++ that works across all platforms and vendors, so we abstract this
-// @todo put this in utils!!
-void *alignedAlloc(size_t size, size_t alignment)
-{
-    void *data = nullptr;
-#if defined(_MSC_VER) || defined(__MINGW32__)
-    data = _aligned_malloc(size, alignment);
-#else
-    int res = posix_memalign(&data, alignment, size);
-    if (res != 0)
-        data = nullptr;
-#endif
-    return data;
-}
-
-void alignedFree(void *data)
-{
-#if defined(_MSC_VER) || defined(__MINGW32__)
-    _aligned_free(data);
-#else
-    free(data);
-#endif
-}
-
-// *** define C++ function ***
-static int MyCppFunction(lua_State *L) // Lua callable functions must be this format
-{
-    const int num = (int)lua_tonumber(L, 1); // get first param from stack
-    const char *str = lua_tostring(L, 2);    // get second param from stack
-    std::cout << "Hello from C++!" << std::endl;
-    std::cout << "num = " << num << ", str = " << str << std::endl;
-    return 0; // how many params we're passing to Lua
-}
-
 Renderer::Renderer(std::shared_ptr<Context> context)
 {
+    // Store ctx
     _context = context;
 
+    // Create renderpass
     _renderPass = std::make_shared<RenderPass>(_context);
 
+    // Create pipeline(s)
     _pipeline = std::make_unique<Pipeline>(_context, _renderPass);
+    // @todo this isnt necessary..
+    _pipeline->Build();
 
     for (uint32_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
@@ -54,6 +24,7 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     _renderFinishedSemaphores.resize(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
     _inFlightFences.resize(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
 
+    // @todo should this be in context or something??
     VkSemaphoreCreateInfo semaphoreInfo{};
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
@@ -79,43 +50,22 @@ Renderer::Renderer(std::shared_ptr<Context> context)
         _uniformBuffers.push_back(new UniformBuffer(_context, sizeof(UniformBufferObject)));
     }
 
-    /*
-    VkDeviceSize bufferSize = sizeof(UniformBufferObject);
-
-    uniformBuffers.resize(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
-    uniformBuffersMemory.resize(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
-    uniformBuffersMapped.resize(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
-
-
-    for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
-    {
-        Buffer::CreateBuffer(_context, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffers[i], uniformBuffersMemory[i]);
-
-        vkMapMemory(_context->GetLogicalDevice(), uniformBuffersMemory[i], 0, bufferSize, 0, &uniformBuffersMapped[i]);
-    }
-    */
-
-    lua_register(Singleton::GetInstance("test")->GetState(), "CallMyCppFunction", MyCppFunction); // register our C++ function with Lua
-
-    // @todo this isnt necessary..
-    _pipeline->Build();
-
     auto ivy = new Quad(_context);
     ivy->position = glm::vec3(0.5, -0.5, 0.0);
     ivy->textureId = 0;
-    ivy->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/ivysaur.png");
+    ivy->texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/ivysaur.png");
 
     auto ivy2 = new Quad(_context);
     ivy2->position = glm::vec3(0.5, -0.2, 0.0);
     ivy2->scale = glm::vec3(0.2, 0.2, 0.0);
     ivy2->textureId = 1;
-    ivy2->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/link.png");
+    ivy2->texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/link.png");
 
     auto ivy3 = new Quad(_context);
     ivy3->position = glm::vec3(1.0, -0.2, 0.0);
     ivy3->textureId = 2;
     ivy3->scale = glm::vec3(0.5, 0.5, 0.0);
-    ivy3->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/lionheart.png");
+    ivy3->texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/lionheart.png");
 
     pane = new Quad(_context);
     pane->color = glm::vec4(1.0f, 1.0f, 1.0f, 0.4f);
@@ -128,19 +78,6 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     _sprites.push_back(ivy3);
 
     srand(static_cast<unsigned>(time(0)));
-
-    /*
-    for (int i = 0; i < 4; i++)
-    {
-        float x = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
-        float y = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
-        float z = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
-        auto glyph = new Quad(_context);
-        glyph->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/ivysaur.png");
-        glyph->position = glm::vec3(x, y * -1, 0.0);
-        _text.push_back(glyph);
-    }
-    */
 
     // @temp dynamic UBO
     // Calculate required alignment based on minimum device offset alignment
@@ -155,12 +92,6 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     {
         dynamicAlignment = (dynamicAlignment + minUboAlignment - 1) & ~(minUboAlignment - 1);
     }
-
-    // size_t bufferSizeUbo = 10 * dynamicAlignment;
-    //_instanceUbo.model = (glm::mat4 *)alignedAlloc(bufferSizeUbo, dynamicAlignment);
-
-    //_texture = std::make_unique<Texture>(_context);
-    //_texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/ivysaur.png");
 
     for (unsigned int i = 0; i < _uniformBuffers.size(); i++)
     {
@@ -192,7 +123,6 @@ Renderer::Renderer(std::shared_ptr<Context> context)
 
     _context->CreateDescriptorSets(rawUniformBuffers, _context->descriptorImageInfos);
 
-    /*
     hb_buffer_t *buf;
     buf = hb_buffer_create();
     hb_buffer_add_utf8(buf, "Test", -1, 0, -1);
@@ -202,14 +132,28 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     hb_buffer_set_script(buf, HB_SCRIPT_LATIN);
     hb_buffer_set_language(buf, hb_language_from_string("en", -1));
 
-    hb_blob_t *blob = hb_blob_create_from_file("/Users/joakim/Desktop/Symbios/resources/fonts/quick-kiss-font/QuickKissPersonalUse-PxlZ.ttf");
+    hb_blob_t *blob = hb_blob_create_from_file("/Users/joakimwennergren/Desktop/Symbios/resources/fonts/quick-kiss-font/QuickKissPersonalUse-PxlZ.ttf");
     hb_face_t *face = hb_face_create(blob, 0);
     hb_font_t *font = hb_font_create(face);
 
     hb_shape(font, buf, NULL, 0);
-    */
 
-    srand(static_cast<unsigned>(time(0)));
+    glyph_info = hb_buffer_get_glyph_infos(buf, &glyph_count);
+    glyph_pos = hb_buffer_get_glyph_positions(buf, &glyph_count);
+
+    hb_position_t cursor_x = 0;
+    hb_position_t cursor_y = 0;
+    for (unsigned int i = 0; i < glyph_count; i++)
+    {
+        hb_codepoint_t glyphid = glyph_info[i].codepoint;
+        hb_position_t x_offset = glyph_pos[i].x_offset;
+        hb_position_t y_offset = glyph_pos[i].y_offset;
+        hb_position_t x_advance = glyph_pos[i].x_advance;
+        hb_position_t y_advance = glyph_pos[i].y_advance;
+        /* draw_glyph(glyphid, cursor_x + x_offset, cursor_y + y_offset); */
+        cursor_x += x_advance;
+        cursor_y += y_advance;
+    }
 }
 
 Renderer::~Renderer()
@@ -227,7 +171,6 @@ Renderer::~Renderer()
 
 void Renderer::Render()
 {
-
     time2 += 0.1;
 
     if (time2 >= 2.0)
