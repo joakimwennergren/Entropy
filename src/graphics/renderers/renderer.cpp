@@ -53,19 +53,19 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     auto ivy = new Quad(_context);
     ivy->position = glm::vec3(0.5, -0.5, 0.0);
     ivy->textureId = 0;
-    ivy->texture->CreateTextureImage("C:\\Symbios\\resources\\textures\\ivysaur.png");
+    ivy->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/ivysaur.png");
 
     auto ivy2 = new Quad(_context);
     ivy2->position = glm::vec3(0.5, -0.2, 0.0);
     ivy2->scale = glm::vec3(0.2, 0.2, 0.0);
     ivy2->textureId = 1;
-    ivy2->texture->CreateTextureImage("C:\\Symbios\\resources\\textures\\link.png");
+    ivy2->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/link.png");
 
     auto ivy3 = new Quad(_context);
     ivy3->position = glm::vec3(1.0, -0.2, 0.0);
     ivy3->textureId = 2;
     ivy3->scale = glm::vec3(0.5, 0.5, 0.0);
-    ivy3->texture->CreateTextureImage("C:\\Symbios\\resources\\textures\\lionheart.png");
+    ivy3->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/lionheart.png");
 
     pane = new Quad(_context);
     pane->color = glm::vec4(1.0f, 1.0f, 1.0f, 0.4f);
@@ -132,7 +132,7 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     hb_buffer_set_script(buf, HB_SCRIPT_LATIN);
     hb_buffer_set_language(buf, hb_language_from_string("en", -1));
 
-    hb_blob_t *blob = hb_blob_create_from_file("C:\\Symbios\\resources\\fonts\\quick-kiss-font\\QuickKissPersonalUse-PxlZ.ttf");
+    hb_blob_t *blob = hb_blob_create_from_file("/Users/joakim/Desktop/Symbios/resources/fonts/quick-kiss-font/QuickKissPersonalUse-PxlZ.ttf");
     hb_face_t *face = hb_face_create(blob, 0);
     hb_font_t *font = hb_font_create(face);
 
