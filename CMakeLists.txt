@@ -98,9 +98,6 @@ target_include_directories(Symbios PRIVATE
 
     # Metal-CPP
     external/metal-cpp/
-
-    # Lua
-    external/lua-5.4.6/src
 )
 
 target_compile_features(Symbios PRIVATE cxx_std_17)
