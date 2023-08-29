@@ -37,7 +37,7 @@ int main(int argc, char **argv)
     Singleton::GetInstance("test")->InitState();
     // create a new lua instance
     luaL_openlibs(Singleton::GetInstance("test")->GetState()); // give lua access to basic libraries
-    luaL_dofile(Singleton::GetInstance("test")->GetState(), "/Users/joakimwennergren/Desktop/Symbios/resources/scripts/test.lua");
+    luaL_dofile(Singleton::GetInstance("test")->GetState(), "C:\\Symbios\\resources\\scripts\\test.lua");
 
     Game game;
     game.Run();

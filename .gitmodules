@@ -22,6 +22,3 @@
 [submodule "harfbuzz"]
 	path = external/harfbuzz
 	url = https://github.com/harfbuzz/harfbuzz.git
-[submodule "mono"]
-	path = external/mono
-	url = https://github.com/mono/mono.git
