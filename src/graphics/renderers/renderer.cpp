@@ -53,19 +53,13 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     auto ivy = new Quad(_context);
     ivy->position = glm::vec3(0.5, -0.5, 0.0);
     ivy->textureId = 0;
-    ivy->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/ivysaur.png");
+    ivy->texture->CreateTextureImage(Filesystem::GetProjectBasePath() + "/ivysaur.png");
 
     auto ivy2 = new Quad(_context);
     ivy2->position = glm::vec3(0.5, -0.2, 0.0);
     ivy2->scale = glm::vec3(0.2, 0.2, 0.0);
     ivy2->textureId = 1;
-    ivy2->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/link.png");
-
-    auto ivy3 = new Quad(_context);
-    ivy3->position = glm::vec3(1.0, -0.2, 0.0);
-    ivy3->textureId = 2;
-    ivy3->scale = glm::vec3(0.5, 0.5, 0.0);
-    ivy3->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/lionheart.png");
+    ivy2->texture->CreateTextureImage(Filesystem::GetProjectBasePath() + "/link.png");
 
     pane = new Quad(_context);
     pane->color = glm::vec4(1.0f, 1.0f, 1.0f, 0.4f);
@@ -75,7 +69,6 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     _sprites.push_back(pane);
     _sprites.push_back(ivy);
     _sprites.push_back(ivy2);
-    _sprites.push_back(ivy3);
 
     srand(static_cast<unsigned>(time(0)));
 
@@ -110,19 +103,17 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     _context->descriptorImageInfos[1].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     _context->descriptorImageInfos[1].imageView = ivy2->texture->GetImageView();
 
-    _context->descriptorImageInfos[2].sampler = _context->_textureSampler;
-    _context->descriptorImageInfos[2].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    _context->descriptorImageInfos[2].imageView = ivy3->texture->GetImageView();
 
-    for (int i = 3; i < 16; i++)
+    for (int i = 2; i < 16; i++)
     {
         _context->descriptorImageInfos[i].sampler = _context->_textureSampler;
         _context->descriptorImageInfos[i].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-        _context->descriptorImageInfos[i].imageView = ivy3->texture->GetImageView();
+        _context->descriptorImageInfos[i].imageView = ivy2->texture->GetImageView();
     }
 
     _context->CreateDescriptorSets(rawUniformBuffers, _context->descriptorImageInfos);
 
+    /*
     hb_buffer_t *buf;
     buf = hb_buffer_create();
     hb_buffer_add_utf8(buf, "Test", -1, 0, -1);
@@ -150,10 +141,18 @@ Renderer::Renderer(std::shared_ptr<Context> context)
         hb_position_t y_offset = glyph_pos[i].y_offset;
         hb_position_t x_advance = glyph_pos[i].x_advance;
         hb_position_t y_advance = glyph_pos[i].y_advance;
-        /* draw_glyph(glyphid, cursor_x + x_offset, cursor_y + y_offset); */
+        draw_glyph(glyphid, cursor_x + x_offset, cursor_y + y_offset);
         cursor_x += x_advance;
         cursor_y += y_advance;
     }
+    */
+    
+    float r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+    float g = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+    float b = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+
+    pane->color = glm::vec4(r, g, b, 0.4f);
+
 }
 
 Renderer::~Renderer()
@@ -171,17 +170,6 @@ Renderer::~Renderer()
 
 void Renderer::Render()
 {
-    time2 += 0.8f;
-
-    if (time2 >= 2.0)
-    {
-        float r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
-        float g = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
-        float b = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
-
-        pane->color = glm::vec4(r, g, b, 0.4f);
-        time2 = 0;
-    }
 
     uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(_context->GetLogicalDevice(), _context->GetSwapChain(), UINT64_MAX, _imageAvailableSemaphores[_currentFrame], VK_NULL_HANDLE, &imageIndex);

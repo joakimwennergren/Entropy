@@ -114,6 +114,8 @@ static void framebufferResizeCallback(GLFWwindow *window, int width, int height)
 #include <UIKit/UIKit.hpp>
 #include <MetalKit/MetalKit.hpp>
 
+extern "C" UI::ViewController *get_native_bounds(UI::View * view, UI::Screen * screen);
+
 #include "renderer.hpp"
 
 using namespace Symbios::Graphics::Renderers;
@@ -152,7 +154,7 @@ private:
     {
         _renderer->Render();
     }
-
+    
     std::shared_ptr<Renderer> _renderer;
 };
 
@@ -198,22 +200,28 @@ public:
     inline bool applicationDidFinishLaunching(UI::Application *pApp, NS::Value *options) override
     {
         CGRect frame = UI::Screen::mainScreen()->bounds();
+        
+        //_pViewController = UI::ViewController::alloc()->init(nil, nil);
+        
 
+        
         _pWindow = UI::Window::alloc()->init(frame);
-
-        _pViewController = UI::ViewController::alloc()->init(nil, nil);
-
+        
         _pDevice = MTL::CreateSystemDefaultDevice();
 
         _pMtkView = MTK::View::alloc()->init(frame, _pDevice);
+        
+        _pViewController = get_native_bounds((UI::View *)_pMtkView, UI::Screen::mainScreen());
+        
         _pMtkView->setColorPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
         _pMtkView->setClearColor(MTL::ClearColor::Make(1.0, 1.0, 1.0, 1.0));
-
+        
         _pViewDelegate = new MTKViewDelegate();
         _pMtkView->setDelegate(_pViewDelegate);
 
         UI::View *mtkView = (UI::View *)_pMtkView;
-        mtkView->setAutoresizingMask(UI::ViewAutoresizingFlexibleWidth | UI::ViewAutoresizingFlexibleHeight);
+        mtkView->setAutoresizingMask(UI::ViewAutoresizingFlexibleWidth | UI::ViewAutoresizingFlexibleHeight );
+        
         _pViewController->view()->addSubview(mtkView);
         _pWindow->setRootViewController(_pViewController);
 
@@ -251,11 +259,11 @@ public:
 private:
     std::shared_ptr<Context> _context;
     UI::Window *_pWindow = nullptr;
-    UI::ViewController *_pViewController = nullptr;
     MTK::View *_pMtkView = nullptr;
     MTL::Device *_pDevice = nullptr;
     MTKViewDelegate *_pViewDelegate = nullptr;
     NS::AutoreleasePool *_autoreleasePool = nullptr;
+    UI::ViewController *_pViewController = nullptr;
 };
 
 #endif

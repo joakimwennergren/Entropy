@@ -24,6 +24,8 @@ add_subdirectory(external/glm)
 add_subdirectory(external/harfbuzz)
 
 # Scripting
+set(LUA_ENABLE_SHARED OFF)
+set(LUA_BUILD_COMPILER OFF)
 add_subdirectory(external/Lua)
 
 add_executable(Symbios)
@@ -126,6 +128,9 @@ if(NOT XCODE)
         # Windowing
         glfw
 
+        # Text shaping
+        harfbuzz
+
         # Scripting
         lua_static
     )
@@ -138,6 +143,13 @@ if(XCODE)
         XCODE_GENERATE_SCHEME ON
         XCODE_SCHEME_ENABLE_GPU_FRAME_CAPTURE_MODE "Metal")
     target_link_libraries(Symbios
+
+        # Scripting
+        lua_static
+
+        # Text shaping
+        harfbuzz
+
         "-framework foundation"
         "-framework metal"
         "-framework metalkit"
@@ -148,6 +160,8 @@ if(XCODE)
         "-framework coreaudio"
         "-framework audiotoolbox"
         "-framework avfoundation"
+        "-framework coretext"
+
     )
     include_directories(external/vulkan-headers)
 endif()

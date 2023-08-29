@@ -17,9 +17,9 @@
 // include Lua headers
 extern "C"
 {
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
 }
 
 // extern "C" void say_hello();
@@ -34,15 +34,15 @@ public:
 
 int main(int argc, char **argv)
 {
-    Singleton::GetInstance("test")->InitState();
-    // create a new lua instance
-    luaL_openlibs(Singleton::GetInstance("test")->GetState()); // give lua access to basic libraries
-    luaL_dofile(Singleton::GetInstance("test")->GetState(), "C:\\Symbios\\resources\\scripts\\test.lua");
+    // Singleton::GetInstance("test")->InitState();
+    //  create a new lua instance
+    // luaL_openlibs(Singleton::GetInstance("test")->GetState()); // give lua access to basic libraries
+    // luaL_dofile(Singleton::GetInstance("test")->GetState(), "C:\\Symbios\\resources\\scripts\\test.lua");
 
     Game game;
     game.Run();
 
-    lua_close(Singleton::GetInstance("test")->GetState());
+    // lua_close(Singleton::GetInstance("test")->GetState());
 
     return 0;
 }
