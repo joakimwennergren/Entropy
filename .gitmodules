@@ -22,3 +22,6 @@
 [submodule "harfbuzz"]
 	path = external/harfbuzz
 	url = https://github.com/harfbuzz/harfbuzz.git
+[submodule "Lua"]
+	path = external/Lua
+	url = https://github.com/walterschell/Lua.git

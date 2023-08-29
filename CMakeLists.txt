@@ -23,6 +23,9 @@ add_subdirectory(external/glm)
 # Text shaping
 add_subdirectory(external/harfbuzz)
 
+# Scripting
+add_subdirectory(external/Lua)
+
 add_executable(Symbios)
 
 target_sources(Symbios PRIVATE
@@ -114,7 +117,7 @@ target_link_libraries(Symbios
     harfbuzz
 
     # Scripting
-    /Users/joakimwennergren/Desktop/Symbios/external/lua-5.4.6/src/liblua.a
+    lua_static
 )
 
 if(NOT XCODE)
@@ -125,6 +128,9 @@ if(NOT XCODE)
 
         # Windowing
         glfw
+
+        # Scripting
+        lua_static
     )
 endif()
 

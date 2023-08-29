@@ -53,19 +53,19 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     auto ivy = new Quad(_context);
     ivy->position = glm::vec3(0.5, -0.5, 0.0);
     ivy->textureId = 0;
-    ivy->texture->CreateTextureImage("C:\\Symbios\\shaders\\basic\\Symbios\\resources\\textures\\ivysaur.png");
+    ivy->texture->CreateTextureImage("C:\\Symbios\\resources\\textures\\ivysaur.png");
 
     auto ivy2 = new Quad(_context);
     ivy2->position = glm::vec3(0.5, -0.2, 0.0);
     ivy2->scale = glm::vec3(0.2, 0.2, 0.0);
     ivy2->textureId = 1;
-    ivy2->texture->CreateTextureImage("C:\\Symbios\\shaders\\basic\\Symbios\\resources\\textures\\link.png");
+    ivy2->texture->CreateTextureImage("C:\\Symbios\\resources\\textures\\link.png");
 
     auto ivy3 = new Quad(_context);
     ivy3->position = glm::vec3(1.0, -0.2, 0.0);
     ivy3->textureId = 2;
     ivy3->scale = glm::vec3(0.5, 0.5, 0.0);
-    ivy3->texture->CreateTextureImage("C:\\Symbios\\shaders\\basic\\Symbios\\resources\\textures\\lionheart.png");
+    ivy3->texture->CreateTextureImage("C:\\Symbios\\resources\\textures\\lionheart.png");
 
     pane = new Quad(_context);
     pane->color = glm::vec4(1.0f, 1.0f, 1.0f, 0.4f);
@@ -171,7 +171,7 @@ Renderer::~Renderer()
 
 void Renderer::Render()
 {
-    time2 += 0.1;
+    time2 += 0.8f;
 
     if (time2 >= 2.0)
     {
