@@ -42,9 +42,14 @@ class SecondViewController: UIViewController {
         if(orientation == .portrait)
         {
             
-        } else if (orientation == .landscapeLeft)
+        } else if (orientation == .landscapeLeft )
         {
             print("in landscape left")
+            let temp = _view.frame.size.height
+            _view.frame.size.height = temp + 30
+        } else if(orientation == .landscapeRight)
+        {
+            print("in landscape right")
             let temp = _view.frame.size.height
             _view.frame.size.height = temp + 30
         }

@@ -54,6 +54,8 @@ namespace Symbios
                  */
                 inline VkImageView GetImageView() { return this->_imageView; };
 
+                bool hasTexture = false;
+
             private:
                 /**
                  * @brief

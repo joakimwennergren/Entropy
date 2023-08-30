@@ -16,7 +16,7 @@ void Pipeline::Build()
 #ifdef BUILD_FOR_IOS
     _shader = std::make_unique<Shader>(_context, Filesystem::GetProjectBasePath() + "/vert.spv", Filesystem::GetProjectBasePath() + "/frag.spv");
 #else
-    _shader = std::make_unique<Shader>(_context, Filesystem::GetProjectBasePath() + "/Users/joakim/Desktop/Symbios/shaders/basic/vert.spv", "/Users/joakim/Desktop/Symbios/shaders/basic/frag.spv");
+    _shader = std::make_unique<Shader>(_context, "/Users/joakim/Desktop/Symbios/shaders/basic/vert.spv", "/Users/joakim/Desktop/Symbios/shaders/basic/frag.spv");
 #endif
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
@@ -122,7 +122,30 @@ void Pipeline::Build()
     colorBlending.blendConstants[2] = 0.0f; // Optional
     colorBlending.blendConstants[3] = 0.0f; // Optional
 
-    auto descriptorSetLayout = _context->GetDescriptorSetLayouts();
+    std::vector<VkDescriptorSetLayout> dsLayouts(2);
+
+    VkDescriptorSetLayout _tempLayout;
+
+    VkDescriptorSetLayoutBinding texturesLayoutBinding{};
+    texturesLayoutBinding.binding = 2;
+    texturesLayoutBinding.descriptorCount = 1;
+    texturesLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+    texturesLayoutBinding.pImmutableSamplers = nullptr;
+    texturesLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+    std::array<VkDescriptorSetLayoutBinding, 1> bindings = {texturesLayoutBinding};
+    VkDescriptorSetLayoutCreateInfo layoutInfo{};
+    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+    layoutInfo.pBindings = bindings.data();
+
+    if (vkCreateDescriptorSetLayout(_context->GetLogicalDevice(), &layoutInfo, nullptr, &_tempLayout) != VK_SUCCESS)
+    {
+        throw std::runtime_error("failed to create descriptor set layout!");
+    }
+
+    dsLayouts[0] = _context->GetDescriptorSetLayouts();
+    dsLayouts[1] = _tempLayout;
 
     // setup push constants
     VkPushConstantRange push_constant;
@@ -135,8 +158,8 @@ void Pipeline::Build()
 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = 1;
-    pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
+    pipelineLayoutInfo.setLayoutCount = 2;
+    pipelineLayoutInfo.pSetLayouts = dsLayouts.data();
     pipelineLayoutInfo.pPushConstantRanges = &push_constant;
     pipelineLayoutInfo.pushConstantRangeCount = 1;
 

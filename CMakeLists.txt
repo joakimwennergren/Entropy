@@ -24,7 +24,7 @@ add_subdirectory(external/glm)
 add_subdirectory(external/harfbuzz)
 
 # Scripting
-set(LUA_ENABLE_SHARED OFF)
+set(LUA_ENABLE_SHARED ON)
 set(LUA_BUILD_COMPILER OFF)
 add_subdirectory(external/Lua)
 

@@ -6,7 +6,7 @@ layout(location = 2) flat in int texId;
 layout(location = 3) in vec4 color;
 
 layout(binding = 1) uniform sampler texSampler;
-layout(binding = 2) uniform texture2D textures[8];
+layout(set = 1, binding = 2) uniform texture2D _texture;
 
 layout(location = 0) out vec4 outColor;
 
@@ -16,7 +16,7 @@ void main() {
         outColor = color;
     } else 
     {
-        outColor = texture(sampler2D(textures[texId], texSampler), fragTexCoord);
+        outColor = texture(sampler2D(_texture, texSampler), fragTexCoord);
     }
 
 }

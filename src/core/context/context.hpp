@@ -243,6 +243,13 @@ namespace Symbios
             inline VkDescriptorSetLayout GetDescriptorSetLayouts() { return this->_descriptorSetLayout; };
 
             /**
+             * @brief Get the Descriptor Pool object
+             *
+             * @return _descriptorPool
+             */
+            inline VkDescriptorPool GetDescriptorPool() { return this->_descriptorPool; };
+
+            /**
              * @brief
              *
              * @param device
@@ -255,7 +262,7 @@ namespace Symbios
              *
              * @param uniformBuffers
              */
-            void CreateDescriptorSets(std::vector<VkBuffer> uniformBuffers, std::vector<VkDescriptorImageInfo> descriptorImageInfos);
+            void CreateDescriptorSets(std::vector<VkBuffer> uniformBuffers, VkImageView view);
 
             /**
              * @brief
