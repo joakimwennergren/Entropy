@@ -37,7 +37,7 @@ class SecondViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         
-        var orientation = UIDevice.current.orientation
+        let orientation = UIDevice.current.orientation
         
         if(orientation == .portrait)
         {

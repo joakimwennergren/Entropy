@@ -51,15 +51,22 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     }
 
     auto ivy = new Quad(_context);
-    ivy->position = glm::vec3(0.5, -0.5, 0.0);
+    ivy->position = glm::vec3(1.0, -0.8, 0.0);
+    ivy->scale = glm::vec3(2.0, 0.5, 0.0);
     ivy->textureId = 0;
-    ivy->texture->CreateTextureImage(Filesystem::GetProjectBasePath() + "/ivysaur.png");
-
+    ivy->texture->CreateTextureImage(Filesystem::GetProjectBasePath() + "/layer-1.png");
+    
     auto ivy2 = new Quad(_context);
-    ivy2->position = glm::vec3(0.5, -0.2, 0.0);
-    ivy2->scale = glm::vec3(0.2, 0.2, 0.0);
+    ivy2->position = glm::vec3(1.0, -0.45, 0.0);
+    ivy2->scale = glm::vec3(2.0, 1.0, 0.0);
     ivy2->textureId = 1;
-    ivy2->texture->CreateTextureImage(Filesystem::GetProjectBasePath() + "/link.png");
+    ivy2->texture->CreateTextureImage(Filesystem::GetProjectBasePath() + "/layer-2.png");
+    
+    auto ivy3 = new Quad(_context);
+    ivy3->position = glm::vec3(1.0, -0.48, 0.0);
+    ivy3->scale = glm::vec3(2.0, 1.0, 0.0);
+    ivy3->textureId = 2;
+    ivy3->texture->CreateTextureImage(Filesystem::GetProjectBasePath() + "/layer-3.png");
 
     pane = new Quad(_context);
     pane->color = glm::vec4(1.0f, 1.0f, 1.0f, 0.4f);
@@ -69,6 +76,7 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     _sprites.push_back(pane);
     _sprites.push_back(ivy);
     _sprites.push_back(ivy2);
+    _sprites.push_back(ivy3);
 
     srand(static_cast<unsigned>(time(0)));
 
@@ -98,17 +106,21 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     _context->descriptorImageInfos[0].sampler = _context->_textureSampler;
     _context->descriptorImageInfos[0].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     _context->descriptorImageInfos[0].imageView = ivy->texture->GetImageView();
-
+    
     _context->descriptorImageInfos[1].sampler = _context->_textureSampler;
     _context->descriptorImageInfos[1].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     _context->descriptorImageInfos[1].imageView = ivy2->texture->GetImageView();
+    
+    _context->descriptorImageInfos[2].sampler = _context->_textureSampler;
+    _context->descriptorImageInfos[2].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    _context->descriptorImageInfos[2].imageView = ivy3->texture->GetImageView();
 
 
-    for (int i = 2; i < 16; i++)
+    for (int i = 3; i < 16; i++)
     {
         _context->descriptorImageInfos[i].sampler = _context->_textureSampler;
         _context->descriptorImageInfos[i].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-        _context->descriptorImageInfos[i].imageView = ivy2->texture->GetImageView();
+        _context->descriptorImageInfos[i].imageView = ivy->texture->GetImageView();
     }
 
     _context->CreateDescriptorSets(rawUniformBuffers, _context->descriptorImageInfos);
@@ -263,8 +275,8 @@ void Renderer::Render()
 
         auto model = glm::mat4(1.0f);
         model = glm::translate(glm::mat4(1.0), sprite->position);
-
         model = glm::scale(model, sprite->scale);
+        model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
 
         InstancePushConstants constants;
         constants.modelMatrix = model;
