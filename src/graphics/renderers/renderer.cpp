@@ -54,51 +54,58 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     ivy->position = glm::vec3(1.0, -0.4, 0.0);
     ivy->scale = glm::vec3(1.0, 0.6, 0.0);
     ivy->textureId = 0;
-    ivy->texture->CreateTextureImage(Filesystem::GetProjectBasePath() + "/layer-1.png");
+    ivy->texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/layer-1.png");
 
     auto ivy2 = new Quad(_context);
     ivy2->position = glm::vec3(1.0, -0.4, 0.0);
     ivy2->scale = glm::vec3(1.0, 0.6, 0.0);
     ivy2->textureId = 1;
-    ivy2->texture->CreateTextureImage(Filesystem::GetProjectBasePath() + "/layer-2.png");
+    ivy2->texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/layer-2.png");
 
     auto ivy3 = new Quad(_context);
     ivy3->position = glm::vec3(1.0, -0.4, 0.0);
     ivy3->scale = glm::vec3(1.0, 0.6, 0.0);
     ivy3->textureId = 2;
-    ivy3->texture->CreateTextureImage(Filesystem::GetProjectBasePath() + "/layer-3.png");
+    ivy3->texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/layer-3.png");
 
     auto ivy4 = new Quad(_context);
     ivy4->position = glm::vec3(1.0, -0.4, 0.0);
     ivy4->scale = glm::vec3(1.0, 0.6, 0.0);
     ivy4->textureId = 2;
-    ivy4->texture->CreateTextureImage(Filesystem::GetProjectBasePath() + "/layer-4.png");
+    ivy4->texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/layer-4.png");
 
     auto ivy5 = new Quad(_context);
     ivy5->position = glm::vec3(1.0, 0.0, 0.0);
     ivy5->scale = glm::vec3(1.0, 0.6, 0.0);
     ivy5->textureId = 2;
-    ivy5->texture->CreateTextureImage(Filesystem::GetProjectBasePath() + "/layer-5.png");
+    ivy5->texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/layer-5.png");
 
-    auto ivy7 = new Quad(_context);
-    ivy7->position = glm::vec3(0.6, -0.4, 0.0);
+    ivy7 = new Quad(_context);
+    ivy7->position = glm::vec3(0.6, -0.75, 0.0);
     ivy7->scale = glm::vec3(0.1, 0.1, 0.0);
     ivy7->textureId = 2;
-    ivy7->texture->CreateTextureImage(Filesystem::GetProjectBasePath() + "/svamp.png");
+    ivy7->texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/svamp.png");
+
+    auto ivy8 = new Quad(_context);
+    ivy8->position = glm::vec3(0.85, -0.5, 0.0);
+    ivy8->scale = glm::vec3(1.0, 1.0, 0.0);
+    ivy8->textureId = 2;
+    ivy8->texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/splash.png");
 
     pane = new Quad(_context);
     pane->color = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
     pane->scale = glm::vec3(4.0, 2.0, 0.0);
     pane->position = glm::vec3(0.0, 0.0, 0.0);
-    pane->texture->CreateTextureImage(Filesystem::GetProjectBasePath() + "/layer-3.png");
+    pane->texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/layer-3.png");
 
     _sprites.push_back(pane);
-    _sprites.push_back(ivy);
     _sprites.push_back(ivy2);
     _sprites.push_back(ivy3);
     _sprites.push_back(ivy4);
     _sprites.push_back(ivy5);
     _sprites.push_back(ivy7);
+    _sprites.push_back(ivy);
+    _sprites.push_back(ivy8);
 
     srand(static_cast<unsigned>(time(0)));
 
@@ -186,6 +193,11 @@ Renderer::~Renderer()
 
 void Renderer::Render()
 {
+
+    float scale = 0.1;
+
+    scale += glfwGetTime() * 0.01;
+    ivy7->scale = glm::vec3(scale, scale, 0.0);
 
     uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(_context->GetLogicalDevice(), _context->GetSwapChain(), UINT64_MAX, _imageAvailableSemaphores[_currentFrame], VK_NULL_HANDLE, &imageIndex);

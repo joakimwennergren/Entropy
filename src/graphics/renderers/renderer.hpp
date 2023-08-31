@@ -109,6 +109,8 @@ namespace Symbios
                 hb_glyph_info_t *glyph_info;
                 hb_glyph_position_t *glyph_pos;
 
+                Quad *ivy7;
+
                 // @refactored buffers!!
                 std::vector<UniformBuffer *> _uniformBuffers;
             };

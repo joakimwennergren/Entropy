@@ -21,9 +21,9 @@ Texture::~Texture()
 
 void Texture::CreateTextureImage(std::string path)
 {
-    
+
     PLOG_INFO << path;
-    
+
     stbi_set_flip_vertically_on_load(true);
 
     int texWidth, texHeight, texChannels;
@@ -44,13 +44,13 @@ void Texture::CreateTextureImage(std::string path)
     auto mem = buffer.GetBufferMemory();
     auto buf = buffer.GetVulkanBuffer();
 
-    CreateImage(texWidth, texHeight, VK_FORMAT_B8G8R8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _textureImage, mem);
+    CreateImage(texWidth, texHeight, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _textureImage, mem);
 
-    TransitionImageLayout(_textureImage, VK_FORMAT_B8G8R8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    TransitionImageLayout(_textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
     CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
-    TransitionImageLayout(_textureImage, VK_FORMAT_B8G8R8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    TransitionImageLayout(_textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    _imageView = _context->CreateImageView(_textureImage, VK_FORMAT_B8G8R8A8_SRGB);
+    _imageView = _context->CreateImageView(_textureImage, VK_FORMAT_R8G8B8A8_SRGB);
 
     hasTexture = true;
 }

@@ -161,7 +161,6 @@ if(XCODE)
         "-framework audiotoolbox"
         "-framework avfoundation"
         "-framework coretext"
-
     )
     include_directories(external/vulkan-headers)
 endif()
