@@ -23,10 +23,14 @@ add_subdirectory(external/glm)
 # Text shaping
 add_subdirectory(external/harfbuzz)
 
+# Text rendering
+add_subdirectory(external/freetype-2.10.0)
+
 # Scripting
-set(LUA_ENABLE_SHARED ON)
+set(LUA_ENABLE_SHARED OFF)
 set(LUA_BUILD_COMPILER OFF)
 add_subdirectory(external/Lua)
+add_subdirectory(external/LuaBridge)
 
 add_executable(Symbios)
 
@@ -116,7 +120,6 @@ target_link_libraries(Symbios
     harfbuzz
 
     # Scripting
-    lua_static
 )
 
 if(NOT XCODE)
@@ -130,8 +133,10 @@ if(NOT XCODE)
 
         # Text shaping
         harfbuzz
+        freetype
 
         # Scripting
+        LuaBridge
         lua_static
     )
 endif()
@@ -145,6 +150,7 @@ if(XCODE)
     target_link_libraries(Symbios
 
         # Scripting
+        LuaBridge
         lua_static
 
         # Text shaping

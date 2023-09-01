@@ -1,11 +1,24 @@
 #pragma once
 
+// include Lua headers
+extern "C"
+{
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
+}
+
+#include <LuaBridge/LuaBridge.h>
+
 #include "vertex.hpp"
 #include "texture.hpp"
 #include "context.hpp"
 #include "vertexbuffer.hpp"
+#include "state.hpp"
 
 using namespace Symbios::Graphics::Textures;
+using namespace Symbios::Scripting::States;
+using namespace luabridge;
 
 namespace Symbios
 {
@@ -20,7 +33,9 @@ namespace Symbios
                  * @brief Construct a new Quad object
                  *
                  */
-                Quad() = default;
+                Quad()
+                {
+                }
 
                 /**
                  * @brief Construct a new Quad object
@@ -49,7 +64,7 @@ namespace Symbios
                  */
                 inline const std::vector<uint16_t> GetIndices() { return this->_indices; };
 
-                std::unique_ptr<Texture> texture = nullptr;
+                Texture *texture = nullptr;
                 std::unique_ptr<VertexBuffer> vertexBuffer;
                 std::unique_ptr<Buffer> indexBuffer;
                 glm::vec3 position;
@@ -77,6 +92,12 @@ namespace Symbios
 
                     vkUpdateDescriptorSets(_context->GetLogicalDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
                 }
+
+                void BindToLua();
+
+                void Test() { PLOG_ERROR << "KYK"; };
+
+                void SetPosition(glm::vec3 newPosition) { this->position = newPosition; };
 
                 // Testing
                 VkDescriptorSet _descriptorSet;

@@ -9,4 +9,3 @@
 
 // Render settings
 #define MAX_CONCURRENT_FRAMES_IN_FLIGHT 2
-#define TEXTURE_ARRAY_SIZE  8

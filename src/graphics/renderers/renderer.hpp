@@ -22,9 +22,25 @@
 #include "uniformbuffer.hpp"
 #include "state.hpp"
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#include FT_GLYPH_H
+#include <freetype/ftglyph.h>
+
 #include <hb.h>
 #include <iostream>
 
+// include Lua headers
+extern "C"
+{
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
+}
+
+#include <LuaBridge/LuaBridge.h>
+
+using namespace luabridge;
 using namespace Symbios::Core;
 using namespace Symbios::Scripting::States;
 using namespace Symbios::Graphics::Buffers;
@@ -33,6 +49,25 @@ using namespace Symbios::Graphics::Pipelines;
 using namespace Symbios::Graphics::Primitives;
 using namespace Symbios::Graphics::RenderPasses;
 using namespace Symbios::Graphics::CommandBuffers;
+
+struct Character
+{
+    Quad *glyph;
+    glm::ivec2 Size;    // Size of glyph
+    glm::ivec2 Bearing; // Offset from baseline to left/top of glyph
+    FT_Pos Advance;     // Offset to advance to next glyph
+};
+
+class Dbg
+{
+public:
+    Dbg()
+    {
+        std::cout << "DEBUG" << std::endl;
+    }
+
+    void println() { PLOG_ERROR << "TEST"; };
+};
 
 namespace Symbios
 {
@@ -74,6 +109,13 @@ namespace Symbios
                  */
                 void FrameBufferResized() { this->_framebufferResized = true; };
 
+                Quad *ivy7;
+                Quad *pane;
+
+                std::string GetContext() { return "TEST"; };
+
+                std::vector<Quad *> RenderText(std::string text, float x, float y, float scale, glm::vec3 color);
+
             private:
                 std::shared_ptr<Context> _context;
                 std::shared_ptr<RenderPass> _renderPass;
@@ -102,17 +144,15 @@ namespace Symbios
                 void *mem2;
                 VkDeviceSize dynamicAlignment;
 
-                Quad *pane;
                 float time2;
                 // Text shaping
                 unsigned int glyph_count;
                 hb_glyph_info_t *glyph_info;
                 hb_glyph_position_t *glyph_pos;
 
-                Quad *ivy7;
-
                 // @refactored buffers!!
                 std::vector<UniformBuffer *> _uniformBuffers;
+                std::map<char, Character> Characters;
             };
         }
     }

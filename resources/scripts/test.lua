@@ -1,1 +1,3 @@
-print("Hello from lua!")
+local q = Quad(Context)
+
+print("debug")

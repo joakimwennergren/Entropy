@@ -2,6 +2,9 @@
 
 #include <string>
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 #include "context.hpp"
 #include "buffer.hpp"
 #include "commandbuffer.hpp"
@@ -46,6 +49,11 @@ namespace Symbios
                  * @param path
                  */
                 void CreateTextureImage(std::string path);
+
+                /**
+                 *
+                 */
+                void CreateTextureImageFromBuffer(FT_Bitmap bitmap);
 
                 /**
                  * @brief Get the Image View object

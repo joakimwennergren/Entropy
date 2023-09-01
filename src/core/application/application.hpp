@@ -20,6 +20,8 @@ using namespace Symbios::Graphics::Renderers;
 
 static void framebufferResizeCallback(GLFWwindow *window, int width, int height);
 
+static void cursorPositionCallback(GLFWwindow *window, double x, double y);
+
 /**
  * @brief Application class
  *
@@ -44,9 +46,9 @@ public:
             PLOG_FATAL << "Could not initialize GLFW library!";
             exit(EXIT_FAILURE);
         }
-
+        // glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GL_FALSE);
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        _window = glfwCreateWindow(1920, 1080, "Symbios dev application", NULL, NULL);
+        _window = glfwCreateWindow(640, 480, "Symbios dev application", NULL, NULL);
 
         if (!_window)
         {
@@ -58,6 +60,7 @@ public:
         glfwSetWindowUserPointer(_window, this);
 
         glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
+        glfwSetCursorPosCallback(_window, cursorPositionCallback);
 
         _context = std::make_shared<Context>(_window);
         _renderer = std::make_shared<Renderer>(_context);
@@ -103,6 +106,15 @@ static void framebufferResizeCallback(GLFWwindow *window, int width, int height)
     if (app != nullptr)
     {
         app->GetRenderer()->FrameBufferResized();
+    }
+}
+
+static void cursorPositionCallback(GLFWwindow *window, double x, double y)
+{
+    auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
+    if (app != nullptr)
+    {
+        // app->GetRenderer()->pane->position = glm::vec3((float)x, (float)y, 0.0);
     }
 }
 

@@ -6,7 +6,7 @@ Quad::Quad(std::shared_ptr<Context> context)
 {
     _context = context;
 
-    texture = std::make_unique<Texture>(_context);
+    texture = new Texture(_context);
 
     // Create buffers @todo temp!!!
     vertexBuffer = std::make_unique<VertexBuffer>(_context, _vertices);
@@ -47,5 +47,9 @@ Quad::Quad(std::shared_ptr<Context> context)
 }
 
 Quad::~Quad()
+{
+}
+
+void Quad::BindToLua()
 {
 }

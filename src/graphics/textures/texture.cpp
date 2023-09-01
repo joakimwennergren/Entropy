@@ -19,12 +19,34 @@ Texture::~Texture()
     vkFreeMemory(_context->GetLogicalDevice(), _textureImageMemory, nullptr);
 }
 
+void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap)
+{
+    int texWidth = bitmap.width, texHeight = bitmap.rows;
+
+    VkDeviceSize imageSize = texWidth * texHeight;
+
+    StagedBuffer buffer(_context, imageSize, bitmap.buffer);
+
+    auto mem = buffer.GetBufferMemory();
+    auto buf = buffer.GetVulkanBuffer();
+
+    CreateImage(texWidth, texHeight, VK_FORMAT_R8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _textureImage, mem);
+
+    TransitionImageLayout(_textureImage, VK_FORMAT_R8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+    TransitionImageLayout(_textureImage, VK_FORMAT_R8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+    _imageView = _context->CreateImageView(_textureImage, VK_FORMAT_R8_UNORM);
+
+    hasTexture = true;
+}
+
 void Texture::CreateTextureImage(std::string path)
 {
 
     PLOG_INFO << path;
 
-    stbi_set_flip_vertically_on_load(true);
+    // stbi_set_flip_vertically_on_load(true);
 
     int texWidth, texHeight, texChannels;
     stbi_uc *pixels = stbi_load(path.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);

@@ -2,6 +2,29 @@
 
 using namespace Symbios::Graphics::Renderers;
 
+std::vector<Quad *> Renderer::RenderText(std::string text, float x, float y, float scale, glm::vec3 color)
+{
+    // iterate through all characters
+
+    std::string::const_iterator c;
+
+    std::vector<Quad *> glyphs;
+
+    for (c = text.begin(); c != text.end(); c++)
+    {
+        Character ch = Characters[*c];
+
+        ch.glyph->position = glm::vec3(x, y, 0.0);
+
+        glyphs.push_back(ch.glyph);
+
+        // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+        x += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
+    }
+
+    return glyphs;
+}
+
 Renderer::Renderer(std::shared_ptr<Context> context)
 {
     // Store ctx
@@ -12,6 +35,7 @@ Renderer::Renderer(std::shared_ptr<Context> context)
 
     // Create pipeline(s)
     _pipeline = std::make_unique<Pipeline>(_context, _renderPass);
+
     // @todo this isnt necessary..
     _pipeline->Build();
 
@@ -50,62 +74,29 @@ Renderer::Renderer(std::shared_ptr<Context> context)
         _uniformBuffers.push_back(new UniformBuffer(_context, sizeof(UniformBufferObject)));
     }
 
-    auto ivy = new Quad(_context);
-    ivy->position = glm::vec3(1.0, -0.4, 0.0);
-    ivy->scale = glm::vec3(1.0, 0.6, 0.0);
-    ivy->textureId = 0;
-    ivy->texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/layer-1.png");
-
-    auto ivy2 = new Quad(_context);
-    ivy2->position = glm::vec3(1.0, -0.4, 0.0);
-    ivy2->scale = glm::vec3(1.0, 0.6, 0.0);
-    ivy2->textureId = 1;
-    ivy2->texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/layer-2.png");
-
-    auto ivy3 = new Quad(_context);
-    ivy3->position = glm::vec3(1.0, -0.4, 0.0);
-    ivy3->scale = glm::vec3(1.0, 0.6, 0.0);
-    ivy3->textureId = 2;
-    ivy3->texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/layer-3.png");
-
-    auto ivy4 = new Quad(_context);
-    ivy4->position = glm::vec3(1.0, -0.4, 0.0);
-    ivy4->scale = glm::vec3(1.0, 0.6, 0.0);
-    ivy4->textureId = 2;
-    ivy4->texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/layer-4.png");
-
-    auto ivy5 = new Quad(_context);
-    ivy5->position = glm::vec3(1.0, 0.0, 0.0);
-    ivy5->scale = glm::vec3(1.0, 0.6, 0.0);
-    ivy5->textureId = 2;
-    ivy5->texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/layer-5.png");
-
     ivy7 = new Quad(_context);
-    ivy7->position = glm::vec3(0.6, -0.75, 0.0);
-    ivy7->scale = glm::vec3(0.1, 0.1, 0.0);
+    ivy7->position = glm::vec3(500.0, -500.0, 0.0);
+    ivy7->scale = glm::vec3(100.0, 100.0, 0.0);
     ivy7->textureId = 2;
-    ivy7->texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/svamp.png");
+    ivy7->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/svamp.png");
 
-    auto ivy8 = new Quad(_context);
-    ivy8->position = glm::vec3(0.85, -0.5, 0.0);
-    ivy8->scale = glm::vec3(1.0, 1.0, 0.0);
-    ivy8->textureId = 2;
-    ivy8->texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/splash.png");
+    auto L = Singleton::GetInstance("tset")->GetState();
 
-    pane = new Quad(_context);
-    pane->color = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-    pane->scale = glm::vec3(4.0, 2.0, 0.0);
-    pane->position = glm::vec3(0.0, 0.0, 0.0);
-    pane->texture->CreateTextureImage("/Users/joakimwennergren/Desktop/Symbios/resources/textures/layer-3.png");
+    getGlobalNamespace(L)
+        .beginClass<Context>("Context")
+        .addConstructor<void (*)()>()
+        .endClass();
 
-    _sprites.push_back(pane);
-    _sprites.push_back(ivy2);
-    _sprites.push_back(ivy3);
-    _sprites.push_back(ivy4);
-    _sprites.push_back(ivy5);
-    _sprites.push_back(ivy7);
-    _sprites.push_back(ivy);
-    _sprites.push_back(ivy8);
+    getGlobalNamespace(L)
+        .beginClass<Quad>("Quad")
+        .addConstructor<void (*)(void)>()
+        .addFunction("println", &Quad::Test)
+        .addFunction("setPosition", &Quad::SetPosition)
+        .endClass();
+
+    luabridge::setGlobal(L, _context.get(), "Context");
+
+    //_sprites.push_back(ivy7);
 
     srand(static_cast<unsigned>(time(0)));
 
@@ -165,9 +156,110 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     }
     */
 
-    float r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
-    float g = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
-    float b = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+    FT_Library ft;
+    FT_Face face;
+
+    FT_Init_FreeType(&ft);
+
+    FT_New_Face(ft, "/Users/joakim/Desktop/Symbios/resources/fonts/lato/Lato-Regular.ttf", 0, &face);
+
+    FT_Set_Pixel_Sizes(face, 0, 256);
+
+    for (uint8_t c = 32; c < 128; c++)
+    {
+        auto glyph_index = FT_Get_Char_Index(face, c);
+
+        if (glyph_index != 0)
+        {
+            auto error = FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
+
+            if (error)
+            {
+                throw std::runtime_error("failed to load glyph");
+            }
+
+            FT_GlyphSlot glyphSlot = face->glyph;
+
+            error = FT_Render_Glyph(glyphSlot, FT_RENDER_MODE_NORMAL);
+            if (error)
+            {
+                throw std::runtime_error("failed to render glyph");
+            }
+
+            if (glyphSlot->bitmap.width != 0)
+            {
+                auto g = new Quad(_context);
+                g->position = glm::vec3(500.0, -500.0, 0.0);
+                g->scale = glm::vec3(10.0, 10.0, 0.0);
+                g->textureId = 2;
+                g->texture->CreateTextureImageFromBuffer(face->glyph->bitmap);
+
+                Character character = {
+                    g,
+                    glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+                    glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+                    face->glyph->advance.x};
+
+                //_sprites.push_back(g);
+
+                Characters.insert(std::pair<char, Character>(c, character));
+            }
+        }
+    }
+
+    //  g->UpdateImage();
+
+    // generate texture
+    /*
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(
+        GL_TEXTURE_2D,
+        0,
+        GL_RED,
+        face->glyph->bitmap.width,
+        face->glyph->bitmap.rows,
+        0,
+        GL_RED,
+        GL_UNSIGNED_BYTE,
+        face->glyph->bitmap.buffer);
+    // set texture options
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // now store character for later use
+    Character character = {
+        texture,
+        glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+        glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+        face->glyph->advance.x};
+    Characters.insert(std::pair<char, Character>(c, character));
+    */
+    std::string text = "i";
+
+    float x = 500.0, y = -500.0;
+    float scale = 0.8;
+    std::string::const_iterator c;
+
+    for (c = text.begin(); c != text.end(); c++)
+    {
+        Character ch = Characters[*c];
+
+        auto g = new Quad(_context);
+        g->position = glm::vec3(x, y, 0.0);
+        g->textureId = 2;
+        g->scale = ch.glyph->scale;
+        g->texture = ch.glyph->texture;
+
+        _sprites.push_back(g);
+
+        PLOG_WARNING << ch.Advance;
+
+        // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+        x += (ch.Advance >> 6); // bitshift by 6 to get value in pixels (2^6 = 64)
+    }
 
     for (auto sprite : _sprites)
     {
@@ -175,7 +267,9 @@ Renderer::Renderer(std::shared_ptr<Context> context)
             sprite->UpdateImage();
     }
 
-    _context->CreateDescriptorSets(rawUniformBuffers, ivy->texture->GetImageView());
+    _context->CreateDescriptorSets(rawUniformBuffers, ivy7->texture->GetImageView());
+
+    luaL_dofile(Singleton::GetInstance("test")->GetState(), "/Users/joakim/Desktop/Symbios/resources/scripts/test.lua");
 }
 
 Renderer::~Renderer()
@@ -196,8 +290,8 @@ void Renderer::Render()
 
     float scale = 0.1;
 
-    scale += glfwGetTime() * 0.01;
-    ivy7->scale = glm::vec3(scale, scale, 0.0);
+    // scale += glfwGetTime() * 0.01;
+    // ivy7->scale = glm::vec3(scale, scale, 0.0);
 
     uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(_context->GetLogicalDevice(), _context->GetSwapChain(), UINT64_MAX, _imageAvailableSemaphores[_currentFrame], VK_NULL_HANDLE, &imageIndex);
@@ -294,9 +388,9 @@ void Renderer::Render()
 
         auto model = glm::mat4(1.0f);
 
-        auto translate = glm::translate(model, sprite->position);
+        auto translate = glm::translate(glm::mat4(1.0f), sprite->position);
         auto scale = glm::scale(glm::mat4(1.0), sprite->scale);
-        auto rotate = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+        auto rotate = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
 
         InstancePushConstants constants;
         constants.modelMatrix = translate * scale * rotate;
@@ -307,13 +401,16 @@ void Renderer::Render()
             constants.textureId = sprite->textureId;
         }
 
+        // PLOG_ERROR << (float)_context->GetSwapChainExtent().height;
+
         // upload the matrix to the GPU via push constants
         vkCmdPushConstants(currentCmdBuffer, _pipeline->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(InstancePushConstants), &constants);
 
         ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-        float aspect = (float)_context->GetSwapChainExtent().width / (float)_context->GetSwapChainExtent().height;
-        ubo.proj = glm::ortho(0.0f, aspect, 0.0f, 1.0f, 0.0f, 100.0f);
+        float V = (float)_context->GetSwapChainExtent().width / (float)_context->GetSwapChainExtent().height;
+
+        ubo.proj = glm::ortho(0.0f, (float)_context->GetSwapChainExtent().width, (float)_context->GetSwapChainExtent().height, 0.0f, -1.0f, 1.0f);
         ubo.proj[1][1] *= -1;
 
         memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));
