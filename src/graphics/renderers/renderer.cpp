@@ -163,7 +163,7 @@ Renderer::Renderer(std::shared_ptr<Context> context)
 
     FT_New_Face(ft, "/Users/joakim/Desktop/Symbios/resources/fonts/lato/Lato-Regular.ttf", 0, &face);
 
-    FT_Set_Pixel_Sizes(face, 0, 256);
+    FT_Set_Pixel_Sizes(face, 0, 64);
 
     for (uint8_t c = 32; c < 128; c++)
     {
@@ -190,7 +190,6 @@ Renderer::Renderer(std::shared_ptr<Context> context)
             {
                 auto g = new Quad(_context);
                 g->position = glm::vec3(500.0, -500.0, 0.0);
-                g->scale = glm::vec3(10.0, 10.0, 0.0);
                 g->textureId = 2;
                 g->texture->CreateTextureImageFromBuffer(face->glyph->bitmap);
 
@@ -237,9 +236,9 @@ Renderer::Renderer(std::shared_ptr<Context> context)
         face->glyph->advance.x};
     Characters.insert(std::pair<char, Character>(c, character));
     */
-    std::string text = "i";
+    std::string text = "TEST";
 
-    float x = 500.0, y = -500.0;
+    float x = 200.0, y = -500.0;
     float scale = 0.8;
     std::string::const_iterator c;
 
@@ -247,15 +246,19 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     {
         Character ch = Characters[*c];
 
+        float xpos = x + ch.Bearing.x;
+        float ypos = y - (ch.Size.y - ch.Bearing.y);
+
+        float w = ch.Size.x;
+        float h = ch.Size.y;
+
         auto g = new Quad(_context);
-        g->position = glm::vec3(x, y, 0.0);
+        g->position = glm::vec3(xpos, ypos, 0.0);
         g->textureId = 2;
-        g->scale = ch.glyph->scale;
+        g->scale = glm::vec3(w, h, 0.0);
         g->texture = ch.glyph->texture;
 
         _sprites.push_back(g);
-
-        PLOG_WARNING << ch.Advance;
 
         // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
         x += (ch.Advance >> 6); // bitshift by 6 to get value in pixels (2^6 = 64)

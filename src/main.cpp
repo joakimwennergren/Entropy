@@ -35,13 +35,13 @@ public:
 int main(int argc, char **argv)
 {
     Singleton::GetInstance("test")->InitState();
-    //  create a new lua instance
-    luaL_openlibs(Singleton::GetInstance("test")->GetState()); // give lua access to basic libraries
+
+    luaL_openlibs(Singleton::GetInstance("test")->GetState());
 
     Game game;
     game.Run();
 
-    // lua_close(Singleton::GetInstance("test")->GetState());
+    lua_close(Singleton::GetInstance("test")->GetState());
 
     return 0;
 }
