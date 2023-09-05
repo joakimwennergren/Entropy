@@ -103,14 +103,14 @@ namespace Symbios
                 VkDescriptorSet _descriptorSet;
                 VkDescriptorSetLayout _descriptorSetLayout;
 
-            private:
-                std::shared_ptr<Context> _context;
-
-                const std::vector<Vertex> _vertices = {
+                std::vector<Vertex> _vertices = {
                     {{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
                     {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
                     {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
                     {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
+
+            private:
+                std::shared_ptr<Context> _context;
 
                 const std::vector<uint16_t> _indices = {
                     0, 1, 2, 2, 3, 0};

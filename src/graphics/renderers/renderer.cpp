@@ -206,37 +206,7 @@ Renderer::Renderer(std::shared_ptr<Context> context)
         }
     }
 
-    //  g->UpdateImage();
-
-    // generate texture
-    /*
-    unsigned int texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexImage2D(
-        GL_TEXTURE_2D,
-        0,
-        GL_RED,
-        face->glyph->bitmap.width,
-        face->glyph->bitmap.rows,
-        0,
-        GL_RED,
-        GL_UNSIGNED_BYTE,
-        face->glyph->bitmap.buffer);
-    // set texture options
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // now store character for later use
-    Character character = {
-        texture,
-        glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-        glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-        face->glyph->advance.x};
-    Characters.insert(std::pair<char, Character>(c, character));
-    */
-    std::string text = "TEST";
+    std::string text = "Like";
 
     float x = 200.0, y = -500.0;
     float scale = 0.8;
@@ -245,6 +215,12 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     for (c = text.begin(); c != text.end(); c++)
     {
         Character ch = Characters[*c];
+
+        int bbox_ymax = face->bbox.yMax / 64;
+        int glyph_width = face->glyph->metrics.width / 64;
+        int advance = face->glyph->metrics.horiAdvance / 64;
+        int x_off = (advance - glyph_width) / 2;
+        int y_off = bbox_ymax - face->glyph->metrics.horiBearingY / 64;
 
         float xpos = x + ch.Bearing.x;
         float ypos = y - (ch.Size.y - ch.Bearing.y);
@@ -261,7 +237,7 @@ Renderer::Renderer(std::shared_ptr<Context> context)
         _sprites.push_back(g);
 
         // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-        x += (ch.Advance >> 6); // bitshift by 6 to get value in pixels (2^6 = 64)
+        x += (ch.Advance >> 6) * 2.0f; // bitshift by 6 to get value in pixels (2^6 = 64)
     }
 
     for (auto sprite : _sprites)

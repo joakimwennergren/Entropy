@@ -102,6 +102,9 @@ target_include_directories(Symbios PRIVATE
     # Scripting
     src/scripting/state
 
+    # Animation
+    src/animation/easing
+
     # Metal-CPP
     external/metal-cpp/
 )
