@@ -4,8 +4,6 @@
 
 Gyro is a framework to make 3D visual effects.
 
-It's a collboration between @joakimwennergren and @klorex
-
 ## Target
 For now the target is windows platform.
 https://github.com/alaingalvan/CrossWindow
