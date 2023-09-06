@@ -1,23 +1,7 @@
-/**
- * @file renderpass.cpp
- * @author Joakim Wennergren (joakim.wennergren@databeams.se)
- * @brief
- * @version 0.1
- * @date 2023-08-22
- *
- * @copyright Copyright (c) 2023
- *
- */
-
 #include "renderpass.hpp"
 
 using namespace Symbios::Graphics::RenderPasses;
 
-/**
- * @brief Construct a new Render Pass:: Render Pass object
- *
- * @param context
- */
 RenderPass::RenderPass(std::shared_ptr<Context> context)
 {
     this->_context = context;
@@ -71,10 +55,6 @@ RenderPass::RenderPass(std::shared_ptr<Context> context)
     this->CreateFramebuffers();
 }
 
-/**
- * @brief Destroy the Render Pass:: Render Pass object
- *
- */
 RenderPass::~RenderPass()
 {
     for (auto framebuffer : this->_swapChainFramebuffers)
@@ -85,12 +65,6 @@ RenderPass::~RenderPass()
     vkDestroyRenderPass(_context->GetLogicalDevice(), this->_renderPass, nullptr);
 }
 
-/**
- * @brief
- *
- * @param commandBuffer
- * @param imageIndex
- */
 void RenderPass::Begin(std::shared_ptr<CommandBuffer> commandBuffer, uint32_t imageIndex)
 {
     VkRenderPassBeginInfo renderPassInfo{};
@@ -108,20 +82,11 @@ void RenderPass::Begin(std::shared_ptr<CommandBuffer> commandBuffer, uint32_t im
     vkCmdBeginRenderPass(commandBuffer->GetCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
 
-/**
- * @brief
- *
- * @param commandBuffer
- */
 void RenderPass::End(std::shared_ptr<CommandBuffer> commandBuffer)
 {
     vkCmdEndRenderPass(commandBuffer->GetCommandBuffer());
 }
 
-/**
- * @brief
- *
- */
 void RenderPass::CreateFramebuffers()
 {
     this->_swapChainFramebuffers.resize(_context->GetSwapChainImageViews().size());

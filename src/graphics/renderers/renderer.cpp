@@ -253,7 +253,6 @@ Renderer::Renderer(std::shared_ptr<Context> context)
 
 Renderer::~Renderer()
 {
-
     vkDeviceWaitIdle(_context->GetLogicalDevice());
 
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)

@@ -23,7 +23,8 @@ layout(location=1)out vec2 fragTexCoord;
 layout(location=2)out int texId;
 layout(location=3)out vec4 color;
 
-void main(){
+void main()
+{
     gl_Position=ubo.proj*ubo.view*PushConstants.modelMatrix*vec4(inPosition,1.);
     fragColor=inColor;
     fragTexCoord=inTexCoord;

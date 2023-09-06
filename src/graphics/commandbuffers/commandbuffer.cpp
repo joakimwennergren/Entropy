@@ -2,13 +2,9 @@
 
 using namespace Symbios::Graphics::CommandBuffers;
 
-/**
- * @brief Construct a new Command Buffer:: Command Buffer object
- *
- * @param context
- */
 CommandBuffer::CommandBuffer(std::shared_ptr<Context> context)
 {
+    // Store context
     _context = context;
 
     VkCommandBufferAllocateInfo allocInfo{};
@@ -24,18 +20,10 @@ CommandBuffer::CommandBuffer(std::shared_ptr<Context> context)
     }
 }
 
-/**
- * @brief Destroy the Command Buffer:: Command Buffer object
- *
- */
 CommandBuffer::~CommandBuffer()
 {
 }
 
-/**
- * @brief
- *
- */
 void CommandBuffer::RecordOnce()
 {
     VkCommandBufferBeginInfo beginInfo{};
@@ -45,12 +33,6 @@ void CommandBuffer::RecordOnce()
     vkBeginCommandBuffer(_commandBuffer, &beginInfo);
 }
 
-/**
- * @brief
- *
- * @param imageIndex
- * @param renderPass
- */
 void CommandBuffer::Record()
 {
     VkCommandBufferBeginInfo beginInfo{};
@@ -65,10 +47,6 @@ void CommandBuffer::Record()
     }
 }
 
-/**
- * @brief
- *
- */
 void CommandBuffer::EndRecording()
 {
     if (vkEndCommandBuffer(_commandBuffer) != VK_SUCCESS)
@@ -78,10 +56,6 @@ void CommandBuffer::EndRecording()
     }
 }
 
-/**
- * @brief
- *
- */
 void CommandBuffer::EndRecordingOnce()
 {
     if (vkEndCommandBuffer(_commandBuffer) != VK_SUCCESS)
