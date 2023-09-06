@@ -33,9 +33,7 @@ namespace Symbios
                  * @brief Construct a new Quad object
                  *
                  */
-                Quad()
-                {
-                }
+                Quad() = default;
 
                 /**
                  * @brief Construct a new Quad object

@@ -18,8 +18,11 @@ std::vector<Quad *> Renderer::RenderText(std::string text, float x, float y, flo
 
         glyphs.push_back(ch.glyph);
 
+        PLOG_ERROR << ch.YAdvance;
+
         // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
         x += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
+        y += (ch.YAdvance);
     }
 
     return glyphs;
@@ -163,7 +166,7 @@ Renderer::Renderer(std::shared_ptr<Context> context)
 
     FT_New_Face(ft, "/Users/joakim/Desktop/Symbios/resources/fonts/lato/Lato-Regular.ttf", 0, &face);
 
-    FT_Set_Pixel_Sizes(face, 0, 64);
+    FT_Set_Pixel_Sizes(face, 0, 12);
 
     for (uint8_t c = 32; c < 128; c++)
     {
@@ -197,7 +200,9 @@ Renderer::Renderer(std::shared_ptr<Context> context)
                     g,
                     glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
                     glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-                    face->glyph->advance.x};
+                    face->glyph->advance.x,
+                    0
+                };
 
                 //_sprites.push_back(g);
 
@@ -206,7 +211,7 @@ Renderer::Renderer(std::shared_ptr<Context> context)
         }
     }
 
-    std::string text = "Like";
+    std::string text = "HEJSAN";
 
     float x = 200.0, y = -500.0;
     float scale = 0.8;
@@ -216,14 +221,8 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     {
         Character ch = Characters[*c];
 
-        int bbox_ymax = face->bbox.yMax / 64;
-        int glyph_width = face->glyph->metrics.width / 64;
-        int advance = face->glyph->metrics.horiAdvance / 64;
-        int x_off = (advance - glyph_width) / 2;
-        int y_off = bbox_ymax - face->glyph->metrics.horiBearingY / 64;
-
-        float xpos = x + ch.Bearing.x;
-        float ypos = y - (ch.Size.y - ch.Bearing.y);
+        float xpos = x + ch.Size.x;
+        float ypos = y - (ch.Size.y);
 
         float w = ch.Size.x;
         float h = ch.Size.y;
@@ -237,7 +236,8 @@ Renderer::Renderer(std::shared_ptr<Context> context)
         _sprites.push_back(g);
 
         // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-        x += (ch.Advance >> 6) * 2.0f; // bitshift by 6 to get value in pixels (2^6 = 64)
+        x += (ch.Advance >> 6) * 2.4; // bitshift by 6 to get value in pixels (2^6 = 64)
+        y += (ch.YAdvance);
     }
 
     for (auto sprite : _sprites)
