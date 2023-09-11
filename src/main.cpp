@@ -24,11 +24,23 @@ extern "C"
 
 // extern "C" void say_hello();
 
+// Factories
+#include "primitive_factory.hpp"
+
+using namespace Symbios::Graphics::Factories;
+
 class Game : public Application
 {
 public:
     Game() : Application()
     {
+        auto primitivesFactory = PrimitiveFactory(_context);
+
+        getGlobalNamespace(Singleton::GetInstance("test")->GetState())
+            .beginClass<PrimitiveFactory>("PrimitiveFactory")
+            .addConstructor<void (*)()>()
+            .addFunction("NewQuad", &PrimitiveFactory::Test)
+            .endClass();
     }
 };
 

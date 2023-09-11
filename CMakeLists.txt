@@ -53,6 +53,7 @@ target_sources(Symbios PRIVATE
     src/graphics/textures/texture.cpp
     src/graphics/utilities/utilities.cpp
     src/graphics/primitives/2d/quad.cpp
+    src/graphics/factories/primitive_factory.cpp
 
     # Scripting
     src/scripting/state/state.cpp
@@ -92,6 +93,7 @@ target_include_directories(Symbios PRIVATE
     src/graphics/utilities
     src/graphics/primitives/2d
     src/graphics/primitives/3d
+    src/graphics/factories/
 
     # Audio
     src/audio/
@@ -104,6 +106,9 @@ target_include_directories(Symbios PRIVATE
 
     # Animation
     src/animation/easing
+
+    # SceneGraph
+    src/scenegraph
 
     # Metal-CPP
     external/metal-cpp/

@@ -44,8 +44,6 @@ void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap)
 void Texture::CreateTextureImage(std::string path)
 {
 
-    PLOG_INFO << path;
-
     // stbi_set_flip_vertically_on_load(true);
 
     int texWidth, texHeight, texChannels;

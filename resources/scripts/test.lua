@@ -1,3 +1,8 @@
-local q = Quad(Context)
+print("start")
 
-print("debug")
+local pf = Quad(Context)
+
+pf:println()
+
+
+print("end")

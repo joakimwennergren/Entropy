@@ -92,8 +92,12 @@ public:
         }
     }
 
+protected:
+
+        std::shared_ptr<Context> _context;
+
 private:
-    std::shared_ptr<Context> _context;
+
     std::shared_ptr<Renderer> _renderer;
     GLFWwindow *_window;
 

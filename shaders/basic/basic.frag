@@ -16,7 +16,8 @@ void main() {
         outColor = color;
     } else 
     {
-        outColor = texture(sampler2D(_texture, texSampler), fragTexCoord);
+        vec4 sampled = vec4(1.0, 1.0, 1.0, texture(sampler2D(_texture, texSampler), fragTexCoord).r);
+        outColor = color * sampled;
     }
 
 }

@@ -166,9 +166,9 @@ Renderer::Renderer(std::shared_ptr<Context> context)
 
     FT_New_Face(ft, "/Users/joakim/Desktop/Symbios/resources/fonts/lato/Lato-Regular.ttf", 0, &face);
 
-    FT_Set_Pixel_Sizes(face, 0, 12);
+    FT_Set_Pixel_Sizes(face, 0, 32);
 
-    for (uint8_t c = 32; c < 128; c++)
+    for (uint8_t c = 0; c < 128; c++)
     {
         auto glyph_index = FT_Get_Char_Index(face, c);
 
@@ -211,7 +211,7 @@ Renderer::Renderer(std::shared_ptr<Context> context)
         }
     }
 
-    std::string text = "HEJSAN";
+    std::string text = "Noemi&Joakim";
 
     float x = 200.0, y = -500.0;
     float scale = 0.8;

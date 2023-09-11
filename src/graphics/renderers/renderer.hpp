@@ -6,6 +6,8 @@
 
 #include <chrono>
 
+#include <unordered_map>
+
 #include "context.hpp"
 #include "renderpass.hpp"
 #include "pipeline.hpp"
@@ -21,6 +23,8 @@
 
 #include "uniformbuffer.hpp"
 #include "state.hpp"
+
+#include "easing.hpp"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -154,6 +158,15 @@ namespace Symbios
                 // @refactored buffers!!
                 std::vector<UniformBuffer *> _uniformBuffers;
                 std::map<char, Character> Characters;
+
+
+                // Create an unordered_map of three strings (that map to strings)
+                std::unordered_map<std::string, std::string> u =
+                {
+                    {"RED", "#FF0000"},
+                    {"GREEN", "#00FF00"},
+                    {"BLUE", "#0000FF"}
+                };
             };
         }
     }

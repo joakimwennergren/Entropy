@@ -15,9 +15,11 @@ extern "C"
 #include "context.hpp"
 #include "vertexbuffer.hpp"
 #include "state.hpp"
+#include "renderable.hpp"
 
 using namespace Symbios::Graphics::Textures;
 using namespace Symbios::Scripting::States;
+using namespace Symbios::Renderables;
 using namespace luabridge;
 
 namespace Symbios
@@ -26,7 +28,7 @@ namespace Symbios
     {
         namespace Primitives
         {
-            class Quad
+            class Quad: public Renderable
             {
             public:
                 /**
@@ -65,11 +67,6 @@ namespace Symbios
                 Texture *texture = nullptr;
                 std::unique_ptr<VertexBuffer> vertexBuffer;
                 std::unique_ptr<Buffer> indexBuffer;
-                glm::vec3 position;
-                glm::vec3 rotation;
-                glm::vec3 scale = glm::vec3(1.0);
-                int textureId = -1;
-                glm::vec4 color;
 
                 void UpdateImage()
                 {
