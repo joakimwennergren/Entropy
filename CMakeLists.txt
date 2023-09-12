@@ -55,6 +55,9 @@ target_sources(Symbios PRIVATE
     src/graphics/primitives/2d/quad.cpp
     src/graphics/factories/primitive_factory.cpp
 
+    # Text
+    src/graphics/text/label.cpp
+
     # Scripting
     src/scripting/state/state.cpp
 
@@ -109,6 +112,9 @@ target_include_directories(Symbios PRIVATE
 
     # SceneGraph
     src/scenegraph
+
+    # text
+    src/graphics/text
 
     # Metal-CPP
     external/metal-cpp/

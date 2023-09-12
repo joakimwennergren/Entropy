@@ -473,11 +473,6 @@ void Context::CreateSurfaceiOS(CA::MetalLayer *layer)
 #endif
 
 #ifdef BUILD_FOR_MACOS
-/**
- * @brief
- *
- * @param window
- */
 void Context::CreateSurfaceMacOS(GLFWwindow *window)
 {
     if (glfwCreateWindowSurface(this->_instance, window, nullptr, &this->_surface) != VK_SUCCESS)

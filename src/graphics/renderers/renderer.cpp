@@ -30,6 +30,8 @@ std::vector<Quad *> Renderer::RenderText(std::string text, float x, float y, flo
 
 Renderer::Renderer(std::shared_ptr<Context> context)
 {
+
+
     // Store ctx
     _context = context;
 
@@ -192,7 +194,7 @@ Renderer::Renderer(std::shared_ptr<Context> context)
             if (glyphSlot->bitmap.width != 0)
             {
                 auto g = new Quad(_context);
-                g->position = glm::vec3(500.0, -500.0, 0.0);
+                g->position = glm::vec3(200.0, -500.0, 0.0);
                 g->textureId = 2;
                 g->texture->CreateTextureImageFromBuffer(face->glyph->bitmap);
 
@@ -211,7 +213,7 @@ Renderer::Renderer(std::shared_ptr<Context> context)
         }
     }
 
-    std::string text = "Noemi&Joakim";
+    std::string text = "Test";
 
     float x = 200.0, y = -500.0;
     float scale = 0.8;
@@ -236,7 +238,7 @@ Renderer::Renderer(std::shared_ptr<Context> context)
         _sprites.push_back(g);
 
         // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-        x += (ch.Advance >> 6) * 2.4; // bitshift by 6 to get value in pixels (2^6 = 64)
+        x += (ch.Advance >> 6) * 2.0f; // bitshift by 6 to get value in pixels (2^6 = 64)
         y += (ch.YAdvance);
     }
 
@@ -267,9 +269,6 @@ void Renderer::Render()
 {
 
     float scale = 0.1;
-
-    // scale += glfwGetTime() * 0.01;
-    // ivy7->scale = glm::vec3(scale, scale, 0.0);
 
     uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(_context->GetLogicalDevice(), _context->GetSwapChain(), UINT64_MAX, _imageAvailableSemaphores[_currentFrame], VK_NULL_HANDLE, &imageIndex);
@@ -388,7 +387,7 @@ void Renderer::Render()
 
         float V = (float)_context->GetSwapChainExtent().width / (float)_context->GetSwapChainExtent().height;
 
-        ubo.proj = glm::ortho(0.0f, (float)_context->GetSwapChainExtent().width, (float)_context->GetSwapChainExtent().height, 0.0f, -1.0f, 1.0f);
+        ubo.proj = glm::ortho(0.0f, (float)_context->GetSwapChainExtent().width * 2.0f, (float)_context->GetSwapChainExtent().height * 2.0f, 0.0f, -1.0f, 1.0f);
         ubo.proj[1][1] *= -1;
 
         memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));

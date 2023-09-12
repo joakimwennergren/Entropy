@@ -48,7 +48,7 @@ public:
         }
         // glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GL_FALSE);
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        _window = glfwCreateWindow(640, 480, "Symbios dev application", NULL, NULL);
+        _window = glfwCreateWindow(1920, 1080, "Symbios dev application", NULL, NULL);
 
         if (!_window)
         {
@@ -61,9 +61,10 @@ public:
 
         glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
         glfwSetCursorPosCallback(_window, cursorPositionCallback);
-
+    
         _context = std::make_shared<Context>(_window);
         _renderer = std::make_shared<Renderer>(_context);
+
     }
 
     /**
