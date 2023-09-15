@@ -2,32 +2,6 @@
 
 using namespace Symbios::Graphics::Renderers;
 
-std::vector<Quad *> Renderer::RenderText(std::string text, float x, float y, float scale, glm::vec3 color)
-{
-    // iterate through all characters
-
-    std::string::const_iterator c;
-
-    std::vector<Quad *> glyphs;
-
-    for (c = text.begin(); c != text.end(); c++)
-    {
-        Character ch = Characters[*c];
-
-        ch.glyph->position = glm::vec3(x, y, 0.0);
-
-        glyphs.push_back(ch.glyph);
-
-        PLOG_ERROR << ch.YAdvance;
-
-        // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-        x += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
-        y += (ch.YAdvance);
-    }
-
-    return glyphs;
-}
-
 Renderer::Renderer(std::shared_ptr<Context> context)
 {
 
@@ -168,7 +142,7 @@ Renderer::Renderer(std::shared_ptr<Context> context)
 
     FT_New_Face(ft, "/Users/joakim/Desktop/Symbios/resources/fonts/lato/Lato-Regular.ttf", 0, &face);
 
-    FT_Set_Pixel_Sizes(face, 0, 32);
+    FT_Set_Pixel_Sizes(face, 0, 164);
 
     for (uint8_t c = 0; c < 128; c++)
     {
@@ -242,11 +216,13 @@ Renderer::Renderer(std::shared_ptr<Context> context)
         y += (ch.YAdvance);
     }
 
+    /*
     for (auto sprite : _sprites)
     {
         if (sprite->texture->hasTexture)
             sprite->UpdateImage();
     }
+    */
 
     _context->CreateDescriptorSets(rawUniformBuffers, ivy7->texture->GetImageView());
 
@@ -265,7 +241,7 @@ Renderer::~Renderer()
     }
 }
 
-void Renderer::Render()
+void Renderer::Render(std::shared_ptr<SceneGraph> graph)
 {
 
     float scale = 0.1;
@@ -341,14 +317,8 @@ void Renderer::Render()
 
     uint32_t modelCnt = 0;
 
-    for (auto sprite : _sprites)
+    for (const auto& [key, sprite] : graph->renderables)
     {
-        // One dynamic offset per dynamic descriptor to offset into the ubo containing all model matrices
-        // uint32_t dynamicOffset = modelCnt * static_cast<uint32_t>(dynamicAlignment);
-        // Bind the descriptor set for rendering a mesh using the dynamic offset
-
-        // vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &dynamicOffset);
-
         auto currentDescriptorSet = _context->GetDescriptorSets()[_currentFrame];
         vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 0, nullptr);
 

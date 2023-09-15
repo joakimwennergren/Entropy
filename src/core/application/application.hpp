@@ -4,6 +4,7 @@
 #include "context.hpp"
 #include "renderer.hpp"
 #include "state.hpp"
+#include "scenegraph.hpp"
 
 #include <plog/Log.h>
 #include <plog/Init.h>
@@ -17,9 +18,9 @@
 
 using namespace Symbios::Core;
 using namespace Symbios::Graphics::Renderers;
+using namespace Symbios::SceneGraphs;
 
 static void framebufferResizeCallback(GLFWwindow *window, int width, int height);
-
 static void cursorPositionCallback(GLFWwindow *window, double x, double y);
 
 /**
@@ -48,7 +49,7 @@ public:
         }
         // glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GL_FALSE);
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        _window = glfwCreateWindow(1920, 1080, "Symbios dev application", NULL, NULL);
+        _window = glfwCreateWindow(640, 480, "Symbios dev application", NULL, NULL);
 
         if (!_window)
         {
@@ -64,6 +65,7 @@ public:
     
         _context = std::make_shared<Context>(_window);
         _renderer = std::make_shared<Renderer>(_context);
+        _sceneGraph = std::make_shared<SceneGraph>();
 
     }
 
@@ -89,14 +91,13 @@ public:
         while (!glfwWindowShouldClose(_window))
         {
             glfwPollEvents();
-            _renderer->Render();
+            _renderer->Render(_sceneGraph);
         }
     }
 
 protected:
-
         std::shared_ptr<Context> _context;
-
+        std::shared_ptr<SceneGraph> _sceneGraph;
 private:
 
     std::shared_ptr<Renderer> _renderer;

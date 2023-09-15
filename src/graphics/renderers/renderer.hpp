@@ -44,6 +44,9 @@ extern "C"
 
 #include <LuaBridge/LuaBridge.h>
 
+#include "scenegraph.hpp"
+#include "sprite.hpp"
+
 using namespace luabridge;
 using namespace Symbios::Core;
 using namespace Symbios::Scripting::States;
@@ -53,6 +56,9 @@ using namespace Symbios::Graphics::Pipelines;
 using namespace Symbios::Graphics::Primitives;
 using namespace Symbios::Graphics::RenderPasses;
 using namespace Symbios::Graphics::CommandBuffers;
+using namespace Symbios::SceneGraphs;
+
+
 
 struct Character
 {
@@ -100,7 +106,7 @@ namespace Symbios
                  * @brief
                  *
                  */
-                void Render();
+                void Render(std::shared_ptr<SceneGraph> graph);
 
                 /**
                  * @brief
@@ -118,8 +124,6 @@ namespace Symbios
                 Quad *pane;
 
                 std::string GetContext() { return "TEST"; };
-
-                std::vector<Quad *> RenderText(std::string text, float x, float y, float scale, glm::vec3 color);
 
             private:
                 std::shared_ptr<Context> _context;
@@ -158,15 +162,6 @@ namespace Symbios
                 // @refactored buffers!!
                 std::vector<UniformBuffer *> _uniformBuffers;
                 std::map<char, Character> Characters;
-
-
-                // Create an unordered_map of three strings (that map to strings)
-                std::unordered_map<std::string, std::string> u =
-                {
-                    {"RED", "#FF0000"},
-                    {"GREEN", "#00FF00"},
-                    {"BLUE", "#0000FF"}
-                };
             };
         }
     }

@@ -19,7 +19,7 @@
 #include <glm/glm.hpp>
 
 #include "renderable.hpp"
-#include "quad.hpp"
+#include "sprite.hpp"
 
 using namespace Symbios::Renderables;
 using namespace Symbios::Graphics::Primitives;
@@ -30,7 +30,7 @@ namespace Symbios
     {
         struct Character
         {
-            Quad *glyph;
+            Sprite *glyph;
             glm::ivec2 Size;
             glm::ivec2 Bearing; 
             FT_Pos Advance;     
@@ -40,13 +40,15 @@ namespace Symbios
         class Label : public Renderable
         {
         public:
-            Label(std::shared_ptr<Context> context);
+            Label(std::shared_ptr<Context> context, std::string text);
             ~Label();   
+            std::vector<Sprite *> sprites;
 
         private:
             FT_Library ft;
             FT_Face face;  
             std::map<char, Character> _characters;
+            float maxDescent;
         };
     }
 }

@@ -53,6 +53,7 @@ target_sources(Symbios PRIVATE
     src/graphics/textures/texture.cpp
     src/graphics/utilities/utilities.cpp
     src/graphics/primitives/2d/quad.cpp
+    src/graphics/primitives/2d/sprite.cpp
     src/graphics/factories/primitive_factory.cpp
 
     # Text

@@ -23,8 +23,7 @@ namespace Symbios
         class SceneGraph
         {
         public:
-            std::unordered_map<int, std::unqiue_ptr<Renderable>> renderables;
-            
+            std::unordered_map<int, std::shared_ptr<Renderable>> renderables;
         };
     }
 }

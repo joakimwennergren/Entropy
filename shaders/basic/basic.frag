@@ -14,7 +14,13 @@ void main() {
     if(texId == -1)
     {
         outColor = color;
-    } else 
+    } 
+    else if(texId == 1)
+    {
+        vec4 sampled = texture(sampler2D(_texture, texSampler), fragTexCoord);
+        outColor = color * sampled;   
+    }
+    else if(texId == 2)
     {
         vec4 sampled = vec4(1.0, 1.0, 1.0, texture(sampler2D(_texture, texSampler), fragTexCoord).r);
         outColor = color * sampled;
