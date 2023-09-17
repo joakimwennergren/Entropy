@@ -20,17 +20,8 @@ add_subdirectory(external/plog)
 # GLM
 add_subdirectory(external/glm)
 
-# Text shaping
-add_subdirectory(external/harfbuzz)
-
 # Text rendering
 add_subdirectory(external/freetype-2.10.0)
-
-# Scripting
-set(LUA_ENABLE_SHARED OFF)
-set(LUA_BUILD_COMPILER OFF)
-add_subdirectory(external/Lua)
-add_subdirectory(external/LuaBridge)
 
 add_executable(Symbios)
 
@@ -119,6 +110,8 @@ target_include_directories(Symbios PRIVATE
 
     # Metal-CPP
     external/metal-cpp/
+
+    external/freetype-2.10.0/include
 )
 
 target_compile_features(Symbios PRIVATE cxx_std_17)
@@ -130,9 +123,6 @@ target_link_libraries(Symbios
 
     # GLM
     glm
-
-    # Text shaping
-    harfbuzz
 
     # Scripting
 )
@@ -147,12 +137,8 @@ if(NOT XCODE)
         glfw
 
         # Text shaping
-        harfbuzz
         freetype
 
-        # Scripting
-        LuaBridge
-        lua_static
     )
 endif()
 
@@ -162,14 +148,11 @@ if(XCODE)
     set_target_properties(Symbios PROPERTIES
         XCODE_GENERATE_SCHEME ON
         XCODE_SCHEME_ENABLE_GPU_FRAME_CAPTURE_MODE "Metal")
+    
     target_link_libraries(Symbios
 
-        # Scripting
-        LuaBridge
-        lua_static
-
         # Text shaping
-        harfbuzz
+        freetype
 
         "-framework foundation"
         "-framework metal"

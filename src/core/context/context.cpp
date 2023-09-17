@@ -9,21 +9,26 @@ using namespace Symbios::Core;
  * @param layer
  * @param frame
  */
-Context::Context(CA::MetalLayer *layer, CGRect frame)
+Context::Context()
+{
+    this->CreateInstance();
+}
+
+void Context::setLayerAndFrame(CA::MetalLayer *layer, CGRect frame)
 {
     this->_layer = layer;
     this->_frame = frame;
-    this->CreateInstance();
-    this->CreateSurfaceiOS(layer);
     this->PickPhysicalDevice();
     this->CreateLogicalDevice();
     this->CreateSwapChain(frame);
+    this->CreateSurfaceiOS(layer);
     this->CreateImageViews();
     this->CreateCommandPool();
     this->CreateDescriptorPool();
     this->CreateDescriptorSetLayout();
     this->CreateTextureSampler();
 }
+
 #endif
 
 #ifdef BUILD_FOR_WINDOWS

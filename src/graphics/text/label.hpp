@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include <map>
+
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
@@ -47,7 +49,7 @@ namespace Symbios
         private:
             FT_Library ft;
             FT_Face face;  
-            std::map<char, Character> _characters;
+            std::map<int, Character> _characters;
             float maxDescent;
         };
     }

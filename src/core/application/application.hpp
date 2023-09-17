@@ -141,6 +141,8 @@ using namespace Symbios::Graphics::Renderers;
 class MTKViewDelegate : public MTK::ViewDelegate
 {
 public:
+    
+    std::shared_ptr<SceneGraph> graph;
     /**
      * @brief Construct a new MTKViewDelegate object
      *
@@ -170,7 +172,7 @@ private:
      */
     inline virtual void drawInMTKView(MTK::View *pView) override
     {
-        _renderer->Render();
+        _renderer->Render(graph);
     }
 
     std::shared_ptr<Renderer> _renderer;
@@ -189,8 +191,10 @@ public:
         plog::init(plog::verbose, &consoleAppender);
 
         this->_autoreleasePool = NS::AutoreleasePool::alloc()->init();
+        
+        this->_sceneGraph = std::make_shared<SceneGraph>();
 
-        UI::ApplicationMain(0, 0, this);
+        this->_context = std::make_shared<Context>();
     }
 
     /**
@@ -245,11 +249,12 @@ public:
 
         CA::MetalLayer *layer = _pMtkView->currentDrawable()->layer();
 
-        _context = std::make_shared<Context>(layer, frame);
+        _context->setLayerAndFrame(layer, frame);
 
         auto renderer = std::make_shared<Renderer>(_context);
 
         _pViewDelegate->SetRenderer(renderer);
+        _pViewDelegate->graph = _sceneGraph;
 
         return true;
     }
@@ -270,10 +275,16 @@ public:
      */
     inline void Run()
     {
+       UI::ApplicationMain(0, 0, this);
     }
 
-private:
     std::shared_ptr<Context> _context;
+protected:
+
+        std::shared_ptr<SceneGraph> _sceneGraph;
+
+private:
+
     UI::Window *_pWindow = nullptr;
     MTK::View *_pMtkView = nullptr;
     MTL::Device *_pDevice = nullptr;

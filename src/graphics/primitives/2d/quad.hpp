@@ -1,15 +1,5 @@
 #pragma once
 
-// include Lua headers
-extern "C"
-{
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
-}
-
-#include <LuaBridge/LuaBridge.h>
-
 #include "vertex.hpp"
 #include "texture.hpp"
 #include "context.hpp"
@@ -20,7 +10,6 @@ extern "C"
 using namespace Symbios::Graphics::Textures;
 using namespace Symbios::Scripting::States;
 using namespace Symbios::Renderables;
-using namespace luabridge;
 
 namespace Symbios
 {

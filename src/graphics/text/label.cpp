@@ -14,8 +14,6 @@ Label::Label(std::shared_ptr<Context> context, std::string text)
 
     for (uint8_t c = 31; c < 128; c++)
     {
-
-        PLOG_WARNING << c;
         auto glyph_index = FT_Get_Char_Index(face, c);
 
         if (glyph_index != 0)
@@ -41,7 +39,7 @@ Label::Label(std::shared_ptr<Context> context, std::string text)
             if (glyphSlot->bitmap.width != 0)
             {
                 auto g = new Sprite(context);
-                g->position = glm::vec3(200.0, -500.0, 0.0);
+                g->position = glm::vec3(200.0, 0.0, 0.0);
                 g->textureId = 2;
                 g->texture->CreateTextureImageFromBuffer(face->glyph->bitmap);
 

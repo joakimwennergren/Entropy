@@ -62,11 +62,6 @@ namespace Symbios
         class Context
         {
         public:
-            /**
-             * @brief Construct a new Context object
-             *
-             */
-            Context() = default;
 
             /**
              * @brief
@@ -101,7 +96,9 @@ namespace Symbios
              * @param layer
              * @param frame
              */
-            Context(CA::MetalLayer *layer, CGRect frame);
+            Context();
+
+            void setLayerAndFrame(CA::MetalLayer *layer, CGRect frame);
 
             /**
              * @brief Create a surface

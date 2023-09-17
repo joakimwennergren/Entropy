@@ -14,13 +14,6 @@
 #include <string>
 #include <mutex>
 
-// include Lua headers
-extern "C"
-{
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
-}
 
 namespace Symbios
 {
@@ -53,7 +46,6 @@ namespace Symbios
                 ~Singleton() {}
 
                 std::string value_;
-                lua_State *_L;
 
             public:
                 /**
@@ -81,9 +73,6 @@ namespace Symbios
                 {
                     // ...
                 }
-
-                void InitState() { this->_L = luaL_newstate(); };
-                lua_State *GetState() { return this->_L; };
 
                 std::string value() const
                 {

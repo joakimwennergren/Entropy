@@ -14,13 +14,6 @@
 #include "application.hpp"
 #include "state.hpp"
 
-// include Lua headers
-extern "C"
-{
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
-}
 
 // extern "C" void say_hello();
 
@@ -28,36 +21,37 @@ extern "C"
 #include "primitive_factory.hpp"
 #include "sprite.hpp"
 #include "label.hpp"
+#include "filesystem.hpp"
 
 using namespace Symbios::Graphics::Factories;
 using namespace Symbios::Text;
+using namespace Symbios;
 
 class Game : public Application
 {
 public:
-    Game() : Application()
+    Game()
     {
+
+        Application();
         
         auto primitivesFactory = PrimitiveFactory(_context);
 
-        getGlobalNamespace(Singleton::GetInstance("test")->GetState())
-            .beginClass<PrimitiveFactory>("PrimitiveFactory")
-            .addConstructor<void (*)()>()
-            .addFunction("NewQuad", &PrimitiveFactory::Test)
-            .endClass();
+        /*
 
         auto quad = std::make_shared<Sprite>(_context);
         quad->type = 1;
-        quad->position = glm::vec3(200.0, -500.0, 0.0);
+        quad->position = glm::vec3(0.0, 0.0, 0.0);
         quad->textureId = 1;
         quad->color = glm::vec4(1.0, 1.0, 1.0, 1.0);
         quad->scale = glm::vec3(100.0, 100.0, 0.0);
-        quad->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/svamp.png");
+        quad->texture->CreateTextureImage(Filesystem::GetProjectBasePath() + "/svamp.png");
         quad->UpdateImage();
-
-        auto label = std::make_shared<Label>(_context, "Symbios ");
-
         _sceneGraph->renderables.insert(std::make_pair(0, quad));
+
+        */
+        
+        auto label = std::make_shared<Label>(_context, "Symbios");
 
         int id = 1;
 
@@ -66,19 +60,14 @@ public:
             _sceneGraph->renderables.insert(std::make_pair(id++, ch));
         }
         //_sceneGraph->renderables.insert(std::make_pair(1, label));
+
     }
 };
 
 int main(int argc, char **argv)
 {
-    Singleton::GetInstance("test")->InitState();
-
-    luaL_openlibs(Singleton::GetInstance("test")->GetState());
-
     Game game;
-    game.Run();
-
-    lua_close(Singleton::GetInstance("test")->GetState());
+    //game.Run();
 
     return 0;
 }

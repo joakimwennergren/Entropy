@@ -30,24 +30,13 @@
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
 #include <freetype/ftglyph.h>
-
-#include <hb.h>
 #include <iostream>
-
-// include Lua headers
-extern "C"
-{
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
-}
-
-#include <LuaBridge/LuaBridge.h>
 
 #include "scenegraph.hpp"
 #include "sprite.hpp"
 
-using namespace luabridge;
+#include <map>
+
 using namespace Symbios::Core;
 using namespace Symbios::Scripting::States;
 using namespace Symbios::Graphics::Buffers;
@@ -154,14 +143,9 @@ namespace Symbios
                 VkDeviceSize dynamicAlignment;
 
                 float time2;
-                // Text shaping
-                unsigned int glyph_count;
-                hb_glyph_info_t *glyph_info;
-                hb_glyph_position_t *glyph_pos;
-
                 // @refactored buffers!!
                 std::vector<UniformBuffer *> _uniformBuffers;
-                std::map<char, Character> Characters;
+                std::map<int, Character> Characters;
             };
         }
     }

@@ -59,22 +59,6 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     ivy7->textureId = 2;
     ivy7->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/svamp.png");
 
-    auto L = Singleton::GetInstance("tset")->GetState();
-
-    getGlobalNamespace(L)
-        .beginClass<Context>("Context")
-        .addConstructor<void (*)()>()
-        .endClass();
-
-    getGlobalNamespace(L)
-        .beginClass<Quad>("Quad")
-        .addConstructor<void (*)(void)>()
-        .addFunction("println", &Quad::Test)
-        .addFunction("setPosition", &Quad::SetPosition)
-        .endClass();
-
-    luabridge::setGlobal(L, _context.get(), "Context");
-
     //_sprites.push_back(ivy7);
 
     srand(static_cast<unsigned>(time(0)));
@@ -225,8 +209,6 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     */
 
     _context->CreateDescriptorSets(rawUniformBuffers, ivy7->texture->GetImageView());
-
-    luaL_dofile(Singleton::GetInstance("test")->GetState(), "/Users/joakim/Desktop/Symbios/resources/scripts/test.lua");
 }
 
 Renderer::~Renderer()
