@@ -55,7 +55,7 @@ Renderer::Renderer()
     ivy7->position = glm::vec3(500.0, -500.0, 0.0);
     ivy7->scale = glm::vec3(100.0, 100.0, 0.0);
     ivy7->textureId = 2;
-    ivy7->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/svamp.png");
+    ivy7->texture->CreateTextureImage(Filesystem::GetProjectBasePath() + "/svamp.png");
 
     //_sprites.push_back(ivy7);
 
@@ -80,95 +80,6 @@ Renderer::Renderer()
         auto rawBuffer = _uniformBuffers[i]->GetVulkanBuffer();
         rawUniformBuffers.push_back(rawBuffer);
     }
-
-    FT_Library ft;
-    FT_Face face;
-
-    FT_Init_FreeType(&ft);
-
-    FT_New_Face(ft, "/Users/joakim/Desktop/Symbios/resources/fonts/lato/Lato-Regular.ttf", 0, &face);
-
-    FT_Set_Pixel_Sizes(face, 0, 164);
-
-    for (uint8_t c = 0; c < 128; c++)
-    {
-        auto glyph_index = FT_Get_Char_Index(face, c);
-
-        if (glyph_index != 0)
-        {
-            auto error = FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
-
-            if (error)
-            {
-                throw std::runtime_error("failed to load glyph");
-            }
-
-            FT_GlyphSlot glyphSlot = face->glyph;
-
-            error = FT_Render_Glyph(glyphSlot, FT_RENDER_MODE_NORMAL);
-            if (error)
-            {
-                throw std::runtime_error("failed to render glyph");
-            }
-
-            if (glyphSlot->bitmap.width != 0)
-            {
-                auto g = new Quad();
-                g->position = glm::vec3(200.0, -500.0, 0.0);
-                g->textureId = 2;
-                g->texture->CreateTextureImageFromBuffer(face->glyph->bitmap);
-
-                Character character = {
-                    g,
-                    glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-                    glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-                    face->glyph->advance.x,
-                    0
-                };
-
-                //_sprites.push_back(g);
-
-                Characters.insert(std::pair<char, Character>(c, character));
-            }
-        }
-    }
-
-    std::string text = "Test";
-
-    float x = 200.0, y = -500.0;
-    float scale = 0.8;
-    std::string::const_iterator c;
-
-    for (c = text.begin(); c != text.end(); c++)
-    {
-        Character ch = Characters[*c];
-
-        float xpos = x + ch.Size.x;
-        float ypos = y - (ch.Size.y);
-
-        float w = ch.Size.x;
-        float h = ch.Size.y;
-
-        auto g = new Quad();
-        g->position = glm::vec3(xpos, ypos, 0.0);
-        g->textureId = 2;
-        g->scale = glm::vec3(w, h, 0.0);
-        g->texture = ch.glyph->texture;
-
-        _sprites.push_back(g);
-
-        // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-        x += (ch.Advance >> 6) * 2.0f; // bitshift by 6 to get value in pixels (2^6 = 64)
-        y += (ch.YAdvance);
-    }
-
-    /*
-    for (auto sprite : _sprites)
-    {
-        if (sprite->texture->hasTexture)
-            sprite->UpdateImage();
-    }
-    */
 
     _context->CreateDescriptorSets(rawUniformBuffers, ivy7->texture->GetImageView());
 }
@@ -301,7 +212,7 @@ void Renderer::Render(std::shared_ptr<SceneGraph> graph)
 
         float V = (float)_context->GetSwapChainExtent().width / (float)_context->GetSwapChainExtent().height;
 
-        ubo.proj = glm::ortho(0.0f, (float)_context->GetSwapChainExtent().width * 2.0f, (float)_context->GetSwapChainExtent().height * 2.0f, 0.0f, -1.0f, 1.0f);
+        ubo.proj = glm::ortho(0.0f, (float)_context->GetSwapChainExtent().width, (float)_context->GetSwapChainExtent().height, 0.0f, -1.0f, 1.0f);
         ubo.proj[1][1] *= -1;
 
         memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));

@@ -268,16 +268,30 @@ public:
         _pViewDelegate->SetRenderer(renderer);
         _pViewDelegate->graph = _sceneGraph;
         
+        this->_context = Global::GetInstance()->GetVulkanContext();
+        
+        auto quad2 = std::make_shared<Sprite>();
+        quad2->type = 1;
+        quad2->position = glm::vec3(frame.size.width * 1.8f, -600.0, 0.0);
+        quad2->textureId = 1;
+        quad2->color = glm::vec4(1.0, 1.0, 1.0, 1.0);
+        quad2->scale = glm::vec3(600.0, 600.0, 0.0);
+        quad2->texture->CreateTextureImage(Filesystem::GetProjectBasePath() + "/svamp.png");
+        quad2->UpdateImage();
+        
+        _sceneGraph->renderables.insert(std::make_pair(100, quad2));
+
+        //auto primitivesFactory = PrimitiveFactory();
         auto quad = std::make_shared<Sprite>();
         quad->type = 1;
-        quad->position = glm::vec3(500.0, -500.0, 0.0);
+        quad->position = glm::vec3(frame.size.width * 1.5f, frame.size.height * 2.0f * -1.0f, 0.0);
         quad->textureId = 1;
         quad->color = glm::vec4(1.0, 1.0, 1.0, 1.0);
-        quad->scale = glm::vec3(300.0, 300.0, 0.0);
-        quad->texture->CreateTextureImage(Filesystem::GetProjectBasePath() + "/svamp.png");
+        quad->scale = glm::vec3(frame.size.width * 1.5f, frame.size.height * 2.0f, 0.0);
+        quad->texture->CreateTextureImage(Filesystem::GetProjectBasePath() + "/background.png");
         quad->UpdateImage();
 
-        auto label = std::make_shared<Label>("Symbios");
+        auto label = std::make_shared<Label>("SVAMPJAKT");
 
         int id = 1;
 
@@ -285,11 +299,11 @@ public:
         {
             _sceneGraph->renderables.insert(std::make_pair(id++, ch));
         }
-        //_sceneGraph->renderables.insert(std::make_pair(1, label));
 
         _sceneGraph->renderables.insert(std::make_pair(0, quad));
+        
+        
 
-        this->_context = Global::GetInstance()->GetVulkanContext();
 
         return true;
     }

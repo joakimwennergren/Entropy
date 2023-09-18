@@ -12,9 +12,9 @@ Label::Label(std::string text)
 
     FT_Init_FreeType(&ft);
 
-    FT_New_Face(ft, (Filesystem::GetProjectBasePath() + "/Lato-Regular.ttf").c_str(), 0, &face);
+    FT_New_Face(ft, (Filesystem::GetProjectBasePath() + "/Lato-Bold.ttf").c_str(), 0, &face);
 
-    FT_Set_Pixel_Sizes(face, 0, 32);
+    FT_Set_Pixel_Sizes(face, 0, 64);
 
     for (uint8_t c = 31; c < 128; c++)
     {
@@ -41,7 +41,7 @@ Label::Label(std::string text)
             if (glyphSlot->bitmap.width != 0)
             {
                 auto g = new Sprite();
-                g->position = glm::vec3(200.0, 0.0, 0.0);
+                g->position = glm::vec3(200.0, 500.0, 0.0);
                 g->textureId = 2;
                 g->texture->CreateTextureImageFromBuffer(face->glyph->bitmap);
 
@@ -58,7 +58,7 @@ Label::Label(std::string text)
         }
     }
 
-    float x = 300.0, y = -300.0;
+    float x = 300.0, y = -250.0;
     std::string::const_iterator c;
 
     for (c = text.begin(); c != text.end(); c++)
@@ -75,11 +75,10 @@ Label::Label(std::string text)
         g->position = glm::vec3(xpos, ypos, 0.0);
         g->textureId = 2;
         g->scale = glm::vec3(w, h, 0.0);
+        g->color = glm::vec4(1.0, 0.5, 0.0, 1.0);
         g->texture = ch.glyph->texture;
 
         g->UpdateImage();
-
-        PLOG_ERROR << ypos;
 
         // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
         x += (ch.Advance >> 6) * 2.0f; // bitshift by 6 to get value in pixels (2^6 = 64)

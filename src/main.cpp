@@ -21,9 +21,11 @@
 #include "primitive_factory.hpp"
 #include "sprite.hpp"
 #include "label.hpp"
+#include "quad.hpp"
 #include "filesystem.hpp"
 
 using namespace Symbios::Graphics::Factories;
+using namespace Symbios::Graphics::Primitives;
 using namespace Symbios::Text;
 using namespace Symbios;
 
@@ -32,7 +34,7 @@ class Game : public Application
 public:
     Game() : Application() 
     {
-        //auto primitivesFactory = PrimitiveFactory();
+
     }
 };
 
