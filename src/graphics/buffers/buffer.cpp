@@ -2,10 +2,10 @@
 
 using namespace Symbios::Graphics::Buffers;
 
-Buffer::Buffer(std::shared_ptr<Context> context)
+Buffer::Buffer()
 {
     // Store vulkan ctx
-    _context = context;
+    _context = Global::GetInstance()->GetVulkanContext();
 }
 
 Buffer::~Buffer()
@@ -36,7 +36,7 @@ void Buffer::CreateBuffer(std::shared_ptr<Context> _context, VkDeviceSize size, 
     VkMemoryAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex = Utility::FindMemoryTypeIndex(_context, memRequirements.memoryTypeBits, properties);
+    allocInfo.memoryTypeIndex = Utility::FindMemoryTypeIndex(memRequirements.memoryTypeBits, properties);
 
     if (vkAllocateMemory(_context->GetLogicalDevice(), &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
     {
@@ -49,7 +49,7 @@ void Buffer::CreateBuffer(std::shared_ptr<Context> _context, VkDeviceSize size, 
 void Buffer::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
 {
     // Create a commandBuffer
-    auto cmdBuffer = CommandBuffer(_context);
+    auto cmdBuffer = CommandBuffer();
     auto cmdBufferHandle = cmdBuffer.GetCommandBuffer();
 
     // Start recording

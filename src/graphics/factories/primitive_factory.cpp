@@ -2,12 +2,13 @@
 
 using namespace Symbios::Graphics::Factories;
 
-PrimitiveFactory::PrimitiveFactory(std::shared_ptr<Context> context)
+PrimitiveFactory::PrimitiveFactory()
 {
-	_context = context;
+    // Store vulkan ctx
+    _context = Global::GetInstance()->GetVulkanContext();
 }
 
 Quad * PrimitiveFactory::NewQuad()
 {
-	return new Quad(_context);
+	return new Quad();
 }

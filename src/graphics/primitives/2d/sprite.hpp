@@ -23,15 +23,9 @@ namespace Symbios
                 /**
                  * @brief Construct a new Quad object
                  *
-                 */
-                Sprite() = default;
-
-                /**
-                 * @brief Construct a new Quad object
-                 *
                  * @param context
                  */
-                Sprite(std::shared_ptr<Context> context);
+                Sprite();
 
                 /**
                  * @brief Destroy the Quad object

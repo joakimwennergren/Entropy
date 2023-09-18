@@ -11,8 +11,10 @@
 #pragma once
 
 #include "context.hpp"
+#include "global.hpp"
 
 using namespace Symbios::Core;
+using namespace Symbios::Graphics::Contexts;
 
 namespace Symbios
 {
@@ -32,15 +34,7 @@ namespace Symbios
                  *
                  * @param context
                  */
-
-                CommandBuffer() = default;
-
-                /**
-                 * @brief Construct a new Command Buffer object
-                 *
-                 * @param context
-                 */
-                CommandBuffer(std::shared_ptr<Context> context);
+                CommandBuffer();
 
                 /**
                  * @brief Destroy the Command Buffer object

@@ -62,9 +62,11 @@ public:
 
         glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
         glfwSetCursorPosCallback(_window, cursorPositionCallback);
+
+
+        Global::GetInstance()->InitializeContext(_window);
     
-        _context = std::make_shared<Context>(_window);
-        _renderer = std::make_shared<Renderer>(_context);
+        _renderer = std::make_shared<Renderer>();
         _sceneGraph = std::make_shared<SceneGraph>();
 
     }
@@ -194,7 +196,7 @@ public:
         
         this->_sceneGraph = std::make_shared<SceneGraph>();
 
-        this->_context = std::make_shared<Context>();
+        this->_context = Global::GetInstance()->GetVulkanContext();
     }
 
     /**
@@ -249,9 +251,9 @@ public:
 
         CA::MetalLayer *layer = _pMtkView->currentDrawable()->layer();
 
-        _context->setLayerAndFrame(layer, frame);
+        Global::GetInstance()->GetVulkanContext()->setLayerAndFrame(layer, frame);
 
-        auto renderer = std::make_shared<Renderer>(_context);
+        auto renderer = std::make_shared<Renderer>();
 
         _pViewDelegate->SetRenderer(renderer);
         _pViewDelegate->graph = _sceneGraph;

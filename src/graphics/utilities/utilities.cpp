@@ -2,8 +2,13 @@
 
 using namespace Symbios::Graphics::Utilities;
 
-uint32_t Utility::FindMemoryTypeIndex(std::shared_ptr<Context> _context, uint32_t typeFilter, VkMemoryPropertyFlags properties)
+uint32_t Utility::FindMemoryTypeIndex(uint32_t typeFilter, VkMemoryPropertyFlags properties)
 {
+
+    // Store vulkan ctx
+    auto _context = Global::GetInstance()->GetVulkanContext();
+
+
     // Get the physical device's memory properties
     VkPhysicalDeviceMemoryProperties memProperties;
     vkGetPhysicalDeviceMemoryProperties(_context->GetPhysicalDevice(), &memProperties);

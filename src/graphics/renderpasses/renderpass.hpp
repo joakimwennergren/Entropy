@@ -3,9 +3,11 @@
 #include <vulkan/vulkan.hpp>
 #include "context.hpp"
 #include "commandbuffer.hpp"
+#include "global.hpp"
 
 using namespace Symbios::Core;
 using namespace Symbios::Graphics::CommandBuffers;
+using namespace Symbios::Graphics::Contexts;
 
 namespace Symbios
 {
@@ -19,15 +21,9 @@ namespace Symbios
                 /**
                  * @brief Construct a new Render Pass object
                  *
-                 */
-                RenderPass() = default;
-
-                /**
-                 * @brief Construct a new Render Pass object
-                 *
                  * @param context
                  */
-                RenderPass(std::shared_ptr<Context> context);
+                RenderPass();
 
                 /**
                  * @brief Destroy the Render Pass object

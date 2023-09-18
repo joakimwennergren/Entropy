@@ -2,9 +2,10 @@
 
 using namespace Symbios::Graphics::Shaders;
 
-Shader::Shader(std::shared_ptr<Context> context, const std::string vert, const std::string frag)
+Shader::Shader(const std::string vert, const std::string frag)
 {
-    this->_context = context;
+    // Store vulkan ctx
+    _context = Global::GetInstance()->GetVulkanContext();
 
     this->_vertCode = this->ReadFile(vert);
     this->_fragCode = this->ReadFile(frag);

@@ -2,10 +2,10 @@
 
 using namespace Symbios::Graphics::Pipelines;
 
-Pipeline::Pipeline(std::shared_ptr<Context> context, std::shared_ptr<RenderPass> renderPass)
+Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass)
 {
-    // Store the context
-    _context = context;
+    // Store vulkan ctx
+    _context = Global::GetInstance()->GetVulkanContext();
 
     _renderPass = renderPass;
 }
@@ -14,9 +14,9 @@ void Pipeline::Build()
 {
     // Create Shader and store it
 #ifdef BUILD_FOR_IOS
-    _shader = std::make_unique<Shader>(_context, Filesystem::GetProjectBasePath() + "/vert.spv", Filesystem::GetProjectBasePath() + "/frag.spv");
+    _shader = std::make_unique<Shader>(Filesystem::GetProjectBasePath() + "/vert.spv", Filesystem::GetProjectBasePath() + "/frag.spv");
 #else
-    _shader = std::make_unique<Shader>(_context, "/Users/joakim/Desktop/Symbios/shaders/basic/vert.spv", "/Users/joakim/Desktop/Symbios/shaders/basic/frag.spv");
+    _shader = std::make_unique<Shader>("/Users/joakim/Desktop/Symbios/shaders/basic/vert.spv", "/Users/joakim/Desktop/Symbios/shaders/basic/frag.spv");
 #endif
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};

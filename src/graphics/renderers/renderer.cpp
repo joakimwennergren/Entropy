@@ -2,25 +2,23 @@
 
 using namespace Symbios::Graphics::Renderers;
 
-Renderer::Renderer(std::shared_ptr<Context> context)
+Renderer::Renderer()
 {
-
-
-    // Store ctx
-    _context = context;
+    // Store vulkan ctx
+    _context = Global::GetInstance()->GetVulkanContext();
 
     // Create renderpass
-    _renderPass = std::make_shared<RenderPass>(_context);
+    _renderPass = std::make_shared<RenderPass>();
 
     // Create pipeline(s)
-    _pipeline = std::make_unique<Pipeline>(_context, _renderPass);
+    _pipeline = std::make_unique<Pipeline>(_renderPass);
 
     // @todo this isnt necessary..
     _pipeline->Build();
 
     for (uint32_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
-        _commandBuffers.push_back(std::make_shared<CommandBuffer>(_context));
+        _commandBuffers.push_back(std::make_shared<CommandBuffer>());
     }
 
     _imageAvailableSemaphores.resize(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
@@ -50,10 +48,10 @@ Renderer::Renderer(std::shared_ptr<Context> context)
     // Create buffers @todo temp!!!
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
-        _uniformBuffers.push_back(new UniformBuffer(_context, sizeof(UniformBufferObject)));
+        _uniformBuffers.push_back(new UniformBuffer(sizeof(UniformBufferObject)));
     }
 
-    ivy7 = new Quad(_context);
+    ivy7 = new Quad();
     ivy7->position = glm::vec3(500.0, -500.0, 0.0);
     ivy7->scale = glm::vec3(100.0, 100.0, 0.0);
     ivy7->textureId = 2;
@@ -151,7 +149,7 @@ Renderer::Renderer(std::shared_ptr<Context> context)
 
             if (glyphSlot->bitmap.width != 0)
             {
-                auto g = new Quad(_context);
+                auto g = new Quad();
                 g->position = glm::vec3(200.0, -500.0, 0.0);
                 g->textureId = 2;
                 g->texture->CreateTextureImageFromBuffer(face->glyph->bitmap);
@@ -187,7 +185,7 @@ Renderer::Renderer(std::shared_ptr<Context> context)
         float w = ch.Size.x;
         float h = ch.Size.y;
 
-        auto g = new Quad(_context);
+        auto g = new Quad();
         g->position = glm::vec3(xpos, ypos, 0.0);
         g->textureId = 2;
         g->scale = glm::vec3(w, h, 0.0);

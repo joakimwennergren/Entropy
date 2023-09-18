@@ -27,15 +27,9 @@ namespace Symbios
                 /**
                  * @brief Construct a new Texture object
                  *
-                 */
-                Texture() = default;
-
-                /**
-                 * @brief Construct a new Texture object
-                 *
                  * @param context
                  */
-                Texture(std::shared_ptr<Context> context);
+                Texture();
 
                 /**
                  * @brief Destroy the Texture object

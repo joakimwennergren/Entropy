@@ -2,12 +2,13 @@
 
 using namespace Symbios::Graphics::RenderPasses;
 
-RenderPass::RenderPass(std::shared_ptr<Context> context)
+RenderPass::RenderPass()
 {
-    this->_context = context;
+    // Store vulkan ctx
+    _context = Global::GetInstance()->GetVulkanContext();
 
     VkAttachmentDescription colorAttachment{};
-    colorAttachment.format = context->GetSwapChainImageFormat();
+    colorAttachment.format = _context->GetSwapChainImageFormat();
     colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 
     colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
@@ -46,7 +47,7 @@ RenderPass::RenderPass(std::shared_ptr<Context> context)
     renderPassInfo.dependencyCount = 1;
     renderPassInfo.pDependencies = &dependency;
 
-    if (vkCreateRenderPass(context->GetLogicalDevice(), &renderPassInfo, nullptr, &this->_renderPass) != VK_SUCCESS)
+    if (vkCreateRenderPass(_context->GetLogicalDevice(), &renderPassInfo, nullptr, &this->_renderPass) != VK_SUCCESS)
     {
         PLOG_ERROR << "failed to create render pass!";
         exit(EXIT_FAILURE);

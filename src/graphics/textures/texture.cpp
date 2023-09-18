@@ -6,10 +6,11 @@
 
 using namespace Symbios::Graphics::Textures;
 
-Texture::Texture(std::shared_ptr<Context> context)
+Texture::Texture()
 {
-    _context = context;
-    _commandBuffer = std::make_unique<CommandBuffer>(_context);
+    // Store vulkan ctx
+    _context = Global::GetInstance()->GetVulkanContext();
+    _commandBuffer = std::make_unique<CommandBuffer>();
 }
 
 Texture::~Texture()
@@ -25,7 +26,7 @@ void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap)
 
     VkDeviceSize imageSize = texWidth * texHeight;
 
-    StagedBuffer buffer(_context, imageSize, bitmap.buffer);
+    StagedBuffer buffer(imageSize, bitmap.buffer);
 
     auto mem = buffer.GetBufferMemory();
     auto buf = buffer.GetVulkanBuffer();
@@ -59,7 +60,7 @@ void Texture::CreateTextureImage(std::string path)
         exit(EXIT_FAILURE);
     }
 
-    StagedBuffer buffer(_context, imageSize, pixels);
+    StagedBuffer buffer(imageSize, pixels);
 
     stbi_image_free(pixels);
 

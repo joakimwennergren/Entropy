@@ -12,8 +12,10 @@
 #pragma once
 
 #include "context.hpp"
+#include "global.hpp"
 
 using namespace Symbios::Core;
+using namespace Symbios::Graphics::Contexts;
 
 namespace Symbios
 {
@@ -36,7 +38,7 @@ namespace Symbios
                  * @param properties Properties to match against
                  * @return uint32_t Index of matched property
                  */
-                static uint32_t FindMemoryTypeIndex(std::shared_ptr<Context> _context, uint32_t typeFilter, VkMemoryPropertyFlags properties);
+                static uint32_t FindMemoryTypeIndex(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
                 /**
                  * @brief Wrapper functions for aligned memory allocation

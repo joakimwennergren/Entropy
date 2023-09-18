@@ -62,7 +62,6 @@ namespace Symbios
         class Context
         {
         public:
-
             /**
              * @brief
              *

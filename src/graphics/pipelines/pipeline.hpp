@@ -18,11 +18,13 @@
 #include "vertex.hpp"
 #include "instance.hpp"
 #include "instance_pushcontants.hpp"
+#include "global.hpp"
 
 using namespace Symbios::Core;
 using namespace Symbios::Filesystem;
 using namespace Symbios::Graphics::Shaders;
 using namespace Symbios::Graphics::RenderPasses;
+using namespace Symbios::Graphics::Contexts;
 
 namespace Symbios
 {
@@ -49,7 +51,7 @@ namespace Symbios
                  * @param context
                  * @param renderPass
                  */
-                Pipeline(std::shared_ptr<Context> context, std::shared_ptr<RenderPass> renderPass);
+                Pipeline(std::shared_ptr<RenderPass> renderPass);
 
                 /**
                  * @brief

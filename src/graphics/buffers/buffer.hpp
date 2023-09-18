@@ -16,10 +16,12 @@
 #include "vertex.hpp"
 #include "utilities.hpp"
 #include "commandbuffer.hpp"
+#include "global.hpp"
 
 using namespace Symbios::Core;
 using namespace Symbios::Graphics::Utilities;
 using namespace Symbios::Graphics::CommandBuffers;
+using namespace Symbios::Graphics::Contexts;
 
 namespace Symbios
 {
@@ -38,15 +40,9 @@ namespace Symbios
                 /**
                  * @brief Construct a new Buffer object
                  *
-                 */
-                Buffer() = default;
-
-                /**
-                 * @brief Construct a new Buffer object
-                 *
                  * @param context Vulkan context
                  */
-                Buffer(std::shared_ptr<Context> context);
+                Buffer();
 
                 /**
                  * @brief Destroy the Buffer object

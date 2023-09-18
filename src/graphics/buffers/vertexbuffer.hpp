@@ -35,15 +35,9 @@ namespace Symbios
                 /**
                  * @brief Construct a new Buffer object
                  *
-                 */
-                VertexBuffer() = default;
-
-                /**
-                 * @brief Construct a new Buffer object
-                 *
                  * @param context Vulkan context
                  */
-                VertexBuffer(std::shared_ptr<Context> context, std::vector<Vertex> vertices);
+                VertexBuffer(std::vector<Vertex> vertices);
 
                 /**
                  * @brief Destroy the Buffer object

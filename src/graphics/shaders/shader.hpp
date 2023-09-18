@@ -14,8 +14,10 @@
 #include <fstream>
 
 #include "context.hpp"
+#include "global.hpp"
 
 using namespace Symbios::Core;
+using namespace Symbios::Graphics::Contexts;
 
 namespace Symbios
 {
@@ -38,7 +40,7 @@ namespace Symbios
                  * @param frag
                  * @param context
                  */
-                Shader(std::shared_ptr<Context> context, const std::string vert, const std::string frag);
+                Shader(const std::string vert, const std::string frag);
 
                 /**
                  * @brief Destroy the Shader object

@@ -81,15 +81,9 @@ namespace Symbios
                 /**
                  * @brief Construct a new Renderer object
                  *
-                 */
-                Renderer() = default;
-
-                /**
-                 * @brief Construct a new Renderer object
-                 *
                  * @param context
                  */
-                Renderer(std::shared_ptr<Context> context);
+                Renderer();
 
                 /**
                  * @brief

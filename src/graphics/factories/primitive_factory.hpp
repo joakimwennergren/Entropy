@@ -26,15 +26,7 @@ namespace Symbios
                  *
                  * @param context
                  */
-
-                PrimitiveFactory() = default;
-
-                /**
-                 * @brief Construct a new Command Buffer object
-                 *
-                 * @param context
-                 */
-                PrimitiveFactory(std::shared_ptr<Context> context);
+                PrimitiveFactory();
 
                 Quad * NewQuad();
 

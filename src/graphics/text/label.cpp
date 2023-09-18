@@ -2,13 +2,17 @@
 
 using namespace Symbios::Text;
 
-Label::Label(std::shared_ptr<Context> context, std::string text)
+Label::Label(std::string text)
 {
+
+    // Store vulkan ctx
+    auto context = Global::GetInstance()->GetVulkanContext();
+
 	// All of this is temp code @todo
 
     FT_Init_FreeType(&ft);
 
-    FT_New_Face(ft, "/Users/joakim/Desktop/Symbios/resources/fonts/lato/Lato-Regular.ttf", 0, &face);
+    FT_New_Face(ft, (Filesystem::GetProjectBasePath() + "/Lato-Regular.ttf").c_str(), 0, &face);
 
     FT_Set_Pixel_Sizes(face, 0, 32);
 
@@ -18,8 +22,6 @@ Label::Label(std::shared_ptr<Context> context, std::string text)
 
         if (glyph_index != 0)
         {
-
-
             auto error = FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
 
             if (error)
@@ -38,7 +40,7 @@ Label::Label(std::shared_ptr<Context> context, std::string text)
 
             if (glyphSlot->bitmap.width != 0)
             {
-                auto g = new Sprite(context);
+                auto g = new Sprite();
                 g->position = glm::vec3(200.0, 0.0, 0.0);
                 g->textureId = 2;
                 g->texture->CreateTextureImageFromBuffer(face->glyph->bitmap);
@@ -69,7 +71,7 @@ Label::Label(std::shared_ptr<Context> context, std::string text)
         float w = ch.Size.x;
         float h = ch.Size.y;
 
-        auto g = new Sprite(context);
+        auto g = new Sprite();
         g->position = glm::vec3(xpos, ypos, 0.0);
         g->textureId = 2;
         g->scale = glm::vec3(w, h, 0.0);

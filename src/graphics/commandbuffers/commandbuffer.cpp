@@ -2,10 +2,10 @@
 
 using namespace Symbios::Graphics::CommandBuffers;
 
-CommandBuffer::CommandBuffer(std::shared_ptr<Context> context)
+CommandBuffer::CommandBuffer()
 {
-    // Store context
-    _context = context;
+    // Store vulkan ctx
+    _context = Global::GetInstance()->GetVulkanContext();
 
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;

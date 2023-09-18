@@ -22,9 +22,11 @@
 
 #include "renderable.hpp"
 #include "sprite.hpp"
+#include "filesystem.hpp"
 
 using namespace Symbios::Renderables;
 using namespace Symbios::Graphics::Primitives;
+using namespace Symbios;
 
 namespace Symbios
 {
@@ -42,7 +44,7 @@ namespace Symbios
         class Label : public Renderable
         {
         public:
-            Label(std::shared_ptr<Context> context, std::string text);
+            Label(std::string text);
             ~Label();   
             std::vector<Sprite *> sprites;
 

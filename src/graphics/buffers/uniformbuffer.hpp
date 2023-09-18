@@ -43,7 +43,7 @@ namespace Symbios
                  *
                  * @param context Vulkan context
                  */
-                UniformBuffer(std::shared_ptr<Context> context, VkDeviceSize bufferSize);
+                UniformBuffer(VkDeviceSize bufferSize);
 
                 /**
                  * @brief Destroy the Buffer object

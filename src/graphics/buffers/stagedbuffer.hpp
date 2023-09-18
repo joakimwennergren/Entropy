@@ -43,7 +43,7 @@ namespace Symbios
                  *
                  * @param context Vulkan context
                  */
-                StagedBuffer(std::shared_ptr<Context> context, VkDeviceSize size, uint8_t *data);
+                StagedBuffer(VkDeviceSize size, uint8_t *data);
 
                 /**
                  * @brief Destroy the Buffer object

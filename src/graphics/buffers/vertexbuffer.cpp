@@ -2,10 +2,10 @@
 
 using namespace Symbios::Graphics::Buffers;
 
-VertexBuffer::VertexBuffer(std::shared_ptr<Context> context, std::vector<Vertex> vertices)
+VertexBuffer::VertexBuffer(std::vector<Vertex> vertices)
 {
     // Store vulkan ctx
-    _context = context;
+    _context = Global::GetInstance()->GetVulkanContext();
 
     VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 
