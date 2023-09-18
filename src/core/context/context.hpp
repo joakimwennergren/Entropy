@@ -95,9 +95,7 @@ namespace Symbios
              * @param layer
              * @param frame
              */
-            Context();
-
-            void setLayerAndFrame(CA::MetalLayer *layer, CGRect frame);
+            Context(CA::MetalLayer *layer, CGRect frame);
 
             /**
              * @brief Create a surface

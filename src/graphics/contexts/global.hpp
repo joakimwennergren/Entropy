@@ -87,9 +87,9 @@ namespace Symbios
                     vulkanContext = std::make_shared<Context>(window);
                 }
 #else 
-                void InitializeContext()
+                void InitializeContext(CA::MetalLayer *layer, CGRect frame)
                 {
-                    vulkanContext = std::make_shared<Context>();
+                    vulkanContext = std::make_shared<Context>(layer, frame);
                 }             
 #endif
 

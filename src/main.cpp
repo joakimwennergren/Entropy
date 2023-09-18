@@ -32,29 +32,7 @@ class Game : public Application
 public:
     Game() : Application() 
     {
-        auto primitivesFactory = PrimitiveFactory();
-
-        auto quad = std::make_shared<Sprite>();
-        quad->type = 1;
-        quad->position = glm::vec3(500.0, -500.0, 0.0);
-        quad->textureId = 1;
-        quad->color = glm::vec4(1.0, 1.0, 1.0, 1.0);
-        quad->scale = glm::vec3(300.0, 300.0, 0.0);
-        quad->texture->CreateTextureImage(Filesystem::GetProjectBasePath() + "/svamp.png");
-        quad->UpdateImage();
-
-        auto label = std::make_shared<Label>("Symbios");
-
-        int id = 1;
-
-        for(auto ch : label->sprites)
-        {
-            _sceneGraph->renderables.insert(std::make_pair(id++, ch));
-        }
-        //_sceneGraph->renderables.insert(std::make_pair(1, label));
-
-        _sceneGraph->renderables.insert(std::make_pair(0, quad));
-
+        //auto primitivesFactory = PrimitiveFactory();
     }
 };
 

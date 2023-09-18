@@ -81,42 +81,6 @@ Renderer::Renderer()
         rawUniformBuffers.push_back(rawBuffer);
     }
 
-    // every item in descriptorImageInfos needs an imageview...
-
-    /*
-    hb_buffer_t *buf;
-    buf = hb_buffer_create();
-    hb_buffer_add_utf8(buf, "Test", -1, 0, -1);
-
-    // If you know the direction, script, and language
-    hb_buffer_set_direction(buf, HB_DIRECTION_LTR);
-    hb_buffer_set_script(buf, HB_SCRIPT_LATIN);
-    hb_buffer_set_language(buf, hb_language_from_string("en", -1));
-
-    hb_blob_t *blob = hb_blob_create_from_file("/Users/joakim/Desktop/Symbios/resources/fonts/quick-kiss-font/QuickKissPersonalUse-PxlZ.ttf");
-    hb_face_t *face = hb_face_create(blob, 0);
-    hb_font_t *font = hb_font_create(face);
-
-    hb_shape(font, buf, NULL, 0);
-
-    glyph_info = hb_buffer_get_glyph_infos(buf, &glyph_count);
-    glyph_pos = hb_buffer_get_glyph_positions(buf, &glyph_count);
-
-    hb_position_t cursor_x = 0;
-    hb_position_t cursor_y = 0;
-    for (unsigned int i = 0; i < glyph_count; i++)
-    {
-        hb_codepoint_t glyphid = glyph_info[i].codepoint;
-        hb_position_t x_offset = glyph_pos[i].x_offset;
-        hb_position_t y_offset = glyph_pos[i].y_offset;
-        hb_position_t x_advance = glyph_pos[i].x_advance;
-        hb_position_t y_advance = glyph_pos[i].y_advance;
-        draw_glyph(glyphid, cursor_x + x_offset, cursor_y + y_offset);
-        cursor_x += x_advance;
-        cursor_y += y_advance;
-    }
-    */
-
     FT_Library ft;
     FT_Face face;
 

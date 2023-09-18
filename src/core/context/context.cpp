@@ -9,19 +9,15 @@ using namespace Symbios::Core;
  * @param layer
  * @param frame
  */
-Context::Context()
-{
-    this->CreateInstance();
-}
-
-void Context::setLayerAndFrame(CA::MetalLayer *layer, CGRect frame)
+Context::Context(CA::MetalLayer *layer, CGRect frame)
 {
     this->_layer = layer;
     this->_frame = frame;
+    this->CreateInstance();
+    this->CreateSurfaceiOS(layer);
     this->PickPhysicalDevice();
     this->CreateLogicalDevice();
     this->CreateSwapChain(frame);
-    this->CreateSurfaceiOS(layer);
     this->CreateImageViews();
     this->CreateCommandPool();
     this->CreateDescriptorPool();
@@ -713,7 +709,7 @@ void Context::CreateSwapChain(GLFWwindow *window)
     _swapChainImages.resize(imageCount);
     vkGetSwapchainImagesKHR(_device, _swapChain, &imageCount, _swapChainImages.data());
 
-    _swapChainImageFormat = surfaceFormat.format;
+      = surfaceFormat.format;
     _swapChainExtent = extent;
 }
 #endif

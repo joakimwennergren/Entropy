@@ -16,6 +16,7 @@
 
 #include <GLFW/glfw3.h>
 
+using namespace Symbios;
 using namespace Symbios::Core;
 using namespace Symbios::Graphics::Renderers;
 using namespace Symbios::SceneGraphs;
@@ -134,6 +135,14 @@ static void cursorPositionCallback(GLFWwindow *window, double x, double y)
 #include <UIKit/UIKit.hpp>
 #include <MetalKit/MetalKit.hpp>
 
+#include "filesystem.hpp"
+#include "quad.hpp"
+#include "sprite.hpp"
+#include "label.hpp"
+
+using namespace Symbios;
+using namespace Symbios::Text;
+
 extern "C" UI::ViewController *get_native_bounds(UI::View *view, UI::Screen *screen);
 
 #include "renderer.hpp"
@@ -151,6 +160,7 @@ public:
      */
     MTKViewDelegate() : MTK::ViewDelegate()
     {
+
     }
 
     inline void SetRenderer(std::shared_ptr<Renderer> renderer)
@@ -195,8 +205,8 @@ public:
         this->_autoreleasePool = NS::AutoreleasePool::alloc()->init();
         
         this->_sceneGraph = std::make_shared<SceneGraph>();
-
-        this->_context = Global::GetInstance()->GetVulkanContext();
+        
+        UI::ApplicationMain(0, 0, this);
     }
 
     /**
@@ -251,12 +261,35 @@ public:
 
         CA::MetalLayer *layer = _pMtkView->currentDrawable()->layer();
 
-        Global::GetInstance()->GetVulkanContext()->setLayerAndFrame(layer, frame);
-
+        Global::GetInstance()->InitializeContext(layer, frame);
+        
         auto renderer = std::make_shared<Renderer>();
-
+        
         _pViewDelegate->SetRenderer(renderer);
         _pViewDelegate->graph = _sceneGraph;
+        
+        auto quad = std::make_shared<Sprite>();
+        quad->type = 1;
+        quad->position = glm::vec3(500.0, -500.0, 0.0);
+        quad->textureId = 1;
+        quad->color = glm::vec4(1.0, 1.0, 1.0, 1.0);
+        quad->scale = glm::vec3(300.0, 300.0, 0.0);
+        quad->texture->CreateTextureImage(Filesystem::GetProjectBasePath() + "/svamp.png");
+        quad->UpdateImage();
+
+        auto label = std::make_shared<Label>("Symbios");
+
+        int id = 1;
+
+        for(auto ch : label->sprites)
+        {
+            _sceneGraph->renderables.insert(std::make_pair(id++, ch));
+        }
+        //_sceneGraph->renderables.insert(std::make_pair(1, label));
+
+        _sceneGraph->renderables.insert(std::make_pair(0, quad));
+
+        this->_context = Global::GetInstance()->GetVulkanContext();
 
         return true;
     }
@@ -277,7 +310,7 @@ public:
      */
     inline void Run()
     {
-       UI::ApplicationMain(0, 0, this);
+
     }
 
     std::shared_ptr<Context> _context;
