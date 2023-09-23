@@ -172,7 +172,7 @@ void Renderer::Render(std::shared_ptr<SceneGraph> graph)
 
     uint32_t modelCnt = 0;
 
-    for (const auto& [key, sprite] : graph->renderables)
+    for (auto sprite : graph->renderables)
     {
         auto currentDescriptorSet = _context->GetDescriptorSets()[_currentFrame];
         vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 0, nullptr);

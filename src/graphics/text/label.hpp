@@ -34,7 +34,7 @@ namespace Symbios
     {
         struct Character
         {
-            Sprite *glyph;
+            std::shared_ptr<Sprite> glyph;
             glm::ivec2 Size;
             glm::ivec2 Bearing; 
             FT_Pos Advance;     
@@ -46,7 +46,7 @@ namespace Symbios
         public:
             Label(std::string text);
             ~Label();   
-            std::vector<Sprite *> sprites;
+            std::vector<std::shared_ptr<Sprite>> sprites;
 
         private:
             FT_Library ft;

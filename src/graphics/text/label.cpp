@@ -12,7 +12,7 @@ Label::Label(std::string text)
 
     FT_Init_FreeType(&ft);
 
-    FT_New_Face(ft, (Filesystem::GetProjectBasePath() + "/Lato-Bold.ttf").c_str(), 0, &face);
+    FT_New_Face(ft, (Filesystem::GetProjectBasePath() + "/Lato-Regular.ttf").c_str(), 0, &face);
 
     FT_Set_Pixel_Sizes(face, 0, 64);
 
@@ -40,7 +40,7 @@ Label::Label(std::string text)
 
             if (glyphSlot->bitmap.width != 0)
             {
-                auto g = new Sprite();
+                auto g = std::make_shared<Sprite>();
                 g->position = glm::vec3(200.0, 500.0, 0.0);
                 g->textureId = 2;
                 g->texture->CreateTextureImageFromBuffer(face->glyph->bitmap);
@@ -71,7 +71,7 @@ Label::Label(std::string text)
         float w = ch.Size.x;
         float h = ch.Size.y;
 
-        auto g = new Sprite();
+        auto g = std::make_shared<Sprite>();
         g->position = glm::vec3(xpos, ypos, 0.0);
         g->textureId = 2;
         g->scale = glm::vec3(w, h, 0.0);

@@ -12,7 +12,7 @@
 #pragma once
 
 #include <string>
-#include <unordered_map>
+#include <vector>
 #include "renderable.hpp"
 
 
@@ -23,7 +23,7 @@ namespace Symbios
         class SceneGraph
         {
         public:
-            std::unordered_map<int, std::shared_ptr<Renderable>> renderables;
+            std::vector<std::shared_ptr<Renderable>> renderables;
         };
     }
 }
