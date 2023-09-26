@@ -130,6 +130,8 @@ static void cursorPositionCallback(GLFWwindow *window, double x, double y)
 
 #ifdef BUILD_FOR_IOS
 
+#include <chrono>
+
 #include <Metal/Metal.hpp>
 #include <UIKit/UIKit.hpp>
 #include <MetalKit/MetalKit.hpp>
@@ -143,6 +145,8 @@ static void cursorPositionCallback(GLFWwindow *window, double x, double y)
 using namespace Symbios;
 using namespace Symbios::Text;
 using namespace Symbios::Animation;
+
+using namespace std::chrono;
 
 extern "C" UI::ViewController *get_native_bounds(UI::View *view, UI::Screen *screen);
 extern "C" CGPoint touch();
@@ -227,6 +231,13 @@ public:
             }
         }
         
+        
+        double GetTimeAsDouble() {
+            using namespace std::chrono;
+            using SecondsFP = std::chrono::duration<double>;
+            return duration_cast<SecondsFP>(high_resolution_clock::now().time_since_epoch()).count();
+        }
+        
         /**
          * @brief
          *
@@ -234,46 +245,14 @@ public:
          */
         inline virtual void drawInMTKView(MTK::View *pView) override
         {
+            auto tick_time = (float)GetTimeAsDouble();
             
-            app->OnRender();
+            deltaTime = tick_time - lastTick;
             
-            if(state == 1)
-            {
-                if(!hasSpawnedMushrooms)
-                {
-                    SpawnMushrooms();
-                    hasSpawnedMushrooms = true;
-                }
-            }
+            lastTick = tick_time;
             
-            
-            int cnt = 0;
-            for(auto renderable : graph->renderables) {
-                
-                CGPoint tp = touch();
-                
-                renderable->hasBeenTouched(tp.x * 3.0f,  tp.y);
-                
-                
-                if(renderable->id == 777)
-                {
-                    if(renderable->hasBeenTouched(tp.x * 3.0f,  tp.y * 1.5f))
-                    {
-                        renderable->color = glm::vec4(1.0, 1.0, 1.0, 0.0);
-                        state = 1;
-                    }
-                    if(test <= 1.0)
-                    {
-                        test += 0.05;
-                        renderable->color = glm::vec4(1.0, 1.0, 1.0, test);
-                    }
-                    
-                }
-                
-                cnt++;
-            }
-            
-            
+            app->OnRender(deltaTime);
+                        
             _renderer->Render(graph);
         }
         
@@ -282,6 +261,9 @@ public:
         float test = 0.0;
         
         int state = 0;
+        
+        float lastTick = 0.0;
+        float deltaTime = 0.0;
         
         // MushroomHunter GameState
         bool hasSpawnedMushrooms = false;
@@ -333,7 +315,7 @@ public:
      */
     inline bool applicationDidFinishLaunching(UI::Application *pApp, NS::Value *options) override
     {
-        CGRect frame = UI::Screen::mainScreen()->bounds();
+        frame = UI::Screen::mainScreen()->bounds();
         
         //_pViewController = UI::ViewController::alloc()->init(nil, nil);
         
@@ -370,13 +352,15 @@ public:
         _pViewDelegate->graph = _sceneGraph;
         
         this->_context = Global::GetInstance()->GetVulkanContext();
-        
-        this->Setup(frame);
+
+        OnInit();
         
         return true;
     }
+
+    virtual void OnInit() = 0;
     
-    virtual void OnRender() = 0;
+    virtual void OnRender(float deltaTime) = 0;
 
     /**
      * @brief
@@ -388,78 +372,6 @@ public:
     }
 
 public:
-
-    void Setup(CGRect frame)
-    {
-        
-        // Foreground - Layer 1
-        auto layer_1 = std::make_shared<Sprite>();
-        layer_1->zIndex = 10;
-        layer_1->New(
-            Filesystem::GetProjectBasePath() + "/layer_1.png", 
-            glm::vec3(frame.size.width * 1.5f, frame.size.height * 2.0f * -1.0f, 0.0),
-            glm::vec3(frame.size.width * 1.5f, frame.size.height * 2.0f, 0.0),
-            glm::vec4(1.0, 1.0, 1.0, 1.0)
-        );
-        _sceneGraph->renderables.push_back(layer_1);
-        
-        
-        // Foreground - Layer 2
-        auto layer_2 = std::make_shared<Sprite>();
-        layer_2->zIndex = 8;
-        layer_2->New(
-            Filesystem::GetProjectBasePath() + "/layer_2.png", 
-            glm::vec3(frame.size.width * 1.5f, frame.size.height * 2.0f * -1.0f, 0.0),
-            glm::vec3(frame.size.width * 1.5f, frame.size.height * 2.0f, 0.0),
-            glm::vec4(1.0, 1.0, 1.0, 1.0)
-        );
-        _sceneGraph->renderables.push_back(layer_2);
-
-        
-        // Foreground - Layer 3
-        auto layer_3 = std::make_shared<Sprite>();
-        layer_3->zIndex = 6;
-        layer_3->New(
-            Filesystem::GetProjectBasePath() + "/layer_3.png", 
-            glm::vec3(frame.size.width * 1.5f, frame.size.height * 2.0f * -1.0f, 0.0),
-            glm::vec3(frame.size.width * 1.5f, frame.size.height * 2.0f, 0.0),
-            glm::vec4(1.0, 1.0, 1.0, 1.0)
-        );
-        _sceneGraph->renderables.push_back(layer_3);
-        
-        // Foreground - Layer 3
-        auto banderoll = std::make_shared<Sprite>();
-        banderoll->zIndex = 20;
-        banderoll->id = 777;
-        banderoll->New(
-            Filesystem::GetProjectBasePath() + "/banderoll.png",
-            glm::vec3(frame.size.width * 1.5f, frame.size.height * 1.75f * -1.0f, 0.0),
-            glm::vec3(frame.size.width * 1.0f, frame.size.height * 1.0f, 0.0),
-            glm::vec4(1.0, 1.0, 1.0, 1.0)
-        );
-        _sceneGraph->renderables.push_back(banderoll);
-
-        
-        // Background
-        auto background = std::make_shared<Sprite>();
-        background->zIndex = 4;
-        background->New(
-            Filesystem::GetProjectBasePath() + "/background.png", 
-            glm::vec3(frame.size.width * 1.5f, frame.size.height * 2.0f * -1.0f, 0.0),
-            glm::vec3(frame.size.width * 1.5f, frame.size.height * 2.0f, 0.0),
-            glm::vec4(1.0, 1.0, 1.0, 1.0)
-        );
-        _sceneGraph->renderables.push_back(background);
-
-        /*
-        // Title
-        auto label = std::make_shared<Label>("SVAMPJAKT");
-        for(auto ch : label->sprites)
-        {
-            _sceneGraph->renderables.push_back(ch);
-        }
-         */
-    }
     
     /**
      * @brief
@@ -471,6 +383,7 @@ public:
     }
 
     std::shared_ptr<Context> _context;
+    CGRect frame;
 protected:
 
         std::shared_ptr<SceneGraph> _sceneGraph;
