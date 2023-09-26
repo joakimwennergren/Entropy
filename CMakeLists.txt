@@ -24,6 +24,7 @@ add_subdirectory(external/glm)
 set(FT_WITH_BZIP2 OFF)
 add_subdirectory(external/freetype-2.10.0)
 
+
 add_executable(Symbios)
 
 target_sources(Symbios PRIVATE
@@ -46,7 +47,7 @@ target_sources(Symbios PRIVATE
     src/graphics/utilities/utilities.cpp
     src/graphics/primitives/2d/quad.cpp
     src/graphics/primitives/2d/sprite.cpp
-    src/graphics/contexts/global.cpp
+    src/global/global.cpp
 
     # Text
     src/graphics/text/label.cpp
@@ -86,7 +87,7 @@ target_include_directories(Symbios PRIVATE
     src/graphics/utilities
     src/graphics/primitives/2d
     src/graphics/primitives/3d
-    src/graphics/contexts
+    src/global
 
     # Audio
     src/audio/
@@ -107,6 +108,8 @@ target_include_directories(Symbios PRIVATE
     external/metal-cpp/
 
     external/freetype-2.10.0/include
+
+    external/ChaiScript/include
 )
 
 target_compile_features(Symbios PRIVATE cxx_std_17)
@@ -133,6 +136,9 @@ if(NOT XCODE)
 
         # Text shaping
         freetype
+
+        # Scripting
+        chaiscript
 
     )
 endif()

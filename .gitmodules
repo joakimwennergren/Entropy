@@ -25,3 +25,6 @@
 [submodule "freetype"]
 	path = external/freetype
 	url = https://github.com/freetype/freetype.git
+[submodule "ChaiScript"]
+	path = external/ChaiScript
+	url = https://github.com/ChaiScript/ChaiScript.git

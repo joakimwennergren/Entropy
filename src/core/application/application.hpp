@@ -151,146 +151,150 @@ extern "C" CGPoint touch();
 
 using namespace Symbios::Graphics::Renderers;
 
-class MTKViewDelegate : public MTK::ViewDelegate
-{
-public:
-    
-    std::shared_ptr<SceneGraph> graph;
-    /**
-     * @brief Construct a new MTKViewDelegate object
-     *
-     */
-    MTKViewDelegate() : MTK::ViewDelegate()
-    {
-    }
-
-    inline void SetRenderer(std::shared_ptr<Renderer> renderer)
-    {
-        _renderer = renderer;
-    }
-
-    /**
-     * @brief Destroy the MTKViewDelegate object
-     *
-     */
-    virtual ~MTKViewDelegate() override
-    {
-    }
-    
-    CGRect frame;
-
-private:
-
-    float RandomFloat(float a, float b) {
-        float random = ((float) rand()) / (float) RAND_MAX;
-        float diff = b - a;
-        float r = random * diff;
-        return a + r;
-    }
-
-    float SpawnMushrooms() 
-    {
-        for(int i = 0; i < 5; ++i)
-        {
-            auto svamp = std::make_shared<Sprite>();
-            float x = 100.0;
-            float y = 380.0;
-
-            if(i < 2)
-            {
-                x = RandomFloat(550.0, frame.size.width * 3.0 - 300.0);
-                y = RandomFloat(360.0, 400.0);
-                svamp->zIndex = 9;
-            }
-
-            if(i >=2 && i <= 4)
-            {
-                x = RandomFloat(550.0, frame.size.width * 3.0 - 300.0);
-                y = RandomFloat(600.0, 680.0);
-                svamp->zIndex = 7;   
-            }
-
-            svamp->id = i + 1;
-            svamp->rotationX = RandomFloat(-35.0, 35.0);
-            svamp->New(
-                Filesystem::GetProjectBasePath() + mushrooms[rand() % mushrooms.size()],
-                glm::vec3(x, y * -1.0f, 0.0),
-                glm::vec3(100.0, 100.0, 0.0),
-                glm::vec4(1.0, 1.0, 1.0, 1.0)
-            );
-            graph->renderables.push_back(svamp);    
-        }
-    }
-
-    /**
-     * @brief
-     *
-     * @param pView
-     */
-    inline virtual void drawInMTKView(MTK::View *pView) override
-    {   
-        if(state == 1)
-        {
-            if(!hasSpawnedMushrooms)
-            {
-                SpawnMushrooms();
-                hasSpawnedMushrooms = true;
-            }    
-        }
-
-
-        int cnt = 0;
-        for(auto renderable : graph->renderables) {
-
-            CGPoint tp = touch();
-
-            renderable->hasBeenTouched(tp.x * 3.0f,  tp.y);
-
-
-            if(renderable->id == 777)
-            {
-                if(renderable->hasBeenTouched(tp.x * 3.0f,  tp.y * 1.5f))
-                {
-                    renderable->color = glm::vec4(1.0, 1.0, 1.0, 0.0);
-                    state = 1;
-                }
-                if(test <= 1.0)
-                {
-                    test += 0.05;
-                    renderable->color = glm::vec4(1.0, 1.0, 1.0, test);      
-                }
-
-            }
-
-            cnt++;
-        }  
-
-
-        _renderer->Render(graph);
-    }
-
-    std::shared_ptr<Renderer> _renderer;
-
-    float test = 0.0;
-
-    int state = 0;
-
-    // MushroomHunter GameState
-    bool hasSpawnedMushrooms = false;
-
-    const std::vector<std::string> mushrooms = {
-        "/Eldsopp.png",
-        "/Bombmurkla.png",
-        "/gul_kantarell.png",
-        "/Stolt fjällskivling.png",
-        "/Vaxskivling.png",
-    };
-
-};
-
 class Application : public UI::ApplicationDelegate
 {
 public:
+    
+    class MTKViewDelegate : public MTK::ViewDelegate
+    {
+    public:
+        
+        std::shared_ptr<SceneGraph> graph;
+        /**
+         * @brief Construct a new MTKViewDelegate object
+         *
+         */
+        MTKViewDelegate(Application *app) : MTK::ViewDelegate()
+        {
+            this->app = app;
+        }
+        
+        inline void SetRenderer(std::shared_ptr<Renderer> renderer)
+        {
+            _renderer = renderer;
+        }
+        
+        /**
+         * @brief Destroy the MTKViewDelegate object
+         *
+         */
+        virtual ~MTKViewDelegate() override
+        {
+        }
+        Application *app;
+        CGRect frame;
+        
+    private:
+        
+        float RandomFloat(float a, float b) {
+            float random = ((float) rand()) / (float) RAND_MAX;
+            float diff = b - a;
+            float r = random * diff;
+            return a + r;
+        }
+        
+        float SpawnMushrooms()
+        {
+            for(int i = 0; i < 5; ++i)
+            {
+                auto svamp = std::make_shared<Sprite>();
+                float x = 100.0;
+                float y = 380.0;
+                
+                if(i < 2)
+                {
+                    x = RandomFloat(550.0, frame.size.width * 3.0 - 300.0);
+                    y = RandomFloat(360.0, 400.0);
+                    svamp->zIndex = 9;
+                }
+                
+                if(i >=2 && i <= 4)
+                {
+                    x = RandomFloat(550.0, frame.size.width * 3.0 - 300.0);
+                    y = RandomFloat(600.0, 680.0);
+                    svamp->zIndex = 7;
+                }
+                
+                svamp->id = i + 1;
+                svamp->rotationX = RandomFloat(-35.0, 35.0);
+                svamp->New(
+                           Filesystem::GetProjectBasePath() + mushrooms[rand() % mushrooms.size()],
+                           glm::vec3(x, y * -1.0f, 0.0),
+                           glm::vec3(100.0, 100.0, 0.0),
+                           glm::vec4(1.0, 1.0, 1.0, 1.0)
+                           );
+                graph->renderables.push_back(svamp);
+            }
+        }
+        
+        /**
+         * @brief
+         *
+         * @param pView
+         */
+        inline virtual void drawInMTKView(MTK::View *pView) override
+        {
+            
+            app->OnRender();
+            
+            if(state == 1)
+            {
+                if(!hasSpawnedMushrooms)
+                {
+                    SpawnMushrooms();
+                    hasSpawnedMushrooms = true;
+                }
+            }
+            
+            
+            int cnt = 0;
+            for(auto renderable : graph->renderables) {
+                
+                CGPoint tp = touch();
+                
+                renderable->hasBeenTouched(tp.x * 3.0f,  tp.y);
+                
+                
+                if(renderable->id == 777)
+                {
+                    if(renderable->hasBeenTouched(tp.x * 3.0f,  tp.y * 1.5f))
+                    {
+                        renderable->color = glm::vec4(1.0, 1.0, 1.0, 0.0);
+                        state = 1;
+                    }
+                    if(test <= 1.0)
+                    {
+                        test += 0.05;
+                        renderable->color = glm::vec4(1.0, 1.0, 1.0, test);
+                    }
+                    
+                }
+                
+                cnt++;
+            }
+            
+            
+            _renderer->Render(graph);
+        }
+        
+        std::shared_ptr<Renderer> _renderer;
+        
+        float test = 0.0;
+        
+        int state = 0;
+        
+        // MushroomHunter GameState
+        bool hasSpawnedMushrooms = false;
+        
+        const std::vector<std::string> mushrooms = {
+            "/Eldsopp.png",
+            "/Bombmurkla.png",
+            "/gul_kantarell.png",
+            "/Stolt fjällskivling.png",
+            "/Vaxskivling.png",
+        };
+        
+    };
     /**
      * @brief Construct a new Application object
      *
@@ -299,14 +303,12 @@ public:
     {
         static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
         plog::init(plog::verbose, &consoleAppender);
-
+        
         this->_autoreleasePool = NS::AutoreleasePool::alloc()->init();
         
         this->_sceneGraph = std::make_shared<SceneGraph>();
-        
-        UI::ApplicationMain(0, 0, this);
     }
-
+    
     /**
      * @brief Destroy the Application object
      *
@@ -320,7 +322,7 @@ public:
         delete _pViewDelegate;
         this->_autoreleasePool->release();
     }
-
+    
     /**
      * @brief
      *
@@ -332,33 +334,33 @@ public:
     inline bool applicationDidFinishLaunching(UI::Application *pApp, NS::Value *options) override
     {
         CGRect frame = UI::Screen::mainScreen()->bounds();
-
+        
         //_pViewController = UI::ViewController::alloc()->init(nil, nil);
-
+        
         _pWindow = UI::Window::alloc()->init(frame);
-
+        
         _pDevice = MTL::CreateSystemDefaultDevice();
-
+        
         _pMtkView = MTK::View::alloc()->init(frame, _pDevice);
-
+        
         _pViewController = get_native_bounds((UI::View *)_pMtkView, UI::Screen::mainScreen());
-
+        
         _pMtkView->setColorPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
         _pMtkView->setClearColor(MTL::ClearColor::Make(1.0, 1.0, 1.0, 1.0));
-
-        _pViewDelegate = new MTKViewDelegate();
+        
+        _pViewDelegate = new MTKViewDelegate(this);
         _pMtkView->setDelegate(_pViewDelegate);
-
+        
         UI::View *mtkView = (UI::View *)_pMtkView;
         mtkView->setAutoresizingMask(UI::ViewAutoresizingFlexibleWidth | UI::ViewAutoresizingFlexibleHeight);
-
+        
         _pViewController->view()->addSubview(mtkView);
         _pWindow->setRootViewController(_pViewController);
-
+        
         _pWindow->makeKeyAndVisible();
-
+        
         CA::MetalLayer *layer = _pMtkView->currentDrawable()->layer();
-
+        
         Global::GetInstance()->InitializeContext(layer, frame);
         
         auto renderer = std::make_shared<Renderer>();
@@ -368,11 +370,13 @@ public:
         _pViewDelegate->graph = _sceneGraph;
         
         this->_context = Global::GetInstance()->GetVulkanContext();
-
+        
         this->Setup(frame);
-
+        
         return true;
     }
+    
+    virtual void OnRender() = 0;
 
     /**
      * @brief
@@ -463,7 +467,7 @@ public:
      */
     inline void Run()
     {
-
+        UI::ApplicationMain(0, 0, this);
     }
 
     std::shared_ptr<Context> _context;
