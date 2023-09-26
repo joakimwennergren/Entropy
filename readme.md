@@ -2,7 +2,7 @@
 
 ## What is this?
 
-Gyro is a framework to make 3D visual effects.
+Symbios is a framework to make 3D visual effects.
 
 ## Target
 For now the target is windows platform.

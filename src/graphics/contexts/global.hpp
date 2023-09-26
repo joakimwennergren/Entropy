@@ -56,6 +56,7 @@ namespace Symbios
                 ~Global() {}
 
                 std::shared_ptr<Context> vulkanContext;
+                
 
             public:
                 /**

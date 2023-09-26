@@ -709,7 +709,7 @@ void Context::CreateSwapChain(GLFWwindow *window)
     _swapChainImages.resize(imageCount);
     vkGetSwapchainImagesKHR(_device, _swapChain, &imageCount, _swapChainImages.data());
 
-      = surfaceFormat.format;
+    _swapChainImageFormat = surfaceFormat.format;
     _swapChainExtent = extent;
 }
 #endif

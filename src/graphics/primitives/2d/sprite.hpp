@@ -4,11 +4,9 @@
 #include "texture.hpp"
 #include "context.hpp"
 #include "vertexbuffer.hpp"
-#include "state.hpp"
 #include "renderable.hpp"
 
 using namespace Symbios::Graphics::Textures;
-using namespace Symbios::Scripting::States;
 using namespace Symbios::Renderables;
 
 namespace Symbios

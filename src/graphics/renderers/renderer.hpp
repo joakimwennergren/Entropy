@@ -22,9 +22,6 @@
 #include "instance_pushcontants.hpp"
 
 #include "uniformbuffer.hpp"
-#include "state.hpp"
-
-#include "easing.hpp"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -39,36 +36,13 @@
 #include <map>
 
 using namespace Symbios::Core;
-using namespace Symbios::Scripting::States;
+using namespace Symbios::SceneGraphs;
 using namespace Symbios::Graphics::Buffers;
 using namespace Symbios::Graphics::Textures;
 using namespace Symbios::Graphics::Pipelines;
 using namespace Symbios::Graphics::Primitives;
 using namespace Symbios::Graphics::RenderPasses;
 using namespace Symbios::Graphics::CommandBuffers;
-using namespace Symbios::SceneGraphs;
-
-
-
-struct Character
-{
-    Quad *glyph;
-    glm::ivec2 Size;    // Size of glyph
-    glm::ivec2 Bearing; // Offset from baseline to left/top of glyph
-    FT_Pos Advance;     // Offset to advance to next glyph
-    FT_Pos YAdvance;
-};
-
-class Dbg
-{
-public:
-    Dbg()
-    {
-        std::cout << "DEBUG" << std::endl;
-    }
-
-    void println() { PLOG_ERROR << "TEST"; };
-};
 
 namespace Symbios
 {
@@ -104,11 +78,6 @@ namespace Symbios
                  */
                 void FrameBufferResized() { this->_framebufferResized = true; };
 
-                Quad *ivy7;
-                Quad *pane;
-
-                std::string GetContext() { return "TEST"; };
-
             private:
                 std::shared_ptr<Context> _context;
                 std::shared_ptr<RenderPass> _renderPass;
@@ -124,23 +93,20 @@ namespace Symbios
 
                 bool _framebufferResized = false;
 
-                std::vector<Quad *> _sprites;
                 std::vector<VkBuffer> rawUniformBuffers;
 
                 InstanceUBO _instanceUbo;
                 std::vector<VkBuffer> uniformBuffersInstances;
-                VkBuffer buf1, buf2;
 
                 VkDeviceMemory _uniformBufferInstanceMemory;
                 VkDeviceMemory _uniformBufferInstanceMemory2;
-                void *mem1;
-                void *mem2;
                 VkDeviceSize dynamicAlignment;
 
-                float time2;
                 // @refactored buffers!!
                 std::vector<UniformBuffer *> _uniformBuffers;
-                std::map<int, Character> Characters;
+
+                // @todo remove this
+                Quad *ivy7; 
             };
         }
     }

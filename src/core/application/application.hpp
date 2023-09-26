@@ -3,7 +3,6 @@
 #include "config.hpp"
 #include "context.hpp"
 #include "renderer.hpp"
-#include "state.hpp"
 #include "scenegraph.hpp"
 
 #include <plog/Log.h>

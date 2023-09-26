@@ -55,11 +55,9 @@ Renderer::Renderer()
     ivy7->position = glm::vec3(500.0, -500.0, 0.0);
     ivy7->scale = glm::vec3(100.0, 100.0, 0.0);
     ivy7->textureId = 2;
-    ivy7->texture->CreateTextureImage(Filesystem::GetProjectBasePath() + "/svamp.png");
+    ivy7->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/banderoll.png");
 
     //_sprites.push_back(ivy7);
-
-    srand(static_cast<unsigned>(time(0)));
 
     // @temp dynamic UBO
     // Calculate required alignment based on minimum device offset alignment

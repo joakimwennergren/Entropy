@@ -46,14 +46,10 @@ target_sources(Symbios PRIVATE
     src/graphics/utilities/utilities.cpp
     src/graphics/primitives/2d/quad.cpp
     src/graphics/primitives/2d/sprite.cpp
-    src/graphics/factories/primitive_factory.cpp
     src/graphics/contexts/global.cpp
 
     # Text
     src/graphics/text/label.cpp
-
-    # Scripting
-    src/scripting/state/state.cpp
 
     # Main entrypoint
     src/main.cpp
@@ -90,7 +86,6 @@ target_include_directories(Symbios PRIVATE
     src/graphics/utilities
     src/graphics/primitives/2d
     src/graphics/primitives/3d
-    src/graphics/factories/
     src/graphics/contexts
 
     # Audio
@@ -98,9 +93,6 @@ target_include_directories(Symbios PRIVATE
 
     # Filesystem
     src/filesystem
-
-    # Scripting
-    src/scripting/state
 
     # Animation
     src/animation/easing
