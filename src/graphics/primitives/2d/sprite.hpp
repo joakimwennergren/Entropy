@@ -33,6 +33,16 @@ namespace Symbios
                  */
                 ~Sprite();
 
+                void New(std::string path, glm::vec3 position, glm::vec3 scale, glm::vec4 color)
+                {
+                    this->position = position;
+                    this->textureId = 1;
+                    this->color = color;
+                    this->scale = scale;
+                    this->texture->CreateTextureImage(path);
+                    this->UpdateImage();
+                }
+
                 void UpdateImage()
                 {
 
@@ -85,10 +95,6 @@ namespace Symbios
 
                     vkUpdateDescriptorSets(_context->GetLogicalDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
                 }
-
-                void BindToLua();
-
-                void Test() { PLOG_ERROR << "KYK"; };
 
                 void SetPosition(glm::vec3 newPosition) { this->position = newPosition; };
 

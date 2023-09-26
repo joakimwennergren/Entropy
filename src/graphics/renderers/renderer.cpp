@@ -172,8 +172,15 @@ void Renderer::Render(std::shared_ptr<SceneGraph> graph)
 
     uint32_t modelCnt = 0;
 
+    sort(graph->renderables.begin(), graph->renderables.end(), [](std::shared_ptr<Renderable> lhs, std::shared_ptr<Renderable> rhs) {
+      return lhs->zIndex < rhs->zIndex;
+    });
+
     for (auto sprite : graph->renderables)
     {
+        if(!sprite->visible)
+            return;
+        
         auto currentDescriptorSet = _context->GetDescriptorSets()[_currentFrame];
         vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 0, nullptr);
 
@@ -193,9 +200,10 @@ void Renderer::Render(std::shared_ptr<SceneGraph> graph)
         auto translate = glm::translate(glm::mat4(1.0f), sprite->position);
         auto scale = glm::scale(glm::mat4(1.0), sprite->scale);
         auto rotate = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+        auto modelRotation = glm::rotate(glm::mat4(1.0f), glm::radians(sprite->rotationX), glm::vec3(0.0, 1.0, 0.0));
 
         InstancePushConstants constants;
-        constants.modelMatrix = translate * scale * rotate;
+        constants.modelMatrix = translate * scale * rotate * modelRotation;
         constants.color = sprite->color;
 
         if (sprite->texture->GetImageView() != nullptr)
@@ -203,14 +211,10 @@ void Renderer::Render(std::shared_ptr<SceneGraph> graph)
             constants.textureId = sprite->textureId;
         }
 
-        // PLOG_ERROR << (float)_context->GetSwapChainExtent().height;
-
         // upload the matrix to the GPU via push constants
         vkCmdPushConstants(currentCmdBuffer, _pipeline->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(InstancePushConstants), &constants);
 
         ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-        float V = (float)_context->GetSwapChainExtent().width / (float)_context->GetSwapChainExtent().height;
 
         ubo.proj = glm::ortho(0.0f, (float)_context->GetSwapChainExtent().width, (float)_context->GetSwapChainExtent().height, 0.0f, -1.0f, 1.0f);
         ubo.proj[1][1] *= -1;

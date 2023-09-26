@@ -10,6 +10,8 @@ import UIKit
 
 var _view = UIView()
 var _screen = UIScreen()
+var _touchPoint = CGPoint()
+
 class SecondViewController: UIViewController {
     
     override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
@@ -33,6 +35,27 @@ class SecondViewController: UIViewController {
             text="Another"
         }
         print(text)
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first {
+            let currentPoint = touch.location(in: self.view)
+            _touchPoint = currentPoint;
+        }
+    }
+
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first {
+            let currentPoint = touch.location(in: self.view)
+
+        }
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first {
+            let currentPoint = touch.location(in: self.view)
+            // do something with your currentPoint
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -59,6 +82,12 @@ class SecondViewController: UIViewController {
     }
 
     
+}
+
+@_cdecl("touch")
+func touch() -> CGPoint
+{
+    return _touchPoint
 }
 
 @_cdecl("get_native_bounds")

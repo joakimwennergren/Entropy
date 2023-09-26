@@ -34,6 +34,7 @@
 
 #include "scenegraph.hpp"
 #include "sprite.hpp"
+#include "renderable.hpp"
 
 #include <map>
 

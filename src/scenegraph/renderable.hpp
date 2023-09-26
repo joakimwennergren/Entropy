@@ -30,7 +30,22 @@ namespace Symbios
         {
         public:
 
-            int type = -1;
+            int zIndex = 0;
+
+            inline bool hasBeenTouched(float x, float y)
+            {
+                if(x >= (position.x/3.0) && x < ((position.x/1.5) + scale.x * 1.5f) && y >= (((position.y/1.5f)) * -1.0f) - scale.y/2.0 && y <= (((position.y/1.5f)) * -1.0f))
+                {
+                    return true;
+                }
+                return false;
+            }
+
+            int id = 0;
+
+            bool visible = true;
+
+            float rotationX = 0.0;
 
             glm::vec3 position = glm::vec3(0.0);
             glm::vec3 rotation = glm::vec3(1.0);

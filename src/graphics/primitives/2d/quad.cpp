@@ -7,7 +7,6 @@ Quad::Quad()
     // Store vulkan ctx
     _context = Global::GetInstance()->GetVulkanContext();
 
-
     _indices = {
     0, 1, 2, 2, 3, 0};
 
@@ -27,9 +26,5 @@ Quad::Quad()
 }
 
 Quad::~Quad()
-{
-}
-
-void Quad::BindToLua()
 {
 }

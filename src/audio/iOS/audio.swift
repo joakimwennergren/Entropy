@@ -6,7 +6,6 @@ func playSound() {
 
     print("")
 
-
     guard let path = Bundle.main.path(forResource: "Anticlimax", ofType:"wav") else {
         return }
     let url = URL(fileURLWithPath: path)

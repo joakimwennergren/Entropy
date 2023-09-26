@@ -33,9 +33,13 @@ namespace Symbios
                  */
                 ~Quad();
 
-                void BindToLua();
-
-                void Test() { PLOG_ERROR << "KYK"; };
+                void New(glm::vec3 position, glm::vec3 scale, glm::vec4 color)
+                {
+                    this->position = position;
+                    this->textureId = -1;
+                    this->color = color;
+                    this->scale = scale;
+                }
 
                 void SetPosition(glm::vec3 newPosition) { this->position = newPosition; };
 

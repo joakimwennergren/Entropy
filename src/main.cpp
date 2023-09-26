@@ -34,7 +34,7 @@ class Game : public Application
 public:
     Game() : Application() 
     {
-
+        srand (time(NULL));
     }
 };
 

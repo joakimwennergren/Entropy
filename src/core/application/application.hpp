@@ -139,11 +139,14 @@ static void cursorPositionCallback(GLFWwindow *window, double x, double y)
 #include "quad.hpp"
 #include "sprite.hpp"
 #include "label.hpp"
+#include "easing.hpp"
 
 using namespace Symbios;
 using namespace Symbios::Text;
+using namespace Symbios::Animation;
 
 extern "C" UI::ViewController *get_native_bounds(UI::View *view, UI::Screen *screen);
+extern "C" CGPoint touch();
 
 #include "renderer.hpp"
 
@@ -160,7 +163,6 @@ public:
      */
     MTKViewDelegate() : MTK::ViewDelegate()
     {
-
     }
 
     inline void SetRenderer(std::shared_ptr<Renderer> renderer)
@@ -175,19 +177,116 @@ public:
     virtual ~MTKViewDelegate() override
     {
     }
+    
+    CGRect frame;
 
 private:
+
+    float RandomFloat(float a, float b) {
+        float random = ((float) rand()) / (float) RAND_MAX;
+        float diff = b - a;
+        float r = random * diff;
+        return a + r;
+    }
+
+    float SpawnMushrooms() 
+    {
+        for(int i = 0; i < 5; ++i)
+        {
+            auto svamp = std::make_shared<Sprite>();
+            float x = 100.0;
+            float y = 380.0;
+
+            if(i < 2)
+            {
+                x = RandomFloat(550.0, frame.size.width * 3.0 - 300.0);
+                y = RandomFloat(360.0, 400.0);
+                svamp->zIndex = 9;
+            }
+
+            if(i >=2 && i <= 4)
+            {
+                x = RandomFloat(550.0, frame.size.width * 3.0 - 300.0);
+                y = RandomFloat(600.0, 680.0);
+                svamp->zIndex = 7;   
+            }
+
+            svamp->id = i + 1;
+            svamp->rotationX = RandomFloat(-35.0, 35.0);
+            svamp->New(
+                Filesystem::GetProjectBasePath() + mushrooms[rand() % mushrooms.size()],
+                glm::vec3(x, y * -1.0f, 0.0),
+                glm::vec3(100.0, 100.0, 0.0),
+                glm::vec4(1.0, 1.0, 1.0, 1.0)
+            );
+            graph->renderables.push_back(svamp);    
+        }
+    }
+
     /**
      * @brief
      *
      * @param pView
      */
     inline virtual void drawInMTKView(MTK::View *pView) override
-    {
+    {   
+        if(state == 1)
+        {
+            if(!hasSpawnedMushrooms)
+            {
+                SpawnMushrooms();
+                hasSpawnedMushrooms = true;
+            }    
+        }
+
+
+        int cnt = 0;
+        for(auto renderable : graph->renderables) {
+
+            CGPoint tp = touch();
+
+            renderable->hasBeenTouched(tp.x * 3.0f,  tp.y);
+
+
+            if(renderable->id == 777)
+            {
+                if(renderable->hasBeenTouched(tp.x * 3.0f,  tp.y * 1.5f))
+                {
+                    renderable->color = glm::vec4(1.0, 1.0, 1.0, 0.0);
+                    state = 1;
+                }
+                if(test <= 1.0)
+                {
+                    test += 0.05;
+                    renderable->color = glm::vec4(1.0, 1.0, 1.0, test);      
+                }
+
+            }
+
+            cnt++;
+        }  
+
+
         _renderer->Render(graph);
     }
 
     std::shared_ptr<Renderer> _renderer;
+
+    float test = 0.0;
+
+    int state = 0;
+
+    // MushroomHunter GameState
+    bool hasSpawnedMushrooms = false;
+
+    const std::vector<std::string> mushrooms = {
+        "/Eldsopp.png",
+        "/Bombmurkla.png",
+        "/gul_kantarell.png",
+        "/Stolt fjällskivling.png",
+        "/Vaxskivling.png",
+    };
+
 };
 
 class Application : public UI::ApplicationDelegate
@@ -266,41 +365,12 @@ public:
         auto renderer = std::make_shared<Renderer>();
         
         _pViewDelegate->SetRenderer(renderer);
+        _pViewDelegate->frame = frame;
         _pViewDelegate->graph = _sceneGraph;
         
         this->_context = Global::GetInstance()->GetVulkanContext();
-        
-        auto quad = std::make_shared<Sprite>();
-        quad->type = 1;
-        quad->position = glm::vec3(frame.size.width * 1.5f, frame.size.height * 2.0f * -1.0f, 0.0);
-        quad->textureId = 1;
-        quad->color = glm::vec4(1.0, 1.0, 1.0, 1.0);
-        quad->scale = glm::vec3(frame.size.width * 1.5f, frame.size.height * 2.0f, 0.0);
-        quad->texture->CreateTextureImage(Filesystem::GetProjectBasePath() + "/background.png");
-        quad->UpdateImage();
-        _sceneGraph->renderables.push_back(quad);
-        
-        auto quad2 = std::make_shared<Sprite>();
-        quad2->type = 1;
-        quad2->position = glm::vec3(frame.size.width * 1.8f, -600.0, 0.0);
-        quad2->textureId = 1;
-        quad2->color = glm::vec4(1.0, 1.0, 1.0, 1.0);
-        quad2->scale = glm::vec3(200.0, 200.0, 0.0);
-        quad2->texture->CreateTextureImage(Filesystem::GetProjectBasePath() + "/svamp.png");
-        quad2->UpdateImage();
-        
-        _sceneGraph->renderables.push_back(quad2);
 
-        //auto primitivesFactory = PrimitiveFactory();
-
-        auto label = std::make_shared<Label>("SVAMPJAKT");
-
-        int id = 1;
-
-        for(auto ch : label->sprites)
-        {
-            _sceneGraph->renderables.push_back(ch);
-        }
+        this->Setup(frame);
 
         return true;
     }
@@ -315,6 +385,79 @@ public:
     }
 
 public:
+
+    void Setup(CGRect frame)
+    {
+        
+        // Foreground - Layer 1
+        auto layer_1 = std::make_shared<Sprite>();
+        layer_1->zIndex = 10;
+        layer_1->New(
+            Filesystem::GetProjectBasePath() + "/layer_1.png", 
+            glm::vec3(frame.size.width * 1.5f, frame.size.height * 2.0f * -1.0f, 0.0),
+            glm::vec3(frame.size.width * 1.5f, frame.size.height * 2.0f, 0.0),
+            glm::vec4(1.0, 1.0, 1.0, 1.0)
+        );
+        _sceneGraph->renderables.push_back(layer_1);
+        
+        
+        // Foreground - Layer 2
+        auto layer_2 = std::make_shared<Sprite>();
+        layer_2->zIndex = 8;
+        layer_2->New(
+            Filesystem::GetProjectBasePath() + "/layer_2.png", 
+            glm::vec3(frame.size.width * 1.5f, frame.size.height * 2.0f * -1.0f, 0.0),
+            glm::vec3(frame.size.width * 1.5f, frame.size.height * 2.0f, 0.0),
+            glm::vec4(1.0, 1.0, 1.0, 1.0)
+        );
+        _sceneGraph->renderables.push_back(layer_2);
+
+        
+        // Foreground - Layer 3
+        auto layer_3 = std::make_shared<Sprite>();
+        layer_3->zIndex = 6;
+        layer_3->New(
+            Filesystem::GetProjectBasePath() + "/layer_3.png", 
+            glm::vec3(frame.size.width * 1.5f, frame.size.height * 2.0f * -1.0f, 0.0),
+            glm::vec3(frame.size.width * 1.5f, frame.size.height * 2.0f, 0.0),
+            glm::vec4(1.0, 1.0, 1.0, 1.0)
+        );
+        _sceneGraph->renderables.push_back(layer_3);
+        
+        // Foreground - Layer 3
+        auto banderoll = std::make_shared<Sprite>();
+        banderoll->zIndex = 20;
+        banderoll->id = 777;
+        banderoll->New(
+            Filesystem::GetProjectBasePath() + "/banderoll.png",
+            glm::vec3(frame.size.width * 1.5f, frame.size.height * 1.75f * -1.0f, 0.0),
+            glm::vec3(frame.size.width * 1.0f, frame.size.height * 1.0f, 0.0),
+            glm::vec4(1.0, 1.0, 1.0, 1.0)
+        );
+        _sceneGraph->renderables.push_back(banderoll);
+
+        
+        // Background
+        auto background = std::make_shared<Sprite>();
+        background->zIndex = 4;
+        background->New(
+            Filesystem::GetProjectBasePath() + "/background.png", 
+            glm::vec3(frame.size.width * 1.5f, frame.size.height * 2.0f * -1.0f, 0.0),
+            glm::vec3(frame.size.width * 1.5f, frame.size.height * 2.0f, 0.0),
+            glm::vec4(1.0, 1.0, 1.0, 1.0)
+        );
+        _sceneGraph->renderables.push_back(background);
+
+        /*
+        // Title
+        auto label = std::make_shared<Label>("SVAMPJAKT");
+        for(auto ch : label->sprites)
+        {
+            _sceneGraph->renderables.push_back(ch);
+        }
+         */
+    }
+    
     /**
      * @brief
      *
