@@ -14,17 +14,10 @@
 #include <string>
 #include <mutex>
 
-#include "context.hpp"
-
-#include <chaiscript/chaiscript.hpp>
-
-#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
-
-#include <GLFW/glfw3.h>
-
-#endif
+#include "renderable.hpp"
 
 using namespace Symbios::Core;
+using namespace Symbios::Renderables;
 
 namespace Symbios
 {
@@ -35,7 +28,7 @@ namespace Symbios
              * alternative to constructor and lets clients access the same instance of this
              * class over and over.
              */
-            class Global
+            class SceneGraph
             {
 
                 /**
@@ -44,30 +37,31 @@ namespace Symbios
                  * operator.
                  */
             private:
-                static Global *pinstance_;
+                static SceneGraph *pinstance_;
                 static std::mutex mutex_;
 
             protected:
-                Global()
+                SceneGraph()
                 {
-                    chai = new chaiscript::ChaiScript();
-                    //_sceneGraph = std::make_shared<SceneGraph>();
+
                 }
 
-                ~Global() {}
+                ~SceneGraph() {}
 
-                std::shared_ptr<Context> vulkanContext;
-                chaiscript::ChaiScript *chai;
+
 
             public:
+
+                std::vector<Renderable *> renderables;
+                
                 /**
                  * Singletons should not be cloneable.
                  */
-                Global(Global &other) = delete;
+                SceneGraph(SceneGraph &other) = delete;
                 /**
                  * Singletons should not be assignable.
                  */
-                void operator=(const Global &) = delete;
+                void operator=(const SceneGraph &) = delete;
                 /**
                  * This is the static method that controls the access to the singleton
                  * instance. On the first run, it creates a singleton object and places it
@@ -75,30 +69,24 @@ namespace Symbios
                  * object stored in the static field.
                  */
 
-                inline chaiscript::ChaiScript *GetChaiInstance() {return this->chai;};
-
                 //inline std::shared_ptr<SceneGraph> GetSceneGraph() {return this->_sceneGraph;};
 
-                static Global *GetInstance();
+                static SceneGraph *GetInstance();
                 /**
                  * Finally, any singleton should define some business logic, which can be
                  * executed on its instance.
                  */
-
-                std::shared_ptr<Context> GetVulkanContext() { return this->vulkanContext;};
-
-#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
-                void InitializeContext(GLFWwindow * window)
+                
+                inline std::vector<Renderable *> GetRenderables() { return this->renderables;};
+                
+                inline Renderable * FindObject(std::string objectName)
                 {
-                    vulkanContext = std::make_shared<Context>(window);
+                    for(auto renderable : renderables)
+                    {
+                        if(renderable->name == objectName)
+                            return renderable;
+                    }
                 }
-#else 
-                void InitializeContext(CA::MetalLayer *layer, CGRect frame)
-                {
-                    vulkanContext = std::make_shared<Context>(layer, frame);
-                }             
-#endif
-
             };
         }
 }

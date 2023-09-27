@@ -4,9 +4,8 @@ using namespace Symbios::Text;
 
 Label::Label(std::string text)
 {
-
     // Store vulkan ctx
-    auto context = Global::GetInstance()->GetVulkanContext();
+    auto context = Contexts::Global::GetInstance()->GetVulkanContext();
 
 	// All of this is temp code @todo
 

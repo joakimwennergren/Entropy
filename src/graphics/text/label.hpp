@@ -20,9 +20,10 @@
 
 #include <glm/glm.hpp>
 
-#include "renderable.hpp"
 #include "sprite.hpp"
 #include "filesystem.hpp"
+#include "global.hpp"
+#include "renderable.hpp"
 
 using namespace Symbios::Renderables;
 using namespace Symbios::Graphics::Primitives;

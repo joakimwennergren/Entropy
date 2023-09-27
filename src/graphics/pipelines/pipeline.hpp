@@ -24,7 +24,7 @@ using namespace Symbios::Core;
 using namespace Symbios::Filesystem;
 using namespace Symbios::Graphics::Shaders;
 using namespace Symbios::Graphics::RenderPasses;
-using namespace Symbios::Graphics::Contexts;
+using namespace Symbios::Contexts;
 
 namespace Symbios
 {

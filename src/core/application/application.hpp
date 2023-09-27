@@ -3,7 +3,6 @@
 #include "config.hpp"
 #include "context.hpp"
 #include "renderer.hpp"
-#include "scenegraph.hpp"
 
 #include <plog/Log.h>
 #include <plog/Init.h>
@@ -197,6 +196,7 @@ public:
             return a + r;
         }
         
+        /*
         float SpawnMushrooms()
         {
             for(int i = 0; i < 5; ++i)
@@ -229,7 +229,9 @@ public:
                            );
                 graph->renderables.push_back(svamp);
             }
+         
         }
+         */
         
         
         double GetTimeAsDouble() {
@@ -253,7 +255,7 @@ public:
             
             app->OnRender(deltaTime);
                         
-            _renderer->Render(graph);
+            _renderer->Render();
         }
         
         std::shared_ptr<Renderer> _renderer;
@@ -288,7 +290,6 @@ public:
         
         this->_autoreleasePool = NS::AutoreleasePool::alloc()->init();
         
-        this->_sceneGraph = std::make_shared<SceneGraph>();
     }
     
     /**
@@ -349,7 +350,6 @@ public:
         
         _pViewDelegate->SetRenderer(renderer);
         _pViewDelegate->frame = frame;
-        _pViewDelegate->graph = _sceneGraph;
         
         this->_context = Global::GetInstance()->GetVulkanContext();
 
@@ -385,8 +385,6 @@ public:
     std::shared_ptr<Context> _context;
     CGRect frame;
 protected:
-
-        std::shared_ptr<SceneGraph> _sceneGraph;
 
 private:
 

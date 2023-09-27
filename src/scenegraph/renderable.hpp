@@ -1,3 +1,4 @@
+
 /**
  * @file easing.hpp
  * @author Joakim Wennergren (joakim.wennergren@databeams.se)
@@ -14,6 +15,7 @@
 #include "texture.hpp"
 #include "vertexbuffer.hpp"
 #include "buffer.hpp"
+#include "global.hpp"
 
 #include <string>
 #include <unordered_map>
@@ -31,6 +33,8 @@ namespace Symbios
         public:
 
             int zIndex = 0;
+
+            std::string name;
 
             inline bool hasBeenTouched(float x, float y)
             {

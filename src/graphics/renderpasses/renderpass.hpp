@@ -7,7 +7,7 @@
 
 using namespace Symbios::Core;
 using namespace Symbios::Graphics::CommandBuffers;
-using namespace Symbios::Graphics::Contexts;
+using namespace Symbios::Contexts;
 
 namespace Symbios
 {

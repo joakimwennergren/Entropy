@@ -5,7 +5,7 @@ using namespace Symbios::Graphics::Buffers;
 Buffer::Buffer()
 {
     // Store vulkan ctx
-    _context = Global::GetInstance()->GetVulkanContext();
+    _context = Contexts::Global::GetInstance()->GetVulkanContext();
 }
 
 Buffer::~Buffer()

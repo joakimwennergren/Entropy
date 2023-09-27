@@ -1,4 +1,9 @@
 #include "symbios.hpp"
+#include "filesystem.hpp"
+#include "easing.hpp"
+#include <chaiscript/chaiscript.hpp>
+
+using namespace Symbios::Animation;
 
 class Game : public Application
 {
@@ -11,6 +16,18 @@ public:
 
     void OnInit()
     {
+        auto chai = Global::GetInstance()->GetChaiInstance();
+
+        chai->add(chaiscript::constructor<Sprite ()>(), "Sprite");
+        //chai->add(chaiscript::fun(&Sprite::test), "test");
+
+        chai->use(Filesystem::GetProjectBasePath() + "/test.chai");
+
+        /*
+        
+
+        auto _sceneGraph = Contexts::SceneGraph::GetInstance();
+
         // Foreground - Layer 1
         auto layer_1 = std::make_shared<Sprite>();
         layer_1->zIndex = 10;
@@ -20,9 +37,11 @@ public:
             glm::vec3(frame.size.width * 1.5f, frame.size.height * 2.0f, 0.0),
             glm::vec4(1.0, 1.0, 1.0, 1.0)
         );
+
         _sceneGraph->renderables.push_back(layer_1);
-        
-        
+        */
+
+        /*
         // Foreground - Layer 2
         auto layer_2 = std::make_shared<Sprite>();
         layer_2->zIndex = 8;
@@ -48,13 +67,14 @@ public:
         
         // Foreground - Layer 3
         auto banderoll = std::make_shared<Sprite>();
+        banderoll->name = "banderoll";
         banderoll->zIndex = 20;
         banderoll->id = 777;
         banderoll->New(
             Filesystem::GetProjectBasePath() + "/banderoll.png",
             glm::vec3(frame.size.width * 1.5f, frame.size.height * 1.75f * -1.0f, 0.0),
             glm::vec3(frame.size.width * 1.0f, frame.size.height * 1.0f, 0.0),
-            glm::vec4(1.0, 1.0, 1.0, 1.0)
+            glm::vec4(1.0, 1.0, 1.0, 0.8)
         );
         _sceneGraph->renderables.push_back(banderoll);
 
@@ -68,12 +88,13 @@ public:
             glm::vec3(frame.size.width * 1.5f, frame.size.height * 2.0f, 0.0),
             glm::vec4(1.0, 1.0, 1.0, 1.0)
         );
-        _sceneGraph->renderables.push_back(background);     
+        _sceneGraph->renderables.push_back(background);  
+        */   
     }
 
     void OnRender(float deltaTime)
     {
-    
+        //auto object = _sceneGraph->FindObject("banderoll");
     }
 };
 

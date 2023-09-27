@@ -51,13 +51,11 @@ Renderer::Renderer()
         _uniformBuffers.push_back(new UniformBuffer(sizeof(UniformBufferObject)));
     }
 
-    ivy7 = new Quad();
+    ivy7 = new Sprite();
     ivy7->position = glm::vec3(500.0, -500.0, 0.0);
-    ivy7->scale = glm::vec3(100.0, 100.0, 0.0);
+    ivy7->scale = glm::vec3(20.0, 20.0, 0.0);
     ivy7->textureId = 2;
     ivy7->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/banderoll.png");
-
-    //_sprites.push_back(ivy7);
 
     // @temp dynamic UBO
     // Calculate required alignment based on minimum device offset alignment
@@ -94,9 +92,8 @@ Renderer::~Renderer()
     }
 }
 
-void Renderer::Render(std::shared_ptr<SceneGraph> graph)
+void Renderer::Render()
 {
-
     float scale = 0.1;
 
     uint32_t imageIndex;
@@ -170,11 +167,11 @@ void Renderer::Render(std::shared_ptr<SceneGraph> graph)
 
     uint32_t modelCnt = 0;
 
-    sort(graph->renderables.begin(), graph->renderables.end(), [](std::shared_ptr<Renderable> lhs, std::shared_ptr<Renderable> rhs) {
+    sort(Contexts::SceneGraph::GetInstance()->renderables.begin(), Contexts::SceneGraph::GetInstance()->renderables.end(), [](Renderable * lhs, Renderable * rhs) {
       return lhs->zIndex < rhs->zIndex;
     });
 
-    for (auto sprite : graph->renderables)
+    for (auto sprite : Contexts::SceneGraph::GetInstance()->renderables)
     {
         if(!sprite->visible)
             return;

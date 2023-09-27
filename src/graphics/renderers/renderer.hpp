@@ -22,6 +22,7 @@
 #include "instance_pushcontants.hpp"
 
 #include "uniformbuffer.hpp"
+#include "scenegraph.hpp"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -29,14 +30,13 @@
 #include <freetype/ftglyph.h>
 #include <iostream>
 
-#include "scenegraph.hpp"
-#include "sprite.hpp"
 #include "renderable.hpp"
+#include "sprite.hpp"
 
 #include <map>
 
 using namespace Symbios::Core;
-using namespace Symbios::SceneGraphs;
+using namespace Symbios::Renderables;
 using namespace Symbios::Graphics::Buffers;
 using namespace Symbios::Graphics::Textures;
 using namespace Symbios::Graphics::Pipelines;
@@ -64,7 +64,7 @@ namespace Symbios
                  * @brief
                  *
                  */
-                void Render(std::shared_ptr<SceneGraph> graph);
+                void Render();
 
                 /**
                  * @brief
@@ -106,7 +106,7 @@ namespace Symbios
                 std::vector<UniformBuffer *> _uniformBuffers;
 
                 // @todo remove this
-                Quad *ivy7; 
+                Sprite *ivy7; 
             };
         }
     }

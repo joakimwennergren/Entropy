@@ -5,7 +5,7 @@ using namespace Symbios::Graphics::Primitives;
 Quad::Quad()
 {
     // Store vulkan ctx
-    _context = Global::GetInstance()->GetVulkanContext();
+    _context = Contexts::Global::GetInstance()->GetVulkanContext();
 
     _indices = {
     0, 1, 2, 2, 3, 0};
@@ -15,8 +15,6 @@ Quad::Quad()
         {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
         {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
         {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
-
-    texture = new Texture();
 
     // Create buffers @todo temp!!!
     vertexBuffer = std::make_unique<VertexBuffer>(_vertices);

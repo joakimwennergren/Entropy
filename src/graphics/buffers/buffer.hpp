@@ -21,7 +21,6 @@
 using namespace Symbios::Core;
 using namespace Symbios::Graphics::Utilities;
 using namespace Symbios::Graphics::CommandBuffers;
-using namespace Symbios::Graphics::Contexts;
 
 namespace Symbios
 {

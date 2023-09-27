@@ -5,7 +5,9 @@ using namespace Symbios::Graphics::Primitives;
 Sprite::Sprite()
 {
     // Store vulkan ctx
-    _context = Global::GetInstance()->GetVulkanContext();
+    _context = Contexts::Global::GetInstance()->GetVulkanContext();
+
+    auto _sceneGraph = Contexts::SceneGraph::GetInstance();
 
     _indices = {
     0, 1, 2, 2, 3, 0};
@@ -23,6 +25,15 @@ Sprite::Sprite()
 
     indexBuffer = std::make_unique<Buffer>();
     indexBuffer->CreateIndexBufferUint16(_indices);
+
+    this->New(
+            Filesystem::GetProjectBasePath() + "/layer_1.png", 
+            glm::vec3(1240 * 1.5f, 480 * 2.0f * -1.0f, 0.0),
+            glm::vec3(1240 * 1.5f, 480 * 2.0f, 0.0),
+            glm::vec4(1.0, 1.0, 1.0, 1.0)
+    );
+
+    _sceneGraph->renderables.push_back(this);
 }
 
 Sprite::~Sprite()

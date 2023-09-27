@@ -14,7 +14,6 @@
 #include "global.hpp"
 
 using namespace Symbios::Core;
-using namespace Symbios::Graphics::Contexts;
 
 namespace Symbios
 {

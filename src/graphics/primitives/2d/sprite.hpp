@@ -1,10 +1,14 @@
 #pragma once
 
+#include <memory>
+
 #include "vertex.hpp"
 #include "texture.hpp"
 #include "context.hpp"
 #include "vertexbuffer.hpp"
 #include "renderable.hpp"
+#include "scenegraph.hpp"
+#include "filesystem.hpp"
 
 using namespace Symbios::Graphics::Textures;
 using namespace Symbios::Renderables;
@@ -15,7 +19,7 @@ namespace Symbios
     {
         namespace Primitives
         {
-            class Sprite: public Renderable
+            class Sprite: public Renderable, public std::enable_shared_from_this<Sprite>
             {
             public:
                 /**
