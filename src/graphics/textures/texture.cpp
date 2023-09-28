@@ -46,6 +46,8 @@ void Texture::CreateTextureImage(std::string path)
 {
     // stbi_set_flip_vertically_on_load(true);
 
+        PLOG_FATAL << path;
+
     int texWidth, texHeight, texChannels;
     stbi_uc *pixels = stbi_load(path.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
 

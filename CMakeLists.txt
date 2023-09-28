@@ -141,7 +141,6 @@ if(NOT XCODE)
         freetype
 
         # Scripting
-        chaiscript
 
     )
 endif()

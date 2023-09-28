@@ -17,7 +17,6 @@
 using namespace Symbios;
 using namespace Symbios::Core;
 using namespace Symbios::Graphics::Renderers;
-using namespace Symbios::SceneGraphs;
 
 static void framebufferResizeCallback(GLFWwindow *window, int width, int height);
 static void cursorPositionCallback(GLFWwindow *window, double x, double y);
@@ -66,8 +65,6 @@ public:
         Global::GetInstance()->InitializeContext(_window);
     
         _renderer = std::make_shared<Renderer>();
-        _sceneGraph = std::make_shared<SceneGraph>();
-
     }
 
     /**
@@ -80,6 +77,10 @@ public:
         glfwTerminate();
     }
 
+    virtual void OnInit() = 0;
+    
+    virtual void OnRender(float deltaTime) = 0;
+
     std::shared_ptr<Renderer> GetRenderer() { return this->_renderer; };
 
 public:
@@ -89,16 +90,20 @@ public:
      */
     inline void Run()
     {
+
+        this->OnInit();
+
         while (!glfwWindowShouldClose(_window))
         {
+            this->OnRender(0.0f);
+
             glfwPollEvents();
-            _renderer->Render(_sceneGraph);
+            _renderer->Render();
         }
     }
 
 protected:
         std::shared_ptr<Context> _context;
-        std::shared_ptr<SceneGraph> _sceneGraph;
 private:
 
     std::shared_ptr<Renderer> _renderer;
@@ -195,45 +200,7 @@ public:
             float r = random * diff;
             return a + r;
         }
-        
-        /*
-        float SpawnMushrooms()
-        {
-            for(int i = 0; i < 5; ++i)
-            {
-                auto svamp = std::make_shared<Sprite>();
-                float x = 100.0;
-                float y = 380.0;
                 
-                if(i < 2)
-                {
-                    x = RandomFloat(550.0, frame.size.width * 3.0 - 300.0);
-                    y = RandomFloat(360.0, 400.0);
-                    svamp->zIndex = 9;
-                }
-                
-                if(i >=2 && i <= 4)
-                {
-                    x = RandomFloat(550.0, frame.size.width * 3.0 - 300.0);
-                    y = RandomFloat(600.0, 680.0);
-                    svamp->zIndex = 7;
-                }
-                
-                svamp->id = i + 1;
-                svamp->rotationX = RandomFloat(-35.0, 35.0);
-                svamp->New(
-                           Filesystem::GetProjectBasePath() + mushrooms[rand() % mushrooms.size()],
-                           glm::vec3(x, y * -1.0f, 0.0),
-                           glm::vec3(100.0, 100.0, 0.0),
-                           glm::vec4(1.0, 1.0, 1.0, 1.0)
-                           );
-                graph->renderables.push_back(svamp);
-            }
-         
-        }
-         */
-        
-        
         double GetTimeAsDouble() {
             using namespace std::chrono;
             using SecondsFP = std::chrono::duration<double>;

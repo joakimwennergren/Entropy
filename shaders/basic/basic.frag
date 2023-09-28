@@ -10,20 +10,15 @@ layout(set = 1, binding = 2) uniform texture2D _texture;
 
 layout(location = 0) out vec4 outColor;
 
-void main() {
-    if(texId == -1)
-    {
+void main() 
+{
+    if(texId == -1) {
         outColor = color;
-    } 
-    else if(texId == 1)
-    {
+    }  else if(texId == 1) {
         vec4 sampled = texture(sampler2D(_texture, texSampler), fragTexCoord);
-        outColor = color * sampled;   
-    }
-    else if(texId == 2)
-    {
+        outColor = color * sampled;
+    } else if(texId == 2) {
         vec4 sampled = vec4(1.0, 1.0, 1.0, texture(sampler2D(_texture, texSampler), fragTexCoord).r);
         outColor = color * sampled;
     }
-
 }

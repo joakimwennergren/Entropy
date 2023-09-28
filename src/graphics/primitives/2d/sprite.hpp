@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 #include "vertex.hpp"
 #include "texture.hpp"
 #include "context.hpp"
@@ -19,7 +17,7 @@ namespace Symbios
     {
         namespace Primitives
         {
-            class Sprite: public Renderable, public std::enable_shared_from_this<Sprite>
+            class Sprite: public Renderable
             {
             public:
                 /**

@@ -13,7 +13,8 @@ public:
     {
 
     }
-
+    
+private:
     void OnInit()
     {
         auto chai = Global::GetInstance()->GetChaiInstance();
@@ -21,11 +22,9 @@ public:
         chai->add(chaiscript::constructor<Sprite ()>(), "Sprite");
         //chai->add(chaiscript::fun(&Sprite::test), "test");
 
-        chai->use(Filesystem::GetProjectBasePath() + "/test.chai");
+        chai->use("/Users/joakim/Desktop/Symbios/resources/scripts/test.chai");
 
         /*
-        
-
         auto _sceneGraph = Contexts::SceneGraph::GetInstance();
 
         // Foreground - Layer 1
