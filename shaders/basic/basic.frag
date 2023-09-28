@@ -6,7 +6,8 @@ layout(location = 2) flat in int texId;
 layout(location = 3) in vec4 color;
 
 layout(binding = 1) uniform sampler texSampler;
-layout(set = 1, binding = 2) uniform texture2D _texture;
+layout(binding = 2) uniform texture2D _texture;
+//layout(set = 1, binding = 2) uniform texture2D _texture;
 
 layout(location = 0) out vec4 outColor;
 

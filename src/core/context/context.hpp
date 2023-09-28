@@ -256,7 +256,7 @@ namespace Symbios
              *
              * @param uniformBuffers
              */
-            void CreateDescriptorSets(std::vector<VkBuffer> uniformBuffers, VkImageView view);
+            void CreateDescriptorSets(std::vector<VkBuffer> uniformBuffers);
 
             /**
              * @brief

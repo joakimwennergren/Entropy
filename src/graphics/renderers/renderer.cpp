@@ -51,12 +51,6 @@ Renderer::Renderer()
         _uniformBuffers.push_back(new UniformBuffer(sizeof(UniformBufferObject)));
     }
 
-    ivy7 = new Sprite();
-    ivy7->position = glm::vec3(500.0, -500.0, 0.0);
-    ivy7->scale = glm::vec3(20.0, 20.0, 0.0);
-    ivy7->textureId = 2;
-    ivy7->texture->CreateTextureImage("/Users/joakim/Desktop/Symbios/resources/textures/banderoll.png");
-
     // @temp dynamic UBO
     // Calculate required alignment based on minimum device offset alignment
 
@@ -77,7 +71,7 @@ Renderer::Renderer()
         rawUniformBuffers.push_back(rawBuffer);
     }
 
-    _context->CreateDescriptorSets(rawUniformBuffers, ivy7->texture->GetImageView());
+    _context->CreateDescriptorSets(rawUniformBuffers);
 }
 
 Renderer::~Renderer()
@@ -177,11 +171,9 @@ void Renderer::Render()
             return;
         
         auto currentDescriptorSet = _context->GetDescriptorSets()[_currentFrame];
+
         vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 0, nullptr);
-
-        if (sprite->texture->hasTexture)
-            vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 1, 1, &sprite->_descriptorSet, 0, nullptr);
-
+        
         VkBuffer vertexBuffers[] = {sprite->vertexBuffer->GetVulkanBuffer()};
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);

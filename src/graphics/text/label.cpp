@@ -77,8 +77,6 @@ Label::Label(std::string text)
         g->color = glm::vec4(1.0, 0.5, 0.0, 1.0);
         g->texture = ch.glyph->texture;
 
-        g->UpdateImage();
-
         // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
         x += (ch.Advance >> 6) * 2.0f; // bitshift by 6 to get value in pixels (2^6 = 64)
         sprites.push_back(g);
