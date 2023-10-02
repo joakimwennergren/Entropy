@@ -7,6 +7,8 @@
 #include "renderable.hpp"
 #include "scenegraph.hpp"
 #include "filesystem.hpp"
+#include "global.hpp"
+
 
 using namespace Symbios::Graphics::Textures;
 using namespace Symbios::Renderables;
@@ -20,12 +22,14 @@ namespace Symbios
             class Sprite: public Renderable
             {
             public:
+
+                Sprite() = default;
                 /**
                  * @brief Construct a new Quad object
                  *
                  * @param context
                  */
-                Sprite();
+                Sprite(std::string path);
 
                 /**
                  * @brief Destroy the Quad object
@@ -42,7 +46,9 @@ namespace Symbios
                     this->texture->CreateTextureImage(path);
                 }
 
-                void SetPosition(glm::vec3 newPosition) { this->position = newPosition; };
+                inline void SetName(std::string name) {this->name = name;};
+                inline void SetPosition(float x, float y) { this->position = glm::vec3(x, y, 0.0); };
+                inline void SetScale(float x, float y) { this->scale = glm::vec3(x, y, 0.0); };
 
                 std::vector<Vertex> _vertices = {
                     {{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},

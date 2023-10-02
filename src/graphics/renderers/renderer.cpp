@@ -139,9 +139,13 @@ void Renderer::Render()
 
     vkResetCommandBuffer(currentCmdBuffer, 0);
 
+    auto currentDescriptorSet = _context->GetDescriptorSets()[_currentFrame];
+
+
     _commandBuffers[_currentFrame]->Record();
 
     _renderPass->Begin(_commandBuffers[_currentFrame], imageIndex);
+
 
     vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipeline());
 
@@ -164,22 +168,18 @@ void Renderer::Render()
     sort(Contexts::SceneGraph::GetInstance()->renderables.begin(), Contexts::SceneGraph::GetInstance()->renderables.end(), [](Renderable * lhs, Renderable * rhs) {
       return lhs->zIndex < rhs->zIndex;
     });
-
+    
     for (auto sprite : Contexts::SceneGraph::GetInstance()->renderables)
     {
-        if(!sprite->visible)
-            return;
-        
-        auto currentDescriptorSet = _context->GetDescriptorSets()[_currentFrame];
 
-        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 0, nullptr);
-        
         VkBuffer vertexBuffers[] = {sprite->vertexBuffer->GetVulkanBuffer()};
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
-
         vkCmdBindIndexBuffer(currentCmdBuffer, sprite->indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT16);
 
+        
+
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 0, nullptr);
         UniformBufferObject ubo{};
 
         auto model = glm::mat4(1.0f);
@@ -212,6 +212,7 @@ void Renderer::Render()
 
         modelCnt++;
     }
+
 
     _renderPass->End(_commandBuffers[_currentFrame]);
 

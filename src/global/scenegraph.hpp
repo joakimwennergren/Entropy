@@ -78,6 +78,11 @@ namespace Symbios
              */
             
             inline std::vector<Renderable *> GetRenderables() { return this->renderables;};
+
+            inline void Add(Renderable *renderable)
+            {
+                renderables.push_back(renderable);
+            }
             
             inline Renderable * FindObject(std::string objectName)
             {
@@ -86,6 +91,21 @@ namespace Symbios
                     if(renderable->name == objectName)
                         return renderable;
                 }
+            }
+
+            inline void RemoveObjectByName(std::string objectName)
+            {
+                int index = 0;
+                for(auto renderable : renderables)
+                {
+                    if(renderable->name == objectName)
+                    {
+                        PLOG_INFO << renderable;
+                        renderables.erase(renderables.begin()+index);
+                    }
+
+                    index++;
+                }      
             }
         };
     }

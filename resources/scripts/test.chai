@@ -1,1 +1,40 @@
-var sprite = Sprite();
+global width;
+global height;
+
+global layer_1 = Sprite("/resources/textures/layer_1.png");
+//var layer_2 = Sprite("/resources/textures/layer_2.png");
+//var layer_3 = Sprite("/resources/textures/layer_3.png");
+//var background = Sprite("/resources/textures/background.png");
+global bombmurkla = Sprite("/resources/textures/gul_kantarell.png");
+Graph.Add(layer_1);
+Graph.Add(bombmurkla);
+
+def OnUpdate()
+{
+	layer_1.SetScale(width/2, height/2);
+	layer_1.SetPosition(width/2, (height / 2) * -1);
+
+	bombmurkla.SetScale(100.0, 100.0);
+	bombmurkla.SetPosition(100.0, -100.0);
+
+	/*
+
+	layer_2.SetScale(width/2, height/2);
+	layer_2.SetPosition(width/2, (height / 2) * -1);
+
+	layer_3.SetScale(width/2, height/2);
+	layer_3.SetPosition(width/2, (height / 2) * -1);
+
+	background.SetScale(width/2, height/2);
+	background.SetPosition(width/2, (height / 2) * -1);
+
+
+	*/
+}
+
+def OnResize(w, h)
+{
+	width = w;
+	height = h;
+}
+

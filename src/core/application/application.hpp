@@ -21,6 +21,12 @@ using namespace Symbios::Graphics::Renderers;
 static void framebufferResizeCallback(GLFWwindow *window, int width, int height);
 static void cursorPositionCallback(GLFWwindow *window, double x, double y);
 
+struct Screen
+{
+    int width;
+    int height;
+};
+
 /**
  * @brief Application class
  *
@@ -65,6 +71,12 @@ public:
         Global::GetInstance()->InitializeContext(_window);
     
         _renderer = std::make_shared<Renderer>();
+
+        int width, height;
+        glfwGetFramebufferSize(_window, &width, &height);
+
+        screen.width = width;
+        screen.height = height;
     }
 
     /**
@@ -76,6 +88,8 @@ public:
         glfwDestroyWindow(_window);
         glfwTerminate();
     }
+
+    inline int GetScreenWidth() {return this->screen.width;};
 
     virtual void OnInit() = 0;
     
@@ -95,6 +109,12 @@ public:
 
         while (!glfwWindowShouldClose(_window))
         {
+            int width, height;
+            glfwGetFramebufferSize(_window, &width, &height);
+
+            screen.width = width;
+            screen.height = height;
+
             this->OnRender(0.0f);
 
             glfwPollEvents();
@@ -104,10 +124,13 @@ public:
 
 protected:
         std::shared_ptr<Context> _context;
+        GLFWwindow *_window;
+        Screen screen;
+        chaiscript::ChaiScript * chai;
 private:
 
     std::shared_ptr<Renderer> _renderer;
-    GLFWwindow *_window;
+
 
 private:
 };

@@ -31,7 +31,7 @@ namespace Symbios
         class Renderable
         {
         public:
-
+            
             void UpdateImage(VkDescriptorSet ds)
             {
 
@@ -70,16 +70,16 @@ namespace Symbios
 
                 VkDescriptorImageInfo imageInfo{};
                 imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                imageInfo.imageView = texture->hasTexture ? texture->GetImageView() : nullptr;
-                imageInfo.sampler = _context->_textureSampler;
+                imageInfo.imageView = texture->GetImageView();
+                imageInfo.sampler = texture->GetSampler();
 
                 std::array<VkWriteDescriptorSet, 1> descriptorWrites{};
 
                 descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
                 descriptorWrites[0].dstSet = ds;
-                descriptorWrites[0].dstBinding = 2;
+                descriptorWrites[0].dstBinding = 1;
                 descriptorWrites[0].dstArrayElement = 0;
-                descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+                descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                 descriptorWrites[0].descriptorCount = 1;
                 descriptorWrites[0].pImageInfo = &imageInfo;
 
@@ -134,7 +134,6 @@ namespace Symbios
              * @return const std::vector<uint16_t>
              */
             inline const std::vector<uint16_t> GetIndices() { return this->_indices; };
-
 
             std::vector<uint16_t> _indices;
             std::vector<Vertex> _vertices;

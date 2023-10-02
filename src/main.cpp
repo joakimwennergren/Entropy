@@ -1,9 +1,13 @@
 #include "symbios.hpp"
 #include "filesystem.hpp"
 #include "easing.hpp"
+#include "scenegraph.hpp"
+#include "renderable.hpp"
+#include "sprite.hpp"
 #include <chaiscript/chaiscript.hpp>
 
 using namespace Symbios::Animation;
+using namespace Symbios::Contexts;
 
 class Game : public Application
 {
@@ -11,16 +15,28 @@ public:
     
     Game()
     {
-
+        _sceneGraph = Contexts::SceneGraph::GetInstance();
     }
     
 private:
+    SceneGraph * _sceneGraph;
+
     void OnInit()
     {
-        auto chai = Global::GetInstance()->GetChaiInstance();
+        chai = Global::GetInstance()->GetChaiInstance();
 
-        chai->add(chaiscript::constructor<Sprite ()>(), "Sprite");
-        //chai->add(chaiscript::fun(&Sprite::test), "test");
+        chai->add(chaiscript::base_class<Renderable, Sprite>());
+
+        chai->add_global(chaiscript::var(_sceneGraph), "Graph"); // global non-const, throws if object exists
+        chai->add(chaiscript::fun(&SceneGraph::RemoveObjectByName), "RemoveObjectByName");
+        chai->add(chaiscript::fun(&SceneGraph::Add), "Add");
+
+        chai->add(chaiscript::constructor<Sprite(std::string path)>(), "Sprite");
+        chai->add(chaiscript::fun(&Sprite::SetScale), "SetScale");
+        chai->add(chaiscript::fun(&Sprite::SetPosition), "SetPosition");
+        chai->add(chaiscript::fun(&Sprite::SetName), "SetName");
+
+        chai->add(chaiscript::var(std::ref(screen)), "screen"); // by reference, shared between C++ and chai
 
         chai->use("/Users/joakim/Desktop/Symbios/resources/scripts/test.chai");
 
@@ -93,7 +109,12 @@ private:
 
     void OnRender(float deltaTime)
     {
-        //auto object = _sceneGraph->FindObject("banderoll");
+        auto onResize = chai->eval<std::function<void(int, int)>>("OnResize"); 
+
+        onResize(screen.width, screen.height);
+
+        auto p = chai->eval<std::function<void()>>("OnUpdate"); 
+        p();
     }
 };
 

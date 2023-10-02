@@ -15,6 +15,7 @@
 #include <mutex>
 
 #include "context.hpp"
+#include "texture.hpp"
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
 
@@ -48,12 +49,14 @@ namespace Symbios
         protected:
             Global()
             {
-                
+                masterTexture = new Texture();
+                masterTexture->CreateMasterTexture();
             }
 
             ~Global() {}
 
             std::shared_ptr<Context> vulkanContext;
+            Texture * masterTexture;
             
 
         public:
@@ -77,6 +80,8 @@ namespace Symbios
              * Finally, any singleton should define some business logic, which can be
              * executed on its instance.
              */
+
+            Texture * GetMasterTexture() {return this->masterTexture;};
 
             std::shared_ptr<Context> GetVulkanContext() { return this->vulkanContext;};
 

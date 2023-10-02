@@ -2,7 +2,7 @@
 
 using namespace Symbios::Graphics::Primitives;
 
-Sprite::Sprite()
+Sprite::Sprite(std::string path)
 {
     // Store vulkan ctx
     _context = Contexts::Global::GetInstance()->GetVulkanContext();
@@ -27,18 +27,18 @@ Sprite::Sprite()
     indexBuffer->CreateIndexBufferUint16(_indices);
 
     this->New(
-            Filesystem::GetProjectBasePath() + "/resources/textures/layer_1.png", 
+            Filesystem::GetProjectBasePath() + path, 
             glm::vec3(1240 * 1.5f, 480 * 2.0f * -1.0f, 0.0),
-            glm::vec3(100.0, 100.0, 0.0),
+            glm::vec3(0.0, 0.0, 0.0),
             glm::vec4(1.0, 1.0, 0.0, 1.0)
     );
 
+    
     for(auto ds : _context->GetDescriptorSets())
     {
         UpdateImage(ds);
     }
 
-    _sceneGraph->renderables.push_back(this);
 }
 
 Sprite::~Sprite()
