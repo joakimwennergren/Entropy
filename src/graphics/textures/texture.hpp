@@ -42,9 +42,7 @@ namespace Symbios
                  *
                  * @param path
                  */
-                void CreateTextureImage(std::string path, int layers = 1);
-
-                void CreateMasterTexture();
+                void CreateTextureImage(std::string path);
 
                 /**
                  *
@@ -58,8 +56,6 @@ namespace Symbios
                  */
                 inline VkImageView GetImageView() { return this->_imageView; };
 
-                inline VkSampler GetSampler() { return this->_textureSampler; };
-
                 bool hasTexture = false;
 
             private:
@@ -71,7 +67,7 @@ namespace Symbios
                  * @param oldLayout
                  * @param newLayout
                  */
-                void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, int layers);
+                void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 
                 /**
                  * @brief
@@ -81,7 +77,7 @@ namespace Symbios
                  * @param width
                  * @param height
                  */
-                void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, int layers);
+                void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 
                 /**
                  * @brief Create a Image object
@@ -95,12 +91,11 @@ namespace Symbios
                  * @param image
                  * @param imageMemory
                  */
-                void CreateImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory, int layers);
+                void CreateImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory);
 
                 std::shared_ptr<Context> _context;
                 std::unique_ptr<CommandBuffer> _commandBuffer;
 
-                VkSampler _textureSampler;
                 VkBuffer _stagingBuffer;
                 VkDeviceMemory _stagingBufferMemory;
                 VkImage _textureImage;

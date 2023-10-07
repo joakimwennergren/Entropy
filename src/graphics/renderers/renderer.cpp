@@ -165,7 +165,7 @@ void Renderer::Render()
 
     uint32_t modelCnt = 0;
 
-    sort(Contexts::SceneGraph::GetInstance()->renderables.begin(), Contexts::SceneGraph::GetInstance()->renderables.end(), [](Renderable * lhs, Renderable * rhs) {
+    sort(Contexts::SceneGraph::GetInstance()->renderables.begin(), Contexts::SceneGraph::GetInstance()->renderables.end(), [](std::shared_ptr<Renderable> lhs, std::shared_ptr<Renderable> rhs) {
       return lhs->zIndex < rhs->zIndex;
     });
     
@@ -176,10 +176,10 @@ void Renderer::Render()
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
         vkCmdBindIndexBuffer(currentCmdBuffer, sprite->indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT16);
-
         
-
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 1, 1, &sprite->_descriptorSet, 0, nullptr);
         vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 0, nullptr);
+        
         UniformBufferObject ubo{};
 
         auto model = glm::mat4(1.0f);
@@ -187,7 +187,22 @@ void Renderer::Render()
         auto translate = glm::translate(glm::mat4(1.0f), sprite->position);
         auto scale = glm::scale(glm::mat4(1.0), sprite->scale);
         auto rotate = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
-        auto modelRotation = glm::rotate(glm::mat4(1.0f), glm::radians(sprite->rotationX), glm::vec3(0.0, 1.0, 0.0));
+
+        auto o = glm::vec3(0.0, 0.0, 0.0);
+
+        if(sprite->orientation == 1){
+            o.x = 1;
+        }
+
+        if(sprite->orientation == 2) {
+            o.y = 1;
+        }
+
+        if(sprite->orientation == 3) {
+            o.z = 1;
+        }
+
+        auto modelRotation = glm::rotate(glm::mat4(1.0f), glm::radians(sprite->rotationX), o);
 
         InstancePushConstants constants;
         constants.modelMatrix = translate * scale * rotate * modelRotation;

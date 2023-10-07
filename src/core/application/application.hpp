@@ -10,6 +10,13 @@
 #include <plog/Appenders/ColorConsoleAppender.h>
 #include "plog/Initializers/RollingFileInitializer.h"
 
+struct Screen
+{
+    int width;
+    int height;
+};
+
+
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
 
 #include <GLFW/glfw3.h>
@@ -20,12 +27,6 @@ using namespace Symbios::Graphics::Renderers;
 
 static void framebufferResizeCallback(GLFWwindow *window, int width, int height);
 static void cursorPositionCallback(GLFWwindow *window, double x, double y);
-
-struct Screen
-{
-    int width;
-    int height;
-};
 
 /**
  * @brief Application class
@@ -53,7 +54,7 @@ public:
         }
         // glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GL_FALSE);
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        _window = glfwCreateWindow(640, 480, "Symbios dev application", NULL, NULL);
+        _window = glfwCreateWindow(640, 340, "Symbios dev application", NULL, NULL);
 
         if (!_window)
         {
@@ -244,6 +245,9 @@ public:
             lastTick = tick_time;
             
             app->OnRender(deltaTime);
+
+            app->screen.width = app->frame.size.width * 3.0;
+            app->screen.height = app->frame.size.height * 3.3;
                         
             _renderer->Render();
         }
@@ -374,6 +378,8 @@ public:
 
     std::shared_ptr<Context> _context;
     CGRect frame;
+    Screen screen;
+    chaiscript::ChaiScript * chai;
 protected:
 
 private:

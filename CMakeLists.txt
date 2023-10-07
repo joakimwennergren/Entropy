@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.7)
 
+set(CMAKE_OSX_SYSROOT macosx14.0)
+
+
+
 project(
     Symbios
     VERSION 0.0.1

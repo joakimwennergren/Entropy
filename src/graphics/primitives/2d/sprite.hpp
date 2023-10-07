@@ -31,12 +31,6 @@ namespace Symbios
                  */
                 Sprite(std::string path);
 
-                /**
-                 * @brief Destroy the Quad object
-                 *
-                 */
-                ~Sprite();
-
                 void New(std::string path, glm::vec3 position, glm::vec3 scale, glm::vec4 color)
                 {
                     this->position = position;
@@ -49,6 +43,12 @@ namespace Symbios
                 inline void SetName(std::string name) {this->name = name;};
                 inline void SetPosition(float x, float y) { this->position = glm::vec3(x, y, 0.0); };
                 inline void SetScale(float x, float y) { this->scale = glm::vec3(x, y, 0.0); };
+                inline void SetZIndex(int z) {this->zIndex = z;};
+                inline void SetRotation(float r, int orientation) {
+                    this->rotationX = r;
+                    this->orientation = orientation;
+                };
+                inline void SetColor(float r, float g, float b, float a) { this->color = glm::vec4(r,g,b,a);};
 
                 std::vector<Vertex> _vertices = {
                     {{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},

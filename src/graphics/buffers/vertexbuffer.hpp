@@ -28,7 +28,6 @@ namespace Symbios
              * @brief
              *
              */
-
             class VertexBuffer : public Buffer
             {
             public:

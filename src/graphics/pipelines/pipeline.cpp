@@ -122,11 +122,16 @@ void Pipeline::Build()
     colorBlending.blendConstants[2] = 0.0f; // Optional
     colorBlending.blendConstants[3] = 0.0f; // Optional
 
-    std::vector<VkDescriptorSetLayout> dsLayouts(1);
-
-    /*
+    std::vector<VkDescriptorSetLayout> dsLayouts(2);
 
     VkDescriptorSetLayout _tempLayout;
+
+    VkDescriptorSetLayoutBinding samplerLayoutBinding{};
+    samplerLayoutBinding.binding = 1;
+    samplerLayoutBinding.descriptorCount = 1;
+    samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
+    samplerLayoutBinding.pImmutableSamplers = nullptr;
+    samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
     VkDescriptorSetLayoutBinding texturesLayoutBinding{};
     texturesLayoutBinding.binding = 2;
@@ -135,8 +140,7 @@ void Pipeline::Build()
     texturesLayoutBinding.pImmutableSamplers = nullptr;
     texturesLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-    std::array<VkDescriptorSetLayoutBinding, 1> bindings = {texturesLayoutBinding};
-    
+    std::array<VkDescriptorSetLayoutBinding, 2> bindings = {texturesLayoutBinding, samplerLayoutBinding};
     VkDescriptorSetLayoutCreateInfo layoutInfo{};
     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
@@ -147,10 +151,8 @@ void Pipeline::Build()
         throw std::runtime_error("failed to create descriptor set layout!");
     }
 
-    */
-
     dsLayouts[0] = _context->GetDescriptorSetLayouts();
-    //dsLayouts[1] = _tempLayout;
+    dsLayouts[1] = _tempLayout;
 
     // setup push constants
     VkPushConstantRange push_constant;

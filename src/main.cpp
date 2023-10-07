@@ -5,9 +5,30 @@
 #include "renderable.hpp"
 #include "sprite.hpp"
 #include <chaiscript/chaiscript.hpp>
+#include <cmath>
 
 using namespace Symbios::Animation;
 using namespace Symbios::Contexts;
+
+float sinus(float x)
+{
+    return sin(x);
+}
+
+int random_num(int min, int max)
+{
+    return rand() % max + min;
+}
+
+float random_float()
+{
+    float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+    return r;
+}
+
+float easeOutBounce( float t ) {
+    return 1 - pow( 2, -6 * t ) * abs( cos( t * M_PI * 3.5 ) );
+}
 
 class Game : public Application
 {
@@ -15,6 +36,7 @@ public:
     
     Game()
     {
+        srand(time(nullptr));
         _sceneGraph = Contexts::SceneGraph::GetInstance();
     }
     
@@ -23,22 +45,34 @@ private:
 
     void OnInit()
     {
-        chai = Global::GetInstance()->GetChaiInstance();
+        this->chai = Global::GetInstance()->GetChaiInstance();
 
-        chai->add(chaiscript::base_class<Renderable, Sprite>());
+        this->chai->add(chaiscript::fun(&random_num), "random");
+        this->chai->add(chaiscript::fun(&random_float), "randomFloat");
+        this->chai->add(chaiscript::fun(&sinus), "sin");
+        this->chai->add(chaiscript::fun(&easeOutBounce), "easeOutBounce");
 
-        chai->add_global(chaiscript::var(_sceneGraph), "Graph"); // global non-const, throws if object exists
-        chai->add(chaiscript::fun(&SceneGraph::RemoveObjectByName), "RemoveObjectByName");
-        chai->add(chaiscript::fun(&SceneGraph::Add), "Add");
+        this->chai->add(chaiscript::base_class<Renderable, Sprite>());
 
-        chai->add(chaiscript::constructor<Sprite(std::string path)>(), "Sprite");
-        chai->add(chaiscript::fun(&Sprite::SetScale), "SetScale");
-        chai->add(chaiscript::fun(&Sprite::SetPosition), "SetPosition");
-        chai->add(chaiscript::fun(&Sprite::SetName), "SetName");
+        this->chai->add_global(chaiscript::var(_sceneGraph), "Graph"); // global non-const, throws if object exists
+        this->chai->add(chaiscript::fun(&SceneGraph::RemoveObjectByName), "RemoveObjectByName");
+        this->chai->add(chaiscript::fun(&SceneGraph::Add), "Add");
 
-        chai->add(chaiscript::var(std::ref(screen)), "screen"); // by reference, shared between C++ and chai
+        this->chai->add(chaiscript::constructor<Sprite(std::string path)>(), "Sprite");
+        this->chai->add(chaiscript::fun(&Sprite::SetScale), "SetScale");
+        this->chai->add(chaiscript::fun(&Sprite::SetPosition), "SetPosition");
+        this->chai->add(chaiscript::fun(&Sprite::SetName), "SetName");
+        this->chai->add(chaiscript::fun(&Sprite::SetZIndex), "SetZIndex");
+        this->chai->add(chaiscript::fun(&Sprite::SetRotation), "SetRotation");
+        this->chai->add(chaiscript::fun(&Sprite::SetColor), "SetColor");
 
-        chai->use("/Users/joakim/Desktop/Symbios/resources/scripts/test.chai");
+        this->chai->add(chaiscript::var(std::ref(screen)), "screen"); // by reference, shared between C++ and chai
+        this->chai->add(chaiscript::user_type<Sprite>(), "Sprite");
+        this->chai->add(chaiscript::constructor<Sprite (const Sprite &)>(), "Sprite");
+
+        //this->chai->use("/Users/joakim/Desktop/Symbios/resources/scripts/test.chai");
+
+        this->chai->use(Filesystem::GetProjectBasePath() + "/test.chai");
 
         /*
         auto _sceneGraph = Contexts::SceneGraph::GetInstance();

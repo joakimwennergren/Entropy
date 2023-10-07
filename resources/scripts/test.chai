@@ -1,35 +1,314 @@
-global width;
-global height;
+global width = 0.0;
+global height = 0.0;
+global tick = 0.0;
+//global time = 0.0;
 
-global layer_1 = Sprite("/resources/textures/layer_1.png");
-//var layer_2 = Sprite("/resources/textures/layer_2.png");
-//var layer_3 = Sprite("/resources/textures/layer_3.png");
-//var background = Sprite("/resources/textures/background.png");
-global bombmurkla = Sprite("/resources/textures/gul_kantarell.png");
-Graph.Add(layer_1);
-Graph.Add(bombmurkla);
+global title = Sprite("title.png");
+global layer_1 = Sprite("layer_1.png");
+global layer_2 = Sprite("layer_2.png");
+global layer_3 = Sprite("layer_3.png");
+global playButton = Sprite("play.png");
+global background = Sprite("background.png");
+global GulKantarell = Sprite("gul_kantarell.png");
+global Bombmurkla = Sprite("Bombmurkla.png");
+global Eldsopp = Sprite("Eldsopp.png");
+global Fjallskivling = Sprite("Stolt fjällskivling.png");
+global Vaxskivling = Sprite("Vaxskivling.png");
+
+global Leaf1 = Sprite("leaf1.png");
+global Leaf2 = Sprite("leaf2.png");
+global Leaf3 = Sprite("leaf3.png");
+global Leaf4 = Sprite("leaf4.png");
+
+global mushrooms = [GulKantarell, Bombmurkla, Eldsopp, Fjallskivling, Vaxskivling];
+
+Graph.Add(background);
+
+Graph.Add(title);
+
+Graph.Add(playButton);
+
+title.SetZIndex(99);
+playButton.SetZIndex(99);
+//Graph.Add(layer_1);
+layer_1.SetZIndex(1);
+
+/*
+Graph.Add(GulKantarell);
+Graph.Add(Bombmurkla);
+Graph.Add(Eldsopp);
+Graph.Add(Fjallskivling);
+Graph.Add(Vaxskivling);
+*/
+
+// Layer 1 possible positions
+class Position
+{
+  var x;
+  var y;
+
+  def Position(x, y) { 
+  	this.x = x;
+  	this.y = y;
+  }
+
+  def getX() { return this.x; }
+  def getY() { return this.y; }
+};
+
+global layer1PossiblePositions = [
+	Position(300.0, 340.0),
+	Position(550.0, 350.0),
+	Position(750.0, 370.0),
+	Position(950.0, 370.0),
+	Position(1150.0, 350.0),
+	Position(1350.0, 390.0),
+	Position(1550.0, 360.0),
+	Position(1750.0, 370.0),
+	Position(1950.0, 370.0),
+	Position(2150.0, 370.0)
+
+]
+
+class Mushroom 
+{
+	var sprite;
+	var scale;
+	var position;
+	var yOffset
+
+	def Mushroom() {
+
+		var spriteIndex = random(0, mushrooms.size());
+
+		print(spriteIndex);
+
+		var position = layer1PossiblePositions[random(0, layer1PossiblePositions.size())];
+
+		this.sprite = mushrooms[spriteIndex];
+		
+		if(spriteIndex == 0) {
+			this.scale = random(60, 80);
+			this.yOffset = 30.0;
+		}
+		if(spriteIndex == 1) {
+			this.scale = random(70, 90);
+			this.yOffset = 20.0;
+		}
+		if(spriteIndex == 2) {
+			this.scale = random(70, 80);
+			this.yOffset = 0.0;
+		}
+		if(spriteIndex == 3) {
+			this.scale = 180.0;
+			this.yOffset = 0.0;
+		}
+		if(spriteIndex == 4) {
+			this.scale = random(40, 50);
+			this.yOffset = 50.0;
+		}
+
+		this.position = position;
+
+		this.sprite.SetPosition(position.getX(), (position.getY() - this.yOffset) * -1);
+		this.sprite.SetScale(this.scale, this.scale);
+
+		if(random(0, 2) == 1)
+		{
+			this.sprite.SetRotation(180, 1);	
+		}
+
+
+		this.sprite.SetZIndex(0);
+		Graph.Add(this.sprite);
+	}
+
+	def PopUp()
+	{
+		var s = easeOutBounce(tick) * 50.0;
+		this.sprite.SetScale(s, s);
+	}
+
+};
+
+
+/*
+for (var i = 0; i < 3; ++i)
+{
+	 Mushroom();
+}
+*/
+
+
+
+
+
+//GulKantarell.SetPosition(position.getX(), (position.getY()) * -1);
+//GulKantarell.SetScale(60.0, 60.0);
+
+/*
+Bombmurkla.SetPosition(random(200, 640 * 2), 180 * -1);
+Bombmurkla.SetRotation(random(0, 10));
+Bombmurkla.SetScale(70.0, 70.0);
+
+Eldsopp.SetPosition(random(200, 640 * 2), 180 * -1);
+Eldsopp.SetRotation(random(0, 10));
+Eldsopp.SetScale(90.0, 90.0);
+
+Fjallskivling.SetPosition(random(200, 640 * 2), 250 * -1);
+Fjallskivling.SetRotation(random(0, 10));
+Fjallskivling.SetScale(160.0, 160.0);
+
+Vaxskivling.SetPosition(random(200, 640 * 2), 200 * -1);
+Vaxskivling.SetRotation(random(0, 10));
+Vaxskivling.SetScale(40.0, 40.0);
+*/
+
+class Leaf 
+{
+	var x;
+	var y;
+	var yoff;
+	var xVelocity;
+	var yVelocity;
+	var zIndex;
+	var time;
+
+	var mass;
+
+	// The sprite
+	var sprite;
+
+	def update()
+	{
+		var force = 0.0;
+
+		// gravity
+		force += 1.0 * 9.8; // 9.8m/s/s on earth
+
+		// add other forces in for taste - usual suspects include air resistence
+		// proportional to the square of velocity, against the direction of movement. 
+		// this has the effect of capping max speed.
+
+		var acceleration = force / this.mass; 
+		this.yVelocity += acceleration * this.time;
+
+		if(this.yVelocity < height)
+		{
+				this.sprite.SetColor(1.0, 1.0, 1.0, 1.0);
+		}
+
+		var xVelocity = this.yVelocity * 0.8;
+
+		this.sprite.SetRotation(this.yVelocity * 0.5, 3);
+		this.sprite.SetPosition(this.x - xVelocity - 600.0, this.yVelocity - (height + this.yoff));
+
+		if(this.yVelocity > height + this.yoff)
+		{
+			this.x = random(2400, 2800)
+			this.yoff = random(500, 800);
+			this.yVelocity = 0.0;
+			this.time = 0.0;
+		}
+
+  	this.time += 0.03;
+	}
+
+	def Leaf(x, m, yoff, zIndex)
+	{
+		this.x = 0.0;
+		this.y = 0.0;
+		this.mass = 0.0;
+		this.xVelocity = 0.0;
+		this.yVelocity = 0.0;
+		this.yoff = 0.0;
+		this.zIndex = 0.0;
+		this.time = 0.0;
+
+		this.x = x;
+		this.mass = m;
+		this.yoff = yoff;
+		this.zIndex = zIndex;
+
+		var random = random(0, 4);
+		if(random == 0)
+		{
+			this.sprite = Leaf1;
+		}
+		if(random == 1)
+		{
+			this.sprite = Leaf2;
+		}
+		if(random == 2)
+		{
+			this.sprite = Leaf3;
+		}
+		if(random == 3)
+		{
+			this.sprite = Leaf4;
+		}
+
+		this.sprite.SetPosition(300.0, (300.0) * -1);
+		this.sprite.SetScale(40.0, 40.0);
+		this.sprite.SetZIndex(98);
+		this.sprite.SetColor(1.0, 1.0, 1.0, 0.0);
+		Graph.Add(this.sprite);
+	}
+};
+
+global leaves = [];
+
+for(var i = 0; i < 32; ++i)
+{
+	var leaf = Leaf(random(2400, 2800), random(10, 30), random(500, 800), random(0, 2));
+	leaves.push_back_ref(leaf);
+}
+
+
+global alpha = 0.0;
 
 def OnUpdate()
 {
+
+	for(leaf : leaves)
+	{
+		leaf.update();
+	}
+
+	background.SetColor(1.0, 1.0, 1.0, alpha);
+  
+	var scale = easeOutBounce(tick);
+
+	//shroom.PopUp();
+
 	layer_1.SetScale(width/2, height/2);
 	layer_1.SetPosition(width/2, (height / 2) * -1);
-
-	bombmurkla.SetScale(100.0, 100.0);
-	bombmurkla.SetPosition(100.0, -100.0);
-
-	/*
 
 	layer_2.SetScale(width/2, height/2);
 	layer_2.SetPosition(width/2, (height / 2) * -1);
 
-	layer_3.SetScale(width/2, height/2);
+	playButton.SetScale(100, 100);
+	playButton.SetPosition(width/2, (height / 4) * -1);
+
+	layer_3.SetScale(400, 400);
 	layer_3.SetPosition(width/2, (height / 2) * -1);
+
+	title.SetScale(width/3 * scale, height/3.7 * scale);
+	title.SetPosition(width/2, (height / 2) * -1);
 
 	background.SetScale(width/2, height/2);
 	background.SetPosition(width/2, (height / 2) * -1);
 
+	tick = tick + 0.01;
 
-	*/
+	
+	
+
+
+	if(alpha < 1.0)
+	{
+		alpha = alpha + 0.005;	
+	}
 }
 
 def OnResize(w, h)
@@ -37,4 +316,3 @@ def OnResize(w, h)
 	width = w;
 	height = h;
 }
-

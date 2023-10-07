@@ -36,6 +36,7 @@ namespace Symbios
             class Buffer
             {
             public:
+
                 /**
                  * @brief Construct a new Buffer object
                  *
