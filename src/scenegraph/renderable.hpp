@@ -32,12 +32,12 @@ namespace Symbios
         {
         public:
 
+               std::vector<std::shared_ptr<Renderable>> children;
+
                virtual ~Renderable() { } 
 
                void UpdateImage()
-                {
-
-                    
+               {
                     VkDescriptorSetLayoutBinding samplerLayoutBinding{};
                     samplerLayoutBinding.binding = 1;
                     samplerLayoutBinding.descriptorCount = 1;

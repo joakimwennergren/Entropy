@@ -246,8 +246,11 @@ public:
             
             app->OnRender(deltaTime);
 
-            app->screen.width = app->frame.size.width * 3.0;
-            app->screen.height = app->frame.size.height * 3.3;
+
+            auto ratio = (app->frame.size.width) / (app->frame.size.height);
+
+            app->screen.width = app->frame.size.width * ratio * 0.95;
+            app->screen.height = app->frame.size.height * ratio;
                         
             _renderer->Render();
         }
@@ -260,19 +263,9 @@ public:
         
         float lastTick = 0.0;
         float deltaTime = 0.0;
-        
-        // MushroomHunter GameState
-        bool hasSpawnedMushrooms = false;
-        
-        const std::vector<std::string> mushrooms = {
-            "/Eldsopp.png",
-            "/Bombmurkla.png",
-            "/gul_kantarell.png",
-            "/Stolt fjällskivling.png",
-            "/Vaxskivling.png",
-        };
-        
+
     };
+
     /**
      * @brief Construct a new Application object
      *
@@ -285,6 +278,8 @@ public:
         this->_autoreleasePool = NS::AutoreleasePool::alloc()->init();
         
     }
+
+
     
     /**
      * @brief Destroy the Application object

@@ -24,6 +24,7 @@
 #include "filesystem.hpp"
 #include "global.hpp"
 #include "renderable.hpp"
+#include "scenegraph.hpp"
 
 using namespace Symbios::Renderables;
 using namespace Symbios::Graphics::Primitives;
@@ -45,13 +46,79 @@ namespace Symbios
         class Label : public Renderable
         {
         public:
-            Label(std::string text);
+            Label();
             ~Label();   
             std::vector<std::shared_ptr<Sprite>> sprites;
+
+            inline void SetPosition(float x, float y)
+            {
+                if(this->text.length() == 0)
+                    return;
+                
+                std::string::const_iterator c;
+                int cnt = 0;
+
+                for (c = text.begin(); c != text.end(); c++)
+                {
+                    Character ch = _characters[*c];
+
+                    float xpos = x + ch.Size.x;
+                    float ypos = y - (ch.Bearing.y);
+
+                    auto g = this->children[cnt];
+                    g->position = glm::vec3(xpos, ypos, 0.0);
+
+                    x += (ch.Advance >> 6) * 2.0f;
+                    cnt++;
+                }
+            }
+
+            inline void SetText(std::string text)
+            {
+                auto renderables = Symbios::Contexts::SceneGraph::GetInstance()->renderables;
+                
+                renderables.clear();
+                
+                this->children.clear();
+
+                this->text = text;
+                std::string::const_iterator c;
+                
+                float x = 300.0;
+                float y = -640.0;
+                
+                for (c = text.begin(); c != text.end(); c++)
+                {
+                    Character ch = _characters[*c];
+
+                    float xpos = x + ch.Size.x;
+                    float ypos = y - (ch.Bearing.y);
+
+                    float w = ch.Size.x;
+                    float h = ch.Size.y;
+
+                    auto g = std::make_shared<Sprite>();
+                    g->position = glm::vec3(xpos, ypos, 0.0);
+                    g->textureId = 2;
+                    g->scale = glm::vec3(w, h, 0.0);
+                    g->color = glm::vec4(1.0, 1.0, 1.0, 1.0);
+                    g->zIndex = 999;
+                    g->texture = ch.glyph->texture;
+                    g->UpdateImage();
+
+                    // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+                    x += (ch.Advance >> 6) * 2.0f; // bitshift by 6 to get value in pixels (2^6 = 64)
+                    Symbios::Contexts::SceneGraph::GetInstance()->renderables.push_back(g);
+                    this->children.push_back(g);
+                }
+            }
+            
+            inline void SetZIndex(int index) {this->zIndex = index;};
 
         private:
             FT_Library ft;
             FT_Face face;  
+            std::string text;
             std::map<int, Character> _characters;
             float maxDescent;
         };

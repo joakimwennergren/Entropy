@@ -54,7 +54,7 @@ class SecondViewController: UIViewController {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first {
             let currentPoint = touch.location(in: self.view)
-            // do something with your currentPoint
+            _touchPoint = CGPoint(x: 0, y: 0)
         }
     }
     

@@ -23,7 +23,9 @@ namespace Symbios
             {
             public:
 
-                Sprite() = default;
+                Sprite();
+                
+                Sprite(FT_Bitmap bitmap);
                 /**
                  * @brief Construct a new Quad object
                  *
@@ -41,6 +43,7 @@ namespace Symbios
                 }
 
                 inline void SetName(std::string name) {this->name = name;};
+                inline void SetId(int id) {this->id = id;};
                 inline void SetPosition(float x, float y) { this->position = glm::vec3(x, y, 0.0); };
                 inline void SetScale(float x, float y) { this->scale = glm::vec3(x, y, 0.0); };
                 inline void SetZIndex(int z) {this->zIndex = z;};

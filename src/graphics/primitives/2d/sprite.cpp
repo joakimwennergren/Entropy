@@ -2,13 +2,61 @@
 
 using namespace Symbios::Graphics::Primitives;
 
+Sprite::Sprite()
+{
+     // Store vulkan ctx
+    _context = Contexts::Global::GetInstance()->GetVulkanContext();
+
+    _indices = {
+    0, 1, 2, 2, 3, 0};
+
+    _vertices = {
+        {{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+        {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
+        {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
+        {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
+
+    texture = new Texture();
+
+    // Create buffers @todo temp!!!
+    vertexBuffer = std::make_shared<VertexBuffer>(_vertices);
+    indexBuffer = std::make_shared<Buffer>();
+    
+    indexBuffer->CreateIndexBufferUint16(_indices);  
+}
+
+Sprite::Sprite(FT_Bitmap bitmap)
+{
+     // Store vulkan ctx
+    _context = Contexts::Global::GetInstance()->GetVulkanContext();
+
+    _indices = {
+    0, 1, 2, 2, 3, 0};
+
+    _vertices = {
+        {{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+        {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
+        {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
+        {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
+
+    texture = new Texture();
+
+    // Create buffers @todo temp!!!
+    vertexBuffer = std::make_shared<VertexBuffer>(_vertices);
+    indexBuffer = std::make_shared<Buffer>();
+
+    indexBuffer->CreateIndexBufferUint16(_indices);  
+
+    texture->CreateTextureImageFromBuffer(bitmap);
+    
+    UpdateImage();
+}
+
 
 Sprite::Sprite(std::string path)
 {
     // Store vulkan ctx
     _context = Contexts::Global::GetInstance()->GetVulkanContext();
-
-    auto _sceneGraph = Contexts::SceneGraph::GetInstance();
 
     _indices = {
     0, 1, 2, 2, 3, 0};

@@ -4,11 +4,30 @@
 #include "scenegraph.hpp"
 #include "renderable.hpp"
 #include "sprite.hpp"
+#include "label.hpp"
 #include <chaiscript/chaiscript.hpp>
 #include <cmath>
 
 using namespace Symbios::Animation;
 using namespace Symbios::Contexts;
+
+extern "C" CGPoint touch();
+
+struct TPoint
+{
+    float x;
+    float y;
+};
+
+float GetTouchPointX() {
+    CGPoint point = touch();
+    return (float)point.x * 3.0;
+}
+
+float GetTouchPointY() {
+    CGPoint point = touch();
+    return (float)point.y * 3.3;
+}
 
 float sinus(float x)
 {
@@ -47,31 +66,45 @@ private:
     {
         this->chai = Global::GetInstance()->GetChaiInstance();
 
+        this->chai->add(chaiscript::constructor<Label(const Label &)>(), "Label");
+        this->chai->add(chaiscript::constructor<Label ()>(), "Label");
+        this->chai->add(chaiscript::fun(&Label::SetZIndex), "SetZIndex");
+        this->chai->add(chaiscript::fun(&Label::SetPosition), "SetPosition");
+        this->chai->add(chaiscript::fun(&Label::SetText), "SetText");
+
+        this->chai->add(chaiscript::fun(&GetTouchPointX), "TouchPointX");
+        this->chai->add(chaiscript::fun(&GetTouchPointY), "TouchPointY");
+
         this->chai->add(chaiscript::fun(&random_num), "random");
         this->chai->add(chaiscript::fun(&random_float), "randomFloat");
         this->chai->add(chaiscript::fun(&sinus), "sin");
         this->chai->add(chaiscript::fun(&easeOutBounce), "easeOutBounce");
 
         this->chai->add(chaiscript::base_class<Renderable, Sprite>());
+        this->chai->add(chaiscript::base_class<Renderable, Label>());
 
         this->chai->add_global(chaiscript::var(_sceneGraph), "Graph"); // global non-const, throws if object exists
-        this->chai->add(chaiscript::fun(&SceneGraph::RemoveObjectByName), "RemoveObjectByName");
+        this->chai->add(chaiscript::fun(&SceneGraph::RemoveObjectById), "RemoveObjectById");
         this->chai->add(chaiscript::fun(&SceneGraph::Add), "Add");
+        this->chai->add(chaiscript::fun(&SceneGraph::Remove), "Remove");
 
         this->chai->add(chaiscript::constructor<Sprite(std::string path)>(), "Sprite");
         this->chai->add(chaiscript::fun(&Sprite::SetScale), "SetScale");
         this->chai->add(chaiscript::fun(&Sprite::SetPosition), "SetPosition");
         this->chai->add(chaiscript::fun(&Sprite::SetName), "SetName");
+        this->chai->add(chaiscript::fun(&Sprite::SetId), "SetId");
         this->chai->add(chaiscript::fun(&Sprite::SetZIndex), "SetZIndex");
         this->chai->add(chaiscript::fun(&Sprite::SetRotation), "SetRotation");
         this->chai->add(chaiscript::fun(&Sprite::SetColor), "SetColor");
 
         this->chai->add(chaiscript::var(std::ref(screen)), "screen"); // by reference, shared between C++ and chai
+        
+
+
         this->chai->add(chaiscript::user_type<Sprite>(), "Sprite");
         this->chai->add(chaiscript::constructor<Sprite (const Sprite &)>(), "Sprite");
-
+        
         //this->chai->use("/Users/joakim/Desktop/Symbios/resources/scripts/test.chai");
-
         this->chai->use(Filesystem::GetProjectBasePath() + "/test.chai");
 
         /*

@@ -105,6 +105,10 @@ namespace Symbios
                 // @refactored buffers!!
                 std::vector<UniformBuffer *> _uniformBuffers;
 
+                VkCommandBuffer currentCmdBuffer;
+
+                VkDescriptorSet currentDescriptorSet;
+
                 // @todo remove this
                 Sprite *ivy7; 
             };

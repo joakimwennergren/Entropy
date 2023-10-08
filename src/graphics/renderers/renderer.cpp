@@ -172,6 +172,9 @@ void Renderer::Render()
     for (auto sprite : Contexts::SceneGraph::GetInstance()->renderables)
     {
 
+        if(sprite->vertexBuffer == nullptr)
+            continue;
+
         VkBuffer vertexBuffers[] = {sprite->vertexBuffer->GetVulkanBuffer()};
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
@@ -212,6 +215,7 @@ void Renderer::Render()
         {
             constants.textureId = sprite->textureId;
         }
+
 
         // upload the matrix to the GPU via push constants
         vkCmdPushConstants(currentCmdBuffer, _pipeline->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(InstancePushConstants), &constants);

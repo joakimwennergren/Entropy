@@ -81,7 +81,22 @@ namespace Symbios
 
             inline void Add(std::shared_ptr<Renderable> renderable)
             {
-                renderables.push_back(renderable);
+                if(renderable->children.size() > 0)
+                {
+                    for(auto child : renderable->children)
+                    {
+                      renderables.push_back(child);        
+                    }
+
+                } else {
+                    renderables.push_back(renderable);    
+                }
+
+            }
+
+            inline void Remove(std::shared_ptr<Renderable> renderable)
+            {
+                renderable.reset();
             }
             
             inline std::shared_ptr<Renderable> FindObject(std::string objectName)
@@ -93,19 +108,20 @@ namespace Symbios
                 }
             }
 
-            inline void RemoveObjectByName(std::string objectName)
+            inline void RemoveObjectById(int id)
             {
+                /*
                 int index = 0;
                 for(auto renderable : renderables)
                 {
-                    if(renderable->name == objectName)
+                    if(renderable->id == id)
                     {
-                        PLOG_INFO << renderable;
                         renderables.erase(renderables.begin()+index);
                     }
 
                     index++;
-                }      
+                } 
+                 */
             }
         };
     }
