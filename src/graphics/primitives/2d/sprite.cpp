@@ -22,7 +22,9 @@ Sprite::Sprite()
     vertexBuffer = std::make_shared<VertexBuffer>(_vertices);
     indexBuffer = std::make_shared<Buffer>();
     
-    indexBuffer->CreateIndexBufferUint16(_indices);  
+    indexBuffer->CreateIndexBufferUint16(_indices); 
+
+    _descriptorSetLayout = nullptr;
 }
 
 Sprite::Sprite(FT_Bitmap bitmap)
@@ -48,8 +50,6 @@ Sprite::Sprite(FT_Bitmap bitmap)
     indexBuffer->CreateIndexBufferUint16(_indices);  
 
     texture->CreateTextureImageFromBuffer(bitmap);
-    
-    UpdateImage();
 }
 
 
@@ -81,7 +81,11 @@ Sprite::Sprite(std::string path)
             glm::vec3(0.0, 0.0, 0.0),
             glm::vec4(1.0, 1.0, 1.0, 1.0)
     );
-
     
     UpdateImage();
+}
+
+Sprite::~Sprite()
+{
+    PLOG_DEBUG << "SPRITE DESCRUCTOR CALLED!";
 }

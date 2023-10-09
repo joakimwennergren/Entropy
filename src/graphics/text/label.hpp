@@ -75,9 +75,12 @@ namespace Symbios
 
             inline void SetText(std::string text)
             {
-                auto renderables = Symbios::Contexts::SceneGraph::GetInstance()->renderables;
-                
-                renderables.clear();
+                auto sceneGraph = Symbios::Contexts::SceneGraph::GetInstance();
+
+                for(auto child : children)
+                {
+                    sceneGraph->Remove(child);
+                }
                 
                 this->children.clear();
 
@@ -100,6 +103,7 @@ namespace Symbios
                     auto g = std::make_shared<Sprite>();
                     g->position = glm::vec3(xpos, ypos, 0.0);
                     g->textureId = 2;
+                    g->id = rand() % 9999999999;
                     g->scale = glm::vec3(w, h, 0.0);
                     g->color = glm::vec4(1.0, 1.0, 1.0, 1.0);
                     g->zIndex = 999;

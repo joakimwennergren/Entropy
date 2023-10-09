@@ -127,7 +127,7 @@ protected:
         std::shared_ptr<Context> _context;
         GLFWwindow *_window;
         Screen screen;
-        chaiscript::ChaiScript * chai;
+        chaiscript::ChaiScript chai;
 private:
 
     std::shared_ptr<Renderer> _renderer;
@@ -374,7 +374,7 @@ public:
     std::shared_ptr<Context> _context;
     CGRect frame;
     Screen screen;
-    chaiscript::ChaiScript * chai;
+    chaiscript::ChaiScript chai;
 protected:
 
 private:

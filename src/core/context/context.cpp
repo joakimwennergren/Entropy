@@ -126,6 +126,7 @@ Context::~Context()
     // Last
     vkDestroyInstance(this->_instance, nullptr);
 }
+
 #ifdef USE_VALIDATION_LAYERS
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,

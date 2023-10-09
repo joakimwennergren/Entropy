@@ -171,7 +171,6 @@ void Renderer::Render()
     
     for (auto sprite : Contexts::SceneGraph::GetInstance()->renderables)
     {
-
         if(sprite->vertexBuffer == nullptr)
             continue;
 

@@ -31,10 +31,17 @@ namespace Symbios
         class Renderable
         {
         public:
-
+               int id = 0;
                std::vector<std::shared_ptr<Renderable>> children;
 
-               virtual ~Renderable() { } 
+               ~Renderable() { 
+
+               } 
+
+                void Clean()
+                {
+                    vkDestroyDescriptorSetLayout(_context->GetLogicalDevice(), _descriptorSetLayout, nullptr);
+                }
 
                void UpdateImage()
                {
@@ -107,6 +114,8 @@ namespace Symbios
 
             int zIndex = 0;
 
+
+
             std::string name;
 
             inline bool hasBeenTouched(float x, float y)
@@ -117,8 +126,6 @@ namespace Symbios
                 }
                 return false;
             }
-
-            int id = 0;
 
             bool visible = true;
 
