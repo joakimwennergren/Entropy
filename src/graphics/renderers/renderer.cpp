@@ -5,7 +5,7 @@ using namespace Symbios::Graphics::Renderers;
 Renderer::Renderer()
 {
     // Store vulkan ctx
-    _context = Global::GetInstance()->GetVulkanContext();
+    _context = Global::VulkanContext::GetInstance()->GetVulkanContext();
 
     // Create renderpass
     _renderPass = std::make_shared<RenderPass>();
@@ -165,11 +165,11 @@ void Renderer::Render()
 
     uint32_t modelCnt = 0;
 
-    sort(Contexts::SceneGraph::GetInstance()->renderables.begin(), Contexts::SceneGraph::GetInstance()->renderables.end(), [](Renderable * lhs, Renderable * rhs) {
+    sort(Global::SceneGraph::GetInstance()->renderables.begin(), Global::SceneGraph::GetInstance()->renderables.end(), [](Renderable * lhs, Renderable * rhs) {
       return lhs->zIndex < rhs->zIndex;
     });
     
-    for (auto sprite : Contexts::SceneGraph::GetInstance()->renderables)
+    for (auto sprite : Global::SceneGraph::GetInstance()->renderables)
     {
         if(sprite->vertexBuffer == nullptr)
             continue;

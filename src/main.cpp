@@ -10,7 +10,7 @@
 #include <sol/sol.hpp>
 
 using namespace Symbios::Animation;
-using namespace Symbios::Contexts;
+using namespace Symbios::Global;
 
 float easeOutBounce( float t ) {
     return 1 - pow( 2, -6 * t ) * abs( cos( t * M_PI * 3.5 ) );
@@ -21,7 +21,7 @@ class Primitives
 public:
     Primitives()
     {
-        _sceneGraph = Contexts::SceneGraph::GetInstance();
+        _sceneGraph = Global::SceneGraph::GetInstance();
     }
 
     Sprite * CreateSprite(std::string path)
@@ -55,7 +55,7 @@ public:
     Game()
     {
         srand(time(nullptr));
-        _sceneGraph = Contexts::SceneGraph::GetInstance();
+        _sceneGraph = Global::SceneGraph::GetInstance();
     }
 
 
@@ -91,7 +91,7 @@ private:
         sprite_type["SetPosition"] = &Sprite::SetPosition;
         sprite_type["SetScale"] = &Sprite::SetScale;
 
-        lua.script_file(Filesystem::GetProjectBasePath() +  "/main.lua");
+        lua.script_file(Filesystem::GetScriptsDir() +  "main.lua");
 
         /*
         this->chai.add(chaiscript::constructor<Label(const Label &)>(), "Label");

@@ -5,7 +5,7 @@ using namespace Symbios::Graphics::Buffers;
 StagedBuffer::StagedBuffer(VkDeviceSize size, uint8_t *dataIn)
 {
     // Store vulkan ctx
-    _context = Contexts::Global::GetInstance()->GetVulkanContext();
+    _context = Global::VulkanContext::GetInstance()->GetVulkanContext();
 
     CreateBuffer(_context, size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, _buffer, _bufferMemory);
 

@@ -16,7 +16,7 @@
 #include "vertex.hpp"
 #include "utilities.hpp"
 #include "commandbuffer.hpp"
-#include "global.hpp"
+#include "vulkancontext.hpp"
 
 using namespace Symbios::Core;
 using namespace Symbios::Graphics::Utilities;

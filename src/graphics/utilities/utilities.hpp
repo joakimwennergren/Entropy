@@ -12,7 +12,7 @@
 #pragma once
 
 #include "context.hpp"
-#include "global.hpp"
+#include "vulkancontext.hpp"
 
 using namespace Symbios::Core;
 

@@ -2,11 +2,9 @@ cmake_minimum_required(VERSION 3.7)
 
 set(CMAKE_OSX_SYSROOT macosx14.0)
 
-
-
 project(
     Symbios
-    VERSION 0.0.1
+    VERSION 1.0
     LANGUAGES CXX
 )
 
@@ -59,7 +57,8 @@ target_sources(Symbios PRIVATE
     src/graphics/primitives/2d/sprite.cpp
     
     # Globals
-    src/global/global.cpp
+    src/global/assets.cpp
+    src/global/vulkancontext.cpp
     src/global/scenegraph.cpp
 
     # Text

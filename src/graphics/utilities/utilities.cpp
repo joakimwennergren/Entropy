@@ -6,7 +6,7 @@ uint32_t Utility::FindMemoryTypeIndex(uint32_t typeFilter, VkMemoryPropertyFlags
 {
 
     // Store vulkan ctx
-    auto _context = Contexts::Global::GetInstance()->GetVulkanContext();
+    auto _context = Global::VulkanContext::GetInstance()->GetVulkanContext();
 
 
     // Get the physical device's memory properties

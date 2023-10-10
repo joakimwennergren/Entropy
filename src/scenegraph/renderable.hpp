@@ -15,7 +15,7 @@
 #include "texture.hpp"
 #include "vertexbuffer.hpp"
 #include "buffer.hpp"
-#include "global.hpp"
+#include "vulkancontext.hpp"
 
 #include <string>
 #include <unordered_map>

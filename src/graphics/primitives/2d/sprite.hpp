@@ -7,7 +7,7 @@
 #include "renderable.hpp"
 #include "scenegraph.hpp"
 #include "filesystem.hpp"
-#include "global.hpp"
+#include "vulkancontext.hpp"
 
 
 using namespace Symbios::Graphics::Textures;

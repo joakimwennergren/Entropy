@@ -18,13 +18,13 @@
 #include "vertex.hpp"
 #include "instance.hpp"
 #include "instance_pushcontants.hpp"
-#include "global.hpp"
+#include "vulkancontext.hpp"
 
 using namespace Symbios::Core;
 using namespace Symbios::Filesystem;
 using namespace Symbios::Graphics::Shaders;
 using namespace Symbios::Graphics::RenderPasses;
-using namespace Symbios::Contexts;
+using namespace Symbios::Global;
 
 namespace Symbios
 {

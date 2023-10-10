@@ -19,9 +19,7 @@ namespace Symbios
 #endif
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
-            return std::filesystem::current_path()
-                       .string() +
-                   "/..";
+            return std::filesystem::current_path().string() + "/..";
 #endif
 
 #ifdef BUILD_FOR_IOS
@@ -40,6 +38,51 @@ namespace Symbios
 #endif
 
             return "";
+        }
+
+        inline static std::string GetTexturesDir()
+        {
+            #ifdef BUILD_FOR_IOS
+                return Filesystem::GetProjectBasePath();
+            #else 
+                return Filesystem::GetProjectBasePath() + "/resources/textures/"; 
+            #endif
+        }
+
+        inline static std::string GetScriptsDir()
+        {
+            #ifdef BUILD_FOR_IOS
+                return Filesystem::GetProjectBasePath();
+            #else 
+                return Filesystem::GetProjectBasePath() + "/resources/scripts/"; 
+            #endif
+        }
+
+        inline static std::string GetSpritesDir()
+        {
+            #ifdef BUILD_FOR_IOS
+                return Filesystem::GetProjectBasePath();
+            #else 
+                return Filesystem::GetProjectBasePath() + "/resources/sprites/"; 
+            #endif
+        }
+
+        inline static std::string GetShadersDir()
+        {
+            #ifdef BUILD_FOR_IOS
+                return Filesystem::GetProjectBasePath();
+            #else 
+                return Filesystem::GetProjectBasePath() + "/shaders/basic/"; 
+            #endif
+        }
+
+        inline static std::string GetFontsDir()
+        {
+            #ifdef BUILD_FOR_IOS
+                return Filesystem::GetProjectBasePath();
+            #else 
+                return Filesystem::GetProjectBasePath() + "/resources/fonts/"; 
+            #endif
         }
     }
 }

@@ -9,7 +9,7 @@ using namespace Symbios::Graphics::Textures;
 Texture::Texture()
 {
     // Store vulkan ctx
-    _context = Contexts::Global::GetInstance()->GetVulkanContext();
+    _context = Global::VulkanContext::GetInstance()->GetVulkanContext();
     _commandBuffer = std::make_unique<CommandBuffer>();
 }
 
@@ -44,9 +44,6 @@ void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap)
 
 void Texture::CreateTextureImage(std::string path)
 {
-
-    PLOG_INFO << path;
-
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
     auto colorFormat = VK_FORMAT_R8G8B8A8_UNORM;
 #else
@@ -83,6 +80,12 @@ void Texture::CreateTextureImage(std::string path)
     _imageView = _context->CreateImageView(_textureImage, colorFormat);
 
     hasTexture = true;
+
+    #if USE_DEBUG_INFO == 1
+
+        PLOG_DEBUG << "Successfully loaded texture: " + path;
+
+    #endif
 }
 
 void Texture::CreateImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory)

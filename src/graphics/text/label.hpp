@@ -22,7 +22,7 @@
 
 #include "sprite.hpp"
 #include "filesystem.hpp"
-#include "global.hpp"
+#include "vulkancontext.hpp"
 #include "renderable.hpp"
 #include "scenegraph.hpp"
 
@@ -75,12 +75,7 @@ namespace Symbios
 
             inline void SetText(std::string text)
             {
-                auto sceneGraph = Symbios::Contexts::SceneGraph::GetInstance();
-
-                for(auto child : children)
-                {
-                    sceneGraph->Remove(child);
-                }
+                auto sceneGraph = Symbios::Global::SceneGraph::GetInstance();
                 
                 this->children.clear();
 
@@ -112,7 +107,7 @@ namespace Symbios
 
                     // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
                     x += (ch.Advance >> 6) * 2.0f; // bitshift by 6 to get value in pixels (2^6 = 64)
-                    Symbios::Contexts::SceneGraph::GetInstance()->renderables.push_back(g);
+                    Symbios::Global::SceneGraph::GetInstance()->renderables.push_back(g);
                     //this->children.push_back(g);
                 }
             }

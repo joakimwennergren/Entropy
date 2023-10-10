@@ -5,7 +5,7 @@ using namespace Symbios::Graphics::Primitives;
 Quad::Quad()
 {
     // Store vulkan ctx
-    _context = Contexts::Global::GetInstance()->GetVulkanContext();
+    _context = Global::VulkanContext::GetInstance()->GetVulkanContext();
 
     _indices = {
     0, 1, 2, 2, 3, 0};

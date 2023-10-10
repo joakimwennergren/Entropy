@@ -69,7 +69,7 @@ public:
         glfwSetCursorPosCallback(_window, cursorPositionCallback);
 
 
-        Global::GetInstance()->InitializeContext(_window);
+        Global::VulkanContext::GetInstance()->InitializeContext(_window);
     
         _renderer = std::make_shared<Renderer>();
 
@@ -333,14 +333,14 @@ public:
         
         CA::MetalLayer *layer = _pMtkView->currentDrawable()->layer();
         
-        Global::GetInstance()->InitializeContext(layer, frame);
+        Global::VulkanContext::GetInstance()->InitializeContext(layer, frame);
         
         auto renderer = std::make_shared<Renderer>();
         
         _pViewDelegate->SetRenderer(renderer);
         _pViewDelegate->frame = frame;
         
-        this->_context = Global::GetInstance()->GetVulkanContext();
+        this->_context = Global::VulkanContext::GetInstance()->GetVulkanContext();
 
         OnInit();
         

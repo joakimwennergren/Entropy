@@ -5,7 +5,7 @@ using namespace Symbios::Graphics::Primitives;
 Sprite::Sprite()
 {
      // Store vulkan ctx
-    _context = Contexts::Global::GetInstance()->GetVulkanContext();
+    _context = Global::VulkanContext::GetInstance()->GetVulkanContext();
 
     _indices = {
     0, 1, 2, 2, 3, 0};
@@ -30,7 +30,7 @@ Sprite::Sprite()
 Sprite::Sprite(FT_Bitmap bitmap)
 {
      // Store vulkan ctx
-    _context = Contexts::Global::GetInstance()->GetVulkanContext();
+    _context = Global::VulkanContext::GetInstance()->GetVulkanContext();
 
     _indices = {
     0, 1, 2, 2, 3, 0};
@@ -56,7 +56,7 @@ Sprite::Sprite(FT_Bitmap bitmap)
 Sprite::Sprite(std::string path)
 {
     // Store vulkan ctx
-    _context = Contexts::Global::GetInstance()->GetVulkanContext();
+    _context = Global::VulkanContext::GetInstance()->GetVulkanContext();
 
     _indices = {
     0, 1, 2, 2, 3, 0};
@@ -76,7 +76,7 @@ Sprite::Sprite(std::string path)
     indexBuffer->CreateIndexBufferUint16(_indices);
 
     this->New(
-            Filesystem::GetProjectBasePath() + "/" + path, 
+            Filesystem::GetSpritesDir() + path, 
             glm::vec3(1240 * 1.5f, 480 * 2.0f * -1.0f, 0.0),
             glm::vec3(0.0, 0.0, 0.0),
             glm::vec4(1.0, 1.0, 1.0, 1.0)

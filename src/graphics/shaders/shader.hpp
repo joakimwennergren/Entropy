@@ -14,10 +14,10 @@
 #include <fstream>
 
 #include "context.hpp"
-#include "global.hpp"
+#include "vulkancontext.hpp"
 
 using namespace Symbios::Core;
-using namespace Symbios::Contexts;
+using namespace Symbios::Global;
 
 namespace Symbios
 {

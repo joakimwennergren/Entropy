@@ -8,7 +8,7 @@
 #include "context.hpp"
 #include "buffer.hpp"
 #include "commandbuffer.hpp"
-
+#include "config.hpp"
 #include "stagedbuffer.hpp"
 
 using namespace Symbios::Core;
