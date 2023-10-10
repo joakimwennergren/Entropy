@@ -31,12 +31,11 @@ namespace Symbios
         class Renderable
         {
         public:
+
+               virtual ~Renderable() {};
+
                int id = 0;
                std::vector<std::shared_ptr<Renderable>> children;
-
-               ~Renderable() { 
-
-               } 
 
                 void Clean()
                 {
@@ -70,12 +69,12 @@ namespace Symbios
                         throw std::runtime_error("failed to create descriptor set layout!");
                     }
 
-                    std::vector<VkDescriptorSetLayout> layouts(MAX_CONCURRENT_FRAMES_IN_FLIGHT, _descriptorSetLayout);
+                    std::vector<VkDescriptorSetLayout> layouts(1, _descriptorSetLayout);
 
                     VkDescriptorSetAllocateInfo allocInfo{};
                     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
                     allocInfo.descriptorPool = _context->GetDescriptorPool();
-                    allocInfo.descriptorSetCount = MAX_CONCURRENT_FRAMES_IN_FLIGHT;
+                    allocInfo.descriptorSetCount = 1; //MAX_CONCURRENT_FRAMES_IN_FLIGHT;
                     allocInfo.pSetLayouts = layouts.data();
 
                     if (vkAllocateDescriptorSets(_context->GetLogicalDevice(), &allocInfo, &_descriptorSet) != VK_SUCCESS)
@@ -90,26 +89,23 @@ namespace Symbios
 
                     std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 
-                    for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
-                    {
-                        descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                        descriptorWrites[0].dstSet = _descriptorSet;
-                        descriptorWrites[0].dstBinding = 2;
-                        descriptorWrites[0].dstArrayElement = 0;
-                        descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-                        descriptorWrites[0].descriptorCount = 1;
-                        descriptorWrites[0].pImageInfo = &imageInfo;
+                    descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                    descriptorWrites[0].dstSet = _descriptorSet;
+                    descriptorWrites[0].dstBinding = 2;
+                    descriptorWrites[0].dstArrayElement = 0;
+                    descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+                    descriptorWrites[0].descriptorCount = 1;
+                    descriptorWrites[0].pImageInfo = &imageInfo;
 
-                        descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                        descriptorWrites[1].dstSet = _descriptorSet;
-                        descriptorWrites[1].dstBinding = 1;
-                        descriptorWrites[1].dstArrayElement = 0;
-                        descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
-                        descriptorWrites[1].descriptorCount = 1;
-                        descriptorWrites[1].pImageInfo = &imageInfo;
+                    descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                    descriptorWrites[1].dstSet = _descriptorSet;
+                    descriptorWrites[1].dstBinding = 1;
+                    descriptorWrites[1].dstArrayElement = 0;
+                    descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
+                    descriptorWrites[1].descriptorCount = 1;
+                    descriptorWrites[1].pImageInfo = &imageInfo;
 
-                        vkUpdateDescriptorSets(_context->GetLogicalDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
-                    }
+                    vkUpdateDescriptorSets(_context->GetLogicalDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
                 }
 
             int zIndex = 0;

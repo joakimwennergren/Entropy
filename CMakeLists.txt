@@ -24,10 +24,16 @@ add_subdirectory(external/plog)
 # GLM
 add_subdirectory(external/glm)
 
+# Lua Cmake
+set(LUA_BUILD_COMPILER OFF)
+add_subdirectory(external/Lua)
+
+# Lua SOL
+add_subdirectory(external/sol2)
+
 # Text rendering
 set(FT_WITH_BZIP2 OFF)
 add_subdirectory(external/freetype-2.10.0)
-
 
 add_executable(Symbios)
 
@@ -130,6 +136,8 @@ target_link_libraries(Symbios
     glm
 
     # Scripting
+    sol2
+    lua_static
 )
 
 if(NOT XCODE)
@@ -145,6 +153,8 @@ if(NOT XCODE)
         freetype
 
         # Scripting
+        sol2
+        lua_static
 
     )
 endif()
@@ -160,6 +170,10 @@ if(XCODE)
 
         # Text shaping
         freetype
+
+        # Scripting
+        sol2
+        lua_static
 
         "-framework foundation"
         "-framework metal"

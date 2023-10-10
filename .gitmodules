@@ -28,3 +28,9 @@
 [submodule "ChaiScript"]
 	path = external/ChaiScript
 	url = https://github.com/ChaiScript/ChaiScript.git
+[submodule "sol2"]
+	path = external/sol2
+	url = https://github.com/ThePhD/sol2.git
+[submodule "Lua"]
+	path = external/Lua
+	url = https://github.com/walterschell/Lua.git

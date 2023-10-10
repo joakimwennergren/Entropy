@@ -100,7 +100,7 @@ namespace Symbios
                     float w = ch.Size.x;
                     float h = ch.Size.y;
 
-                    auto g = std::make_shared<Sprite>();
+                    auto g = new Sprite();
                     g->position = glm::vec3(xpos, ypos, 0.0);
                     g->textureId = 2;
                     g->id = rand() % 9999999999;
@@ -113,7 +113,7 @@ namespace Symbios
                     // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
                     x += (ch.Advance >> 6) * 2.0f; // bitshift by 6 to get value in pixels (2^6 = 64)
                     Symbios::Contexts::SceneGraph::GetInstance()->renderables.push_back(g);
-                    this->children.push_back(g);
+                    //this->children.push_back(g);
                 }
             }
             

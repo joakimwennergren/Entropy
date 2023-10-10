@@ -7,63 +7,93 @@
 #include "label.hpp"
 #include <chaiscript/chaiscript.hpp>
 #include <cmath>
+#include <sol/sol.hpp>
 
 using namespace Symbios::Animation;
 using namespace Symbios::Contexts;
-
-extern "C" CGPoint touch();
-
-struct TPoint
-{
-    float x;
-    float y;
-};
-
-float GetTouchPointX() {
-    CGPoint point = touch();
-    return (float)point.x * 3.0;
-}
-
-float GetTouchPointY() {
-    CGPoint point = touch();
-    return (float)point.y * 3.3;
-}
-
-float sinus(float x)
-{
-    return sin(x);
-}
-
-int random_num(int min, int max)
-{
-    return rand() % max + min;
-}
-
-float random_float()
-{
-    float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-    return r;
-}
 
 float easeOutBounce( float t ) {
     return 1 - pow( 2, -6 * t ) * abs( cos( t * M_PI * 3.5 ) );
 }
 
+class Primitives
+{
+public:
+    Primitives()
+    {
+        _sceneGraph = Contexts::SceneGraph::GetInstance();
+    }
+
+    Sprite * CreateSprite(std::string path)
+    {
+        const auto sprite = new Sprite(path);
+        _sceneGraph->Add(sprite);
+        return sprite;
+    }
+
+    void RemoveSprite(Sprite * sprite)
+    {
+        for(auto renderable : _sceneGraph->renderables)
+        {
+            if(renderable == sprite)
+            {
+                PLOG_DEBUG << "FOUND SPRITE... deleting";
+                delete sprite;
+            }
+        }
+    }
+
+private:
+        SceneGraph * _sceneGraph;
+
+};
+
 class Game : public Application
 {
 public:
-    
+    sol::state lua;
     Game()
     {
         srand(time(nullptr));
         _sceneGraph = Contexts::SceneGraph::GetInstance();
     }
+
+
     
 private:
     SceneGraph * _sceneGraph;
 
     void OnInit()
     {
+
+        lua.open_libraries(sol::lib::base);
+        lua.open_libraries(sol::lib::math);
+        lua.open_libraries(sol::lib::table);
+        lua.open_libraries(sol::lib::os);
+        lua.open_libraries(sol::lib::package);
+
+        lua.set_function("CreateSprite", &Primitives::CreateSprite, Primitives());
+        lua.set_function("RemoveSprite", &Primitives::RemoveSprite, Primitives());
+
+        lua.new_usertype<SceneGraph>("SceneGraph",
+            "new", sol::no_constructor,
+            "getInstance", &SceneGraph::GetInstance,
+            "Add", &SceneGraph::Add
+        );
+
+        // make usertype metatable
+        sol::usertype<Sprite> sprite_type = lua.new_usertype<Sprite>(
+            "Sprite", sol::constructors<Sprite(std::string)>(),
+            sol::base_classes, sol::bases<Renderable>()
+        );
+
+        // typical member function that returns a variable
+        sprite_type["SetPosition"] = &Sprite::SetPosition;
+        sprite_type["SetScale"] = &Sprite::SetScale;
+
+        lua.script_file(Filesystem::GetProjectBasePath() +  "/main.lua");
+
+        /*
         this->chai.add(chaiscript::constructor<Label(const Label &)>(), "Label");
         this->chai.add(chaiscript::constructor<Label ()>(), "Label");
         this->chai.add(chaiscript::fun(&Label::SetZIndex), "SetZIndex");
@@ -104,16 +134,11 @@ private:
         
         //this->chai->use("/Users/joakim/Desktop/Symbios/resources/scripts/test.chai");
         this->chai.use(Filesystem::GetProjectBasePath() + "/test.chai");
+        */
     }
 
     void OnRender(float deltaTime)
     {
-        auto onResize = chai.eval<std::function<void(int, int)>>("OnResize"); 
-
-        onResize(screen.width, screen.height);
-
-        auto p = chai.eval<std::function<void()>>("OnUpdate"); 
-        p();
     }
 };
 

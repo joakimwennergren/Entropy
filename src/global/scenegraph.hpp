@@ -52,7 +52,7 @@ namespace Symbios
 
         public:
 
-            std::vector<std::shared_ptr<Renderable>> renderables;
+            std::vector<Renderable *> renderables;
             
             /**
              * Singletons should not be cloneable.
@@ -77,13 +77,11 @@ namespace Symbios
              * executed on its instance.
              */
             
-            inline std::vector<std::shared_ptr<Renderable>> GetRenderables() { return this->renderables;};
+            inline std::vector<Renderable *> GetRenderables() { return this->renderables;};
 
-            inline void Add(std::shared_ptr<Renderable> renderable)
+            inline void Add(Renderable * renderable)
             {
-                PLOG_DEBUG << "PRE PUSH";
-                renderables.push_back(std::move(renderable));
-                PLOG_DEBUG << "POST PUSH";
+                renderables.push_back(renderable);
             }
 
             inline void Remove(std::shared_ptr<Renderable> renderable)
@@ -97,7 +95,7 @@ namespace Symbios
                 }
             }
             
-            inline std::shared_ptr<Renderable> FindObject(std::string objectName)
+            inline Renderable * FindObject(std::string objectName)
             {
                 for(auto renderable : renderables)
                 {
