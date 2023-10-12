@@ -895,10 +895,10 @@ void Context::CreateDescriptorPool()
     poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
 
     poolSizes[1].type = VK_DESCRIPTOR_TYPE_SAMPLER;
-    poolSizes[1].descriptorCount = 1000;
+    poolSizes[1].descriptorCount = 10000;
 
     poolSizes[2].type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-    poolSizes[2].descriptorCount = 1000;
+    poolSizes[2].descriptorCount = 10000;
 
     VkDescriptorPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;

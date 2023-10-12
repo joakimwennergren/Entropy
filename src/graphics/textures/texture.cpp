@@ -82,9 +82,7 @@ void Texture::CreateTextureImage(std::string path)
     hasTexture = true;
 
     #if USE_DEBUG_INFO == 1
-
         PLOG_DEBUG << "Successfully loaded texture: " + path;
-
     #endif
 }
 

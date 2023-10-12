@@ -32,15 +32,21 @@ namespace Symbios
         {
         public:
 
-               virtual ~Renderable() {};
-
-               int id = 0;
-               std::vector<std::shared_ptr<Renderable>> children;
-
-                void Clean()
+                Renderable()
                 {
-                    vkDestroyDescriptorSetLayout(_context->GetLogicalDevice(), _descriptorSetLayout, nullptr);
+                    this->id = rand() % UINT_MAX;
                 }
+
+               ~Renderable()
+               {
+                    #if USE_DEBUG_INFO == 1
+                        PLOG_DEBUG << "2DRenderable destructor called!";
+                    #endif
+
+                    if(_descriptorSetLayout != nullptr) {
+                        vkDestroyDescriptorSetLayout(_context->GetLogicalDevice(), _descriptorSetLayout, nullptr);
+                    }
+               }
 
                void UpdateImage()
                {
@@ -110,18 +116,9 @@ namespace Symbios
 
             int zIndex = 0;
 
-
+            unsigned int id = 0;
 
             std::string name;
-
-            inline bool hasBeenTouched(float x, float y)
-            {
-                if(x >= (position.x/3.0) && x < ((position.x/1.5) + scale.x * 1.5f) && y >= (((position.y/1.5f)) * -1.0f) - scale.y/2.0 && y <= (((position.y/1.5f)) * -1.0f))
-                {
-                    return true;
-                }
-                return false;
-            }
 
             bool visible = true;
 
@@ -136,12 +133,22 @@ namespace Symbios
             int textureId = -1;
 
             Texture *texture = nullptr;
-            std::shared_ptr<VertexBuffer> vertexBuffer;
-            std::shared_ptr<Buffer> indexBuffer;
+            std::unique_ptr<VertexBuffer> vertexBuffer;
+            std::unique_ptr<Buffer> indexBuffer;
 
             // Testing
             VkDescriptorSet _descriptorSet;
             VkDescriptorSetLayout _descriptorSetLayout;
+
+            inline void Translate(float x, float y)
+            {
+                this->position = glm::vec3(x, y, 0.0);
+            }
+
+            inline void Scale(float s)
+            {
+                this->scale = glm::vec3(s, s, 0.0);
+            }
 
             /**
              * @brief Get the Vertices object

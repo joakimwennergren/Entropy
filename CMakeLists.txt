@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.7)
 
-set(CMAKE_OSX_SYSROOT macosx14.0)
+#set(CMAKE_OSX_SYSROOT macosx14.0)
 
 project(
     Symbios
@@ -33,10 +33,7 @@ add_subdirectory(external/sol2)
 set(FT_WITH_BZIP2 OFF)
 add_subdirectory(external/freetype-2.10.0)
 
-add_executable(Symbios)
-
-target_sources(Symbios PRIVATE
-
+add_library(Symbios SHARED
     # Core
     src/core/context/context.cpp
 
@@ -63,14 +60,11 @@ target_sources(Symbios PRIVATE
 
     # Text
     src/graphics/text/label.cpp
-
-    # Main entrypoint
-    src/main.cpp
 )
+
 
 if(NOT XCODE)
     target_include_directories(Symbios PRIVATE
-
         # Vulkan
         ${Vulkan_INCLUDE_DIRS}
     )
@@ -78,7 +72,7 @@ endif()
 
 file(GLOB_RECURSE TEST_SOURCES "tests/*.cpp")
 
-target_include_directories(Symbios PRIVATE
+target_include_directories(Symbios PUBLIC
 
     src
     external
@@ -111,7 +105,7 @@ target_include_directories(Symbios PRIVATE
     src/animation/easing
 
     # SceneGraph
-    src/scenegraph
+    src/renderables
 
     # text
     src/graphics/text
@@ -122,6 +116,10 @@ target_include_directories(Symbios PRIVATE
     external/freetype-2.10.0/include
 
     external/ChaiScript/include
+)
+
+target_sources(Symbios PUBLIC FILE_SET HEADERS
+  FILES src/symbios.hpp
 )
 
 target_compile_features(Symbios PRIVATE cxx_std_17)
@@ -205,5 +203,8 @@ endif()
 if(UNIX AND NOT APPLE)
     set(CMAKE_PLATFORM "BUILD_FOR_LINUX")
 endif()
+
+# install command needs to reference the file set again
+install(TARGETS Symbios FILE_SET HEADERS)
 
 configure_file(config.h.in ${CMAKE_SOURCE_DIR}/src/config.hpp @ONLY)

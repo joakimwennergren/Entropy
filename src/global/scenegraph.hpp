@@ -23,16 +23,14 @@ namespace Symbios
             ~SceneGraph(){}
 
         public:
-            std::vector<Renderable *> renderables;
+            std::vector<std::unique_ptr<Renderable>> renderables;
             
             SceneGraph(SceneGraph &other) = delete;
             void operator=(const SceneGraph &) = delete;
 
             static SceneGraph *GetInstance();
             
-            inline std::vector<Renderable *> GetRenderables() { return this->renderables;};
-
-            void Add(Renderable * renderable);
+            void Add(std::unique_ptr<Renderable> renderable);
         };
     }
 }

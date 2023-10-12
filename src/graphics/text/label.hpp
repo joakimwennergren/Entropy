@@ -65,11 +65,13 @@ namespace Symbios
                     float xpos = x + ch.Size.x;
                     float ypos = y - (ch.Bearing.y);
 
+                    /*
                     auto g = this->children[cnt];
                     g->position = glm::vec3(xpos, ypos, 0.0);
 
                     x += (ch.Advance >> 6) * 2.0f;
                     cnt++;
+                    */
                 }
             }
 
@@ -77,7 +79,7 @@ namespace Symbios
             {
                 auto sceneGraph = Symbios::Global::SceneGraph::GetInstance();
                 
-                this->children.clear();
+                //this->children.clear();
 
                 this->text = text;
                 std::string::const_iterator c;
@@ -107,7 +109,7 @@ namespace Symbios
 
                     // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
                     x += (ch.Advance >> 6) * 2.0f; // bitshift by 6 to get value in pixels (2^6 = 64)
-                    Symbios::Global::SceneGraph::GetInstance()->renderables.push_back(g);
+                    //Symbios::Global::SceneGraph::GetInstance()->renderables.push_back(g);
                     //this->children.push_back(g);
                 }
             }

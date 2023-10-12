@@ -19,8 +19,8 @@ Sprite::Sprite()
     texture = new Texture();
 
     // Create buffers @todo temp!!!
-    vertexBuffer = std::make_shared<VertexBuffer>(_vertices);
-    indexBuffer = std::make_shared<Buffer>();
+    vertexBuffer = std::make_unique<VertexBuffer>(_vertices);
+    indexBuffer = std::make_unique<Buffer>();
     
     indexBuffer->CreateIndexBufferUint16(_indices); 
 
@@ -44,8 +44,8 @@ Sprite::Sprite(FT_Bitmap bitmap)
     texture = new Texture();
 
     // Create buffers @todo temp!!!
-    vertexBuffer = std::make_shared<VertexBuffer>(_vertices);
-    indexBuffer = std::make_shared<Buffer>();
+    vertexBuffer = std::make_unique<VertexBuffer>(_vertices);
+    indexBuffer = std::make_unique<Buffer>();
 
     indexBuffer->CreateIndexBufferUint16(_indices);  
 
@@ -70,22 +70,17 @@ Sprite::Sprite(std::string path)
     texture = new Texture();
 
     // Create buffers @todo temp!!!
-    vertexBuffer = std::make_shared<VertexBuffer>(_vertices);
+    vertexBuffer = std::make_unique<VertexBuffer>(_vertices);
 
-    indexBuffer = std::make_shared<Buffer>();
+    indexBuffer = std::make_unique<Buffer>();
     indexBuffer->CreateIndexBufferUint16(_indices);
 
     this->New(
             Filesystem::GetSpritesDir() + path, 
-            glm::vec3(1240 * 1.5f, 480 * 2.0f * -1.0f, 0.0),
-            glm::vec3(0.0, 0.0, 0.0),
-            glm::vec4(1.0, 1.0, 1.0, 1.0)
+            glm::vec3(0.0f, 0.0f, 0.0f),
+            glm::vec3(0.0f, 0.0f, 0.0f),
+            glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)
     );
     
     UpdateImage();
-}
-
-Sprite::~Sprite()
-{
-    PLOG_DEBUG << "SPRITE DESCRUCTOR CALLED!";
 }
