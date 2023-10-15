@@ -50,6 +50,8 @@ Sprite::Sprite(FT_Bitmap bitmap)
     indexBuffer->CreateIndexBufferUint16(_indices);  
 
     texture->CreateTextureImageFromBuffer(bitmap);
+
+    UpdateImage();
 }
 
 

@@ -249,17 +249,13 @@ public:
 
             auto ratio = (app->frame.size.width) / (app->frame.size.height);
 
-            app->screen.width = app->frame.size.width * ratio * 0.95;
-            app->screen.height = app->frame.size.height * ratio;
+            app->screen.width = app->frame.size.width * 3.0;
+            app->screen.height = app->frame.size.height * 3.3;
                         
             _renderer->Render();
         }
         
         std::shared_ptr<Renderer> _renderer;
-        
-        float test = 0.0;
-        
-        int state = 0;
         
         float lastTick = 0.0;
         float deltaTime = 0.0;

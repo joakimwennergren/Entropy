@@ -150,6 +150,21 @@ namespace Symbios
                 this->scale = glm::vec3(s, s, 0.0);
             }
 
+            inline void Scale2D(float w, float h)
+            {
+                this->scale = glm::vec3(w, h, 0.0);
+            }
+
+            inline void Rotate(float r, int orientation)
+            {
+                this->orientation = orientation;
+                this->rotationX = r;
+            }
+            inline void ZIndex(int z)
+            {
+                this->zIndex = z;
+            }
+
             /**
              * @brief Get the Vertices object
              *

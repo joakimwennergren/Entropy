@@ -43,7 +43,7 @@ namespace Symbios
         inline static std::string GetTexturesDir()
         {
             #ifdef BUILD_FOR_IOS
-                return Filesystem::GetProjectBasePath();
+                return Filesystem::GetProjectBasePath() + "/";
             #else 
                 return Filesystem::GetProjectBasePath() + "/resources/textures/"; 
             #endif
@@ -52,7 +52,7 @@ namespace Symbios
         inline static std::string GetScriptsDir()
         {
             #ifdef BUILD_FOR_IOS
-                return Filesystem::GetProjectBasePath();
+                return Filesystem::GetProjectBasePath() + "/";
             #else 
                 return Filesystem::GetProjectBasePath() + "/resources/scripts/"; 
             #endif
@@ -61,7 +61,7 @@ namespace Symbios
         inline static std::string GetSpritesDir()
         {
             #ifdef BUILD_FOR_IOS
-                return Filesystem::GetProjectBasePath();
+                return Filesystem::GetProjectBasePath() + "/";
             #else 
                 return Filesystem::GetProjectBasePath() + "/resources/sprites/"; 
             #endif
@@ -70,7 +70,7 @@ namespace Symbios
         inline static std::string GetShadersDir()
         {
             #ifdef BUILD_FOR_IOS
-                return Filesystem::GetProjectBasePath();
+                return Filesystem::GetProjectBasePath() + "/";
             #else 
                 return Filesystem::GetProjectBasePath() + "/shaders/basic/"; 
             #endif
@@ -79,7 +79,7 @@ namespace Symbios
         inline static std::string GetFontsDir()
         {
             #ifdef BUILD_FOR_IOS
-                return Filesystem::GetProjectBasePath();
+                return Filesystem::GetProjectBasePath() + "/";
             #else 
                 return Filesystem::GetProjectBasePath() + "/resources/fonts/"; 
             #endif

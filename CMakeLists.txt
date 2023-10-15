@@ -22,18 +22,11 @@ add_subdirectory(external/plog)
 # GLM
 add_subdirectory(external/glm)
 
-# Lua Cmake
-set(LUA_BUILD_COMPILER OFF)
-add_subdirectory(external/Lua)
-
-# Lua SOL
-add_subdirectory(external/sol2)
-
 # Text rendering
 set(FT_WITH_BZIP2 OFF)
 add_subdirectory(external/freetype-2.10.0)
 
-add_library(Symbios SHARED
+add_executable(Symbios
     # Core
     src/core/context/context.cpp
 
@@ -60,6 +53,14 @@ add_library(Symbios SHARED
 
     # Text
     src/graphics/text/label.cpp
+
+    svampjakt2/main.cpp
+
+    # Svampjakt2
+
+    svampjakt2/leafsystem/leaf.cpp
+    svampjakt2/leafsystem/leafsystem.cpp
+
 )
 
 
@@ -74,7 +75,7 @@ file(GLOB_RECURSE TEST_SOURCES "tests/*.cpp")
 
 target_include_directories(Symbios PUBLIC
 
-    src
+    include
     external
 
     # Core
@@ -116,10 +117,10 @@ target_include_directories(Symbios PUBLIC
     external/freetype-2.10.0/include
 
     external/ChaiScript/include
-)
 
-target_sources(Symbios PUBLIC FILE_SET HEADERS
-  FILES src/symbios.hpp
+    # Svampjakt 2
+
+    svampjakt2/leafsystem
 )
 
 target_compile_features(Symbios PRIVATE cxx_std_17)
@@ -131,10 +132,6 @@ target_link_libraries(Symbios
 
     # GLM
     glm
-
-    # Scripting
-    sol2
-    lua_static
 )
 
 if(NOT XCODE)
@@ -148,11 +145,6 @@ if(NOT XCODE)
 
         # Text shaping
         freetype
-
-        # Scripting
-        sol2
-        lua_static
-
     )
 endif()
 
@@ -167,10 +159,6 @@ if(XCODE)
 
         # Text shaping
         freetype
-
-        # Scripting
-        sol2
-        lua_static
 
         "-framework foundation"
         "-framework metal"
@@ -204,7 +192,5 @@ if(UNIX AND NOT APPLE)
     set(CMAKE_PLATFORM "BUILD_FOR_LINUX")
 endif()
 
-# install command needs to reference the file set again
-install(TARGETS Symbios FILE_SET HEADERS)
 
-configure_file(config.h.in ${CMAKE_SOURCE_DIR}/src/config.hpp @ONLY)
+configure_file(config.h.in ${CMAKE_SOURCE_DIR}/include/config.hpp @ONLY)
