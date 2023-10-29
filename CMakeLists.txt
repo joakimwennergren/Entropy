@@ -116,8 +116,6 @@ target_include_directories(Symbios PUBLIC
 
     external/freetype-2.10.0/include
 
-    external/ChaiScript/include
-
     # Svampjakt 2
 
     svampjakt2/leafsystem

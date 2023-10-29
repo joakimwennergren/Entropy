@@ -115,6 +115,9 @@ namespace Symbios
             unsigned int id = 0;
             std::string name;
 
+
+            std::shared_ptr<Renderable> children;
+
             bool visible = true;
 
             float rotationX = 0.0;
@@ -135,20 +138,9 @@ namespace Symbios
             VkDescriptorSet _descriptorSet;
             VkDescriptorSetLayout _descriptorSetLayout;
 
-            inline void Translate(float x, float y)
-            {
-                this->position = glm::vec3(x, y, 0.0);
-            }
-
-            inline void Scale(float s)
-            {
-                this->scale = glm::vec3(s, s, 0.0);
-            }
-
-            inline void Scale2D(float w, float h)
-            {
-                this->scale = glm::vec3(w, h, 0.0);
-            }
+            inline void Translate(float x, float y) { this->position = glm::vec3(x, y, 0.0); }
+            inline void Scale(float s) { this->scale = glm::vec3(s, s, 0.0); }
+            inline void Scale2D(float w, float h) { this->scale = glm::vec3(w, h, 0.0); }
 
             inline void Rotate(float r, int orientation)
             {

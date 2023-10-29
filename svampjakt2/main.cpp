@@ -6,7 +6,6 @@
 #include "sprite.hpp"
 #include "label.hpp"
 #include "leafsystem.hpp"
-#include <chaiscript/chaiscript.hpp>
 #include <cmath>
 
 using namespace Symbios::Animation;
@@ -30,10 +29,11 @@ private:
     {
         leafSystem = std::make_unique<LeafSystem>();
 
-        auto layer_1 = std::make_unique<Sprite>("layer_1.png");
-        layers.push_back(layer_1->id);
-        SceneGraph::GetInstance()->renderables.push_back(std::move(layer_1));
+        auto layer_1 = std::make_shared<Sprite>("layer_1.png");
+        layers.push_back(layer_1);
+        SceneGraph::GetInstance()->renderables.push_back(layer_1);
 
+        /*
         auto layer_2 = std::make_unique<Sprite>("layer_2.png");
         layers.push_back(layer_2->id);
         SceneGraph::GetInstance()->renderables.push_back(std::move(layer_2));
@@ -55,11 +55,20 @@ private:
         {
             SceneGraph::GetInstance()->renderables.push_back(std::move(c));
         }
+        */
         
     }
 
     void OnRender(float deltaTime)
-    {
+    {   
+       leafSystem->Update(screen.width, screen.height);
+
+        for(auto layer : layers)
+        {
+            layer->Scale2D(screen.width/2.0, screen.height/2.0);
+            layer->Translate(screen.width/2.0, screen.height/2.0 * -1);
+        }
+        /*
         // Scale and translate layers
         for (auto &renderable : SceneGraph::GetInstance()->renderables)
         {   
@@ -81,13 +90,13 @@ private:
             }
         } 
         // Update leafsystem
-       leafSystem->Update(screen.width, screen.height);
+
+       */
     }
 
 
-    std::vector<unsigned int> layers;
-    unsigned int title;
-    std::unique_ptr<Label> titleText;
+    std::vector<std::shared_ptr<Sprite>> layers;
+
     std::unique_ptr<LeafSystem> leafSystem;
 };
 

@@ -165,7 +165,7 @@ void Renderer::Render()
 
     uint32_t modelCnt = 0;
 
-    sort(Global::SceneGraph::GetInstance()->renderables.begin(), Global::SceneGraph::GetInstance()->renderables.end(), [](const std::unique_ptr<Renderable>& lhs, const std::unique_ptr<Renderable>&rhs) {
+    sort(Global::SceneGraph::GetInstance()->renderables.begin(), Global::SceneGraph::GetInstance()->renderables.end(), [](const std::shared_ptr<Renderable>& lhs, const std::shared_ptr<Renderable>&rhs) {
       return lhs->zIndex < rhs->zIndex;
     });
     

@@ -14,9 +14,3 @@ SceneGraph *SceneGraph::GetInstance()
     }
     return pinstance_;
 }
-
-void SceneGraph::Add(std::unique_ptr<Renderable> renderable)
-{
-    // @todo check num descriptorsets before pushing?
-
-}
