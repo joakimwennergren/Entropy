@@ -13,10 +13,6 @@ using namespace Symbios::Animation;
 using namespace Symbios::Global;
 using namespace Symbios::Text;
 
-float easeOutBounce( float t ) {
-    return 1 - pow( 2, -6 * t ) * abs( cos( t * M_PI * 3.5 ) );
-}
-
 class Game : public Application
 {
 public:
@@ -32,7 +28,6 @@ private:
 
     void OnInit()
     {
-        /*
         leafSystem = std::make_unique<LeafSystem>();
 
         auto layer_1 = std::make_unique<Sprite>("layer_1.png");
@@ -54,7 +49,6 @@ private:
         auto title = std::make_unique<Sprite>("title.png");
         this->title = title->id;
         SceneGraph::GetInstance()->renderables.push_back(std::move(title));
-        */
 
         titleText = std::make_unique<Label>();
         for(auto &c : titleText->children)
@@ -69,7 +63,7 @@ private:
         // Scale and translate layers
         for (auto &renderable : SceneGraph::GetInstance()->renderables)
         {   
-            /*
+            
             for(auto spriteHandle : layers)
             {
                 if(renderable->id == spriteHandle)
@@ -85,10 +79,9 @@ private:
                 renderable->Scale2D(screen.width/3.0, screen.height/3.6);
                 renderable->Translate(screen.width/2.0, screen.height/2.0 * -1);      
             }
-            */
         } 
         // Update leafsystem
-       //leafSystem->Update(screen.width, screen.height);
+       leafSystem->Update(screen.width, screen.height);
     }
 
 
