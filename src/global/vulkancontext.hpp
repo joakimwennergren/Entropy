@@ -16,8 +16,6 @@
 
 #include "context.hpp"
 
-#include <chaiscript/chaiscript.hpp>
-
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
 
 #include <GLFW/glfw3.h>
@@ -50,14 +48,11 @@ namespace Symbios
             protected:
                 VulkanContext()
                 {
-                    chai = new chaiscript::ChaiScript();
-                    //_sceneGraph = std::make_shared<SceneGraph>();
                 }
 
                 ~VulkanContext() {}
 
                 std::shared_ptr<Context> vulkanContext;
-                chaiscript::ChaiScript *chai;
 
             public:
                 /**
@@ -74,8 +69,6 @@ namespace Symbios
                  * into the static field. On subsequent runs, it returns the client existing
                  * object stored in the static field.
                  */
-
-                inline chaiscript::ChaiScript *GetChaiInstance() {return this->chai;};
 
                 //inline std::shared_ptr<SceneGraph> GetSceneGraph() {return this->_sceneGraph;};
 

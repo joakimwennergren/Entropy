@@ -22,21 +22,14 @@ public:
 
 		const unsigned int random_index = rand() % sprites.size();
 
-        auto sprite = std::make_unique<Sprite>(sprites[random_index]);
-        
-        this->spriteHandle = sprite->id;
+        sprite = std::make_shared<Sprite>(sprites[random_index]);
 
-        SceneGraph::GetInstance()->renderables.push_back(std::move(sprite));
+		sprite->Scale(scale);
+        sprite->Translate(x, y);
 
-        for (auto &renderable : SceneGraph::GetInstance()->renderables)
-        {
-            if(renderable->id == this->spriteHandle)
-            {
-                renderable->Scale(scale);
-                renderable->Translate(x, y);
-                break;
-            }
-        } 
+        SceneGraph::GetInstance()->renderables.push_back(sprite);
+
+
 	}
 
 	void Update(float screenWidth, float screenHeight)
@@ -48,17 +41,10 @@ public:
 
 		float height = 1440 * 2.0;
 
-        for (auto &renderable : SceneGraph::GetInstance()->renderables)
-        {
-            if(renderable->id == this->spriteHandle)
-            {
-            	renderable->Scale(scale);
-            	renderable->ZIndex(2);
-            	renderable->Rotate(this->yVelocity * 0.5, 3);
-            	renderable->Translate(this->xPosition - xVelocity, this->yVelocity - (this->yOffset * -1.0f));
-                break;
-            }
-        } 
+    	sprite->Scale(scale);
+    	sprite->ZIndex(2);
+    	sprite->Rotate(this->yVelocity * 0.5, 3);
+    	sprite->Translate(this->xPosition - xVelocity, this->yVelocity - (this->yOffset * -1.0f));
 
 		if(this->yVelocity > screenHeight - this->yOffset)
 		{
@@ -88,6 +74,6 @@ private:
 	float time = 0.0;
 	float mass = 0.0;
 	float scale = 0.0;
-	unsigned int spriteHandle = 0;
+	std::shared_ptr<Sprite> sprite;
 	const std::vector<std::string> sprites = {"leaf1.png", "leaf2.png", "leaf3.png", "leaf4.png"};
 };
