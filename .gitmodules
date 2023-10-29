@@ -16,9 +16,6 @@
 [submodule "doxygen-awesome-css"]
 	path = external/doxygen-awesome-css
 	url = https://github.com/jothepro/doxygen-awesome-css.git
-[submodule "yoga"]
-	path = external/yoga
-	url = https://github.com/facebook/yoga.git
 [submodule "freetype"]
 	path = external/freetype
 	url = https://github.com/freetype/freetype.git
