@@ -27,8 +27,9 @@ set(FT_WITH_BZIP2 OFF)
 add_subdirectory(external/freetype-2.10.0)
 
 add_executable(Symbios
-    # Core
-    src/core/context/context.cpp
+    
+    # Graphics Contexts
+    src/contexts/context.cpp
 
     # Graphics
     src/graphics/pipelines/pipeline.cpp
@@ -75,12 +76,14 @@ file(GLOB_RECURSE TEST_SOURCES "tests/*.cpp")
 
 target_include_directories(Symbios PUBLIC
 
+    # Application
+    src/application
+
     include
     external
 
     # Core
-    src/core/application
-    src/core/context
+    src/contexts
 
     # Graphics
     src/graphics/pipelines
@@ -119,6 +122,7 @@ target_include_directories(Symbios PUBLIC
     # Svampjakt 2
 
     svampjakt2/leafsystem
+
 )
 
 target_compile_features(Symbios PRIVATE cxx_std_17)

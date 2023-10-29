@@ -68,20 +68,11 @@ private:
             layer->Scale2D(screen.width/2.0, screen.height/2.0);
             layer->Translate(screen.width/2.0, screen.height/2.0 * -1);
         }
+        
         /*
         // Scale and translate layers
         for (auto &renderable : SceneGraph::GetInstance()->renderables)
         {   
-            
-            for(auto spriteHandle : layers)
-            {
-                if(renderable->id == spriteHandle)
-                {
-                    renderable->Scale2D(screen.width/2.0, screen.height/2.0);
-                    renderable->Translate(screen.width/2.0, screen.height/2.0 * -1);
-                }
-            }
-
             if(renderable->id == title)
             {
                 renderable->ZIndex(99);
