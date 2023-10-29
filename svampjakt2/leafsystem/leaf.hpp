@@ -28,8 +28,6 @@ public:
         sprite->Translate(x, y);
 
         SceneGraph::GetInstance()->renderables.push_back(sprite);
-
-
 	}
 
 	void Update(float screenWidth, float screenHeight)
@@ -38,8 +36,6 @@ public:
 		float acceleration = this->force / this->mass; 
 		this->yVelocity += acceleration * this->time;
 		float xVelocity = this->yVelocity * this->xVelocity;
-
-		float height = 1440 * 2.0;
 
     	sprite->Scale(scale);
     	sprite->ZIndex(2);
