@@ -46,6 +46,7 @@ add_executable(Symbios
     src/graphics/utilities/utilities.cpp
     src/graphics/primitives/2d/quad.cpp
     src/graphics/primitives/2d/sprite.cpp
+    src/graphics/synchronization/synchronizer.cpp
     
     # Globals
     src/global/assets.cpp
@@ -97,6 +98,7 @@ target_include_directories(Symbios PUBLIC
     src/graphics/utilities
     src/graphics/primitives/2d
     src/graphics/primitives/3d
+    src/graphics/synchronization
     src/global
 
     # Audio
