@@ -31,7 +31,6 @@ Synchronizer::Synchronizer(unsigned int numObjects)
             exit(EXIT_FAILURE);
         }
     }
-
 }
 
 Synchronizer::~Synchronizer()

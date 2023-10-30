@@ -35,7 +35,6 @@ namespace Symbios
         class Label : public Renderable
         {
         public:
-            std::vector<std::unique_ptr<Sprite>> children;
             Label();
             ~Label();   
             std::vector<std::shared_ptr<Sprite>> sprites;
@@ -67,18 +66,7 @@ namespace Symbios
 
             inline void SetText(std::string text)
             {
-                /*
-                for (auto &renderable : Global::SceneGraph::GetInstance()->renderables)
-                {
-                    for(auto spriteHandle : children)
-                    {
-                        if(renderable->id == spriteHandle)
-                        {
-                            renderable.reset();
-                        }
-                    }
-                } 
-                */
+                this->children.clear();
 
                 this->text = text;
                 std::string::const_iterator c;
@@ -96,7 +84,7 @@ namespace Symbios
                     float w = ch.Size.x;
                     float h = ch.Size.y;
 
-                    auto g = std::make_unique<Sprite>(ch.bitmap);
+                    auto g = std::make_shared<Sprite>(ch.bitmap);
 
                     g->position = glm::vec3(xpos, ypos, 0.0);
                     g->textureId = 2;
@@ -106,7 +94,7 @@ namespace Symbios
 
                     // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
                     x += (ch.Advance >> 6) * 2.0f; // bitshift by 6 to get value in pixels (2^6 = 64)
-                    this->children.push_back(std::move(g));
+                    this->children.push_back(g);
                 }
             }
             

@@ -68,12 +68,6 @@ namespace Symbios
                  * @brief
                  *
                  */
-                ~Renderer();
-
-                /**
-                 * @brief
-                 *
-                 */
                 void Render();
 
                 /**

@@ -52,11 +52,6 @@ Renderer::Renderer()
     _context->CreateDescriptorSets(rawUniformBuffers);
 }
 
-Renderer::~Renderer()
-{
-
-}
-
 void Renderer::Render()
 {
     float scale = 0.1;
@@ -68,26 +63,9 @@ void Renderer::Render()
     {
         _context->RecreateSwapChain();
 
-        for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
-        {
-            vkDestroySemaphore(_context->GetLogicalDevice(), _synchronizer->GetImageSemaphores()[i], nullptr);
-        }
+        _synchronizer.reset();
 
-        VkSemaphoreCreateInfo semaphoreInfo{};
-        semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-        VkFenceCreateInfo fenceInfo{};
-        fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-        fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
-        for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
-        {
-            if (vkCreateSemaphore(_context->GetLogicalDevice(), &semaphoreInfo, nullptr, &_synchronizer->GetImageSemaphores()[i]) != VK_SUCCESS)
-            {
-                PLOG_ERROR << "failed to create synchronization objects for a frame!";
-                exit(EXIT_FAILURE);
-            }
-        }
+        _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
 
         _renderPass->RecreateFrameBuffers();
 
