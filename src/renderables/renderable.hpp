@@ -116,7 +116,7 @@ namespace Symbios
             std::string name;
 
 
-            std::shared_ptr<Renderable> children;
+            std::vector<std::shared_ptr<Renderable>> children;
 
             bool visible = true;
 
