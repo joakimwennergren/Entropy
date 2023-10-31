@@ -1,8 +1,10 @@
 #pragma once
 
-#include <asio.hpp>
+#include <iostream>
+#include <string>
+#include <curl/curl.h>
 
-using asio::ip::tcp;
+#include <plog/Log.h>
 
 namespace Entropy
 {
@@ -12,6 +14,13 @@ namespace Entropy
         {
         public:
             HttpClient();
+
+            int Get(std::string url);
+
+        private:
+
         };
+
+
     }
 }

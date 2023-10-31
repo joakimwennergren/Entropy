@@ -24,6 +24,7 @@ add_subdirectory(external/glm)
 
 # Networking
 add_subdirectory(external/asio.cmake)
+add_subdirectory(external/curl)
 
 # Text rendering
 set(FT_WITH_BZIP2 OFF)
@@ -145,6 +146,7 @@ target_link_libraries(Symbios
 
     # Networking
     asio::asio
+    CURL
 )
 
 if(NOT XCODE)
