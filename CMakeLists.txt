@@ -24,7 +24,12 @@ add_subdirectory(external/glm)
 
 # Networking
 add_subdirectory(external/asio.cmake)
+
+set(BUILD_CURL_EXE OFF)
+set(CURL_STATICLIB ON)
 add_subdirectory(external/curl)
+
+
 
 # Text rendering
 set(FT_WITH_BZIP2 OFF)
@@ -122,6 +127,7 @@ target_include_directories(Symbios PUBLIC
 
     # Network
     src/network
+    external/curl/include
 
     # Metal-CPP
     external/metal-cpp/
@@ -146,7 +152,9 @@ target_link_libraries(Symbios
 
     # Networking
     asio::asio
-    CURL
+
+    #CURL
+    libcurl_static # CURL on macOS?
 )
 
 if(NOT XCODE)

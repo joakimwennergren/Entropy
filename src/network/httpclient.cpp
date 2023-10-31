@@ -21,4 +21,6 @@ int HttpClient::Get(std::string url)
 	  curl_easy_cleanup(curl);
 	}
 
+	return 0;
+
 }
