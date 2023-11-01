@@ -4,7 +4,7 @@ using namespace Symbios::Graphics::Renderers;
 
 Renderer::Renderer()
 {
-    // Store vulkan ctx
+    // Get vulkan ctx
     _context = Global::VulkanContext::GetInstance()->GetVulkanContext();
 
     // Create renderpass
@@ -21,29 +21,7 @@ Renderer::Renderer()
         _commandBuffers.push_back(std::make_shared<CommandBuffer>());
     }
 
-    _imageAvailableSemaphores.resize(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
-    _renderFinishedSemaphores.resize(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
-    _inFlightFences.resize(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
-
-    // @todo should this be in context or something??
-    VkSemaphoreCreateInfo semaphoreInfo{};
-    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-    VkFenceCreateInfo fenceInfo{};
-    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-    fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
-    for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
-    {
-        if (vkCreateSemaphore(_context->GetLogicalDevice(), &semaphoreInfo, nullptr, &_imageAvailableSemaphores[i]) != VK_SUCCESS ||
-            vkCreateSemaphore(_context->GetLogicalDevice(), &semaphoreInfo, nullptr, &_renderFinishedSemaphores[i]) != VK_SUCCESS ||
-            vkCreateFence(_context->GetLogicalDevice(), &fenceInfo, nullptr, &_inFlightFences[i]) != VK_SUCCESS)
-        {
-
-            PLOG_ERROR << "failed to create synchronization objects for a frame!";
-            exit(EXIT_FAILURE);
-        }
-    }
+    _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
 
     // Create buffers @todo temp!!!
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
@@ -74,49 +52,20 @@ Renderer::Renderer()
     _context->CreateDescriptorSets(rawUniformBuffers);
 }
 
-Renderer::~Renderer()
-{
-    vkDeviceWaitIdle(_context->GetLogicalDevice());
-
-    for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
-    {
-        vkDestroySemaphore(_context->GetLogicalDevice(), _renderFinishedSemaphores[i], nullptr);
-        vkDestroySemaphore(_context->GetLogicalDevice(), _imageAvailableSemaphores[i], nullptr);
-        vkDestroyFence(_context->GetLogicalDevice(), _inFlightFences[i], nullptr);
-    }
-}
-
 void Renderer::Render()
 {
     float scale = 0.1;
 
     uint32_t imageIndex;
-    VkResult result = vkAcquireNextImageKHR(_context->GetLogicalDevice(), _context->GetSwapChain(), UINT64_MAX, _imageAvailableSemaphores[_currentFrame], VK_NULL_HANDLE, &imageIndex);
+    VkResult result = vkAcquireNextImageKHR(_context->GetLogicalDevice(), _context->GetSwapChain(), UINT64_MAX, _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE, &imageIndex);
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || _framebufferResized)
     {
         _context->RecreateSwapChain();
 
-        for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
-        {
-            vkDestroySemaphore(_context->GetLogicalDevice(), _imageAvailableSemaphores[i], nullptr);
-        }
+        _synchronizer.reset();
 
-        VkSemaphoreCreateInfo semaphoreInfo{};
-        semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-        VkFenceCreateInfo fenceInfo{};
-        fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-        fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
-        for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
-        {
-            if (vkCreateSemaphore(_context->GetLogicalDevice(), &semaphoreInfo, nullptr, &_imageAvailableSemaphores[i]) != VK_SUCCESS)
-            {
-                PLOG_ERROR << "failed to create synchronization objects for a frame!";
-                exit(EXIT_FAILURE);
-            }
-        }
+        _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
 
         _renderPass->RecreateFrameBuffers();
 
@@ -132,10 +81,10 @@ void Renderer::Render()
 
     auto currentCmdBuffer = _commandBuffers[_currentFrame]->GetCommandBuffer();
 
-    vkWaitForFences(_context->GetLogicalDevice(), 1, &_inFlightFences[_currentFrame], VK_TRUE, UINT64_MAX);
+    vkWaitForFences(_context->GetLogicalDevice(), 1, &_synchronizer->GetFences()[_currentFrame], VK_TRUE, UINT64_MAX);
 
     // Only reset the fence if we are submitting work
-    vkResetFences(_context->GetLogicalDevice(), 1, &_inFlightFences[_currentFrame]);
+    vkResetFences(_context->GetLogicalDevice(), 1, &_synchronizer->GetFences()[_currentFrame]);
 
     vkResetCommandBuffer(currentCmdBuffer, 0);
 
@@ -241,7 +190,7 @@ void Renderer::Render()
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-    VkSemaphore waitSemaphores[] = {_imageAvailableSemaphores[_currentFrame]};
+    VkSemaphore waitSemaphores[] = {_synchronizer->GetImageSemaphores()[_currentFrame]};
     VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
     submitInfo.waitSemaphoreCount = 1;
     submitInfo.pWaitSemaphores = waitSemaphores;
@@ -250,11 +199,11 @@ void Renderer::Render()
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &currentCmdBuffer;
 
-    VkSemaphore signalSemaphores[] = {_renderFinishedSemaphores[_currentFrame]};
+    VkSemaphore signalSemaphores[] = {_synchronizer->GetRenderFinishedSemaphores()[_currentFrame]};
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
 
-    if (vkQueueSubmit(_context->GetGraphicsQueue(), 1, &submitInfo, _inFlightFences[_currentFrame]) != VK_SUCCESS)
+    if (vkQueueSubmit(_context->GetGraphicsQueue(), 1, &submitInfo, _synchronizer->GetFences()[_currentFrame]) != VK_SUCCESS)
     {
         PLOG_ERROR << "failed to submit draw command buffer!";
         exit(EXIT_FAILURE);

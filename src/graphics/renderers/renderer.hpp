@@ -33,6 +33,9 @@
 #include "renderable.hpp"
 #include "sprite.hpp"
 
+
+#include "synchronizer.hpp"
+
 #include <map>
 
 using namespace Symbios::Core;
@@ -43,6 +46,7 @@ using namespace Symbios::Graphics::Pipelines;
 using namespace Symbios::Graphics::Primitives;
 using namespace Symbios::Graphics::RenderPasses;
 using namespace Symbios::Graphics::CommandBuffers;
+using namespace Symbios::Graphics::Synchronization;
 
 namespace Symbios
 {
@@ -70,15 +74,11 @@ namespace Symbios
                  * @brief
                  *
                  */
-                ~Renderer();
-
-                /**
-                 * @brief
-                 *
-                 */
                 void FrameBufferResized() { this->_framebufferResized = true; };
 
             private:
+
+                // Vulkan Ctx
                 std::shared_ptr<Context> _context;
                 std::shared_ptr<RenderPass> _renderPass;
                 std::vector<std::shared_ptr<CommandBuffer>> _commandBuffers;
@@ -89,7 +89,7 @@ namespace Symbios
                 std::vector<VkSemaphore> _renderFinishedSemaphores;
                 std::vector<VkFence> _inFlightFences;
 
-                uint32_t _currentFrame = 0;
+                unsigned int _currentFrame = 0;
 
                 bool _framebufferResized = false;
 
@@ -102,15 +102,11 @@ namespace Symbios
                 VkDeviceMemory _uniformBufferInstanceMemory2;
                 VkDeviceSize dynamicAlignment;
 
-                // @refactored buffers!!
                 std::vector<UniformBuffer *> _uniformBuffers;
-
                 VkCommandBuffer currentCmdBuffer;
-
                 VkDescriptorSet currentDescriptorSet;
 
-                // @todo remove this
-                Sprite *ivy7; 
+                std::unique_ptr<Synchronizer> _synchronizer;
             };
         }
     }

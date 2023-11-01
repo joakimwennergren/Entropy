@@ -6,6 +6,12 @@
 #include "sprite.hpp"
 #include "label.hpp"
 #include "leafsystem.hpp"
+
+// @testing
+#include "httpclient.hpp"
+using namespace Entropy::Network;
+
+
 #include <cmath>
 
 using namespace Symbios::Animation;
@@ -19,6 +25,13 @@ public:
     SceneGraph * _sceneGraph;
     Game()
     {
+
+        auto client = HttpClient();
+
+        client.Get("https://dog.ceo/api/breeds/list/all");
+
+
+
         srand(time(nullptr));
         _sceneGraph = Global::SceneGraph::GetInstance();
     }

@@ -42,11 +42,6 @@ namespace Symbios
                  */
                 Pipeline(std::shared_ptr<RenderPass> renderPass);
 
-                /**
-                 * @brief
-                 *
-                 */
-                void Build();
 
                 /**
                  * @brief Destroy the Pipeline object
@@ -55,17 +50,12 @@ namespace Symbios
                 ~Pipeline();
 
                 /**
-                 * @brief Get the Pipeline object
+                 * @brief
                  *
-                 * @return VkPipeline
                  */
-                inline VkPipeline GetPipeline() { return this->_pipeline; };
+                void Build();
 
-                /**
-                 * @brief Get the Pipeline Layout object
-                 *
-                 * @return VkPipelineLayout
-                 */
+                inline VkPipeline GetPipeline() { return this->_pipeline; };
                 inline VkPipelineLayout GetPipelineLayout() { return this->_pipelineLayout; };
 
             private:
