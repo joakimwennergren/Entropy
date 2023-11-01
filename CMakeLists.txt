@@ -22,6 +22,15 @@ add_subdirectory(external/plog)
 # GLM
 add_subdirectory(external/glm)
 
+# Networking
+add_subdirectory(external/asio.cmake)
+
+set(BUILD_CURL_EXE OFF)
+set(CURL_STATICLIB ON)
+add_subdirectory(external/curl)
+
+
+
 # Text rendering
 set(FT_WITH_BZIP2 OFF)
 add_subdirectory(external/freetype-2.10.0)
@@ -56,13 +65,13 @@ add_executable(Symbios
     # Text
     src/graphics/text/label.cpp
 
-    svampjakt2/main.cpp
+    # Network
+    src/network/httpclient.cpp
 
     # Svampjakt2
-
     svampjakt2/leafsystem/leaf.cpp
     svampjakt2/leafsystem/leafsystem.cpp
-
+    svampjakt2/main.cpp
 )
 
 
@@ -116,6 +125,10 @@ target_include_directories(Symbios PUBLIC
     # text
     src/graphics/text
 
+    # Network
+    src/network
+    external/curl/include
+
     # Metal-CPP
     external/metal-cpp/
 
@@ -136,6 +149,12 @@ target_link_libraries(Symbios
 
     # GLM
     glm
+
+    # Networking
+    asio::asio
+
+    #CURL
+    libcurl_static # CURL on macOS?
 )
 
 if(NOT XCODE)
@@ -195,6 +214,5 @@ endif()
 if(UNIX AND NOT APPLE)
     set(CMAKE_PLATFORM "BUILD_FOR_LINUX")
 endif()
-
 
 configure_file(config.h.in ${CMAKE_SOURCE_DIR}/include/config.hpp @ONLY)

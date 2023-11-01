@@ -31,7 +31,9 @@ namespace Symbios
                     PLOG_DEBUG << "2DRenderable destructor called!";
                 #endif
 
-                if(_descriptorSet != nullptr)
+                vkDeviceWaitIdle(_context->GetLogicalDevice());
+
+                if(_descriptorSet != VK_NULL_HANDLE)
                 {
                      vkFreeDescriptorSets(
                     _context->GetLogicalDevice(),
@@ -40,7 +42,7 @@ namespace Symbios
                     &_descriptorSet);                   
                 }
 
-                if(_descriptorSetLayout != nullptr) {
+                if(_descriptorSetLayout != VK_NULL_HANDLE) {
                     vkDestroyDescriptorSetLayout(_context->GetLogicalDevice(), _descriptorSetLayout, nullptr);
                 }
            }
@@ -116,7 +118,7 @@ namespace Symbios
             std::string name;
 
 
-            std::shared_ptr<Renderable> children;
+            std::vector<std::shared_ptr<Renderable>> children;
 
             bool visible = true;
 
@@ -135,8 +137,8 @@ namespace Symbios
             std::unique_ptr<Buffer> indexBuffer;
 
             // Testing
-            VkDescriptorSet _descriptorSet;
-            VkDescriptorSetLayout _descriptorSetLayout;
+            VkDescriptorSet _descriptorSet = VK_NULL_HANDLE;
+            VkDescriptorSetLayout _descriptorSetLayout = VK_NULL_HANDLE;
 
             inline void Translate(float x, float y) { this->position = glm::vec3(x, y, 0.0); }
             inline void Scale(float s) { this->scale = glm::vec3(s, s, 0.0); }
