@@ -25,8 +25,16 @@ add_subdirectory(external/glm)
 # Networking
 add_subdirectory(external/asio.cmake)
 
+add_subdirectory(external/openssl-cmake)
+
 set(BUILD_CURL_EXE OFF)
 set(CURL_STATICLIB ON)
+set(SSL_ENABLED ON)
+if(WIN32)
+    set(USE_WINDOWS_SSPI ON)
+    set(USE_SCHANNEL ON)
+endif(WIN32)
+
 add_subdirectory(external/curl)
 
 
@@ -134,6 +142,8 @@ target_include_directories(Symbios PUBLIC
 
     external/freetype-2.10.0/include
 
+    external/openssl-cmake/include
+
     # Svampjakt 2
 
     svampjakt2/leafsystem
@@ -154,7 +164,7 @@ target_link_libraries(Symbios
     asio::asio
 
     #CURL
-    libcurl_static # CURL on macOS?
+    libcurl_static 
 )
 
 if(NOT XCODE)

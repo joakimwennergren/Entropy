@@ -25,13 +25,9 @@ public:
     SceneGraph * _sceneGraph;
     Game()
     {
-
         auto client = HttpClient();
-
         client.Get("https://dog.ceo/api/breeds/list/all");
-
-
-
+        
         srand(time(nullptr));
         _sceneGraph = Global::SceneGraph::GetInstance();
     }
