@@ -42,9 +42,12 @@ set(FT_WITH_BZIP2 OFF)
 add_subdirectory(external/freetype-2.10.0)
 
 add_executable(Symbios
-    
-    # Graphics Contexts
-    src/contexts/context.cpp
+
+    # Animation
+    src/animation/easing/easing.cpp
+
+    # Application
+    src/application/application.cpp
 
     # Graphics
     src/graphics/pipelines/pipeline.cpp
@@ -62,6 +65,9 @@ add_executable(Symbios
     src/graphics/primitives/2d/quad.cpp
     src/graphics/primitives/2d/sprite.cpp
     src/graphics/synchronization/synchronizer.cpp
+
+    # Graphics Contexts
+    src/contexts/context.cpp
     
     # Globals
     src/global/assets.cpp

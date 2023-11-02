@@ -1,8 +1,10 @@
+/**
+    application.hpp
+    Application wrapper interface, common for all platforms
+    @author Joakim Wennergren
+    @version 1.0 2/11/2023
+*/
 #pragma once
-
-#include "config.hpp"
-#include "context.hpp"
-#include "renderer.hpp"
 
 #include <plog/Log.h>
 #include <plog/Init.h>
@@ -10,147 +12,106 @@
 #include <plog/Appenders/ColorConsoleAppender.h>
 #include "plog/Initializers/RollingFileInitializer.h"
 
-struct Screen
-{
-    int width;
-    int height;
-};
+#include "config.hpp"
+#include "context.hpp"
+#include "renderer.hpp"
+#include "screen.hpp"
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
 
 #include <GLFW/glfw3.h>
 
+// @todo remove symbios namespace
 using namespace Symbios;
-using namespace Symbios::Core;
 using namespace Symbios::Graphics::Renderers;
 
-static void framebufferResizeCallback(GLFWwindow *window, int width, int height);
-static void cursorPositionCallback(GLFWwindow *window, double x, double y);
+void framebufferResizeCallback(GLFWwindow *window, int width, int height);
+void cursorPositionCallback(GLFWwindow *window, double x, double y);
 
-/**
- * @brief Application class
- *
- */
 class Application
 {
 public:
-    /**
-     * @brief Construct a new Application object
-     *
-     */
     Application()
     {
-        // plog::init(plog::debug, "debug.txt"); // Step2: initialize the logger
+        // Initialize logger
         static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
         plog::init(plog::verbose, &consoleAppender);
 
+        // Seed random
         srand(static_cast<unsigned>(time(0)));
 
+        // Initialize GLFW
         if (!glfwInit())
         {
-            PLOG_FATAL << "Could not initialize GLFW library!";
+            PLOG_FATAL << "Could not initialize GLFW!";
             exit(EXIT_FAILURE);
         }
-        // glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GL_FALSE);
+
+        // Create the window
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         _window = glfwCreateWindow(640, 340, "Symbios dev application", NULL, NULL);
 
         if (!_window)
         {
-            PLOG_FATAL << "Could not create window!";
+            PLOG_FATAL << "Could not create the window!";
             glfwTerminate();
             exit(EXIT_FAILURE);
-        }
+        }   
 
+        // Bind window callbacks
         glfwSetWindowUserPointer(_window, this);
-
         glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
         glfwSetCursorPosCallback(_window, cursorPositionCallback);
 
-
+        // Initialize Vulkan context
         Global::VulkanContext::GetInstance()->InitializeContext(_window);
     
+        // Create the renderer
         _renderer = std::make_shared<Renderer>();
 
+        // Get initial window framebuffer size
         int width, height;
         glfwGetFramebufferSize(_window, &width, &height);
-
         screen.width = width;
         screen.height = height;
     }
 
-    /**
-     * @brief Destroy the Application object
-     *
-     */
     ~Application()
     {
         glfwDestroyWindow(_window);
         glfwTerminate();
     }
 
+    // @todo make this more generic
     inline int GetScreenWidth() {return this->screen.width;};
 
+    /**
+     * On application initialization
+    */
     virtual void OnInit() = 0;
-    
+
+    /**
+     * On each render loop
+    */
     virtual void OnRender(float deltaTime) = 0;
 
+    /**
+     * Start the application
+    */
+    void Run();
+
+    // @todo this shouldn't be public
     std::shared_ptr<Renderer> GetRenderer() { return this->_renderer; };
 
-public:
-    /**
-     * @brief
-     *
-     */
-    inline void Run()
-    {
-
-        this->OnInit();
-
-        while (!glfwWindowShouldClose(_window))
-        {
-            int width, height;
-            glfwGetFramebufferSize(_window, &width, &height);
-
-            screen.width = width;
-            screen.height = height;
-
-            this->OnRender(0.0f);
-
-            glfwPollEvents();
-            _renderer->Render();
-        }
-    }
-
+// @todo look over if this should be protected..
 protected:
-        std::shared_ptr<Context> _context;
-        GLFWwindow *_window;
-        Screen screen;
-private:
+    Screen screen;
 
+private:
+    GLFWwindow *_window;
     std::shared_ptr<Renderer> _renderer;
-
-
-private:
+    std::shared_ptr<Context> _context;
 };
-
-static void framebufferResizeCallback(GLFWwindow *window, int width, int height)
-{
-    auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
-    if (app != nullptr)
-    {
-        app->GetRenderer()->FrameBufferResized();
-    }
-}
-
-static void cursorPositionCallback(GLFWwindow *window, double x, double y)
-{
-    auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
-    if (app != nullptr)
-    {
-        // app->GetRenderer()->pane->position = glm::vec3((float)x, (float)y, 0.0);
-    }
-}
 
 #endif
 
@@ -271,8 +232,6 @@ public:
         this->_autoreleasePool = NS::AutoreleasePool::alloc()->init();
         
     }
-
-
     
     /**
      * @brief Destroy the Application object
