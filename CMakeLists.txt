@@ -25,8 +25,6 @@ add_subdirectory(external/glm)
 # Networking
 add_subdirectory(external/asio.cmake)
 
-add_subdirectory(external/openssl-cmake)
-
 set(BUILD_CURL_EXE OFF)
 set(CURL_STATICLIB ON)
 set(SSL_ENABLED ON)
