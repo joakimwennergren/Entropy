@@ -14,7 +14,7 @@ using namespace Entropy::Network;
 
 #include <cmath>
 
-using namespace Symbios::Animation;
+using namespace Entropy::Animation;
 using namespace Symbios::Global;
 using namespace Symbios::Text;
 
@@ -25,14 +25,8 @@ public:
     SceneGraph * _sceneGraph;
     Game()
     {
-
         auto client = HttpClient();
-
         client.Get("https://dog.ceo/api/breeds/list/all");
-
-
-
-        srand(time(nullptr));
         _sceneGraph = Global::SceneGraph::GetInstance();
     }
 

@@ -27,6 +27,12 @@ add_subdirectory(external/asio.cmake)
 
 set(BUILD_CURL_EXE OFF)
 set(CURL_STATICLIB ON)
+set(SSL_ENABLED ON)
+if(WIN32)
+    set(USE_WINDOWS_SSPI ON)
+    set(USE_SCHANNEL ON)
+endif(WIN32)
+
 add_subdirectory(external/curl)
 
 
@@ -36,9 +42,12 @@ set(FT_WITH_BZIP2 OFF)
 add_subdirectory(external/freetype-2.10.0)
 
 add_executable(Symbios
-    
-    # Graphics Contexts
-    src/contexts/context.cpp
+
+    # Animation
+    src/animation/easing/easing.cpp
+
+    # Application
+    src/application/application.cpp
 
     # Graphics
     src/graphics/pipelines/pipeline.cpp
@@ -56,6 +65,9 @@ add_executable(Symbios
     src/graphics/primitives/2d/quad.cpp
     src/graphics/primitives/2d/sprite.cpp
     src/graphics/synchronization/synchronizer.cpp
+
+    # Graphics Contexts
+    src/contexts/context.cpp
     
     # Globals
     src/global/assets.cpp
@@ -134,6 +146,8 @@ target_include_directories(Symbios PUBLIC
 
     external/freetype-2.10.0/include
 
+    external/openssl-cmake/include
+
     # Svampjakt 2
 
     svampjakt2/leafsystem
@@ -154,7 +168,7 @@ target_link_libraries(Symbios
     asio::asio
 
     #CURL
-    libcurl_static # CURL on macOS?
+    libcurl_static 
 )
 
 if(NOT XCODE)
