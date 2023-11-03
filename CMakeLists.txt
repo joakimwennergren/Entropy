@@ -80,6 +80,9 @@ add_executable(Symbios
     # Network
     src/network/httpclient.cpp
 
+    # Timing
+    src/timing/timer.cpp
+
     # Svampjakt2
     svampjakt2/leafsystem/leaf.cpp
     svampjakt2/leafsystem/leafsystem.cpp
@@ -140,6 +143,9 @@ target_include_directories(Symbios PUBLIC
     # Network
     src/network
     external/curl/include
+
+    # Timing
+    src/timing
 
     # Metal-CPP
     external/metal-cpp/
