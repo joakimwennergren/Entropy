@@ -45,13 +45,12 @@ void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap)
 void Texture::CreateTextureImage(std::string path)
 {
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
-    auto colorFormat = VK_FORMAT_R8G8B8A8_SRGB;
+    auto colorFormat = VK_FORMAT_R8G8B8A8_UNORM;
 #elif defined(BUILD_FOR_WINDOWS)
     auto colorFormat = VK_FORMAT_R8G8B8A8_UNORM;
 #else
     auto colorFormat = VK_FORMAT_B8G8R8A8_SRGB;
 #endif
-
 
     // stbi_set_flip_vertically_on_load(true);
 
@@ -83,9 +82,9 @@ void Texture::CreateTextureImage(std::string path)
 
     hasTexture = true;
 
-    #if USE_DEBUG_INFO == 1
-        PLOG_DEBUG << "Successfully loaded texture: " + path;
-    #endif
+#if USE_DEBUG_INFO == 1
+    PLOG_DEBUG << "Successfully loaded texture: " + path;
+#endif
 }
 
 void Texture::CreateImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory)

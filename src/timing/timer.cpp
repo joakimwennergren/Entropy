@@ -6,7 +6,7 @@ Timer::Timer()
 {
 }
 
-Timer::Timer(int const &tick_duration, int const &max_tick)
+Timer::Timer(float tick_duration, float const &max_tick)
 {
     set_tick_duration(tick_duration);
     set_max_tick(max_tick);
@@ -19,15 +19,16 @@ void Timer::calculate()
 {
     _end = std::chrono::system_clock::now();
     _elapsed = _end - _start;
-    int e = (int)(_elapsed.count() * 1000);
-    if (e >= _tick_duration && e > 0)
+    float e = (_elapsed.count() * 1000.0f);
+
+    if (e >= _tick_duration && e > 0.0f)
     {
         _update = true;
-        int t = (e - (e % _tick_duration)) / _tick_duration;
+        float t = (e - (fmod(e, _tick_duration))) / _tick_duration;
         _current_tick += t;
         if (_current_tick >= _max_tick)
         {
-            _current_tick = 0;
+            _current_tick = 0.0f;
         }
         _start = _end;
     }
@@ -39,7 +40,7 @@ void Timer::calculate()
 
 /* Getters */
 
-int Timer::get_tick() // Returns current tick
+float Timer::get_tick() // Returns current tick
 {
     calculate();
     return _current_tick;
@@ -47,12 +48,12 @@ int Timer::get_tick() // Returns current tick
 
 /* Setters */
 
-void Timer::set_tick_duration(int const &d)
+void Timer::set_tick_duration(float const &d)
 {
     _tick_duration = d;
 }
 
-void Timer::set_max_tick(int const &max)
+void Timer::set_max_tick(float const &max)
 {
     _max_tick = max;
 }
@@ -67,7 +68,7 @@ void Timer::start()
 void Timer::reset()
 {
     _update = true;
-    _current_tick = 0;
+    _current_tick = 0.0f;
     _start = std::chrono::system_clock::now();
 }
 

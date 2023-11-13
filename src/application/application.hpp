@@ -16,6 +16,7 @@
 #include "context.hpp"
 #include "renderer.hpp"
 #include "screen.hpp"
+#include "timer.hpp"
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
 
@@ -24,6 +25,7 @@
 // @todo remove symbios namespace
 using namespace Symbios;
 using namespace Symbios::Graphics::Renderers;
+using namespace Entropy::Timing;
 
 void framebufferResizeCallback(GLFWwindow *window, int width, int height);
 void cursorPositionCallback(GLFWwindow *window, double x, double y);
@@ -56,7 +58,7 @@ public:
             PLOG_FATAL << "Could not create the window!";
             glfwTerminate();
             exit(EXIT_FAILURE);
-        }   
+        }
 
         // Bind window callbacks
         glfwSetWindowUserPointer(_window, this);
@@ -65,9 +67,12 @@ public:
 
         // Initialize Vulkan context
         Global::VulkanContext::GetInstance()->InitializeContext(_window);
-    
+
         // Create the renderer
         _renderer = std::make_shared<Renderer>();
+
+        // Create 1ms Timer
+        _timer = new Timer(1.0f);
 
         // Get initial window framebuffer size
         int width, height;
@@ -78,32 +83,33 @@ public:
 
     ~Application()
     {
+        delete _timer;
         glfwDestroyWindow(_window);
         glfwTerminate();
     }
 
     // @todo make this more generic
-    inline int GetScreenWidth() {return this->screen.width;};
+    inline int GetScreenWidth() { return this->screen.width; };
 
     /**
      * On application initialization
-    */
+     */
     virtual void OnInit() = 0;
 
     /**
      * On each render loop
-    */
+     */
     virtual void OnRender(float deltaTime) = 0;
 
     /**
      * Start the application
-    */
+     */
     void Run();
 
     // @todo this shouldn't be public
     std::shared_ptr<Renderer> GetRenderer() { return this->_renderer; };
 
-// @todo look over if this should be protected..
+    // @todo look over if this should be protected..
 protected:
     Screen screen;
 
@@ -111,6 +117,9 @@ private:
     GLFWwindow *_window;
     std::shared_ptr<Renderer> _renderer;
     std::shared_ptr<Context> _context;
+    Timer *_timer;
+    float _lastTick = 0.0f;
+    float _deltaTime = 0.0f;
 };
 
 #endif
@@ -145,11 +154,9 @@ using namespace Symbios::Graphics::Renderers;
 class Application : public UI::ApplicationDelegate
 {
 public:
-    
     class MTKViewDelegate : public MTK::ViewDelegate
     {
     public:
-        
         std::shared_ptr<SceneGraph> graph;
         /**
          * @brief Construct a new MTKViewDelegate object
@@ -159,12 +166,12 @@ public:
         {
             this->app = app;
         }
-        
+
         inline void SetRenderer(std::shared_ptr<Renderer> renderer)
         {
             _renderer = renderer;
         }
-        
+
         /**
          * @brief Destroy the MTKViewDelegate object
          *
@@ -174,22 +181,23 @@ public:
         }
         Application *app;
         CGRect frame;
-        
+
     private:
-        
-        float RandomFloat(float a, float b) {
-            float random = ((float) rand()) / (float) RAND_MAX;
+        float RandomFloat(float a, float b)
+        {
+            float random = ((float)rand()) / (float)RAND_MAX;
             float diff = b - a;
             float r = random * diff;
             return a + r;
         }
-                
-        double GetTimeAsDouble() {
+
+        double GetTimeAsDouble()
+        {
             using namespace std::chrono;
             using SecondsFP = std::chrono::duration<double>;
             return duration_cast<SecondsFP>(high_resolution_clock::now().time_since_epoch()).count();
         }
-        
+
         /**
          * @brief
          *
@@ -198,26 +206,25 @@ public:
         inline virtual void drawInMTKView(MTK::View *pView) override
         {
             auto tick_time = (float)GetTimeAsDouble();
-            
+
             deltaTime = tick_time - lastTick;
-            
+
             lastTick = tick_time;
-            
+
             app->OnRender(deltaTime);
 
             auto ratio = (app->frame.size.width) / (app->frame.size.height);
 
             app->screen.width = app->frame.size.width * 3.0;
             app->screen.height = app->frame.size.height * 3.3;
-                        
+
             _renderer->Render();
         }
-        
+
         std::shared_ptr<Renderer> _renderer;
-        
+
         float lastTick = 0.0;
         float deltaTime = 0.0;
-
     };
 
     /**
@@ -228,11 +235,10 @@ public:
     {
         static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
         plog::init(plog::verbose, &consoleAppender);
-        
+
         this->_autoreleasePool = NS::AutoreleasePool::alloc()->init();
-        
     }
-    
+
     /**
      * @brief Destroy the Application object
      *
@@ -246,7 +252,7 @@ public:
         delete _pViewDelegate;
         this->_autoreleasePool->release();
     }
-    
+
     /**
      * @brief
      *
@@ -258,49 +264,49 @@ public:
     inline bool applicationDidFinishLaunching(UI::Application *pApp, NS::Value *options) override
     {
         frame = UI::Screen::mainScreen()->bounds();
-        
+
         //_pViewController = UI::ViewController::alloc()->init(nil, nil);
-        
+
         _pWindow = UI::Window::alloc()->init(frame);
-        
+
         _pDevice = MTL::CreateSystemDefaultDevice();
-        
+
         _pMtkView = MTK::View::alloc()->init(frame, _pDevice);
-        
+
         _pViewController = get_native_bounds((UI::View *)_pMtkView, UI::Screen::mainScreen());
-        
+
         _pMtkView->setColorPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
         _pMtkView->setClearColor(MTL::ClearColor::Make(1.0, 1.0, 1.0, 1.0));
-        
+
         _pViewDelegate = new MTKViewDelegate(this);
         _pMtkView->setDelegate(_pViewDelegate);
-        
+
         UI::View *mtkView = (UI::View *)_pMtkView;
         mtkView->setAutoresizingMask(UI::ViewAutoresizingFlexibleWidth | UI::ViewAutoresizingFlexibleHeight);
-        
+
         _pViewController->view()->addSubview(mtkView);
         _pWindow->setRootViewController(_pViewController);
-        
+
         _pWindow->makeKeyAndVisible();
-        
+
         CA::MetalLayer *layer = _pMtkView->currentDrawable()->layer();
-        
+
         Global::VulkanContext::GetInstance()->InitializeContext(layer, frame);
-        
+
         auto renderer = std::make_shared<Renderer>();
-        
+
         _pViewDelegate->SetRenderer(renderer);
         _pViewDelegate->frame = frame;
-        
+
         this->_context = Global::VulkanContext::GetInstance()->GetVulkanContext();
 
         OnInit();
-        
+
         return true;
     }
 
     virtual void OnInit() = 0;
-    
+
     virtual void OnRender(float deltaTime) = 0;
 
     /**
@@ -313,7 +319,6 @@ public:
     }
 
 public:
-    
     /**
      * @brief
      *
@@ -326,10 +331,9 @@ public:
     std::shared_ptr<Context> _context;
     CGRect frame;
     Screen screen;
+
 protected:
-
 private:
-
     UI::Window *_pWindow = nullptr;
     MTK::View *_pMtkView = nullptr;
     MTL::Device *_pDevice = nullptr;

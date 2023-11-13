@@ -4,16 +4,23 @@ void Application::Run()
 {
     this->OnInit();
 
+    _timer->start();
+    _lastTick = (float)_timer->get_tick();
+
     while (!glfwWindowShouldClose(_window))
     {
+        // Calculate delta time
+        _deltaTime = (float)_timer->get_tick() - _lastTick;
+        _lastTick = (float)_timer->get_tick();
+
         // Update screen dimensions
         int width, height;
         glfwGetFramebufferSize(_window, &width, &height);
         screen.width = width;
         screen.height = height;
-        
+
         // Render stuff
-        this->OnRender(0.0f);
+        this->OnRender(_deltaTime);
         _renderer->Render();
 
         // Poll events
