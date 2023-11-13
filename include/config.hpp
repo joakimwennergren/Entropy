@@ -1,7 +1,7 @@
 #pragma once
 
 // Platform
-#define BUILD_FOR_WINDOWS
+#define BUILD_FOR_MACOS
 
 // Debugging
 //#define USE_DEBUG_INFO 0
