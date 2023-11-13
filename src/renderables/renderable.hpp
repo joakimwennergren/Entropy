@@ -19,36 +19,32 @@ namespace Symbios
         class Renderable
         {
         public:
-
             Renderable()
             {
                 this->id = rand() % UINT_MAX;
             }
 
-           ~Renderable()
-           {
-                #if USE_DEBUG_INFO == 1
-                    PLOG_DEBUG << "2DRenderable destructor called!";
-                #endif
-
+            ~Renderable()
+            {
                 vkDeviceWaitIdle(_context->GetLogicalDevice());
 
-                if(_descriptorSet != VK_NULL_HANDLE)
+                if (_descriptorSet != VK_NULL_HANDLE)
                 {
-                     vkFreeDescriptorSets(
-                    _context->GetLogicalDevice(),
-                    _context->GetDescriptorPool(),
-                    1,
-                    &_descriptorSet);                   
+                    vkFreeDescriptorSets(
+                        _context->GetLogicalDevice(),
+                        _context->GetDescriptorPool(),
+                        1,
+                        &_descriptorSet);
                 }
 
-                if(_descriptorSetLayout != VK_NULL_HANDLE) {
+                if (_descriptorSetLayout != VK_NULL_HANDLE)
+                {
                     vkDestroyDescriptorSetLayout(_context->GetLogicalDevice(), _descriptorSetLayout, nullptr);
                 }
-           }
+            }
 
-           void UpdateImage()
-           {
+            void UpdateImage()
+            {
                 VkDescriptorSetLayoutBinding samplerLayoutBinding{};
                 samplerLayoutBinding.binding = 1;
                 samplerLayoutBinding.descriptorCount = 1;
@@ -63,7 +59,7 @@ namespace Symbios
                 texturesLayoutBinding.pImmutableSamplers = nullptr;
                 texturesLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-                std::array<VkDescriptorSetLayoutBinding, 2> bindings = {samplerLayoutBinding,texturesLayoutBinding};
+                std::array<VkDescriptorSetLayoutBinding, 2> bindings = {samplerLayoutBinding, texturesLayoutBinding};
                 VkDescriptorSetLayoutCreateInfo layoutInfo{};
                 layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
                 layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
@@ -79,7 +75,7 @@ namespace Symbios
                 VkDescriptorSetAllocateInfo allocInfo{};
                 allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
                 allocInfo.descriptorPool = _context->GetDescriptorPool();
-                allocInfo.descriptorSetCount = 1; //MAX_CONCURRENT_FRAMES_IN_FLIGHT;
+                allocInfo.descriptorSetCount = 1; // MAX_CONCURRENT_FRAMES_IN_FLIGHT;
                 allocInfo.pSetLayouts = layouts.data();
 
                 if (vkAllocateDescriptorSets(_context->GetLogicalDevice(), &allocInfo, &_descriptorSet) != VK_SUCCESS)
@@ -117,7 +113,6 @@ namespace Symbios
             unsigned int id = 0;
             std::string name;
 
-
             std::vector<std::shared_ptr<Renderable>> children;
 
             bool visible = true;
@@ -149,10 +144,7 @@ namespace Symbios
                 this->orientation = orientation;
                 this->rotationX = r;
             }
-            inline void ZIndex(int z)
-            {
-                this->zIndex = z;
-            }
+            inline void ZIndex(int z) { this->zIndex = z; }
 
             inline const std::vector<Vertex> GetVertices() { return this->_vertices; };
             inline const std::vector<uint16_t> GetIndices() { return this->_indices; };

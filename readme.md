@@ -2,21 +2,9 @@
 
 ## What is this?
 
-Symbios is a framework to make 3D visual effects.
+Entropy..
 
 ## Target
-For now the target is windows platform.
-https://github.com/alaingalvan/CrossWindow
-(can't build a static/dynamic library out of it so fuck it)
-
-## Stepping stones
-* [X] ~~Create a win32 basic window~~
-* [X] ~~wrap it in c++ classes~~
-* [X] ~~strip unnecessary code/features (like the about callback)~~
-* [X] Create an opengl context window
-* [X] Bind vulkan to it
-* [X] Decide on what GPU/3D API to use (I choose you, vulkan! why? because you can optimize and have greater control over everything)
-* [ ] Clean vulkan warnings/errors & restructure code
 
 ## Resources
 
@@ -24,14 +12,6 @@ https://github.com/alaingalvan/CrossWindow
 * https://www.raylib.com/ - raylib is a simple and easy-to-use library to enjoy videogames programming. 
 might be good for inspiration regarding drawing functions etc.
 * https://skia.org/ - 2d graphics engine powering firefox/chrome. Alot of inspiration regarding antialiasing and other stuff.
-
-### GPU Contexts/API
-* https://www.vulkan.org/
-* https://docs.microsoft.com/en-us/windows/win32/direct3d
-* https://www.opengl.org/
-
-### Programming C/C++
-* https://www.enlyze.com/blog/writing-win32-apps-like-its-2020/part-2/
 
 ### Documentation
 * https://vulkan.lunarg.com/

@@ -16,7 +16,7 @@ void Pipeline::Build()
 #ifdef BUILD_FOR_IOS
     _shader = std::make_unique<Shader>(Filesystem::GetProjectBasePath() + "/vert.spv", Filesystem::GetProjectBasePath() + "/frag.spv");
 #else
-    _shader = std::make_unique<Shader>(Filesystem::GetShadersDir() + "/vert.spv", Filesystem::GetShadersDir() + "/frag.spv");
+    _shader = std::make_unique<Shader>(Filesystem::GetShadersDir() + "vert.spv", Filesystem::GetShadersDir() + "/frag.spv");
 #endif
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};

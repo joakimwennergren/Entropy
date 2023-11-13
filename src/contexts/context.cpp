@@ -590,8 +590,10 @@ Context::SwapChainSupportDetails Context::QuerySwapChainSupport(VkPhysicalDevice
 VkSurfaceFormatKHR Context::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats)
 {
 
-#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
+#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
     auto colorFormat = VK_FORMAT_R8G8B8A8_SRGB;
+#elif defined(BUILD_FOR_WINDOWS)
+    auto colorFormat = VK_FORMAT_R8G8B8A8_UNORM;
 #else
     auto colorFormat = VK_FORMAT_B8G8R8A8_SRGB;
 #endif
