@@ -3,3 +3,4 @@
 build
 src/config.hpp
 docs
+**/.DS_Store
