@@ -54,8 +54,6 @@ Renderer::Renderer()
 
 void Renderer::Render()
 {
-    float scale = 0.1;
-
     uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(_context->GetLogicalDevice(), _context->GetSwapChain(), UINT64_MAX, _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE, &imageIndex);
 
@@ -83,7 +81,7 @@ void Renderer::Render()
 
     vkWaitForFences(_context->GetLogicalDevice(), 1, &_synchronizer->GetFences()[_currentFrame], VK_TRUE, UINT64_MAX);
 
-    // Only reset the fence if we are submitting work
+    // @todo this should'nt be here
     vkResetFences(_context->GetLogicalDevice(), 1, &_synchronizer->GetFences()[_currentFrame]);
 
     vkResetCommandBuffer(currentCmdBuffer, 0);
@@ -110,8 +108,6 @@ void Renderer::Render()
     scissor.extent = _context->GetSwapChainExtent();
     vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissor);
 
-    uint32_t modelCnt = 0;
-
     sort(Global::SceneGraph::GetInstance()->renderables.begin(), Global::SceneGraph::GetInstance()->renderables.end(), [](const std::shared_ptr<Renderable> &lhs, const std::shared_ptr<Renderable> &rhs)
          { return lhs->zIndex < rhs->zIndex; });
 
@@ -119,8 +115,6 @@ void Renderer::Render()
     {
         if (sprite->vertexBuffer == nullptr)
             continue;
-
-        // PLOG_INFO << Global::SceneGraph::GetInstance()->renderables.size();
 
         VkBuffer vertexBuffers[] = {sprite->vertexBuffer->GetVulkanBuffer()};
         VkDeviceSize offsets[] = {0};
@@ -131,8 +125,6 @@ void Renderer::Render()
         vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 0, nullptr);
 
         UniformBufferObject ubo{};
-
-        auto model = glm::mat4(1.0f);
 
         auto translate = glm::translate(glm::mat4(1.0f), sprite->position);
         auto scale = glm::scale(glm::mat4(1.0), sprite->scale);
@@ -177,8 +169,6 @@ void Renderer::Render()
         memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));
 
         vkCmdDrawIndexed(currentCmdBuffer, sprite->GetIndices().size(), 1, 0, 0, 0);
-
-        modelCnt++;
     }
 
     _renderPass->End(_commandBuffers[_currentFrame]);

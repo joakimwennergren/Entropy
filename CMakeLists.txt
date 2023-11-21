@@ -19,53 +19,36 @@ include(cmake/platform.cmake)
 include(cmake/external_dependencies.cmake)
 
 # List source files
-file(GLOB_RECURSE SOURCES  ${CMAKE_SOURCE_DIR}/src/*.cpp)
+file(GLOB_RECURSE SOURCES ${CMAKE_SOURCE_DIR}/src/*.cpp)
 
 # Include headers
-include_directories(${CMAKE_SOURCE_DIR}/src external)
+include_directories(${CMAKE_SOURCE_DIR}/src external include)
 
 # Create the library
 add_library(Entropy STATIC ${SOURCES})
 
-# Just for example add some compiler flags.
+# Compiler flags
 target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17 -Wall -Wfloat-conversion)
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${HEADERS})
+# 
+target_include_directories(${PROJECT_NAME} PRIVATE ${Vulkan_INCLUDE_DIRS})
 
-if(NOT XCODE)
-    target_include_directories(Entropy PRIVATE
-        # Vulkan
-        ${Vulkan_INCLUDE_DIRS}
-    )
-endif()
-
-target_link_libraries(Entropy
-
-    # Logging
+#
+target_link_libraries(${PROJECT_NAME}
     plog
-
-    # GLM
     glm
-
-    # Networking
     asio::asio
-
-    #CURL
     libcurl_static 
 )
 
+#
 if(NOT XCODE)
-    target_link_libraries(Entropy
-
-        # Graphics API
+    target_link_libraries(${PROJECT_NAME}
         ${Vulkan_LIBRARIES}
-
-        # Windowing
         glfw
-
-        # Text shaping
         freetype
     )
 endif()
 
+#
 configure_file(config.h.in ${CMAKE_SOURCE_DIR}/include/config.hpp @ONLY)

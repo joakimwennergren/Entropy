@@ -6,7 +6,7 @@
 */
 #pragma once
 
-#include "config.hpp"
+#include <config.hpp>
 
 #include <plog/Log.h>
 #include <plog/Init.h>
@@ -16,8 +16,8 @@
 
 #include <contexts/context.hpp>
 #include <graphics/renderers/renderer.hpp>
-#include "screen.hpp"
 #include <timing/timer.hpp>
+#include "screen.hpp"
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
 
