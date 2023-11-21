@@ -1,9 +1,9 @@
 #pragma once
 
-#include "texture.hpp"
-#include "vertexbuffer.hpp"
-#include "buffer.hpp"
-#include "vulkancontext.hpp"
+#include <graphics/textures/texture.hpp>
+#include <graphics/buffers/vertexbuffer.hpp>
+#include <graphics/buffers/buffer.hpp>
+#include <global/vulkancontext.hpp>
 
 #include <string>
 #include <unordered_map>

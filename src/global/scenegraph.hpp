@@ -3,7 +3,7 @@
 #include <string>
 #include <mutex>
 
-#include "renderable.hpp"
+#include <renderables/renderable.hpp>
 
 using namespace Symbios::Core;
 using namespace Symbios::Renderables;
@@ -19,14 +19,14 @@ namespace Symbios
             static std::mutex mutex_;
 
         protected:
-            SceneGraph(){}
-            ~SceneGraph(){}
+            SceneGraph() {}
+            ~SceneGraph() {}
 
-        public:            
+        public:
             SceneGraph(SceneGraph &other) = delete;
             void operator=(const SceneGraph &) = delete;
             static SceneGraph *GetInstance();
-            
+
             std::vector<std::shared_ptr<Renderable>> renderables;
         };
     }

@@ -1,9 +1,9 @@
 #pragma once
 
 #include <vulkan/vulkan.hpp>
-#include "context.hpp"
-#include "commandbuffer.hpp"
-#include "vulkancontext.hpp"
+#include <contexts/context.hpp>
+#include <global/vulkancontext.hpp>
+#include <graphics/commandbuffers/commandbuffer.hpp>
 
 using namespace Symbios::Core;
 using namespace Symbios::Graphics::CommandBuffers;

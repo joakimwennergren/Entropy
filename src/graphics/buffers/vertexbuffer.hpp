@@ -1,8 +1,8 @@
 #pragma once
 
-#include "context.hpp"
-#include "buffer.hpp"
-#include "vertex.hpp"
+#include <contexts/context.hpp>
+#include <graphics/buffers/buffer.hpp>
+#include <graphics/data/vertex.hpp>
 
 using namespace Symbios::Core;
 using namespace Symbios::Graphics::Buffers;
@@ -16,7 +16,6 @@ namespace Symbios
             class VertexBuffer : public Buffer
             {
             public:
-
                 VertexBuffer(std::vector<Vertex> vertices);
 
                 ~VertexBuffer();

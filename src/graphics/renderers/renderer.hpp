@@ -8,21 +8,21 @@
 
 #include <unordered_map>
 
-#include "context.hpp"
-#include "renderpass.hpp"
-#include "pipeline.hpp"
-#include "vertex.hpp"
-#include "buffer.hpp"
-#include "commandbuffer.hpp"
-#include "mvpuniform.hpp"
-#include "texture.hpp"
-#include "filesystem.hpp"
-#include "quad.hpp"
-#include "instance.hpp"
-#include "instance_pushcontants.hpp"
+#include <contexts/context.hpp>
+#include <graphics/renderpasses/renderpass.hpp>
+#include <graphics/pipelines/pipeline.hpp>
+#include <graphics/data/vertex.hpp>
+#include <graphics/buffers/buffer.hpp>
+#include <graphics/commandbuffers/commandbuffer.hpp>
+#include <graphics/data/ubo.hpp>
+#include <graphics/buffers/uniformbuffer.hpp>
+#include <graphics/textures/texture.hpp>
+#include <filesystem/filesystem.hpp>
+#include <graphics/primitives/2d/quad.hpp>
+#include <graphics/data/pushcontant.hpp>
 
-#include "uniformbuffer.hpp"
-#include "scenegraph.hpp"
+#include <graphics/data/ubo.hpp>
+#include <global/scenegraph.hpp>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -30,11 +30,10 @@
 #include <freetype/ftglyph.h>
 #include <iostream>
 
-#include "renderable.hpp"
-#include "sprite.hpp"
+#include <renderables/renderable.hpp>
+#include <graphics/primitives/2d/sprite.hpp>
 
-
-#include "synchronizer.hpp"
+#include <graphics/synchronization/synchronizer.hpp>
 
 #include <map>
 
@@ -77,7 +76,6 @@ namespace Symbios
                 void FrameBufferResized() { this->_framebufferResized = true; };
 
             private:
-
                 // Vulkan Ctx
                 std::shared_ptr<Context> _context;
                 std::shared_ptr<RenderPass> _renderPass;
@@ -94,18 +92,11 @@ namespace Symbios
                 bool _framebufferResized = false;
 
                 std::vector<VkBuffer> rawUniformBuffers;
-
-                InstanceUBO _instanceUbo;
                 std::vector<VkBuffer> uniformBuffersInstances;
 
-                VkDeviceMemory _uniformBufferInstanceMemory;
-                VkDeviceMemory _uniformBufferInstanceMemory2;
                 VkDeviceSize dynamicAlignment;
 
                 std::vector<UniformBuffer *> _uniformBuffers;
-                VkCommandBuffer currentCmdBuffer;
-                VkDescriptorSet currentDescriptorSet;
-
                 std::unique_ptr<Synchronizer> _synchronizer;
             };
         }
