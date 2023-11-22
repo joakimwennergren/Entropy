@@ -57,18 +57,16 @@ void Renderer::Render()
     uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(_context->GetLogicalDevice(), _context->GetSwapChain(), UINT64_MAX, _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE, &imageIndex);
 
-    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || _framebufferResized)
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
     {
-        _context->RecreateSwapChain();
+
 
         _synchronizer.reset();
 
         _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
-
+        _context->RecreateSwapChain();
         _renderPass->RecreateFrameBuffers();
-
-        _framebufferResized = false;
-
+        
         return;
     }
     else if (result != VK_SUCCESS)
