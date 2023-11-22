@@ -56,5 +56,7 @@ if(NOT XCODE)
     )
 endif()
 
+set(PROJET_BASEPATH ${PROJECT_SOURCE_DIR})
+
 #
 configure_file(config.h.in ${CMAKE_SOURCE_DIR}/include/config.hpp @ONLY)

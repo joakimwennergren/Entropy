@@ -1,5 +1,7 @@
 #pragma once
 
+#include "config.hpp"
+
 #include <filesystem>
 #include <string>
 
@@ -19,7 +21,7 @@ namespace Symbios
 #endif
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
-            return std::filesystem::current_path().string() + "/..";
+            return ENGINE_BASEPATH;
 #endif
 
 #ifdef BUILD_FOR_IOS
@@ -42,47 +44,47 @@ namespace Symbios
 
         inline static std::string GetTexturesDir()
         {
-            #ifdef BUILD_FOR_IOS
-                return Filesystem::GetProjectBasePath() + "/";
-            #else 
-                return Filesystem::GetProjectBasePath() + "/resources/textures/"; 
-            #endif
+#ifdef BUILD_FOR_IOS
+            return Filesystem::GetProjectBasePath() + "/";
+#else
+            return Filesystem::GetProjectBasePath() + "/resources/textures/";
+#endif
         }
 
         inline static std::string GetScriptsDir()
         {
-            #ifdef BUILD_FOR_IOS
-                return Filesystem::GetProjectBasePath() + "/";
-            #else 
-                return Filesystem::GetProjectBasePath() + "/resources/scripts/"; 
-            #endif
+#ifdef BUILD_FOR_IOS
+            return Filesystem::GetProjectBasePath() + "/";
+#else
+            return Filesystem::GetProjectBasePath() + "/resources/scripts/";
+#endif
         }
 
         inline static std::string GetSpritesDir()
         {
-            #ifdef BUILD_FOR_IOS
-                return Filesystem::GetProjectBasePath() + "/";
-            #else 
-                return Filesystem::GetProjectBasePath() + "/resources/sprites/"; 
-            #endif
+#ifdef BUILD_FOR_IOS
+            return Filesystem::GetProjectBasePath() + "/";
+#else
+            return Filesystem::GetProjectBasePath() + "/resources/sprites/";
+#endif
         }
 
         inline static std::string GetShadersDir()
         {
-            #ifdef BUILD_FOR_IOS
-                return Filesystem::GetProjectBasePath() + "/";
-            #else 
-                return Filesystem::GetProjectBasePath() + "/shaders/basic/"; 
-            #endif
+#ifdef BUILD_FOR_IOS
+            return Filesystem::GetProjectBasePath() + "/";
+#else
+            return Filesystem::GetProjectBasePath() + "/shaders/basic/";
+#endif
         }
 
         inline static std::string GetFontsDir()
         {
-            #ifdef BUILD_FOR_IOS
-                return Filesystem::GetProjectBasePath() + "/";
-            #else 
-                return Filesystem::GetProjectBasePath() + "/resources/fonts/"; 
-            #endif
+#ifdef BUILD_FOR_IOS
+            return Filesystem::GetProjectBasePath() + "/";
+#else
+            return Filesystem::GetProjectBasePath() + "/resources/fonts/";
+#endif
         }
     }
 }
