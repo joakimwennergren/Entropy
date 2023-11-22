@@ -7,7 +7,7 @@
 # Game Engine version 1.0
 
 # Set minimum cmake version
-cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
 
 # Declare project
 project(Entropy)
@@ -19,10 +19,7 @@ include(cmake/platform.cmake)
 include(cmake/external_dependencies.cmake)
 
 # List source files
-file(GLOB_RECURSE SOURCES ${CMAKE_SOURCE_DIR}/src/*.cpp)
-
-# Include headers
-include_directories(${CMAKE_SOURCE_DIR}/src external include)
+file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
 # Create the library
 add_library(Entropy STATIC ${SOURCES})
@@ -30,18 +27,25 @@ add_library(Entropy STATIC ${SOURCES})
 # Compiler flags
 target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17 -Wall -Wfloat-conversion)
 
-target_include_directories(${PROJECT_NAME} PUBLIC include)
-
-# 
-target_include_directories(${PROJECT_NAME} PRIVATE ${Vulkan_INCLUDE_DIRS})
+# Include headers
+target_include_directories(${PROJECT_NAME} 
+    PRIVATE
+        external 
+    PUBLIC 
+        ${PROJECT_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/src
+        ${Vulkan_INCLUDE_DIRS}
+)
 
 #
 target_link_libraries(${PROJECT_NAME}
+    sol2
     plog
     glm
     asio::asio
     #libcurl_static 
     libcurl_shared
+    freetype
 )
 
 #
@@ -49,7 +53,6 @@ if(NOT XCODE)
     target_link_libraries(${PROJECT_NAME}
         ${Vulkan_LIBRARIES}
         glfw
-        freetype
     )
 endif()
 
