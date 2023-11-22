@@ -30,6 +30,8 @@ add_library(Entropy STATIC ${SOURCES})
 # Compiler flags
 target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17 -Wall -Wfloat-conversion)
 
+target_include_directories(${PROJECT_NAME} PUBLIC include)
+
 # 
 target_include_directories(${PROJECT_NAME} PRIVATE ${Vulkan_INCLUDE_DIRS})
 
@@ -38,7 +40,8 @@ target_link_libraries(${PROJECT_NAME}
     plog
     glm
     asio::asio
-    libcurl_static 
+    #libcurl_static 
+    libcurl_shared
 )
 
 #
