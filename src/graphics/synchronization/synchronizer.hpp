@@ -1,8 +1,8 @@
 #pragma once
 
 #include <vector>
-#include "context.hpp"
-#include "vulkancontext.hpp"
+#include <contexts/context.hpp>
+#include <global/vulkancontext.hpp>
 
 using namespace Symbios::Core;
 using namespace Symbios::Global;
@@ -34,7 +34,6 @@ namespace Symbios
                 inline std::vector<VkFence> GetFences() { return this->_fences; };
 
             private:
-
                 unsigned int numObjects;
 
                 // Vulkan Ctx

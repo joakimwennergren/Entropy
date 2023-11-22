@@ -12,11 +12,11 @@
 #pragma once
 
 #include <vulkan/vulkan.hpp>
-#include "context.hpp"
-#include "vertex.hpp"
-#include "utilities.hpp"
-#include "commandbuffer.hpp"
-#include "vulkancontext.hpp"
+#include <contexts/context.hpp>
+#include <graphics/data/vertex.hpp>
+#include <graphics/utilities/utilities.hpp>
+#include <graphics/commandbuffers/commandbuffer.hpp>
+#include <global/vulkancontext.hpp>
 
 using namespace Symbios::Core;
 using namespace Symbios::Graphics::Utilities;
@@ -36,7 +36,6 @@ namespace Symbios
             class Buffer
             {
             public:
-
                 /**
                  * @brief Construct a new Buffer object
                  *

@@ -54,8 +54,6 @@ Renderer::Renderer()
 
 void Renderer::Render()
 {
-    float scale = 0.1;
-
     uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(_context->GetLogicalDevice(), _context->GetSwapChain(), UINT64_MAX, _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE, &imageIndex);
 
@@ -83,18 +81,16 @@ void Renderer::Render()
 
     vkWaitForFences(_context->GetLogicalDevice(), 1, &_synchronizer->GetFences()[_currentFrame], VK_TRUE, UINT64_MAX);
 
-    // Only reset the fence if we are submitting work
+    // @todo this should'nt be here
     vkResetFences(_context->GetLogicalDevice(), 1, &_synchronizer->GetFences()[_currentFrame]);
 
     vkResetCommandBuffer(currentCmdBuffer, 0);
 
     auto currentDescriptorSet = _context->GetDescriptorSets()[_currentFrame];
 
-
     _commandBuffers[_currentFrame]->Record();
 
     _renderPass->Begin(_commandBuffers[_currentFrame], imageIndex);
-
 
     vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipeline());
 
@@ -112,30 +108,23 @@ void Renderer::Render()
     scissor.extent = _context->GetSwapChainExtent();
     vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissor);
 
-    uint32_t modelCnt = 0;
+    sort(Global::SceneGraph::GetInstance()->renderables.begin(), Global::SceneGraph::GetInstance()->renderables.end(), [](const std::shared_ptr<Renderable> &lhs, const std::shared_ptr<Renderable> &rhs)
+         { return lhs->zIndex < rhs->zIndex; });
 
-    sort(Global::SceneGraph::GetInstance()->renderables.begin(), Global::SceneGraph::GetInstance()->renderables.end(), [](const std::shared_ptr<Renderable>& lhs, const std::shared_ptr<Renderable>&rhs) {
-      return lhs->zIndex < rhs->zIndex;
-    });
-    
     for (auto &sprite : Global::SceneGraph::GetInstance()->renderables)
     {
-        if(sprite->vertexBuffer == nullptr)
+        if (sprite->vertexBuffer == nullptr)
             continue;
-
-        //PLOG_INFO << Global::SceneGraph::GetInstance()->renderables.size();
 
         VkBuffer vertexBuffers[] = {sprite->vertexBuffer->GetVulkanBuffer()};
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
         vkCmdBindIndexBuffer(currentCmdBuffer, sprite->indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT16);
-        
+
         vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 1, 1, &sprite->_descriptorSet, 0, nullptr);
         vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 0, nullptr);
-        
-        UniformBufferObject ubo{};
 
-        auto model = glm::mat4(1.0f);
+        UniformBufferObject ubo{};
 
         auto translate = glm::translate(glm::mat4(1.0f), sprite->position);
         auto scale = glm::scale(glm::mat4(1.0), sprite->scale);
@@ -143,21 +132,24 @@ void Renderer::Render()
 
         auto o = glm::vec3(0.0, 0.0, 0.0);
 
-        if(sprite->orientation == 1){
+        if (sprite->orientation == 1)
+        {
             o.x = 1;
         }
 
-        if(sprite->orientation == 2) {
+        if (sprite->orientation == 2)
+        {
             o.y = 1;
         }
 
-        if(sprite->orientation == 3) {
+        if (sprite->orientation == 3)
+        {
             o.z = 1;
         }
 
         auto modelRotation = glm::rotate(glm::mat4(1.0f), glm::radians(sprite->rotationX), o);
 
-        InstancePushConstants constants;
+        PushConstant constants;
         constants.modelMatrix = translate * scale * rotate * modelRotation;
         constants.color = sprite->color;
 
@@ -166,9 +158,8 @@ void Renderer::Render()
             constants.textureId = sprite->textureId;
         }
 
-
         // upload the matrix to the GPU via push constants
-        vkCmdPushConstants(currentCmdBuffer, _pipeline->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(InstancePushConstants), &constants);
+        vkCmdPushConstants(currentCmdBuffer, _pipeline->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstant), &constants);
 
         ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -178,10 +169,7 @@ void Renderer::Render()
         memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));
 
         vkCmdDrawIndexed(currentCmdBuffer, sprite->GetIndices().size(), 1, 0, 0, 0);
-
-        modelCnt++;
     }
-
 
     _renderPass->End(_commandBuffers[_currentFrame]);
 

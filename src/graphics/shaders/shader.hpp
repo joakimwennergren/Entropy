@@ -2,8 +2,8 @@
 
 #include <fstream>
 
-#include "context.hpp"
-#include "vulkancontext.hpp"
+#include <contexts/context.hpp>
+#include <global/vulkancontext.hpp>
 
 using namespace Symbios::Core;
 using namespace Symbios::Global;

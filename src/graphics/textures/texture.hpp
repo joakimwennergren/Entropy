@@ -5,11 +5,13 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include "context.hpp"
-#include "buffer.hpp"
-#include "commandbuffer.hpp"
 #include "config.hpp"
-#include "stagedbuffer.hpp"
+
+#include <contexts/context.hpp>
+#include <graphics/buffers/buffer.hpp>
+#include <graphics/commandbuffers/commandbuffer.hpp>
+
+#include <graphics/buffers/stagedbuffer.hpp>
 
 using namespace Symbios::Core;
 using namespace Symbios::Graphics::Buffers;

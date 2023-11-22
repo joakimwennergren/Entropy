@@ -47,8 +47,7 @@
 #include <optional>
 #include <set>
 
-#include "mvpuniform.hpp"
-#include "instance.hpp"
+#include <graphics/data/ubo.hpp>
 
 namespace Symbios
 {

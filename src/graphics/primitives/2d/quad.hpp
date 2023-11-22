@@ -1,10 +1,10 @@
 #pragma once
 
-#include "vertex.hpp"
-#include "texture.hpp"
-#include "context.hpp"
-#include "vertexbuffer.hpp"
-#include "renderable.hpp"
+#include <graphics/data/vertex.hpp>
+#include <graphics/textures/texture.hpp>
+#include <contexts/context.hpp>
+#include <graphics/buffers/vertexbuffer.hpp>
+#include <renderables/renderable.hpp>
 
 using namespace Symbios::Graphics::Textures;
 using namespace Symbios::Renderables;
@@ -15,7 +15,7 @@ namespace Symbios
     {
         namespace Primitives
         {
-            class Quad: public Renderable
+            class Quad : public Renderable
             {
             public:
                 /**
@@ -41,10 +41,8 @@ namespace Symbios
 
                 void SetPosition(glm::vec3 newPosition) { this->position = newPosition; };
 
-
             private:
                 std::shared_ptr<Context> _context;
-
             };
         }
     }

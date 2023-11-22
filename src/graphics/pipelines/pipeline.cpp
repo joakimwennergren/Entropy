@@ -159,7 +159,7 @@ void Pipeline::Build()
     // this push constant range starts at the beginning
     push_constant.offset = 0;
     // this push constant range takes up the size of a MeshPushConstants struct
-    push_constant.size = sizeof(InstancePushConstants);
+    push_constant.size = sizeof(PushConstant);
     // this push constant range is accessible only in the vertex shader
     push_constant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 

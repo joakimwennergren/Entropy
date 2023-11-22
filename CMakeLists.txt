@@ -1,238 +1,57 @@
-cmake_minimum_required(VERSION 3.7)
+# _____       _                         
+# | ____|_ __ | |_ _ __ ___  _ __  _   _ 
+# |  _| | '_ \| __| '__/ _ \| '_ \| | | |
+# | |___| | | | |_| | | (_) | |_) | |_| |
+# |_____|_| |_|\__|_|  \___/| .__/ \__, |
+#                           |_|    |___/ 
+# Game Engine version 1.0
 
-#set(CMAKE_OSX_SYSROOT macosx14.0)
+# Set minimum cmake version
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
-project(
-    Symbios
-    VERSION 1.0
-    LANGUAGES CXX
-)
+# Declare project
+project(Entropy)
 
-if(NOT XCODE)
-    # Vulkan
-    find_package(Vulkan REQUIRED)
+# Detect platform
+include(cmake/platform.cmake)
 
-    # Windowing on desktop
-    add_subdirectory(external/glfw)
-endif()
+# Include dependencies
+include(cmake/external_dependencies.cmake)
 
-# Logging
-add_subdirectory(external/plog)
+# List source files
+file(GLOB_RECURSE SOURCES ${CMAKE_SOURCE_DIR}/src/*.cpp)
 
-# GLM
-add_subdirectory(external/glm)
+# Include headers
+include_directories(${CMAKE_SOURCE_DIR}/src external include)
 
-# Networking
-add_subdirectory(external/asio.cmake)
+# Create the library
+add_library(Entropy STATIC ${SOURCES})
 
-set(BUILD_CURL_EXE OFF)
-set(CURL_STATICLIB ON)
-set(SSL_ENABLED ON)
-if(WIN32)
-    set(USE_WINDOWS_SSPI ON)
-    set(USE_SCHANNEL ON)
-endif(WIN32)
+# Compiler flags
+target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17 -Wall -Wfloat-conversion)
 
-add_subdirectory(external/curl)
+target_include_directories(${PROJECT_NAME} PUBLIC include)
 
+# 
+target_include_directories(${PROJECT_NAME} PRIVATE ${Vulkan_INCLUDE_DIRS})
 
-
-# Text rendering
-set(FT_WITH_BZIP2 OFF)
-add_subdirectory(external/freetype-2.10.0)
-
-add_executable(Symbios
-
-    # Animation
-    src/animation/easing/easing.cpp
-
-    # Application
-    src/application/application.cpp
-
-    # Graphics
-    src/graphics/pipelines/pipeline.cpp
-    src/graphics/shaders/shader.cpp
-    src/graphics/renderpasses/renderpass.cpp
-    src/graphics/commandbuffers/commandbuffer.cpp
-    src/graphics/renderers/renderer.cpp
-    src/graphics/buffers/buffer.cpp
-    src/graphics/buffers/vertexbuffer.cpp
-    src/graphics/buffers/indexbuffer.cpp
-    src/graphics/buffers/uniformbuffer.cpp
-    src/graphics/buffers/stagedbuffer.cpp
-    src/graphics/textures/texture.cpp
-    src/graphics/utilities/utilities.cpp
-    src/graphics/primitives/2d/quad.cpp
-    src/graphics/primitives/2d/sprite.cpp
-    src/graphics/synchronization/synchronizer.cpp
-
-    # Graphics Contexts
-    src/contexts/context.cpp
-    
-    # Globals
-    src/global/assets.cpp
-    src/global/vulkancontext.cpp
-    src/global/scenegraph.cpp
-
-    # Text
-    src/graphics/text/label.cpp
-
-    # Network
-    src/network/httpclient.cpp
-
-    # Timing
-    src/timing/timer.cpp
-
-    # Svampjakt2
-    svampjakt2/leafsystem/leaf.cpp
-    svampjakt2/leafsystem/leafsystem.cpp
-    svampjakt2/main.cpp
-)
-
-
-if(NOT XCODE)
-    target_include_directories(Symbios PRIVATE
-        # Vulkan
-        ${Vulkan_INCLUDE_DIRS}
-    )
-endif()
-
-file(GLOB_RECURSE TEST_SOURCES "tests/*.cpp")
-
-target_include_directories(Symbios PUBLIC
-
-    # Application
-    src/application
-
-    include
-    external
-
-    # Core
-    src/contexts
-
-    # Graphics
-    src/graphics/pipelines
-    src/graphics/shaders
-    src/graphics/renderpasses
-    src/graphics/commandbuffers
-    src/graphics/renderers
-    src/graphics/data
-    src/graphics/buffers
-    src/graphics/textures
-    src/graphics/utilities
-    src/graphics/primitives/2d
-    src/graphics/primitives/3d
-    src/graphics/synchronization
-    src/global
-
-    # Audio
-    src/audio/
-
-    # Filesystem
-    src/filesystem
-
-    # Animation
-    src/animation/easing
-
-    # SceneGraph
-    src/renderables
-
-    # text
-    src/graphics/text
-
-    # Network
-    src/network
-    external/curl/include
-
-    # Timing
-    src/timing
-
-    # Metal-CPP
-    external/metal-cpp/
-
-    external/freetype-2.10.0/include
-
-    external/openssl-cmake/include
-
-    # Svampjakt 2
-
-    svampjakt2/leafsystem
-
-)
-
-target_compile_features(Symbios PRIVATE cxx_std_17)
-
-target_link_libraries(Symbios
-
-    # Logging
+#
+target_link_libraries(${PROJECT_NAME}
     plog
-
-    # GLM
     glm
-
-    # Networking
     asio::asio
-
-    #CURL
-    libcurl_static 
+    #libcurl_static 
+    libcurl_shared
 )
 
+#
 if(NOT XCODE)
-    target_link_libraries(Symbios
-
-        # Graphics API
+    target_link_libraries(${PROJECT_NAME}
         ${Vulkan_LIBRARIES}
-
-        # Windowing
         glfw
-
-        # Text shaping
         freetype
     )
 endif()
 
-# iOS Platform
-if(XCODE)
-    set(CMAKE_PLATFORM "BUILD_FOR_IOS")
-    set_target_properties(Symbios PROPERTIES
-        XCODE_GENERATE_SCHEME ON
-        XCODE_SCHEME_ENABLE_GPU_FRAME_CAPTURE_MODE "Metal")
-    
-    target_link_libraries(Symbios
-
-        # Text shaping
-        freetype
-
-        "-framework foundation"
-        "-framework metal"
-        "-framework metalkit"
-        "-framework uikit"
-        "-framework iosurface"
-        "-framework coregraphics"
-        "-framework quartzcore"
-        "-framework coreaudio"
-        "-framework audiotoolbox"
-        "-framework avfoundation"
-        "-framework coretext"
-    )
-    include_directories(external/vulkan-headers)
-endif()
-
-# Windows platform
-if(WIN32)
-    set(CMAKE_PLATFORM "BUILD_FOR_WINDOWS")
-endif(WIN32)
-
-# MacOS platform
-if(APPLE)
-    if(NOT XCODE)
-        set(CMAKE_PLATFORM "BUILD_FOR_MACOS")
-    endif()
-endif()
-
-# Linux platform
-if(UNIX AND NOT APPLE)
-    set(CMAKE_PLATFORM "BUILD_FOR_LINUX")
-endif()
-
+#
 configure_file(config.h.in ${CMAKE_SOURCE_DIR}/include/config.hpp @ONLY)

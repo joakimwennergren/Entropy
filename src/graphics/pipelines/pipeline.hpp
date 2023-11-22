@@ -1,13 +1,12 @@
 #pragma once
 
-#include "shader.hpp"
-#include "context.hpp"
-#include "renderpass.hpp"
-#include "filesystem.hpp"
-#include "vertex.hpp"
-#include "instance.hpp"
-#include "instance_pushcontants.hpp"
-#include "vulkancontext.hpp"
+#include <graphics/shaders/shader.hpp>
+#include <contexts/context.hpp>
+#include <graphics/renderpasses/renderpass.hpp>
+#include <filesystem/filesystem.hpp>
+#include <graphics/data/vertex.hpp>
+#include <graphics/data/pushcontant.hpp>
+#include <global/vulkancontext.hpp>
 
 using namespace Symbios::Core;
 using namespace Symbios::Filesystem;
@@ -41,7 +40,6 @@ namespace Symbios
                  * @param renderPass
                  */
                 Pipeline(std::shared_ptr<RenderPass> renderPass);
-
 
                 /**
                  * @brief Destroy the Pipeline object
