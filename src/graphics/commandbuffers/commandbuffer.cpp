@@ -5,7 +5,7 @@ using namespace Symbios::Graphics::CommandBuffers;
 CommandBuffer::CommandBuffer()
 {
     // Store vulkan ctx
-    _context = Global::VulkanContext::GetInstance()->GetVulkanContext();
+    _context = VulkanContext::GetInstance()->GetVulkanContext();
 
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;

@@ -14,6 +14,7 @@
 #include <graphics/buffers/stagedbuffer.hpp>
 
 using namespace Symbios::Core;
+using namespace Entropy::Global;
 using namespace Symbios::Graphics::Buffers;
 using namespace Symbios::Graphics::CommandBuffers;
 

@@ -16,6 +16,7 @@
 #include <graphics/data/vertex.hpp>
 
 using namespace Symbios::Core;
+using namespace Entropy::Global;
 using namespace Symbios::Graphics::Buffers;
 
 namespace Symbios

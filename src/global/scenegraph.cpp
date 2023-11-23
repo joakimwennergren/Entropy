@@ -1,6 +1,6 @@
 #include "scenegraph.hpp"
 
-using namespace Symbios::Global;
+using namespace Entropy::Global;
 
 SceneGraph *SceneGraph::pinstance_{nullptr};
 std::mutex SceneGraph::mutex_;

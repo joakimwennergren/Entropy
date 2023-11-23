@@ -1,6 +1,6 @@
 #include "vulkancontext.hpp"
 
-using namespace Symbios::Global;
+using namespace Entropy::Global;
 
 VulkanContext *VulkanContext::pinstance_{nullptr};
 std::mutex VulkanContext::mutex_;

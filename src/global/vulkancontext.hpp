@@ -13,7 +13,7 @@
 
 using namespace Symbios::Core;
 
-namespace Symbios
+namespace Entropy
 {
     namespace Global
     {

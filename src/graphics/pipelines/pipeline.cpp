@@ -5,7 +5,7 @@ using namespace Symbios::Graphics::Pipelines;
 Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass)
 {
     // Store vulkan ctx
-    _context = Global::VulkanContext::GetInstance()->GetVulkanContext();
+    _context = VulkanContext::GetInstance()->GetVulkanContext();
 
     _renderPass = renderPass;
 }

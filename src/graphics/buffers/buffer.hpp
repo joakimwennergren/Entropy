@@ -19,6 +19,7 @@
 #include <global/vulkancontext.hpp>
 
 using namespace Symbios::Core;
+using namespace Entropy::Global;
 using namespace Symbios::Graphics::Utilities;
 using namespace Symbios::Graphics::CommandBuffers;
 

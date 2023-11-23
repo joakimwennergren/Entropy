@@ -6,7 +6,7 @@
 #include <global/vulkancontext.hpp>
 
 using namespace Symbios::Core;
-using namespace Symbios::Global;
+using namespace Entropy::Global;
 
 namespace Symbios
 {

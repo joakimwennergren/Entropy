@@ -10,6 +10,7 @@
 #include <global/vulkancontext.hpp>
 
 using namespace Symbios::Graphics::Textures;
+using namespace Entropy::Global;
 using namespace Symbios::Renderables;
 
 namespace Symbios

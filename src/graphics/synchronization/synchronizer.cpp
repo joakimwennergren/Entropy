@@ -7,7 +7,7 @@ Synchronizer::Synchronizer(unsigned int numObjects)
     this->numObjects = numObjects;
 
     // Get Vulkan ctx
-    _context = Global::VulkanContext::GetInstance()->GetVulkanContext();
+    _context = VulkanContext::GetInstance()->GetVulkanContext();
 
     _imageSemaphores.resize(numObjects);
     _renderFinishedSemaphores.resize(numObjects);

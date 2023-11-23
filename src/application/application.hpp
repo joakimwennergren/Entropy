@@ -25,7 +25,8 @@
 
 // @todo remove symbios namespace
 using namespace Symbios;
-using namespace Symbios::Graphics::Renderers;
+using namespace Entropy::Global;
+using namespace Entropy::Graphics::Renderers;
 using namespace Entropy::Timing;
 
 void framebufferResizeCallback(GLFWwindow *window, int width, int height);
@@ -67,7 +68,7 @@ public:
         glfwSetCursorPosCallback(_window, cursorPositionCallback);
 
         // Initialize Vulkan context
-        Global::VulkanContext::GetInstance()->InitializeContext(_window);
+        VulkanContext::GetInstance()->InitializeContext(_window);
 
         // Create the renderer
         _renderer = std::make_shared<Renderer>();

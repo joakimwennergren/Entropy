@@ -45,14 +45,13 @@ namespace Symbios
                     return;
 
                 std::string::const_iterator c;
-                int cnt = 0;
 
                 for (c = text.begin(); c != text.end(); c++)
                 {
-                    Character &ch = _characters[*c];
+                    // Character &ch = _characters[*c];
 
-                    float xpos = x + ch.Size.x;
-                    float ypos = y - (ch.Bearing.y);
+                    // float xpos = x + ch.Size.x;
+                    // float ypos = y - (ch.Bearing.y);
 
                     /*
                     auto g = this->children[cnt];
@@ -104,7 +103,6 @@ namespace Symbios
             FT_Face face;
             std::string text;
             std::map<char, Character> _characters;
-            float maxDescent;
         };
     }
 }

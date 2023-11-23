@@ -9,7 +9,7 @@ using namespace Symbios::Graphics::Textures;
 Texture::Texture()
 {
     // Store vulkan ctx
-    _context = Global::VulkanContext::GetInstance()->GetVulkanContext();
+    _context = VulkanContext::GetInstance()->GetVulkanContext();
     _commandBuffer = std::make_unique<CommandBuffer>();
 }
 

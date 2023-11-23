@@ -5,7 +5,7 @@ using namespace Symbios::Graphics::RenderPasses;
 RenderPass::RenderPass()
 {
     // Store vulkan ctx
-    _context = Global::VulkanContext::GetInstance()->GetVulkanContext();
+    _context = VulkanContext::GetInstance()->GetVulkanContext();
 
     VkAttachmentDescription colorAttachment{};
     colorAttachment.format = _context->GetSwapChainImageFormat();

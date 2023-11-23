@@ -43,6 +43,16 @@ namespace Symbios
                 }
             }
 
+            bool isAbleToRender()
+            {
+                if (this->vertexBuffer == nullptr)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
             void UpdateImage()
             {
                 VkDescriptorSetLayoutBinding samplerLayoutBinding{};

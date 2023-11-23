@@ -12,7 +12,7 @@ using namespace Symbios::Core;
 using namespace Symbios::Filesystem;
 using namespace Symbios::Graphics::Shaders;
 using namespace Symbios::Graphics::RenderPasses;
-using namespace Symbios::Global;
+using namespace Entropy::Global;
 
 namespace Symbios
 {

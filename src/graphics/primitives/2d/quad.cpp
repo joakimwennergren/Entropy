@@ -5,10 +5,10 @@ using namespace Symbios::Graphics::Primitives;
 Quad::Quad()
 {
     // Store vulkan ctx
-    _context = Global::VulkanContext::GetInstance()->GetVulkanContext();
+    _context = VulkanContext::GetInstance()->GetVulkanContext();
 
     _indices = {
-    0, 1, 2, 2, 3, 0};
+        0, 1, 2, 2, 3, 0};
 
     _vertices = {
         {{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
