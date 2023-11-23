@@ -5,17 +5,52 @@ using namespace Entropy::Global;
 VulkanContext *VulkanContext::pinstance_{nullptr};
 std::mutex VulkanContext::mutex_;
 
-void VulkanContext::Initilize(VkExtent2D frame)
+VkImageView VulkanContext::CreateImageView(VkImage image, VkFormat format)
+{
+    VulkanContext *vkContext = VulkanContext::GetInstance();
+
+    VkImageViewCreateInfo viewInfo{};
+    viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    viewInfo.image = image;
+    viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+    viewInfo.format = format;
+    viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    viewInfo.subresourceRange.baseMipLevel = 0;
+    viewInfo.subresourceRange.levelCount = 1;
+    viewInfo.subresourceRange.baseArrayLayer = 0;
+    viewInfo.subresourceRange.layerCount = 1;
+
+    VkImageView imageView;
+    if (vkCreateImageView(vkContext->logicalDevice, &viewInfo, nullptr, &imageView) != VK_SUCCESS)
+    {
+        throw std::runtime_error("failed to create texture image view!");
+    }
+
+    return imageView;
+}
+
+void VulkanContext::Initialize(VkExtent2D frame, GLFWwindow *window)
 {
     CreateInstance();
-    // CreateSurfaceiOS(layer);
+    CreateSurfaceMacOS(window);
     PickPhysicalDevice();
     CreateLogicalDevice();
     CreateSwapChain(frame);
-    // CreateImageViews();
+    CreateImageViews();
     CreateCommandPool();
     CreateDescriptorPool();
     CreateDesciptorsetLayout();
+    CreateDescriptorSets();
+}
+
+void VulkanContext::CreateImageViews()
+{
+    swapChainImageViews.resize(swapChainImages.size());
+
+    for (uint32_t i = 0; i < swapChainImages.size(); i++)
+    {
+        swapChainImageViews[i] = CreateImageView(swapChainImages[i], swapChainImageFormat);
+    }
 }
 
 #ifdef USE_VALIDATION_LAYERS
@@ -98,8 +133,8 @@ void VulkanContext::CreateInstance()
 #ifdef USE_VALIDATION_LAYERS
     if (CheckValidationLayerSupport())
     {
-        createInfo.enabledLayerCount = (uint32_t)validationLayers.size();
-        createInfo.ppEnabledLayerNames = validationLayers.data();
+        createInfo.enabledLayerCount = (uint32_t)_validationLayers.size();
+        createInfo.ppEnabledLayerNames = _validationLayers.data();
     }
     else
     {
@@ -262,10 +297,10 @@ void VulkanContext::CreateSwapChain(VkExtent2D frame)
     }
 
     vkGetSwapchainImagesKHR(logicalDevice, swapChain, &imageCount, nullptr);
-    _swapChainImages.resize(imageCount);
-    vkGetSwapchainImagesKHR(logicalDevice, swapChain, &imageCount, _swapChainImages.data());
+    swapChainImages.resize(imageCount);
+    vkGetSwapchainImagesKHR(logicalDevice, swapChain, &imageCount, swapChainImages.data());
 
-    _swapChainImageFormat = surfaceFormat.format;
+    swapChainImageFormat = surfaceFormat.format;
     swapChainExtent = extent;
 }
 
@@ -363,7 +398,7 @@ void VulkanContext::CreateDescriptorPool()
     poolInfo.pPoolSizes = poolSizes.data();
     poolInfo.maxSets = 10000;
 
-    if (vkCreateDescriptorPool(logicalDevice, &poolInfo, nullptr, &_descriptorPool) != VK_SUCCESS)
+    if (vkCreateDescriptorPool(logicalDevice, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS)
     {
         PLOG_ERROR << "Failed to create descriptorset pool!";
         exit(EXIT_FAILURE);
@@ -399,7 +434,7 @@ void VulkanContext::CreateDesciptorsetLayout()
     layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
     layoutInfo.pBindings = bindings.data();
 
-    if (vkCreateDescriptorSetLayout(logicalDevice, &layoutInfo, nullptr, &_descriptorSetLayout) != VK_SUCCESS)
+    if (vkCreateDescriptorSetLayout(logicalDevice, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS)
     {
         PLOG_ERROR << "Failed to create a descriptor set layout!";
         exit(EXIT_FAILURE);
@@ -408,17 +443,17 @@ void VulkanContext::CreateDesciptorsetLayout()
 
 void VulkanContext::CreateDescriptorSets()
 {
-    std::vector<VkDescriptorSetLayout> layouts(MAX_CONCURRENT_FRAMES_IN_FLIGHT, _descriptorSetLayout);
+    std::vector<VkDescriptorSetLayout> layouts(MAX_CONCURRENT_FRAMES_IN_FLIGHT, descriptorSetLayout);
 
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    allocInfo.descriptorPool = _descriptorPool;
+    allocInfo.descriptorPool = descriptorPool;
     allocInfo.descriptorSetCount = MAX_CONCURRENT_FRAMES_IN_FLIGHT;
     allocInfo.pSetLayouts = layouts.data();
 
-    _descriptorSets.resize(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+    descriptorSets.resize(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
 
-    if (vkAllocateDescriptorSets(logicalDevice, &allocInfo, _descriptorSets.data()) != VK_SUCCESS)
+    if (vkAllocateDescriptorSets(logicalDevice, &allocInfo, descriptorSets.data()) != VK_SUCCESS)
     {
         PLOG_ERROR << "Failed to allocate descriptor sets!";
         exit(EXIT_FAILURE);
@@ -434,7 +469,7 @@ void VulkanContext::CreateCommandPool()
     poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
     poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
 
-    if (vkCreateCommandPool(logicalDevice, &poolInfo, nullptr, &_commandPool) != VK_SUCCESS)
+    if (vkCreateCommandPool(logicalDevice, &poolInfo, nullptr, &commandPool) != VK_SUCCESS)
     {
         PLOG_ERROR << "Failed to create command pool!";
         exit(EXIT_FAILURE);

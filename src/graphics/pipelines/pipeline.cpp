@@ -57,14 +57,14 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass)
     VkViewport viewport{};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
-    viewport.width = (float)_context->GetSwapChainExtent().width;
-    viewport.height = (float)_context->GetSwapChainExtent().height;
+    viewport.width = (float)vkContext->swapChainExtent.width;
+    viewport.height = (float)vkContext->swapChainExtent.height;
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
 
     VkRect2D scissor{};
     scissor.offset = {0, 0};
-    scissor.extent = _context->GetSwapChainExtent();
+    scissor.extent = vkContext->swapChainExtent;
 
     VkPipelineViewportStateCreateInfo viewportState{};
     viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -145,7 +145,7 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass)
         throw std::runtime_error("failed to create descriptor set layout!");
     }
 
-    dsLayouts[0] = _context->GetDescriptorSetLayouts();
+    dsLayouts[0] = vkContext->descriptorSetLayout;
     dsLayouts[1] = _tempLayout;
 
     // setup push constants

@@ -30,12 +30,6 @@ namespace Symbios
                 /**
                  * @brief Construct a new Pipeline object
                  *
-                 */
-                Pipeline() = default;
-
-                /**
-                 * @brief Construct a new Pipeline object
-                 *
                  * @param context
                  * @param renderPass
                  */
@@ -46,12 +40,6 @@ namespace Symbios
                  *
                  */
                 ~Pipeline();
-
-                /**
-                 * @brief
-                 *
-                 */
-                void Build();
 
                 inline VkPipeline GetPipeline() { return this->_pipeline; };
                 inline VkPipelineLayout GetPipelineLayout() { return this->_pipelineLayout; };

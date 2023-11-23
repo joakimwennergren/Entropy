@@ -81,7 +81,7 @@ public:
             .height = (uint32_t)height};
 
         // Initialize Vulkan context
-        VulkanContext::GetInstance()->Initilize(frame);
+        VulkanContext::GetInstance()->Initialize(frame, _window);
 
         // Create the renderer
         _renderer = std::make_shared<Renderer>();

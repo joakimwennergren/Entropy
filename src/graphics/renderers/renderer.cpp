@@ -4,14 +4,14 @@ using namespace Entropy::Graphics::Renderers;
 
 Renderer::Renderer()
 {
+
+    VulkanContext *vkContext = VulkanContext::GetInstance();
+
     // Create renderpass
     _renderPass = std::make_shared<RenderPass>();
 
     // Create pipeline(s)
     _pipeline = std::make_unique<Pipeline>(_renderPass);
-
-    // @todo this isnt necessary..
-    _pipeline->Build();
 
     _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
 
@@ -32,7 +32,24 @@ Renderer::Renderer()
         rawUniformBuffers.push_back(rawBuffer);
     }
 
-    _context->CreateDescriptorSets(rawUniformBuffers);
+    for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
+    {
+        std::array<VkWriteDescriptorSet, 1> descriptorWrites{};
+        VkDescriptorBufferInfo bufferInfo{};
+        bufferInfo.buffer = rawUniformBuffers[i];
+        bufferInfo.offset = 0;
+        bufferInfo.range = sizeof(UniformBufferObject);
+
+        descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[0].dstSet = vkContext->descriptorSets[i];
+        descriptorWrites[0].dstBinding = 0;
+        descriptorWrites[0].dstArrayElement = 0;
+        descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        descriptorWrites[0].descriptorCount = 1;
+        descriptorWrites[0].pBufferInfo = &bufferInfo;
+
+        vkUpdateDescriptorSets(vkContext->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+    }
 }
 
 void Renderer::Render()
@@ -62,7 +79,11 @@ void Renderer::Render()
 
     // current commandbuffer & descriptorset
     auto currentCmdBuffer = _commandBuffers[_currentFrame]->GetCommandBuffer();
-    auto currentDescriptorSet = _context->GetDescriptorSets()[_currentFrame];
+    auto currentDescriptorSet = vkContext->descriptorSets[_currentFrame];
+
+    // Reset fences and current commandbuffer
+    vkResetFences(vkContext->logicalDevice, 1, &_synchronizer->GetFences()[_currentFrame]);
+    vkResetCommandBuffer(currentCmdBuffer, 0);
 
     // Begin renderpass and commandbuffer recording
     _commandBuffers[_currentFrame]->Record();
@@ -75,8 +96,8 @@ void Renderer::Render()
     VkViewport viewport{};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
-    viewport.width = (float)_context->GetSwapChainExtent().width;
-    viewport.height = (float)_context->GetSwapChainExtent().height;
+    viewport.width = (float)vkContext->swapChainExtent.width;
+    viewport.height = (float)vkContext->swapChainExtent.height;
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
     vkCmdSetViewport(currentCmdBuffer, 0, 1, &viewport);
@@ -84,13 +105,13 @@ void Renderer::Render()
     // Scissor
     VkRect2D scissor{};
     scissor.offset = {0, 0};
-    scissor.extent = _context->GetSwapChainExtent();
+    scissor.extent = vkContext->swapChainExtent;
     vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissor);
 
     // Update UBO
     UniformBufferObject ubo{};
     ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    ubo.proj = glm::ortho(0.0f, (float)_context->GetSwapChainExtent().width, (float)_context->GetSwapChainExtent().height, 0.0f, -1.0f, 1.0f);
+    ubo.proj = glm::ortho(0.0f, (float)vkContext->swapChainExtent.width, (float)vkContext->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
     ubo.proj[1][1] *= -1;
     memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));
 
@@ -163,10 +184,6 @@ void Renderer::Render()
 
     // Submit and present
     this->SubmitAndPresent(currentCmdBuffer, imageIndex);
-
-    // Reset fences and current commandbuffer
-    vkResetFences(vkContext->logicalDevice, 1, &_synchronizer->GetFences()[_currentFrame]);
-    vkResetCommandBuffer(currentCmdBuffer, 0);
 
     // Increment current frame
     _currentFrame = (_currentFrame + 1) % MAX_CONCURRENT_FRAMES_IN_FLIGHT;

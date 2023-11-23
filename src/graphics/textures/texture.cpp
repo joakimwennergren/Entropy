@@ -13,9 +13,10 @@ Texture::Texture()
 
 Texture::~Texture()
 {
-    vkDestroyImageView(_context->GetLogicalDevice(), _imageView, nullptr);
-    vkDestroyImage(_context->GetLogicalDevice(), _textureImage, nullptr);
-    vkFreeMemory(_context->GetLogicalDevice(), _textureImageMemory, nullptr);
+    VulkanContext *vkContext = VulkanContext::GetInstance();
+    vkDestroyImageView(vkContext->logicalDevice, _imageView, nullptr);
+    vkDestroyImage(vkContext->logicalDevice, _textureImage, nullptr);
+    vkFreeMemory(vkContext->logicalDevice, _textureImageMemory, nullptr);
 }
 
 void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap)
@@ -35,7 +36,7 @@ void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap)
     CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
     TransitionImageLayout(_textureImage, VK_FORMAT_R8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    _imageView = _context->CreateImageView(_textureImage, VK_FORMAT_R8_UNORM);
+    _imageView = VulkanContext::CreateImageView(_textureImage, VK_FORMAT_R8_UNORM);
 
     hasTexture = true;
 }
@@ -76,7 +77,7 @@ void Texture::CreateTextureImage(std::string path)
     CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
     TransitionImageLayout(_textureImage, colorFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    _imageView = _context->CreateImageView(_textureImage, colorFormat);
+    _imageView = VulkanContext::CreateImageView(_textureImage, colorFormat);
 
     hasTexture = true;
 
@@ -115,7 +116,7 @@ void Texture::CreateImage(uint32_t width, uint32_t height, VkFormat format, VkIm
     VkMemoryAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex = _context->FindMemoryType(memRequirements.memoryTypeBits, properties);
+    allocInfo.memoryTypeIndex = Utility::FindMemoryTypeIndex(memRequirements.memoryTypeBits, properties);
 
     if (vkAllocateMemory(vkContext->logicalDevice, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
     {

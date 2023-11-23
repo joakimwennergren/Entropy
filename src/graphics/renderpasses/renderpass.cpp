@@ -7,7 +7,7 @@ RenderPass::RenderPass()
     VulkanContext *vkContext = VulkanContext::GetInstance();
 
     VkAttachmentDescription colorAttachment{};
-    colorAttachment.format = _context->GetSwapChainImageFormat();
+    colorAttachment.format = vkContext->swapChainImageFormat;
     colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 
     colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;

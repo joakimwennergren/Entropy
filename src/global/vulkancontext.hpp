@@ -28,6 +28,17 @@ namespace Entropy
                 VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 #endif
 
+#ifdef BUILD_FOR_MACOS
+            inline void CreateSurfaceMacOS(GLFWwindow *window)
+            {
+                if (glfwCreateWindowSurface(this->_instance, window, nullptr, &_windowSurface) != VK_SUCCESS)
+                {
+                    PLOG_FATAL << "Could not create MacOS surface!";
+                    exit(EXIT_FAILURE);
+                }
+            }
+#endif
+
             const std::vector<const char *> _validationLayers = {
                 "VK_LAYER_KHRONOS_validation"};
 
@@ -47,16 +58,19 @@ namespace Entropy
             // SwapChain
             void CreateSwapChain(VkExtent2D frame);
 
+            // ImageViews??
+            void CreateImageViews();
+
         protected:
             VulkanContext(){};
             ~VulkanContext()
             {
                 // vkDestroyImage(_device, _textureImage, nullptr);
 
-                vkDestroyDescriptorPool(logicalDevice, _descriptorPool, nullptr);
-                vkDestroyDescriptorSetLayout(logicalDevice, _descriptorSetLayout, nullptr);
+                vkDestroyDescriptorPool(logicalDevice, descriptorPool, nullptr);
+                vkDestroyDescriptorSetLayout(logicalDevice, descriptorSetLayout, nullptr);
 
-                vkDestroyCommandPool(logicalDevice, _commandPool, nullptr);
+                vkDestroyCommandPool(logicalDevice, commandPool, nullptr);
 
                 for (auto imageView : swapChainImageViews)
                 {
@@ -81,18 +95,6 @@ namespace Entropy
             // Window surface
             VkSurfaceKHR _windowSurface;
 
-            // SwapChain
-            VkFormat _swapChainImageFormat;
-            std::vector<VkImage> _swapChainImages;
-
-            // Descriptorsets
-            std::vector<VkDescriptorSet> _descriptorSets;
-            VkDescriptorSetLayout _descriptorSetLayout;
-            VkDescriptorPool _descriptorPool;
-
-            // CommandBuffers
-            VkCommandPool _commandPool;
-
             // Debug messenger & validation layers
             VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo, const VkAllocationCallbacks *pAllocator, VkDebugUtilsMessengerEXT *pDebugMessenger);
             void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks *pAllocator);
@@ -104,7 +106,8 @@ namespace Entropy
 
             static VulkanContext *GetInstance();
             void RecreateSwapChain(VkExtent2D frame);
-            void Initilize(VkExtent2D frame);
+            void Initialize(VkExtent2D frame, GLFWwindow *window);
+            static VkImageView CreateImageView(VkImage image, VkFormat format);
 
             // Raw vulkan device objects
             VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
@@ -117,7 +120,17 @@ namespace Entropy
             // SwapChain
             VkSwapchainKHR swapChain;
             VkExtent2D swapChainExtent;
+            VkFormat swapChainImageFormat;
             std::vector<VkImageView> swapChainImageViews;
+            std::vector<VkImage> swapChainImages;
+
+            // DescriptorSets
+            std::vector<VkDescriptorSet> descriptorSets;
+            VkDescriptorSetLayout descriptorSetLayout;
+            VkDescriptorPool descriptorPool;
+
+            // CommandBuffers
+            VkCommandPool commandPool;
         };
     }
 }
