@@ -4,7 +4,6 @@ using namespace Entropy::Graphics::Renderers;
 
 Renderer::Renderer()
 {
-
     VulkanContext *vkContext = VulkanContext::GetInstance();
 
     // Create renderpass
