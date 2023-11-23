@@ -294,6 +294,8 @@ namespace Symbios
              */
             void CreateInstance();
 
+            bool CheckDeviceExtensionSupport(VkPhysicalDevice device, const std::vector<const char *> extensions);
+
             /**
              * @brief
              *
@@ -348,15 +350,6 @@ namespace Symbios
              *
              */
             void CreateImageViews();
-
-            /**
-             * @brief
-             *
-             * @param device
-             * @return true
-             * @return false
-             */
-            bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
 
             /**
              * @brief

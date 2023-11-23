@@ -7,10 +7,12 @@
 # Game Engine version 1.0
 
 # Set minimum cmake version
-cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
 
 # Declare project
 project(Entropy)
+
+set(PROJECT_BASEPATH ${PROJECT_SOURCE_DIR})
 
 # Detect platform
 include(cmake/platform.cmake)
@@ -19,39 +21,40 @@ include(cmake/platform.cmake)
 include(cmake/external_dependencies.cmake)
 
 # List source files
-file(GLOB_RECURSE SOURCES ${CMAKE_SOURCE_DIR}/src/*.cpp)
-
-# Include headers
-include_directories(${CMAKE_SOURCE_DIR}/src external include)
+file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
 # Create the library
 add_library(Entropy STATIC ${SOURCES})
 
 # Compiler flags
-target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17 -Wall -Wfloat-conversion)
+target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17 -Wall -Wfloat-conversion -Wunsequenced)
 
-target_include_directories(${PROJECT_NAME} PUBLIC include)
+# Include headers
+target_include_directories(${PROJECT_NAME} 
+    PUBLIC 
+        ${PROJECT_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/src
+        ${Vulkan_INCLUDE_DIRS}
+        external 
+)
 
-# 
-target_include_directories(${PROJECT_NAME} PRIVATE ${Vulkan_INCLUDE_DIRS})
-
-#
+# Link dependencies
 target_link_libraries(${PROJECT_NAME}
+    sol2
     plog
     glm
     asio::asio
-    #libcurl_static 
-    libcurl_shared
+    libcurl_shared #libcurl_static 
+    freetype
 )
 
-#
+# Link dependencies for desktop
 if(NOT XCODE)
     target_link_libraries(${PROJECT_NAME}
         ${Vulkan_LIBRARIES}
         glfw
-        freetype
     )
 endif()
 
-#
-configure_file(config.h.in ${CMAKE_SOURCE_DIR}/include/config.hpp @ONLY)
+# Build config file
+configure_file(config.h.in ${PROJECT_SOURCE_DIR}/include/config.hpp @ONLY)

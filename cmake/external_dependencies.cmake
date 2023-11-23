@@ -30,6 +30,9 @@ if(NOT XCODE)
     add_subdirectory(external/glfw)
 endif()
 
+# Lua SOL 2
+add_subdirectory(external/sol2)
+
 # Text rendering
 set(FT_WITH_BZIP2 OFF)
 add_subdirectory(external/freetype-2.10.0)

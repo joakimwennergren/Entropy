@@ -19,6 +19,7 @@
 #include <global/vulkancontext.hpp>
 
 using namespace Symbios::Core;
+using namespace Entropy::Global;
 using namespace Symbios::Graphics::Utilities;
 using namespace Symbios::Graphics::CommandBuffers;
 
@@ -37,23 +38,10 @@ namespace Symbios
             {
             public:
                 /**
-                 * @brief Construct a new Buffer object
-                 *
-                 * @param context Vulkan context
-                 */
-                Buffer();
-
-                /**
                  * @brief Destroy the Buffer object
                  *
                  */
                 ~Buffer();
-
-                /**
-                 * @brief Create a Index Buffer object
-                 *
-                 */
-                void CreateIndexBufferUint16(std::vector<uint16_t> indices);
 
                 /**
                  * @brief Get the vulkan buffer
@@ -68,6 +56,8 @@ namespace Symbios
                  * @return VkDeviceMemory
                  */
                 inline VkDeviceMemory GetBufferMemory() { return this->_bufferMemory; };
+
+                void CreateIndexBufferUint16(std::vector<uint16_t> indices);
 
                 /**
                  * @brief Get the Mapped Memory object
@@ -86,7 +76,7 @@ namespace Symbios
                  * @param buffer
                  * @param bufferMemory
                  */
-                static void CreateBuffer(std::shared_ptr<Context> _context, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory);
+                static void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory);
 
                 /**
                  * @brief Copy One Buffer into another
@@ -96,9 +86,6 @@ namespace Symbios
                  * @param size srcBuffer size
                  */
                 void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-
-                // Vulkan context
-                std::shared_ptr<Context> _context;
 
                 // Vulkan buffer
                 VkBuffer _buffer;

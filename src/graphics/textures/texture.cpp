@@ -8,16 +8,15 @@ using namespace Symbios::Graphics::Textures;
 
 Texture::Texture()
 {
-    // Store vulkan ctx
-    _context = Global::VulkanContext::GetInstance()->GetVulkanContext();
     _commandBuffer = std::make_unique<CommandBuffer>();
 }
 
 Texture::~Texture()
 {
-    vkDestroyImageView(_context->GetLogicalDevice(), _imageView, nullptr);
-    vkDestroyImage(_context->GetLogicalDevice(), _textureImage, nullptr);
-    vkFreeMemory(_context->GetLogicalDevice(), _textureImageMemory, nullptr);
+    VulkanContext *vkContext = VulkanContext::GetInstance();
+    vkDestroyImageView(vkContext->logicalDevice, _imageView, nullptr);
+    vkDestroyImage(vkContext->logicalDevice, _textureImage, nullptr);
+    vkFreeMemory(vkContext->logicalDevice, _textureImageMemory, nullptr);
 }
 
 void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap)
@@ -37,7 +36,7 @@ void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap)
     CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
     TransitionImageLayout(_textureImage, VK_FORMAT_R8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    _imageView = _context->CreateImageView(_textureImage, VK_FORMAT_R8_UNORM);
+    _imageView = VulkanContext::CreateImageView(_textureImage, VK_FORMAT_R8_UNORM);
 
     hasTexture = true;
 }
@@ -78,7 +77,7 @@ void Texture::CreateTextureImage(std::string path)
     CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
     TransitionImageLayout(_textureImage, colorFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    _imageView = _context->CreateImageView(_textureImage, colorFormat);
+    _imageView = VulkanContext::CreateImageView(_textureImage, colorFormat);
 
     hasTexture = true;
 
@@ -89,6 +88,8 @@ void Texture::CreateTextureImage(std::string path)
 
 void Texture::CreateImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory)
 {
+    VulkanContext *vkContext = VulkanContext::GetInstance();
+
     VkImageCreateInfo imageInfo{};
     imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
     imageInfo.imageType = VK_IMAGE_TYPE_2D;
@@ -104,25 +105,25 @@ void Texture::CreateImage(uint32_t width, uint32_t height, VkFormat format, VkIm
     imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
     imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-    if (vkCreateImage(_context->GetLogicalDevice(), &imageInfo, nullptr, &image) != VK_SUCCESS)
+    if (vkCreateImage(vkContext->logicalDevice, &imageInfo, nullptr, &image) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create image!");
     }
 
     VkMemoryRequirements memRequirements;
-    vkGetImageMemoryRequirements(_context->GetLogicalDevice(), image, &memRequirements);
+    vkGetImageMemoryRequirements(vkContext->logicalDevice, image, &memRequirements);
 
     VkMemoryAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex = _context->FindMemoryType(memRequirements.memoryTypeBits, properties);
+    allocInfo.memoryTypeIndex = Utility::FindMemoryTypeIndex(memRequirements.memoryTypeBits, properties);
 
-    if (vkAllocateMemory(_context->GetLogicalDevice(), &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
+    if (vkAllocateMemory(vkContext->logicalDevice, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to allocate image memory!");
     }
 
-    vkBindImageMemory(_context->GetLogicalDevice(), image, imageMemory, 0);
+    vkBindImageMemory(vkContext->logicalDevice, image, imageMemory, 0);
 }
 
 void Texture::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)

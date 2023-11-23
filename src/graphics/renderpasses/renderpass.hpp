@@ -7,7 +7,7 @@
 
 using namespace Symbios::Core;
 using namespace Symbios::Graphics::CommandBuffers;
-using namespace Symbios::Global;
+using namespace Entropy::Global;
 
 namespace Symbios
 {

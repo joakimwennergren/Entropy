@@ -1,4 +1,4 @@
-# Symbios
+# Entropy
 
 ## What is this?
 

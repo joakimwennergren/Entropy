@@ -4,14 +4,8 @@ using namespace Symbios::Graphics::Pipelines;
 
 Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass)
 {
-    // Store vulkan ctx
-    _context = Global::VulkanContext::GetInstance()->GetVulkanContext();
+    VulkanContext *vkContext = VulkanContext::GetInstance();
 
-    _renderPass = renderPass;
-}
-
-void Pipeline::Build()
-{
     // Create Shader and store it
 #ifdef BUILD_FOR_IOS
     _shader = std::make_unique<Shader>(Filesystem::GetProjectBasePath() + "/vert.spv", Filesystem::GetProjectBasePath() + "/frag.spv");
@@ -63,14 +57,14 @@ void Pipeline::Build()
     VkViewport viewport{};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
-    viewport.width = (float)_context->GetSwapChainExtent().width;
-    viewport.height = (float)_context->GetSwapChainExtent().height;
+    viewport.width = (float)vkContext->swapChainExtent.width;
+    viewport.height = (float)vkContext->swapChainExtent.height;
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
 
     VkRect2D scissor{};
     scissor.offset = {0, 0};
-    scissor.extent = _context->GetSwapChainExtent();
+    scissor.extent = vkContext->swapChainExtent;
 
     VkPipelineViewportStateCreateInfo viewportState{};
     viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -146,12 +140,12 @@ void Pipeline::Build()
     layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
     layoutInfo.pBindings = bindings.data();
 
-    if (vkCreateDescriptorSetLayout(_context->GetLogicalDevice(), &layoutInfo, nullptr, &_tempLayout) != VK_SUCCESS)
+    if (vkCreateDescriptorSetLayout(vkContext->logicalDevice, &layoutInfo, nullptr, &_tempLayout) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create descriptor set layout!");
     }
 
-    dsLayouts[0] = _context->GetDescriptorSetLayouts();
+    dsLayouts[0] = vkContext->descriptorSetLayout;
     dsLayouts[1] = _tempLayout;
 
     // setup push constants
@@ -170,7 +164,7 @@ void Pipeline::Build()
     pipelineLayoutInfo.pPushConstantRanges = &push_constant;
     pipelineLayoutInfo.pushConstantRangeCount = 1;
 
-    if (vkCreatePipelineLayout(_context->GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &this->_pipelineLayout) != VK_SUCCESS)
+    if (vkCreatePipelineLayout(vkContext->logicalDevice, &pipelineLayoutInfo, nullptr, &this->_pipelineLayout) != VK_SUCCESS)
     {
         PLOG_FATAL << "Failed to create default pipeline layout!";
         exit(EXIT_FAILURE);
@@ -192,13 +186,13 @@ void Pipeline::Build()
 
     pipelineInfo.layout = this->_pipelineLayout;
 
-    pipelineInfo.renderPass = _renderPass->GetRenderPass();
+    pipelineInfo.renderPass = renderPass->GetRenderPass();
     pipelineInfo.subpass = 0;
 
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
     pipelineInfo.basePipelineIndex = -1;              // Optional
 
-    if (vkCreateGraphicsPipelines(_context->GetLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &this->_pipeline) != VK_SUCCESS)
+    if (vkCreateGraphicsPipelines(vkContext->logicalDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &this->_pipeline) != VK_SUCCESS)
     {
         PLOG_FATAL << "Failed to create default pipeline!";
         exit(EXIT_FAILURE);
@@ -207,7 +201,8 @@ void Pipeline::Build()
 
 Pipeline::~Pipeline()
 {
-    vkDestroyDescriptorSetLayout(_context->GetLogicalDevice(), this->_descriptorSetLayout, nullptr);
-    vkDestroyPipeline(_context->GetLogicalDevice(), this->_pipeline, nullptr);
-    vkDestroyPipelineLayout(_context->GetLogicalDevice(), this->_pipelineLayout, nullptr);
+    VulkanContext *vkContext = VulkanContext::GetInstance();
+    vkDestroyDescriptorSetLayout(vkContext->logicalDevice, this->_descriptorSetLayout, nullptr);
+    vkDestroyPipeline(vkContext->logicalDevice, this->_pipeline, nullptr);
+    vkDestroyPipelineLayout(vkContext->logicalDevice, this->_pipelineLayout, nullptr);
 }

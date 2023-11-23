@@ -12,5 +12,3 @@
 #include <UIKit/UIKit.hpp>
 #include <MetalKit/MetalKit.hpp>
 #endif
-
-// #include "../src/application/application.hpp"

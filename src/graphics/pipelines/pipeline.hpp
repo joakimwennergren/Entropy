@@ -12,7 +12,7 @@ using namespace Symbios::Core;
 using namespace Symbios::Filesystem;
 using namespace Symbios::Graphics::Shaders;
 using namespace Symbios::Graphics::RenderPasses;
-using namespace Symbios::Global;
+using namespace Entropy::Global;
 
 namespace Symbios
 {
@@ -30,12 +30,6 @@ namespace Symbios
                 /**
                  * @brief Construct a new Pipeline object
                  *
-                 */
-                Pipeline() = default;
-
-                /**
-                 * @brief Construct a new Pipeline object
-                 *
                  * @param context
                  * @param renderPass
                  */
@@ -46,12 +40,6 @@ namespace Symbios
                  *
                  */
                 ~Pipeline();
-
-                /**
-                 * @brief
-                 *
-                 */
-                void Build();
 
                 inline VkPipeline GetPipeline() { return this->_pipeline; };
                 inline VkPipelineLayout GetPipelineLayout() { return this->_pipelineLayout; };

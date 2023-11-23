@@ -8,7 +8,7 @@
 using namespace Symbios::Core;
 using namespace Symbios::Renderables;
 
-namespace Symbios
+namespace Entropy
 {
     namespace Global
     {

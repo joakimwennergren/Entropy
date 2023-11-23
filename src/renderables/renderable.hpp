@@ -6,7 +6,6 @@
 #include <global/vulkancontext.hpp>
 
 #include <string>
-#include <unordered_map>
 #include <glm/glm.hpp>
 
 using namespace Symbios::Graphics::Textures;
@@ -26,25 +25,66 @@ namespace Symbios
 
             ~Renderable()
             {
-                vkDeviceWaitIdle(_context->GetLogicalDevice());
+                VulkanContext *vkContext = VulkanContext::GetInstance();
+
+                vkDeviceWaitIdle(vkContext->logicalDevice);
 
                 if (_descriptorSet != VK_NULL_HANDLE)
                 {
                     vkFreeDescriptorSets(
-                        _context->GetLogicalDevice(),
-                        _context->GetDescriptorPool(),
+                        vkContext->logicalDevice,
+                        vkContext->descriptorPool,
                         1,
                         &_descriptorSet);
                 }
 
                 if (_descriptorSetLayout != VK_NULL_HANDLE)
                 {
-                    vkDestroyDescriptorSetLayout(_context->GetLogicalDevice(), _descriptorSetLayout, nullptr);
+                    vkDestroyDescriptorSetLayout(vkContext->logicalDevice, _descriptorSetLayout, nullptr);
                 }
+            }
+
+            bool isAbleToRender()
+            {
+                if (this->vertexBuffer == nullptr)
+                {
+                    return false;
+                }
+
+                return true;
             }
 
             void UpdateImage()
             {
+                VulkanContext *vkContext = VulkanContext::GetInstance();
+
+                VkPhysicalDeviceProperties properties{};
+                vkGetPhysicalDeviceProperties(vkContext->physicalDevice, &properties);
+
+                VkSamplerCreateInfo samplerInfo{};
+                samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+                samplerInfo.magFilter = VK_FILTER_LINEAR;
+                samplerInfo.minFilter = VK_FILTER_LINEAR;
+
+                samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+                samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+                samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+                samplerInfo.anisotropyEnable = VK_TRUE;
+                samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+                samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+                samplerInfo.unnormalizedCoordinates = VK_FALSE;
+                samplerInfo.compareEnable = VK_FALSE;
+                samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+                samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+                samplerInfo.mipLodBias = 0.0f;
+                samplerInfo.minLod = 0.0f;
+                samplerInfo.maxLod = 0.0f;
+
+                if (vkCreateSampler(vkContext->logicalDevice, &samplerInfo, nullptr, &_textureSampler) != VK_SUCCESS)
+                {
+                    throw std::runtime_error("failed to create texture sampler!");
+                }
+
                 VkDescriptorSetLayoutBinding samplerLayoutBinding{};
                 samplerLayoutBinding.binding = 1;
                 samplerLayoutBinding.descriptorCount = 1;
@@ -65,7 +105,7 @@ namespace Symbios
                 layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
                 layoutInfo.pBindings = bindings.data();
 
-                if (vkCreateDescriptorSetLayout(_context->GetLogicalDevice(), &layoutInfo, nullptr, &_descriptorSetLayout) != VK_SUCCESS)
+                if (vkCreateDescriptorSetLayout(vkContext->logicalDevice, &layoutInfo, nullptr, &_descriptorSetLayout) != VK_SUCCESS)
                 {
                     throw std::runtime_error("failed to create descriptor set layout!");
                 }
@@ -74,11 +114,11 @@ namespace Symbios
 
                 VkDescriptorSetAllocateInfo allocInfo{};
                 allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-                allocInfo.descriptorPool = _context->GetDescriptorPool();
+                allocInfo.descriptorPool = vkContext->descriptorPool;
                 allocInfo.descriptorSetCount = 1; // MAX_CONCURRENT_FRAMES_IN_FLIGHT;
                 allocInfo.pSetLayouts = layouts.data();
 
-                if (vkAllocateDescriptorSets(_context->GetLogicalDevice(), &allocInfo, &_descriptorSet) != VK_SUCCESS)
+                if (vkAllocateDescriptorSets(vkContext->logicalDevice, &allocInfo, &_descriptorSet) != VK_SUCCESS)
                 {
                     throw std::runtime_error("failed to allocate descriptor sets!");
                 }
@@ -86,7 +126,7 @@ namespace Symbios
                 VkDescriptorImageInfo imageInfo{};
                 imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
                 imageInfo.imageView = texture->hasTexture ? texture->GetImageView() : nullptr;
-                imageInfo.sampler = _context->_textureSampler;
+                imageInfo.sampler = _textureSampler;
 
                 std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 
@@ -106,7 +146,7 @@ namespace Symbios
                 descriptorWrites[1].descriptorCount = 1;
                 descriptorWrites[1].pImageInfo = &imageInfo;
 
-                vkUpdateDescriptorSets(_context->GetLogicalDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+                vkUpdateDescriptorSets(vkContext->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
             }
 
             int zIndex = 0;
@@ -134,6 +174,8 @@ namespace Symbios
             // Testing
             VkDescriptorSet _descriptorSet = VK_NULL_HANDLE;
             VkDescriptorSetLayout _descriptorSetLayout = VK_NULL_HANDLE;
+
+            VkSampler _textureSampler;
 
             inline void Translate(float x, float y) { this->position = glm::vec3(x, y, 0.0); }
             inline void Scale(float s) { this->scale = glm::vec3(s, s, 0.0); }
