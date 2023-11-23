@@ -19,9 +19,8 @@ void Application::Run()
         screen.width = width;
         screen.height = height;
 
-        // Render stuff
+        this->_renderer->Render();
         this->OnRender(_deltaTime);
-        _renderer->Render();
 
         // Poll events
         glfwPollEvents();
@@ -31,10 +30,8 @@ void Application::Run()
 void framebufferResizeCallback(GLFWwindow *window, int width, int height)
 {
     auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
-    PLOG_INFO << "RESIZING!!";
     if (app != nullptr)
     {
-        //app->GetRenderer()->FrameBufferResized();
         app->GetRenderer()->Render();
     }
 }

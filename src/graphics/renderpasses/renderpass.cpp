@@ -4,8 +4,7 @@ using namespace Symbios::Graphics::RenderPasses;
 
 RenderPass::RenderPass()
 {
-    // Store vulkan ctx
-    _context = VulkanContext::GetInstance()->GetVulkanContext();
+    VulkanContext *vkContext = VulkanContext::GetInstance();
 
     VkAttachmentDescription colorAttachment{};
     colorAttachment.format = _context->GetSwapChainImageFormat();
@@ -47,7 +46,7 @@ RenderPass::RenderPass()
     renderPassInfo.dependencyCount = 1;
     renderPassInfo.pDependencies = &dependency;
 
-    if (vkCreateRenderPass(_context->GetLogicalDevice(), &renderPassInfo, nullptr, &this->_renderPass) != VK_SUCCESS)
+    if (vkCreateRenderPass(vkContext->logicalDevice, &renderPassInfo, nullptr, &this->_renderPass) != VK_SUCCESS)
     {
         PLOG_ERROR << "failed to create render pass!";
         exit(EXIT_FAILURE);
@@ -58,23 +57,27 @@ RenderPass::RenderPass()
 
 RenderPass::~RenderPass()
 {
+    VulkanContext *vkContext = VulkanContext::GetInstance();
+
     for (auto framebuffer : this->_swapChainFramebuffers)
     {
-        vkDestroyFramebuffer(_context->GetLogicalDevice(), framebuffer, nullptr);
+        vkDestroyFramebuffer(vkContext->logicalDevice, framebuffer, nullptr);
     }
 
-    vkDestroyRenderPass(_context->GetLogicalDevice(), this->_renderPass, nullptr);
+    vkDestroyRenderPass(vkContext->logicalDevice, this->_renderPass, nullptr);
 }
 
 void RenderPass::Begin(std::shared_ptr<CommandBuffer> commandBuffer, uint32_t imageIndex)
 {
+    VulkanContext *vkContext = VulkanContext::GetInstance();
+
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassInfo.renderPass = this->_renderPass;
     renderPassInfo.framebuffer = this->_swapChainFramebuffers[imageIndex];
 
     renderPassInfo.renderArea.offset = {0, 0};
-    renderPassInfo.renderArea.extent = _context->GetSwapChainExtent();
+    renderPassInfo.renderArea.extent = vkContext->swapChainExtent;
 
     VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
     renderPassInfo.clearValueCount = 1;
@@ -90,23 +93,25 @@ void RenderPass::End(std::shared_ptr<CommandBuffer> commandBuffer)
 
 void RenderPass::CreateFramebuffers()
 {
-    this->_swapChainFramebuffers.resize(_context->GetSwapChainImageViews().size());
+    VulkanContext *vkContext = VulkanContext::GetInstance();
 
-    for (size_t i = 0; i < _context->GetSwapChainImageViews().size(); i++)
+    this->_swapChainFramebuffers.resize(vkContext->swapChainImageViews.size());
+
+    for (size_t i = 0; i < vkContext->swapChainImageViews.size(); i++)
     {
         VkImageView attachments[] = {
-            _context->GetSwapChainImageViews()[i]};
+            vkContext->swapChainImageViews[i]};
 
         VkFramebufferCreateInfo framebufferInfo{};
         framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
         framebufferInfo.renderPass = this->_renderPass;
         framebufferInfo.attachmentCount = 1;
         framebufferInfo.pAttachments = attachments;
-        framebufferInfo.width = _context->GetSwapChainExtent().width;
-        framebufferInfo.height = _context->GetSwapChainExtent().height;
+        framebufferInfo.width = vkContext->swapChainExtent.width;
+        framebufferInfo.height = vkContext->swapChainExtent.height;
         framebufferInfo.layers = 1;
 
-        if (vkCreateFramebuffer(_context->GetLogicalDevice(), &framebufferInfo, nullptr, &this->_swapChainFramebuffers[i]) != VK_SUCCESS)
+        if (vkCreateFramebuffer(vkContext->logicalDevice, &framebufferInfo, nullptr, &this->_swapChainFramebuffers[i]) != VK_SUCCESS)
         {
             PLOG_ERROR << "Failed to create framebuffer!";
             exit(EXIT_FAILURE);
@@ -116,9 +121,11 @@ void RenderPass::CreateFramebuffers()
 
 void RenderPass::RecreateFrameBuffers()
 {
+    VulkanContext *vkContext = VulkanContext::GetInstance();
+
     for (auto framebuffer : this->_swapChainFramebuffers)
     {
-        vkDestroyFramebuffer(_context->GetLogicalDevice(), framebuffer, nullptr);
+        vkDestroyFramebuffer(vkContext->logicalDevice, framebuffer, nullptr);
     }
 
     this->CreateFramebuffers();

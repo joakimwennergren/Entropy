@@ -47,12 +47,6 @@ namespace Symbios
                  */
                 StagedBuffer(VkDeviceSize size, uint8_t *data);
 
-                /**
-                 * @brief Destroy the Buffer object
-                 *
-                 */
-                ~StagedBuffer();
-
             private:
             };
         }

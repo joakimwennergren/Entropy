@@ -4,8 +4,7 @@ using namespace Symbios::Graphics::CommandBuffers;
 
 CommandBuffer::CommandBuffer()
 {
-    // Store vulkan ctx
-    _context = VulkanContext::GetInstance()->GetVulkanContext();
+    VulkanContext *vkContext = VulkanContext::GetInstance();
 
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -13,7 +12,7 @@ CommandBuffer::CommandBuffer()
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     allocInfo.commandBufferCount = 1;
 
-    if (vkAllocateCommandBuffers(_context->GetLogicalDevice(), &allocInfo, &_commandBuffer) != VK_SUCCESS)
+    if (vkAllocateCommandBuffers(vkContext->logicalDevice, &allocInfo, &_commandBuffer) != VK_SUCCESS)
     {
         PLOG_ERROR << "Failed to allocate command buffer!";
         exit(EXIT_FAILURE);
@@ -54,6 +53,8 @@ void CommandBuffer::EndRecording()
 
 void CommandBuffer::EndRecordingOnce()
 {
+    VulkanContext *vkContext = VulkanContext::GetInstance();
+
     if (vkEndCommandBuffer(_commandBuffer) != VK_SUCCESS)
     {
         PLOG_ERROR << "Failed to end recording command buffer!";
@@ -65,6 +66,6 @@ void CommandBuffer::EndRecordingOnce()
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &_commandBuffer;
 
-    vkQueueSubmit(_context->GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-    vkQueueWaitIdle(_context->GetGraphicsQueue());
+    vkQueueSubmit(vkContext->graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+    vkQueueWaitIdle(vkContext->graphicsQueue);
 }

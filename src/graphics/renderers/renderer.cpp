@@ -4,9 +4,6 @@ using namespace Entropy::Graphics::Renderers;
 
 Renderer::Renderer()
 {
-    // Get vulkan ctx
-    _context = VulkanContext::GetInstance()->GetVulkanContext();
-
     // Create renderpass
     _renderPass = std::make_shared<RenderPass>();
 
@@ -40,17 +37,19 @@ Renderer::Renderer()
 
 void Renderer::Render()
 {
-    vkWaitForFences(_context->GetLogicalDevice(), 1, &_synchronizer->GetFences()[_currentFrame], VK_TRUE, UINT64_MAX);
+    VulkanContext *vkContext = VulkanContext::GetInstance();
+
+    vkWaitForFences(vkContext->logicalDevice, 1, &_synchronizer->GetFences()[_currentFrame], VK_TRUE, UINT64_MAX);
 
     uint32_t imageIndex;
-    VkResult result = vkAcquireNextImageKHR(_context->GetLogicalDevice(), _context->GetSwapChain(), UINT64_MAX, _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE, &imageIndex);
+    VkResult result = vkAcquireNextImageKHR(vkContext->logicalDevice, vkContext->swapChain, UINT64_MAX, _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE, &imageIndex);
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
     {
         _synchronizer.reset();
         _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
 
-        _context->RecreateSwapChain();
+        // vkContext->RecreateSwapChain();
         _renderPass->RecreateFrameBuffers();
 
         return;
@@ -166,7 +165,7 @@ void Renderer::Render()
     this->SubmitAndPresent(currentCmdBuffer, imageIndex);
 
     // Reset fences and current commandbuffer
-    vkResetFences(_context->GetLogicalDevice(), 1, &_synchronizer->GetFences()[_currentFrame]);
+    vkResetFences(vkContext->logicalDevice, 1, &_synchronizer->GetFences()[_currentFrame]);
     vkResetCommandBuffer(currentCmdBuffer, 0);
 
     // Increment current frame
@@ -175,6 +174,8 @@ void Renderer::Render()
 
 void Renderer::SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex)
 {
+    VulkanContext *vkContext = VulkanContext::GetInstance();
+
     // Submit info
     VkSubmitInfo submitInfo{};
     VkSemaphore signalSemaphores[] = {_synchronizer->GetRenderFinishedSemaphores()[_currentFrame]};
@@ -190,7 +191,7 @@ void Renderer::SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex)
     submitInfo.pSignalSemaphores = signalSemaphores;
 
     // Submit queue
-    if (vkQueueSubmit(_context->GetGraphicsQueue(), 1, &submitInfo, _synchronizer->GetFences()[_currentFrame]) != VK_SUCCESS)
+    if (vkQueueSubmit(vkContext->graphicsQueue, 1, &submitInfo, _synchronizer->GetFences()[_currentFrame]) != VK_SUCCESS)
     {
         PLOG_ERROR << "failed to submit draw command buffer!";
         exit(EXIT_FAILURE);
@@ -203,13 +204,13 @@ void Renderer::SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex)
     presentInfo.pWaitSemaphores = signalSemaphores;
 
     // SwapChains
-    VkSwapchainKHR swapChains[] = {_context->GetSwapChain()};
+    VkSwapchainKHR swapChains[] = {vkContext->swapChain};
     presentInfo.swapchainCount = 1;
     presentInfo.pSwapchains = swapChains;
     presentInfo.pImageIndices = &imageIndex;
 
     // Present
-    if (vkQueuePresentKHR(_context->GetPresentQueue(), &presentInfo) != VK_SUCCESS)
+    if (vkQueuePresentKHR(vkContext->presentQueue, &presentInfo) != VK_SUCCESS)
     {
         PLOG_ERROR << "failed to present!";
         exit(EXIT_FAILURE);

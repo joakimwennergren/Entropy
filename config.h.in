@@ -1,7 +1,7 @@
 #pragma once
 
 // Base path
-#define ENGINE_BASEPATH "@PROJET_BASEPATH@"
+#define ENGINE_BASEPATH "@PROJECT_BASEPATH@"
 
 // Platform
 #define @CMAKE_PLATFORM@

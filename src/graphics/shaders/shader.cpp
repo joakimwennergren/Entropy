@@ -4,9 +4,6 @@ using namespace Symbios::Graphics::Shaders;
 
 Shader::Shader(const std::string vert, const std::string frag)
 {
-    // Store vulkan ctx
-    _context = VulkanContext::GetInstance()->GetVulkanContext();
-
     this->_vertCode = this->ReadFile(vert);
     this->_fragCode = this->ReadFile(frag);
 
@@ -19,8 +16,10 @@ Shader::Shader(const std::string vert, const std::string frag)
 
 Shader::~Shader()
 {
-    vkDestroyShaderModule(this->_context->GetLogicalDevice(), this->_shaderModuleVert, nullptr);
-    vkDestroyShaderModule(this->_context->GetLogicalDevice(), this->_shaderModuleFrag, nullptr);
+    VulkanContext *vkContext = VulkanContext::GetInstance();
+
+    vkDestroyShaderModule(vkContext->logicalDevice, this->_shaderModuleVert, nullptr);
+    vkDestroyShaderModule(vkContext->logicalDevice, this->_shaderModuleFrag, nullptr);
 }
 
 std::vector<char> Shader::ReadFile(std::string filename)
@@ -46,6 +45,8 @@ std::vector<char> Shader::ReadFile(std::string filename)
 
 VkShaderModule Shader::BuildShader(std::vector<char> code)
 {
+    VulkanContext *vkContext = VulkanContext::GetInstance();
+
     VkShaderModuleCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
     createInfo.codeSize = code.size();
@@ -53,7 +54,7 @@ VkShaderModule Shader::BuildShader(std::vector<char> code)
 
     VkShaderModule shaderModule;
 
-    if (vkCreateShaderModule(this->_context->GetLogicalDevice(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
+    if (vkCreateShaderModule(vkContext->logicalDevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
     {
         PLOG_FATAL << "failed to create shader module!";
         exit(EXIT_FAILURE);

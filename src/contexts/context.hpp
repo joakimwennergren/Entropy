@@ -48,9 +48,6 @@
 #include <set>
 
 #include <graphics/data/ubo.hpp>
-#include "utilities/vulkanutil.hpp"
-
-using namespace Entropy::Contexts::VulkanUtilities;
 
 namespace Symbios
 {
@@ -296,6 +293,8 @@ namespace Symbios
              *
              */
             void CreateInstance();
+
+            bool CheckDeviceExtensionSupport(VkPhysicalDevice device, const std::vector<const char *> extensions);
 
             /**
              * @brief

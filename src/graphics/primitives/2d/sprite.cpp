@@ -4,9 +4,6 @@ using namespace Symbios::Graphics::Primitives;
 
 Sprite::Sprite()
 {
-    // Store vulkan ctx
-    _context = VulkanContext::GetInstance()->GetVulkanContext();
-
     _indices = {
         0, 1, 2, 2, 3, 0};
 
@@ -29,9 +26,6 @@ Sprite::Sprite()
 
 Sprite::Sprite(FT_Bitmap bitmap)
 {
-    // Store vulkan ctx
-    _context = VulkanContext::GetInstance()->GetVulkanContext();
-
     _indices = {
         0, 1, 2, 2, 3, 0};
 
@@ -56,9 +50,6 @@ Sprite::Sprite(FT_Bitmap bitmap)
 
 Sprite::Sprite(std::string path)
 {
-    // Store vulkan ctx
-    _context = VulkanContext::GetInstance()->GetVulkanContext();
-
     _indices = {
         0, 1, 2, 2, 3, 0};
 

@@ -20,8 +20,6 @@ namespace Symbios
             public:
                 VertexBuffer(std::vector<Vertex> vertices);
 
-                ~VertexBuffer();
-
             private:
             };
         }

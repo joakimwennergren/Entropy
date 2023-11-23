@@ -8,8 +8,6 @@ using namespace Symbios::Graphics::Textures;
 
 Texture::Texture()
 {
-    // Store vulkan ctx
-    _context = VulkanContext::GetInstance()->GetVulkanContext();
     _commandBuffer = std::make_unique<CommandBuffer>();
 }
 
@@ -89,6 +87,8 @@ void Texture::CreateTextureImage(std::string path)
 
 void Texture::CreateImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory)
 {
+    VulkanContext *vkContext = VulkanContext::GetInstance();
+
     VkImageCreateInfo imageInfo{};
     imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
     imageInfo.imageType = VK_IMAGE_TYPE_2D;
@@ -104,25 +104,25 @@ void Texture::CreateImage(uint32_t width, uint32_t height, VkFormat format, VkIm
     imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
     imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-    if (vkCreateImage(_context->GetLogicalDevice(), &imageInfo, nullptr, &image) != VK_SUCCESS)
+    if (vkCreateImage(vkContext->logicalDevice, &imageInfo, nullptr, &image) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create image!");
     }
 
     VkMemoryRequirements memRequirements;
-    vkGetImageMemoryRequirements(_context->GetLogicalDevice(), image, &memRequirements);
+    vkGetImageMemoryRequirements(vkContext->logicalDevice, image, &memRequirements);
 
     VkMemoryAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memRequirements.size;
     allocInfo.memoryTypeIndex = _context->FindMemoryType(memRequirements.memoryTypeBits, properties);
 
-    if (vkAllocateMemory(_context->GetLogicalDevice(), &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
+    if (vkAllocateMemory(vkContext->logicalDevice, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to allocate image memory!");
     }
 
-    vkBindImageMemory(_context->GetLogicalDevice(), image, imageMemory, 0);
+    vkBindImageMemory(vkContext->logicalDevice, image, imageMemory, 0);
 }
 
 void Texture::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)

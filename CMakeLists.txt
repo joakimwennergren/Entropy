@@ -12,6 +12,8 @@ cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
 # Declare project
 project(Entropy)
 
+set(PROJECT_BASEPATH ${PROJECT_SOURCE_DIR})
+
 # Detect platform
 include(cmake/platform.cmake)
 
@@ -25,30 +27,28 @@ file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 add_library(Entropy STATIC ${SOURCES})
 
 # Compiler flags
-target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17 -Wall -Wfloat-conversion)
+target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17 -Wall -Wfloat-conversion -Wunsequenced)
 
 # Include headers
 target_include_directories(${PROJECT_NAME} 
-    PRIVATE
-        external 
     PUBLIC 
         ${PROJECT_SOURCE_DIR}/include
         ${PROJECT_SOURCE_DIR}/src
         ${Vulkan_INCLUDE_DIRS}
+        external 
 )
 
-#
+# Link dependencies
 target_link_libraries(${PROJECT_NAME}
     sol2
     plog
     glm
     asio::asio
-    #libcurl_static 
-    libcurl_shared
+    libcurl_shared #libcurl_static 
     freetype
 )
 
-#
+# Link dependencies for desktop
 if(NOT XCODE)
     target_link_libraries(${PROJECT_NAME}
         ${Vulkan_LIBRARIES}
@@ -56,7 +56,5 @@ if(NOT XCODE)
     )
 endif()
 
-set(PROJET_BASEPATH ${PROJECT_SOURCE_DIR})
-
-#
-configure_file(config.h.in ${CMAKE_SOURCE_DIR}/include/config.hpp @ONLY)
+# Build config file
+configure_file(config.h.in ${PROJECT_SOURCE_DIR}/include/config.hpp @ONLY)
