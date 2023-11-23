@@ -20,10 +20,6 @@ CommandBuffer::CommandBuffer()
     }
 }
 
-CommandBuffer::~CommandBuffer()
-{
-}
-
 void CommandBuffer::RecordOnce()
 {
     VkCommandBufferBeginInfo beginInfo{};

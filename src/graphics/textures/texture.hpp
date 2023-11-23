@@ -83,7 +83,7 @@ namespace Symbios
                 void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 
                 /**
-                 * @brief Create a Image object
+                 * @brief Create an Image object
                  *
                  * @param width
                  * @param height
@@ -99,8 +99,6 @@ namespace Symbios
                 std::shared_ptr<Context> _context;
                 std::unique_ptr<CommandBuffer> _commandBuffer;
 
-                VkBuffer _stagingBuffer;
-                VkDeviceMemory _stagingBufferMemory;
                 VkImage _textureImage;
                 VkImageView _imageView;
                 VkDeviceMemory _textureImageMemory;

@@ -37,12 +37,6 @@ namespace Symbios
                 CommandBuffer();
 
                 /**
-                 * @brief Destroy the Command Buffer object
-                 *
-                 */
-                ~CommandBuffer();
-
-                /**
                  * @brief
                  *
                  * @param imageIndex

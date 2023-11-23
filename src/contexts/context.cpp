@@ -347,7 +347,7 @@ bool Context::IsDeviceSuitable(VkPhysicalDevice device)
 {
     QueueFamilyIndices indices = FindQueueFamilies(device);
 
-    bool extensionsSupported = CheckDeviceExtensionSupport(device);
+    bool extensionsSupported = VulkanUtility::CheckDeviceExtensionSupport(device, deviceExtensions);
 
     bool swapChainAdequate = false;
     if (extensionsSupported)
@@ -444,7 +444,7 @@ void Context::CreateLogicalDevice()
     if (vkCreateDevice(_physicalDevice, &createInfo, nullptr, &_device) != VK_SUCCESS)
     {
         PLOG_FATAL << "Failed to create a logical device!";
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     vkGetDeviceQueue(this->_device, indices.graphicsFamily.value(), 0, &this->_graphicsQueue);
@@ -521,31 +521,6 @@ void Context::CreateSurfaceLinux(GLFWwindow *window)
     }
 }
 #endif
-
-/**
- * @brief
- *
- * @param device
- * @return true
- * @return false
- */
-bool Context::CheckDeviceExtensionSupport(VkPhysicalDevice device)
-{
-    uint32_t extensionCount;
-    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
-
-    std::vector<VkExtensionProperties> availableExtensions(extensionCount);
-    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
-
-    std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
-
-    for (const auto &extension : availableExtensions)
-    {
-        requiredExtensions.erase(extension.extensionName);
-    }
-
-    return requiredExtensions.empty();
-}
 
 /**
  * @brief
@@ -716,6 +691,7 @@ void Context::CreateSwapChain(GLFWwindow *window)
     }
 
     vkGetSwapchainImagesKHR(_device, _swapChain, &imageCount, nullptr);
+
     _swapChainImages.resize(imageCount);
     vkGetSwapchainImagesKHR(_device, _swapChain, &imageCount, _swapChainImages.data());
 
@@ -937,7 +913,6 @@ void Context::CreateDescriptorSetLayout()
     textureLayoutBinding.pImmutableSamplers = nullptr;
     textureLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-
     std::array<VkDescriptorSetLayoutBinding, 3> bindings = {uboLayoutBinding, samplerLayoutBinding, textureLayoutBinding};
     VkDescriptorSetLayoutCreateInfo layoutInfo{};
     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -946,7 +921,8 @@ void Context::CreateDescriptorSetLayout()
 
     if (vkCreateDescriptorSetLayout(_device, &layoutInfo, nullptr, &_descriptorSetLayout) != VK_SUCCESS)
     {
-        throw std::runtime_error("failed to create descriptor set layout!");
+        PLOG_ERROR << "Failed to create a descriptor set layout!";
+        exit(EXIT_FAILURE);
     }
 }
 
@@ -964,21 +940,17 @@ void Context::CreateDescriptorSets(std::vector<VkBuffer> uniformBuffers)
 
     if (vkAllocateDescriptorSets(_device, &allocInfo, _descriptorSets.data()) != VK_SUCCESS)
     {
-        throw std::runtime_error("failed to allocate descriptor sets!");
+        PLOG_ERROR << "Failed to allocate descriptor sets!";
+        exit(EXIT_FAILURE);
     }
 
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
+        std::array<VkWriteDescriptorSet, 1> descriptorWrites{};
         VkDescriptorBufferInfo bufferInfo{};
         bufferInfo.buffer = uniformBuffers[i];
         bufferInfo.offset = 0;
         bufferInfo.range = sizeof(UniformBufferObject);
-
-        //VkDescriptorImageInfo imageInfo{};
-        //imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-        //imageInfo.sampler = _textureSampler;
-
-        std::array<VkWriteDescriptorSet, 1> descriptorWrites{};
 
         descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[0].dstSet = _descriptorSets[i];
@@ -988,30 +960,13 @@ void Context::CreateDescriptorSets(std::vector<VkBuffer> uniformBuffers)
         descriptorWrites[0].descriptorCount = 1;
         descriptorWrites[0].pBufferInfo = &bufferInfo;
 
-
-        /*
-        descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptorWrites[1].dstSet = _descriptorSets[i];
-        descriptorWrites[1].dstBinding = 1;
-        descriptorWrites[1].dstArrayElement = 0;
-        descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        descriptorWrites[1].descriptorCount = 1;
-        descriptorWrites[1].pImageInfo = &imageInfo;
-        */
-
         vkUpdateDescriptorSets(_device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
     }
 }
 
-/**
- * @brief Create a Image View object
- *
- * @param image
- * @param format
- * @return VkImageView
- */
 VkImageView Context::CreateImageView(VkImage image, VkFormat format)
 {
+    VkImageView imageView;
     VkImageViewCreateInfo viewInfo{};
     viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     viewInfo.image = image;
@@ -1023,10 +978,10 @@ VkImageView Context::CreateImageView(VkImage image, VkFormat format)
     viewInfo.subresourceRange.baseArrayLayer = 0;
     viewInfo.subresourceRange.layerCount = 1;
 
-    VkImageView imageView;
     if (vkCreateImageView(_device, &viewInfo, nullptr, &imageView) != VK_SUCCESS)
     {
-        throw std::runtime_error("failed to create texture image view!");
+        PLOG_ERROR << "Failed to create an image view!";
+        exit(EXIT_FAILURE);
     }
 
     return imageView;
@@ -1059,17 +1014,11 @@ void Context::CreateTextureSampler()
 
     if (vkCreateSampler(_device, &samplerInfo, nullptr, &_textureSampler) != VK_SUCCESS)
     {
-        throw std::runtime_error("failed to create texture sampler!");
+        PLOG_ERROR << "Failed to create a sampler!";
+        exit(EXIT_FAILURE);
     }
 }
 
-/**
- * @brief
- *
- * @param typeFilter
- * @param properties
- * @return uint32_t
- */
 uint32_t Context::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
 {
     VkPhysicalDeviceMemoryProperties memProperties;
@@ -1083,5 +1032,6 @@ uint32_t Context::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags prop
         }
     }
 
-    throw std::runtime_error("failed to find suitable memory type!");
+    PLOG_ERROR << "Failed to find suitable memory type!";
+    exit(EXIT_FAILURE);
 }

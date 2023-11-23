@@ -6,7 +6,6 @@
 #include <global/vulkancontext.hpp>
 
 #include <string>
-#include <unordered_map>
 #include <glm/glm.hpp>
 
 using namespace Symbios::Graphics::Textures;

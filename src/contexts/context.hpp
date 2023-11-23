@@ -48,6 +48,9 @@
 #include <set>
 
 #include <graphics/data/ubo.hpp>
+#include "utilities/vulkanutil.hpp"
+
+using namespace Entropy::Contexts::VulkanUtilities;
 
 namespace Symbios
 {
@@ -348,15 +351,6 @@ namespace Symbios
              *
              */
             void CreateImageViews();
-
-            /**
-             * @brief
-             *
-             * @param device
-             * @return true
-             * @return false
-             */
-            bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
 
             /**
              * @brief
