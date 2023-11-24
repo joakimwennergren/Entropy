@@ -1,5 +1,7 @@
 # Entropy
 
+## Current build status
+
 ![example workflow](https://github.com/joakimwennergren/Entropy-Engine/actions/workflows/cmake-multi-platform.yml/badge.svg)
 
 ## What is this?
