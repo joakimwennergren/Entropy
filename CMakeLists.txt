@@ -7,7 +7,7 @@
 # Game Engine version 1.0
 
 # Set minimum cmake version
-cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.6)
 
 # Declare project
 project(Entropy)
@@ -39,7 +39,7 @@ target_include_directories(${PROJECT_NAME}
         external/vulkan-headers
 )
 
-# Link dependencies
+# Link common dependencies
 target_link_libraries(${PROJECT_NAME}
     sol2
     plog
@@ -49,7 +49,7 @@ target_link_libraries(${PROJECT_NAME}
     freetype
 )
 
-# Link dependencies for desktop
+# Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk)
 target_link_libraries(${PROJECT_NAME}
     ${Vulkan_LIBRARIES}
     glfw
