@@ -9,13 +9,13 @@
 
 #include <glm/glm.hpp>
 
-#include "sprite.hpp"
-#include "filesystem.hpp"
-#include "vulkancontext.hpp"
-#include "renderable.hpp"
-#include "scenegraph.hpp"
+#include <graphics/primitives/2d/sprite.hpp>
+#include <filesystem/filesystem.hpp>
+#include <global/vulkancontext.hpp>
+#include <renderables/renderable.hpp>
+#include <global/scenegraph.hpp>
 
-using namespace Symbios::Renderables;
+using namespace Entropy::Renderables;
 using namespace Symbios::Graphics::Primitives;
 using namespace Symbios;
 
@@ -27,8 +27,8 @@ namespace Symbios
         {
             FT_Bitmap bitmap;
             glm::ivec2 Size;
-            glm::ivec2 Bearing; 
-            FT_Pos Advance;     
+            glm::ivec2 Bearing;
+            FT_Pos Advance;
             FT_Pos YAdvance;
         };
 
@@ -36,23 +36,22 @@ namespace Symbios
         {
         public:
             Label();
-            ~Label();   
+            ~Label();
             std::vector<std::shared_ptr<Sprite>> sprites;
 
             inline void SetPosition(float x, float y)
             {
-                if(this->text.length() == 0)
+                if (this->text.length() == 0)
                     return;
-                
+
                 std::string::const_iterator c;
-                int cnt = 0;
 
                 for (c = text.begin(); c != text.end(); c++)
                 {
-                    Character &ch = _characters[*c];
+                    // Character &ch = _characters[*c];
 
-                    float xpos = x + ch.Size.x;
-                    float ypos = y - (ch.Bearing.y);
+                    // float xpos = x + ch.Size.x;
+                    // float ypos = y - (ch.Bearing.y);
 
                     /*
                     auto g = this->children[cnt];
@@ -70,10 +69,10 @@ namespace Symbios
 
                 this->text = text;
                 std::string::const_iterator c;
-                
+
                 float x = 300.0;
                 float y = -340.0;
-                
+
                 for (c = text.begin(); c != text.end(); c++)
                 {
                     Character &ch = _characters[*c];
@@ -97,14 +96,13 @@ namespace Symbios
                     this->children.push_back(g);
                 }
             }
-            
+
         private:
             FT_Library ft;
 
-            FT_Face face;  
+            FT_Face face;
             std::string text;
             std::map<char, Character> _characters;
-            float maxDescent;
         };
     }
 }

@@ -11,14 +11,14 @@
 
 #pragma once
 
-#include "context.hpp"
-#include "buffer.hpp"
-#include "vertex.hpp"
+#include <global/vulkancontext.hpp>
+#include <graphics/buffers/buffer.hpp>
+#include <graphics/data/vertex.hpp>
 
-using namespace Symbios::Core;
-using namespace Symbios::Graphics::Buffers;
+using namespace Entropy::Global;
+using namespace Entropy::Graphics::Buffers;
 
-namespace Symbios
+namespace Entropy
 {
     namespace Graphics
     {
@@ -44,12 +44,6 @@ namespace Symbios
                  * @param context Vulkan context
                  */
                 StagedBuffer(VkDeviceSize size, uint8_t *data);
-
-                /**
-                 * @brief Destroy the Buffer object
-                 *
-                 */
-                ~StagedBuffer();
 
             private:
             };

@@ -5,17 +5,19 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include "context.hpp"
-#include "buffer.hpp"
-#include "commandbuffer.hpp"
 #include "config.hpp"
-#include "stagedbuffer.hpp"
 
-using namespace Symbios::Core;
-using namespace Symbios::Graphics::Buffers;
-using namespace Symbios::Graphics::CommandBuffers;
+#include <graphics/buffers/buffer.hpp>
+#include <graphics/commandbuffers/commandbuffer.hpp>
+#include <graphics/utilities/utilities.hpp>
+#include <graphics/buffers/stagedbuffer.hpp>
 
-namespace Symbios
+using namespace Entropy::Global;
+using namespace Entropy::Graphics::Buffers;
+using namespace Entropy::Graphics::Utilities;
+using namespace Entropy::Graphics::CommandBuffers;
+
+namespace Entropy
 {
     namespace Graphics
     {
@@ -80,7 +82,7 @@ namespace Symbios
                 void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 
                 /**
-                 * @brief Create a Image object
+                 * @brief Create an Image object
                  *
                  * @param width
                  * @param height
@@ -93,11 +95,8 @@ namespace Symbios
                  */
                 void CreateImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory);
 
-                std::shared_ptr<Context> _context;
                 std::unique_ptr<CommandBuffer> _commandBuffer;
 
-                VkBuffer _stagingBuffer;
-                VkDeviceMemory _stagingBufferMemory;
                 VkImage _textureImage;
                 VkImageView _imageView;
                 VkDeviceMemory _textureImageMemory;

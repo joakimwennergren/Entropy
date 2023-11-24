@@ -1,13 +1,12 @@
 #include "synchronizer.hpp"
 
-using namespace Symbios::Graphics::Synchronization;
+using namespace Entropy::Graphics::Synchronization;
 
 Synchronizer::Synchronizer(unsigned int numObjects)
 {
     this->numObjects = numObjects;
 
-    // Get Vulkan ctx
-    _context = Global::VulkanContext::GetInstance()->GetVulkanContext();
+    VulkanContext *vkContext = VulkanContext::GetInstance();
 
     _imageSemaphores.resize(numObjects);
     _renderFinishedSemaphores.resize(numObjects);
@@ -22,9 +21,9 @@ Synchronizer::Synchronizer(unsigned int numObjects)
 
     for (size_t i = 0; i < numObjects; i++)
     {
-        if (vkCreateSemaphore(_context->GetLogicalDevice(), &semaphoreInfo, nullptr, &_imageSemaphores[i]) != VK_SUCCESS ||
-            vkCreateSemaphore(_context->GetLogicalDevice(), &semaphoreInfo, nullptr, &_renderFinishedSemaphores[i]) != VK_SUCCESS ||
-            vkCreateFence(_context->GetLogicalDevice(), &fenceInfo, nullptr, &_fences[i]) != VK_SUCCESS)
+        if (vkCreateSemaphore(vkContext->logicalDevice, &semaphoreInfo, nullptr, &_imageSemaphores[i]) != VK_SUCCESS ||
+            vkCreateSemaphore(vkContext->logicalDevice, &semaphoreInfo, nullptr, &_renderFinishedSemaphores[i]) != VK_SUCCESS ||
+            vkCreateFence(vkContext->logicalDevice, &fenceInfo, nullptr, &_fences[i]) != VK_SUCCESS)
         {
 
             PLOG_ERROR << "failed to create synchronization objects!";
@@ -35,12 +34,14 @@ Synchronizer::Synchronizer(unsigned int numObjects)
 
 Synchronizer::~Synchronizer()
 {
-    vkDeviceWaitIdle(_context->GetLogicalDevice());
+    VulkanContext *vkContext = VulkanContext::GetInstance();
+
+    vkDeviceWaitIdle(vkContext->logicalDevice);
 
     for (size_t i = 0; i < this->numObjects; i++)
     {
-        vkDestroySemaphore(_context->GetLogicalDevice(), _imageSemaphores[i], nullptr);
-        vkDestroySemaphore(_context->GetLogicalDevice(), _renderFinishedSemaphores[i], nullptr);
-        vkDestroyFence(_context->GetLogicalDevice(), _fences[i], nullptr);
+        vkDestroySemaphore(vkContext->logicalDevice, _imageSemaphores[i], nullptr);
+        vkDestroySemaphore(vkContext->logicalDevice, _renderFinishedSemaphores[i], nullptr);
+        vkDestroyFence(vkContext->logicalDevice, _fences[i], nullptr);
     }
 }

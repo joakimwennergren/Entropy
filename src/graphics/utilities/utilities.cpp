@@ -1,17 +1,14 @@
 #include "utilities.hpp"
 
-using namespace Symbios::Graphics::Utilities;
+using namespace Entropy::Graphics::Utilities;
 
 uint32_t Utility::FindMemoryTypeIndex(uint32_t typeFilter, VkMemoryPropertyFlags properties)
 {
-
-    // Store vulkan ctx
-    auto _context = Global::VulkanContext::GetInstance()->GetVulkanContext();
-
+    VulkanContext *vkContext = VulkanContext::GetInstance();
 
     // Get the physical device's memory properties
     VkPhysicalDeviceMemoryProperties memProperties;
-    vkGetPhysicalDeviceMemoryProperties(_context->GetPhysicalDevice(), &memProperties);
+    vkGetPhysicalDeviceMemoryProperties(vkContext->physicalDevice, &memProperties);
 
     // Iterate over memoryproperties and return index of matched property
     for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)

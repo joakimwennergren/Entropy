@@ -12,17 +12,16 @@
 #pragma once
 
 #include <vulkan/vulkan.hpp>
-#include "context.hpp"
-#include "vertex.hpp"
-#include "utilities.hpp"
-#include "commandbuffer.hpp"
-#include "vulkancontext.hpp"
+#include <graphics/data/vertex.hpp>
+#include <graphics/utilities/utilities.hpp>
+#include <graphics/commandbuffers/commandbuffer.hpp>
+#include <global/vulkancontext.hpp>
 
-using namespace Symbios::Core;
-using namespace Symbios::Graphics::Utilities;
-using namespace Symbios::Graphics::CommandBuffers;
+using namespace Entropy::Global;
+using namespace Entropy::Graphics::Utilities;
+using namespace Entropy::Graphics::CommandBuffers;
 
-namespace Symbios
+namespace Entropy
 {
     namespace Graphics
     {
@@ -36,25 +35,11 @@ namespace Symbios
             class Buffer
             {
             public:
-
-                /**
-                 * @brief Construct a new Buffer object
-                 *
-                 * @param context Vulkan context
-                 */
-                Buffer();
-
                 /**
                  * @brief Destroy the Buffer object
                  *
                  */
                 ~Buffer();
-
-                /**
-                 * @brief Create a Index Buffer object
-                 *
-                 */
-                void CreateIndexBufferUint16(std::vector<uint16_t> indices);
 
                 /**
                  * @brief Get the vulkan buffer
@@ -69,6 +54,8 @@ namespace Symbios
                  * @return VkDeviceMemory
                  */
                 inline VkDeviceMemory GetBufferMemory() { return this->_bufferMemory; };
+
+                void CreateIndexBufferUint16(std::vector<uint16_t> indices);
 
                 /**
                  * @brief Get the Mapped Memory object
@@ -87,7 +74,7 @@ namespace Symbios
                  * @param buffer
                  * @param bufferMemory
                  */
-                static void CreateBuffer(std::shared_ptr<Context> _context, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory);
+                static void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory);
 
                 /**
                  * @brief Copy One Buffer into another
@@ -97,9 +84,6 @@ namespace Symbios
                  * @param size srcBuffer size
                  */
                 void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-
-                // Vulkan context
-                std::shared_ptr<Context> _context;
 
                 // Vulkan buffer
                 VkBuffer _buffer;

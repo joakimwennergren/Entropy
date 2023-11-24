@@ -1,15 +1,13 @@
 #pragma once
 
 #include <vulkan/vulkan.hpp>
-#include "context.hpp"
-#include "commandbuffer.hpp"
-#include "vulkancontext.hpp"
+#include <global/vulkancontext.hpp>
+#include <graphics/commandbuffers/commandbuffer.hpp>
 
-using namespace Symbios::Core;
-using namespace Symbios::Graphics::CommandBuffers;
-using namespace Symbios::Global;
+using namespace Entropy::Graphics::CommandBuffers;
+using namespace Entropy::Global;
 
-namespace Symbios
+namespace Entropy
 {
     namespace Graphics
     {
@@ -61,7 +59,6 @@ namespace Symbios
 
             private:
                 void CreateFramebuffers();
-                std::shared_ptr<Context> _context;
                 VkRenderPass _renderPass;
                 std::vector<VkFramebuffer> _swapChainFramebuffers;
             };

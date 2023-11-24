@@ -1,13 +1,13 @@
 #pragma once
 
-#include "context.hpp"
-#include "buffer.hpp"
-#include "vertex.hpp"
+#include <global/vulkancontext.hpp>
+#include <graphics/buffers/buffer.hpp>
+#include <graphics/data/vertex.hpp>
 
-using namespace Symbios::Core;
-using namespace Symbios::Graphics::Buffers;
+using namespace Entropy::Global;
+using namespace Entropy::Graphics::Buffers;
 
-namespace Symbios
+namespace Entropy
 {
     namespace Graphics
     {
@@ -16,10 +16,7 @@ namespace Symbios
             class VertexBuffer : public Buffer
             {
             public:
-
                 VertexBuffer(std::vector<Vertex> vertices);
-
-                ~VertexBuffer();
 
             private:
             };

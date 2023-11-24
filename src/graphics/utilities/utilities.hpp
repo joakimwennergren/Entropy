@@ -11,12 +11,11 @@
 
 #pragma once
 
-#include "context.hpp"
-#include "vulkancontext.hpp"
+#include <global/vulkancontext.hpp>
 
-using namespace Symbios::Core;
+using namespace Entropy::Global;
 
-namespace Symbios
+namespace Entropy
 {
     namespace Graphics
     {

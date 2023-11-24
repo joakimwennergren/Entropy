@@ -10,12 +10,11 @@
  */
 #pragma once
 
-#include "context.hpp"
-#include "vulkancontext.hpp"
+#include <global/vulkancontext.hpp>
 
-using namespace Symbios::Core;
+using namespace Entropy::Global;
 
-namespace Symbios
+namespace Entropy
 {
     namespace Graphics
     {
@@ -34,12 +33,6 @@ namespace Symbios
                  * @param context
                  */
                 CommandBuffer();
-
-                /**
-                 * @brief Destroy the Command Buffer object
-                 *
-                 */
-                ~CommandBuffer();
 
                 /**
                  * @brief
@@ -74,7 +67,6 @@ namespace Symbios
                 VkCommandBuffer GetCommandBuffer() { return this->_commandBuffer; };
 
             private:
-                std::shared_ptr<Context> _context;
                 VkCommandBuffer _commandBuffer;
             };
         }

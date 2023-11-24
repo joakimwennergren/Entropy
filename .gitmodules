@@ -28,3 +28,6 @@
 [submodule "openssl"]
 	path = external/openssl
 	url = https://github.com/openssl/openssl.git
+[submodule "sol2"]
+	path = external/sol2
+	url = https://github.com/ThePhD/sol2.git

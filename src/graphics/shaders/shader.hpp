@@ -1,12 +1,9 @@
 #pragma once
 
 #include <fstream>
+#include <global/vulkancontext.hpp>
 
-#include "context.hpp"
-#include "vulkancontext.hpp"
-
-using namespace Symbios::Core;
-using namespace Symbios::Global;
+using namespace Entropy::Global;
 
 namespace Symbios
 {
@@ -83,7 +80,6 @@ namespace Symbios
                 VkShaderModule BuildShader(std::vector<char> code);
 
             private:
-                std::shared_ptr<Context> _context;
                 std::vector<char> _vertCode;
                 std::vector<char> _fragCode;
                 VkShaderModule _shaderModuleVert;

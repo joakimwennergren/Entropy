@@ -1,3 +1,4 @@
+/*
 #include "httpclient.hpp"
 
 using namespace Entropy::Network;
@@ -24,3 +25,4 @@ int HttpClient::Get(std::string url)
 	return 0;
 
 }
+*/

@@ -1,5 +1,5 @@
 #include "application.hpp"
-
+#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_WINDOWS)
 void Application::Run()
 {
     this->OnInit();
@@ -19,9 +19,8 @@ void Application::Run()
         screen.width = width;
         screen.height = height;
 
-        // Render stuff
+        this->_renderer->Render();
         this->OnRender(_deltaTime);
-        _renderer->Render();
 
         // Poll events
         glfwPollEvents();
@@ -33,7 +32,7 @@ void framebufferResizeCallback(GLFWwindow *window, int width, int height)
     auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
     if (app != nullptr)
     {
-        app->GetRenderer()->FrameBufferResized();
+        app->GetRenderer()->Render();
     }
 }
 
@@ -45,3 +44,4 @@ void cursorPositionCallback(GLFWwindow *window, double x, double y)
         // app->GetRenderer()->pane->position = glm::vec3((float)x, (float)y, 0.0);
     }
 }
+#endif

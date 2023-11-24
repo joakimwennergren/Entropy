@@ -1,13 +1,11 @@
 #pragma once
 
 #include <vector>
-#include "context.hpp"
-#include "vulkancontext.hpp"
+#include <global/vulkancontext.hpp>
 
-using namespace Symbios::Core;
-using namespace Symbios::Global;
+using namespace Entropy::Global;
 
-namespace Symbios
+namespace Entropy
 {
     namespace Graphics
     {
@@ -34,11 +32,7 @@ namespace Symbios
                 inline std::vector<VkFence> GetFences() { return this->_fences; };
 
             private:
-
                 unsigned int numObjects;
-
-                // Vulkan Ctx
-                std::shared_ptr<Context> _context;
 
                 // Semaphores
                 std::vector<VkSemaphore> _imageSemaphores;

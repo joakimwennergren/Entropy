@@ -6,17 +6,20 @@
 */
 #pragma once
 
+#include <thread>
+#include "stb_image.h"
+
+#include <config.hpp>
+
 #include <plog/Log.h>
 #include <plog/Init.h>
 #include <plog/Formatters/TxtFormatter.h>
 #include <plog/Appenders/ColorConsoleAppender.h>
 #include "plog/Initializers/RollingFileInitializer.h"
 
-#include "config.hpp"
-#include "context.hpp"
-#include "renderer.hpp"
+#include <graphics/renderers/renderer.hpp>
+#include <timing/timer.hpp>
 #include "screen.hpp"
-#include "timer.hpp"
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
 
@@ -24,7 +27,8 @@
 
 // @todo remove symbios namespace
 using namespace Symbios;
-using namespace Symbios::Graphics::Renderers;
+using namespace Entropy::Global;
+using namespace Entropy::Graphics::Renderers;
 using namespace Entropy::Timing;
 
 void framebufferResizeCallback(GLFWwindow *window, int width, int height);
@@ -51,7 +55,7 @@ public:
 
         // Create the window
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        _window = glfwCreateWindow(640, 340, "Symbios dev application", NULL, NULL);
+        _window = glfwCreateWindow(640, 340, "Entropy application", NULL, NULL);
 
         if (!_window)
         {
@@ -65,20 +69,24 @@ public:
         glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
         glfwSetCursorPosCallback(_window, cursorPositionCallback);
 
+        // Get initial window framebuffer size
+        int width, height;
+        glfwGetFramebufferSize(_window, &width, &height);
+        screen.width = width;
+        screen.height = height;
+
+        VkExtent2D frame = {
+            .width = (uint32_t)width,
+            .height = (uint32_t)height};
+
         // Initialize Vulkan context
-        Global::VulkanContext::GetInstance()->InitializeContext(_window);
+        VulkanContext::GetInstance()->Initialize(frame, _window);
 
         // Create the renderer
         _renderer = std::make_shared<Renderer>();
 
         // Create 1ms Timer
         _timer = new Timer(1.0f);
-
-        // Get initial window framebuffer size
-        int width, height;
-        glfwGetFramebufferSize(_window, &width, &height);
-        screen.width = width;
-        screen.height = height;
     }
 
     ~Application()
@@ -112,11 +120,10 @@ public:
     // @todo look over if this should be protected..
 protected:
     Screen screen;
+    GLFWwindow *_window;
 
 private:
-    GLFWwindow *_window;
     std::shared_ptr<Renderer> _renderer;
-    std::shared_ptr<Context> _context;
     Timer *_timer;
     float _lastTick = 0.0f;
     float _deltaTime = 0.0f;
