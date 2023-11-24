@@ -31,3 +31,6 @@
 [submodule "sol2"]
 	path = external/sol2
 	url = https://github.com/ThePhD/sol2.git
+[submodule "eventpp"]
+	path = external/eventpp
+	url = https://github.com/wqking/eventpp.git
