@@ -1,5 +1,7 @@
 # Entropy
 
+![example workflow](https://github.com/joakimwennergren/Entropy-Engine/blob/develop/.github/workflows/cmake-multi-platform.yml/badge.svg)
+
 ## What is this?
 
 Entropy..
