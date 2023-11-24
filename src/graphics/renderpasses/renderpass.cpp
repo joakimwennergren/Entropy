@@ -1,6 +1,6 @@
 #include "renderpass.hpp"
 
-using namespace Symbios::Graphics::RenderPasses;
+using namespace Entropy::Graphics::RenderPasses;
 
 RenderPass::RenderPass()
 {

@@ -19,3 +19,7 @@ endif()
 if(UNIX AND NOT APPLE)
     set(CMAKE_PLATFORM "BUILD_FOR_LINUX")
 endif()
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
+    set(CMAKE_PLATFORM "BUILD_FOR_ANDROID")
+endif()

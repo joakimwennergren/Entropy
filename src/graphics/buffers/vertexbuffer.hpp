@@ -1,15 +1,13 @@
 #pragma once
 
-#include <contexts/context.hpp>
 #include <global/vulkancontext.hpp>
 #include <graphics/buffers/buffer.hpp>
 #include <graphics/data/vertex.hpp>
 
-using namespace Symbios::Core;
 using namespace Entropy::Global;
-using namespace Symbios::Graphics::Buffers;
+using namespace Entropy::Graphics::Buffers;
 
-namespace Symbios
+namespace Entropy
 {
     namespace Graphics
     {

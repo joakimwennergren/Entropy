@@ -1,13 +1,11 @@
 #pragma once
 
 #include <vector>
-#include <contexts/context.hpp>
 #include <global/vulkancontext.hpp>
 
-using namespace Symbios::Core;
 using namespace Entropy::Global;
 
-namespace Symbios
+namespace Entropy
 {
     namespace Graphics
     {
@@ -35,9 +33,6 @@ namespace Symbios
 
             private:
                 unsigned int numObjects;
-
-                // Vulkan Ctx
-                std::shared_ptr<Context> _context;
 
                 // Semaphores
                 std::vector<VkSemaphore> _imageSemaphores;

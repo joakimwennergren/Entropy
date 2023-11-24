@@ -4,7 +4,6 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
-#include <contexts/context.hpp>
 #include <graphics/renderpasses/renderpass.hpp>
 #include <graphics/pipelines/pipeline.hpp>
 #include <graphics/data/vertex.hpp>
@@ -17,15 +16,14 @@
 #include <global/scenegraph.hpp>
 #include <renderables/renderable.hpp>
 
-using namespace Symbios::Core;
 using namespace Entropy::Global;
-using namespace Symbios::Renderables;
-using namespace Symbios::Graphics::Buffers;
-using namespace Symbios::Graphics::Textures;
-using namespace Symbios::Graphics::Pipelines;
-using namespace Symbios::Graphics::RenderPasses;
-using namespace Symbios::Graphics::CommandBuffers;
-using namespace Symbios::Graphics::Synchronization;
+using namespace Entropy::Renderables;
+using namespace Entropy::Graphics::Buffers;
+using namespace Entropy::Graphics::Textures;
+using namespace Entropy::Graphics::Pipelines;
+using namespace Entropy::Graphics::RenderPasses;
+using namespace Entropy::Graphics::CommandBuffers;
+using namespace Entropy::Graphics::Synchronization;
 
 namespace Entropy
 {
@@ -52,7 +50,6 @@ namespace Entropy
                 void SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex);
 
             private:
-                std::shared_ptr<Context> _context;
                 std::shared_ptr<RenderPass> _renderPass;
                 std::vector<std::shared_ptr<CommandBuffer>> _commandBuffers;
 
@@ -65,7 +62,7 @@ namespace Entropy
                 std::vector<VkBuffer> rawUniformBuffers;
                 std::vector<VkBuffer> uniformBuffersInstances;
 
-                std::vector<UniformBuffer *> _uniformBuffers;
+                std::vector<Entopy::Graphics::Buffers::UniformBuffer *> _uniformBuffers;
                 std::unique_ptr<Synchronizer> _synchronizer;
 
                 unsigned int _currentFrame = 0;

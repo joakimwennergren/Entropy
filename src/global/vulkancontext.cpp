@@ -28,7 +28,7 @@ VkImageView VulkanContext::CreateImageView(VkImage image, VkFormat format)
 
     return imageView;
 }
-
+#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_WINDOWS)
 void VulkanContext::Initialize(VkExtent2D frame, GLFWwindow *window)
 {
     CreateInstance();
@@ -42,6 +42,21 @@ void VulkanContext::Initialize(VkExtent2D frame, GLFWwindow *window)
     CreateDesciptorsetLayout();
     CreateDescriptorSets();
 }
+#else
+void VulkanContext::Initialize(VkExtent2D frame)
+{
+    CreateInstance();
+    // CreateSurfaceMacOS(window);
+    PickPhysicalDevice();
+    CreateLogicalDevice();
+    CreateSwapChain(frame);
+    CreateImageViews();
+    CreateCommandPool();
+    CreateDescriptorPool();
+    CreateDesciptorsetLayout();
+    CreateDescriptorSets();
+}
+#endif
 
 void VulkanContext::CreateImageViews()
 {

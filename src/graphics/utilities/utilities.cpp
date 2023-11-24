@@ -1,6 +1,6 @@
 #include "utilities.hpp"
 
-using namespace Symbios::Graphics::Utilities;
+using namespace Entropy::Graphics::Utilities;
 
 uint32_t Utility::FindMemoryTypeIndex(uint32_t typeFilter, VkMemoryPropertyFlags properties)
 {

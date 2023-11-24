@@ -2,13 +2,12 @@
 
 #include <graphics/data/vertex.hpp>
 #include <graphics/textures/texture.hpp>
-#include <contexts/context.hpp>
 #include <graphics/buffers/vertexbuffer.hpp>
 #include <renderables/renderable.hpp>
 
-using namespace Symbios::Graphics::Textures;
+using namespace Entropy::Graphics::Textures;
 using namespace Entropy::Global;
-using namespace Symbios::Renderables;
+using namespace Entropy::Renderables;
 
 namespace Symbios
 {
@@ -41,9 +40,6 @@ namespace Symbios
                 }
 
                 void SetPosition(glm::vec3 newPosition) { this->position = newPosition; };
-
-            private:
-                std::shared_ptr<Context> _context;
             };
         }
     }

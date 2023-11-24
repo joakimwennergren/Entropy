@@ -1,6 +1,6 @@
 #include "pipeline.hpp"
 
-using namespace Symbios::Graphics::Pipelines;
+using namespace Entropy::Graphics::Pipelines;
 
 Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass)
 {
@@ -8,9 +8,9 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass)
 
     // Create Shader and store it
 #ifdef BUILD_FOR_IOS
-    _shader = std::make_unique<Shader>(Filesystem::GetProjectBasePath() + "/vert.spv", Filesystem::GetProjectBasePath() + "/frag.spv");
+    _shader = std::make_unique<Shader>(GetProjectBasePath() + "/vert.spv", GetProjectBasePath() + "/frag.spv");
 #else
-    _shader = std::make_unique<Shader>(Filesystem::GetShadersDir() + "vert.spv", Filesystem::GetShadersDir() + "/frag.spv");
+    _shader = std::make_unique<Shader>(GetShadersDir() + "vert.spv", GetShadersDir() + "/frag.spv");
 #endif
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};

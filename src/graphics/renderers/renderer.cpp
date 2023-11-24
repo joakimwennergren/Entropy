@@ -22,7 +22,7 @@ Renderer::Renderer()
     // Create buffers @todo temp!!!
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
-        _uniformBuffers.push_back(new UniformBuffer(sizeof(UniformBufferObject)));
+        _uniformBuffers.push_back(new Entopy::Graphics::Buffers::UniformBuffer(sizeof(UniformBufferObject)));
     }
 
     for (unsigned int i = 0; i < _uniformBuffers.size(); i++)

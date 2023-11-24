@@ -1,5 +1,5 @@
 #include "application.hpp"
-
+#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_WINDOWS)
 void Application::Run()
 {
     this->OnInit();
@@ -44,3 +44,4 @@ void cursorPositionCallback(GLFWwindow *window, double x, double y)
         // app->GetRenderer()->pane->position = glm::vec3((float)x, (float)y, 0.0);
     }
 }
+#endif

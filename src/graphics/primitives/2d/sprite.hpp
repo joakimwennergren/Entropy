@@ -2,16 +2,15 @@
 
 #include <graphics/data/vertex.hpp>
 #include <graphics/textures/texture.hpp>
-#include <contexts/context.hpp>
 #include <graphics/buffers/vertexbuffer.hpp>
 #include <renderables/renderable.hpp>
 #include <global/scenegraph.hpp>
 #include <filesystem/filesystem.hpp>
 #include <global/vulkancontext.hpp>
 
-using namespace Symbios::Graphics::Textures;
+using namespace Entropy::Graphics::Textures;
 using namespace Entropy::Global;
-using namespace Symbios::Renderables;
+using namespace Entropy::Renderables;
 
 namespace Symbios
 {

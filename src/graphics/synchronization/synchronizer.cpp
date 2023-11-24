@@ -1,6 +1,6 @@
 #include "synchronizer.hpp"
 
-using namespace Symbios::Graphics::Synchronization;
+using namespace Entropy::Graphics::Synchronization;
 
 Synchronizer::Synchronizer(unsigned int numObjects)
 {

@@ -12,18 +12,16 @@
 #pragma once
 
 #include <vulkan/vulkan.hpp>
-#include <contexts/context.hpp>
 #include <graphics/data/vertex.hpp>
 #include <graphics/utilities/utilities.hpp>
 #include <graphics/commandbuffers/commandbuffer.hpp>
 #include <global/vulkancontext.hpp>
 
-using namespace Symbios::Core;
 using namespace Entropy::Global;
-using namespace Symbios::Graphics::Utilities;
-using namespace Symbios::Graphics::CommandBuffers;
+using namespace Entropy::Graphics::Utilities;
+using namespace Entropy::Graphics::CommandBuffers;
 
-namespace Symbios
+namespace Entropy
 {
     namespace Graphics
     {

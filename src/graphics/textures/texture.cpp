@@ -4,7 +4,7 @@
 
 #include "texture.hpp"
 
-using namespace Symbios::Graphics::Textures;
+using namespace Entropy::Graphics::Textures;
 
 Texture::Texture()
 {

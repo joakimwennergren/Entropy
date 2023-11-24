@@ -8,10 +8,10 @@
 #include <string>
 #include <glm/glm.hpp>
 
-using namespace Symbios::Graphics::Textures;
-using namespace Symbios::Graphics::Buffers;
+using namespace Entropy::Graphics::Textures;
+using namespace Entropy::Graphics::Buffers;
 
-namespace Symbios
+namespace Entropy
 {
     namespace Renderables
     {
@@ -125,7 +125,7 @@ namespace Symbios
 
                 VkDescriptorImageInfo imageInfo{};
                 imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                imageInfo.imageView = texture->hasTexture ? texture->GetImageView() : nullptr;
+                imageInfo.imageView = texture->GetImageView();
                 imageInfo.sampler = _textureSampler;
 
                 std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
@@ -168,7 +168,7 @@ namespace Symbios
             int textureId = -1;
 
             Texture *texture = nullptr;
-            std::unique_ptr<VertexBuffer> vertexBuffer;
+            std::unique_ptr<Entropy::Graphics::Buffers::VertexBuffer> vertexBuffer;
             std::unique_ptr<Buffer> indexBuffer;
 
             // Testing
@@ -193,7 +193,6 @@ namespace Symbios
 
             std::vector<uint16_t> _indices;
             std::vector<Vertex> _vertices;
-            std::shared_ptr<Context> _context;
         };
     }
 }

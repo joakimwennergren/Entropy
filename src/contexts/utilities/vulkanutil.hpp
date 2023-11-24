@@ -26,6 +26,10 @@
 #include <MetalKit/MetalKit.hpp>
 #endif
 
+#ifdef BUILD_FOR_ANDROID
+#include <vulkan/vulkan.hpp>
+#endif
+
 #ifdef BUILD_FOR_MACOS
 #include <vulkan/vulkan.hpp>
 #include <GLFW/glfw3.h>

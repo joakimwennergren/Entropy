@@ -1,6 +1,6 @@
 #include "buffer.hpp"
 
-using namespace Symbios::Graphics::Buffers;
+using namespace Entropy::Graphics::Buffers;
 
 Buffer::~Buffer()
 {

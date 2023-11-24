@@ -5,8 +5,7 @@
 
 #include <renderables/renderable.hpp>
 
-using namespace Symbios::Core;
-using namespace Symbios::Renderables;
+using namespace Entropy::Renderables;
 
 namespace Entropy
 {

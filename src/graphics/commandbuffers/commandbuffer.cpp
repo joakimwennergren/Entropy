@@ -1,6 +1,6 @@
 #include "commandbuffer.hpp"
 
-using namespace Symbios::Graphics::CommandBuffers;
+using namespace Entropy::Graphics::CommandBuffers;
 
 CommandBuffer::CommandBuffer()
 {

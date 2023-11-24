@@ -15,7 +15,7 @@
 #include <renderables/renderable.hpp>
 #include <global/scenegraph.hpp>
 
-using namespace Symbios::Renderables;
+using namespace Entropy::Renderables;
 using namespace Symbios::Graphics::Primitives;
 using namespace Symbios;
 

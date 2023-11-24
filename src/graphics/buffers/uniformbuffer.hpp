@@ -11,15 +11,13 @@
 
 #pragma once
 
-#include <contexts/context.hpp>
 #include <graphics/buffers/buffer.hpp>
 #include <graphics/data/vertex.hpp>
 
-using namespace Symbios::Core;
 using namespace Entropy::Global;
-using namespace Symbios::Graphics::Buffers;
+using namespace Entropy::Graphics::Buffers;
 
-namespace Symbios
+namespace Entopy
 {
     namespace Graphics
     {
@@ -36,21 +34,9 @@ namespace Symbios
                 /**
                  * @brief Construct a new Buffer object
                  *
-                 */
-                UniformBuffer() = default;
-
-                /**
-                 * @brief Construct a new Buffer object
-                 *
                  * @param context Vulkan context
                  */
                 UniformBuffer(VkDeviceSize bufferSize);
-
-                /**
-                 * @brief Destroy the Buffer object
-                 *
-                 */
-                ~UniformBuffer();
 
             private:
             };

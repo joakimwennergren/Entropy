@@ -4,6 +4,10 @@
 #include <string>
 #include <mutex>
 
+#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_WINDOWS)
+#include <GLFW/glfw3.h>
+#endif
+
 #include <contexts/utilities/vulkanutil.hpp>
 
 using namespace Entropy::Contexts::VulkanUtilities;
@@ -65,8 +69,6 @@ namespace Entropy
             VulkanContext(){};
             ~VulkanContext()
             {
-                // vkDestroyImage(_device, _textureImage, nullptr);
-
                 vkDestroyDescriptorPool(logicalDevice, descriptorPool, nullptr);
                 vkDestroyDescriptorSetLayout(logicalDevice, descriptorSetLayout, nullptr);
 
@@ -106,7 +108,12 @@ namespace Entropy
 
             static VulkanContext *GetInstance();
             void RecreateSwapChain(VkExtent2D frame);
+#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_WINDOWS)
             void Initialize(VkExtent2D frame, GLFWwindow *window);
+#else
+            void Initialize(VkExtent2D frame);
+#endif
+
             static VkImageView CreateImageView(VkImage image, VkFormat format);
 
             // Raw vulkan device objects

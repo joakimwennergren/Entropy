@@ -20,8 +20,6 @@ Sprite::Sprite()
     indexBuffer = std::make_unique<Buffer>();
 
     indexBuffer->CreateIndexBufferUint16(_indices);
-
-    _descriptorSetLayout = nullptr;
 }
 
 Sprite::Sprite(FT_Bitmap bitmap)

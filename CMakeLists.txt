@@ -24,10 +24,10 @@ include(cmake/external_dependencies.cmake)
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
 # Create the library
-add_library(Entropy STATIC ${SOURCES})
+add_library(Entropy SHARED ${SOURCES})
 
 # Compiler flags
-target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17 -Wall -Wfloat-conversion -Wunsequenced)
+target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17 -Wall -Wfloat-conversion)
 
 # Include headers
 target_include_directories(${PROJECT_NAME} 
@@ -36,6 +36,7 @@ target_include_directories(${PROJECT_NAME}
         ${PROJECT_SOURCE_DIR}/src
         ${Vulkan_INCLUDE_DIRS}
         external 
+        external/vulkan-headers
 )
 
 # Link dependencies
@@ -43,18 +44,16 @@ target_link_libraries(${PROJECT_NAME}
     sol2
     plog
     glm
-    asio::asio
-    libcurl_shared #libcurl_static 
+    #asio::asio
+    #libcurl_shared #libcurl_static 
     freetype
 )
 
 # Link dependencies for desktop
-if(NOT XCODE)
-    target_link_libraries(${PROJECT_NAME}
-        ${Vulkan_LIBRARIES}
-        glfw
-    )
-endif()
+target_link_libraries(${PROJECT_NAME}
+    ${Vulkan_LIBRARIES}
+    glfw
+)
 
 # Build config file
 configure_file(config.h.in ${PROJECT_SOURCE_DIR}/include/config.hpp @ONLY)

@@ -7,20 +7,17 @@
 
 #include "config.hpp"
 
-#include <contexts/context.hpp>
 #include <graphics/buffers/buffer.hpp>
 #include <graphics/commandbuffers/commandbuffer.hpp>
 #include <graphics/utilities/utilities.hpp>
-
 #include <graphics/buffers/stagedbuffer.hpp>
 
-using namespace Symbios::Core;
 using namespace Entropy::Global;
-using namespace Symbios::Graphics::Buffers;
-using namespace Symbios::Graphics::Utilities;
-using namespace Symbios::Graphics::CommandBuffers;
+using namespace Entropy::Graphics::Buffers;
+using namespace Entropy::Graphics::Utilities;
+using namespace Entropy::Graphics::CommandBuffers;
 
-namespace Symbios
+namespace Entropy
 {
     namespace Graphics
     {
@@ -98,7 +95,6 @@ namespace Symbios
                  */
                 void CreateImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory);
 
-                std::shared_ptr<Context> _context;
                 std::unique_ptr<CommandBuffer> _commandBuffer;
 
                 VkImage _textureImage;

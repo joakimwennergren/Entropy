@@ -7,28 +7,27 @@ add_subdirectory(external/plog)
 add_subdirectory(external/glm)
 
 # Networking
-add_subdirectory(external/asio.cmake)
+#add_subdirectory(external/asio.cmake)
 
 # HTTP 
-set(BUILD_CURL_EXE OFF)
-set(CURL_STATICLIB ON)
-set(SSL_ENABLED ON)
+#set(BUILD_CURL_EXE OFF)
+#set(CURL_STATICLIB ON)
+#set(SSL_ENABLED ON)
 
-if(WIN32)
-    set(USE_WINDOWS_SSPI ON)
-    set(USE_SCHANNEL ON)
-endif(WIN32)
+#if(WIN32)
+#    set(USE_WINDOWS_SSPI ON)
+#   set(USE_SCHANNEL ON)
+#endif(WIN32)
 
-add_subdirectory(external/curl)
+#add_subdirectory(external/curl)
 
 # Graphics API
-if(NOT XCODE)
-    # Vulkan
-    find_package(Vulkan REQUIRED)
 
-    # Windowing on desktop
-    add_subdirectory(external/glfw)
-endif()
+# Vulkan
+find_package(Vulkan REQUIRED)
+
+# Windowing on desktop
+add_subdirectory(external/glfw)
 
 # Lua SOL 2
 add_subdirectory(external/sol2)

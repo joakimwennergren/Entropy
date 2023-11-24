@@ -1,6 +1,6 @@
 #include "stagedbuffer.hpp"
 
-using namespace Symbios::Graphics::Buffers;
+using namespace Entropy::Graphics::Buffers;
 
 StagedBuffer::StagedBuffer(VkDeviceSize size, uint8_t *dataIn)
 {

@@ -1,6 +1,6 @@
 #include "vertexbuffer.hpp"
 
-using namespace Symbios::Graphics::Buffers;
+using namespace Entropy::Graphics::Buffers;
 
 VertexBuffer::VertexBuffer(std::vector<Vertex> vertices)
 {

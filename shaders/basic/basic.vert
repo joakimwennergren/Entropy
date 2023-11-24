@@ -12,12 +12,10 @@ layout(location=1)in vec3 inColor;
 layout(location=2)in vec2 inTexCoord;
 
 // Push Constant (per instance)
-layout(push_constant) uniform constants
-{
+layout(push_constant) uniform constants {
     mat4 modelMatrix;
     vec4 color;
     int textureId;
-    
 } pc;
 
 // Attributes to fragment shader
@@ -26,8 +24,7 @@ layout(location=1)out vec2 fragTexCoord;
 layout(location=2)out int texId;
 layout(location=3)out vec4 color;
 
-void main()
-{
+void main() {
     // @todo refactor this..
     fragColor=inColor;
     fragTexCoord=inTexCoord;

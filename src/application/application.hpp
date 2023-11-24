@@ -17,7 +17,6 @@
 #include <plog/Appenders/ColorConsoleAppender.h>
 #include "plog/Initializers/RollingFileInitializer.h"
 
-#include <contexts/context.hpp>
 #include <graphics/renderers/renderer.hpp>
 #include <timing/timer.hpp>
 #include "screen.hpp"
@@ -125,7 +124,6 @@ protected:
 
 private:
     std::shared_ptr<Renderer> _renderer;
-    std::shared_ptr<Context> _context;
     Timer *_timer;
     float _lastTick = 0.0f;
     float _deltaTime = 0.0f;
