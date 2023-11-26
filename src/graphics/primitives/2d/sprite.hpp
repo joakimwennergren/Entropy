@@ -50,6 +50,7 @@ namespace Symbios
                     this->rotationX = r;
                     this->orientation = orientation;
                 };
+
                 inline void SetColor(float r, float g, float b, float a) { this->color = glm::vec4(r, g, b, a); };
 
                 std::vector<Vertex> _vertices = {

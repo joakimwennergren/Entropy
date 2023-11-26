@@ -21,7 +21,7 @@ include(cmake/platform.cmake)
 include(cmake/external_dependencies.cmake)
 
 # List source files
-file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp )
 
 # Create the library
 add_library(Entropy SHARED ${SOURCES})
@@ -37,16 +37,19 @@ target_include_directories(${PROJECT_NAME}
         ${Vulkan_INCLUDE_DIRS}
         external 
         external/vulkan-headers
+        external/lua-5.4.6/src
 )
 
 # Link common dependencies
 target_link_libraries(${PROJECT_NAME}
     sol2
+    lua
     plog
     glm
     #asio::asio
     #libcurl_shared #libcurl_static 
     freetype
+    eventpp
 )
 
 # Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk)
