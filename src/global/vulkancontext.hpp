@@ -3,7 +3,6 @@
 #include <string>
 #include <mutex>
 #include <iostream>
-#include <android/log.h>
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_WINDOWS)
 #include <GLFW/glfw3.h>
