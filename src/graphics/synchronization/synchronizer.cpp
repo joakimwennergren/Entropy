@@ -25,8 +25,6 @@ Synchronizer::Synchronizer(unsigned int numObjects)
             vkCreateSemaphore(vkContext->logicalDevice, &semaphoreInfo, nullptr, &_renderFinishedSemaphores[i]) != VK_SUCCESS ||
             vkCreateFence(vkContext->logicalDevice, &fenceInfo, nullptr, &_fences[i]) != VK_SUCCESS)
         {
-
-            PLOG_ERROR << "failed to create synchronization objects!";
             exit(EXIT_FAILURE);
         }
     }

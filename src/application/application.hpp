@@ -11,12 +11,6 @@
 
 #include <config.hpp>
 
-#include <plog/Log.h>
-#include <plog/Init.h>
-#include <plog/Formatters/TxtFormatter.h>
-#include <plog/Appenders/ColorConsoleAppender.h>
-#include "plog/Initializers/RollingFileInitializer.h"
-
 #include <graphics/renderers/renderer.hpp>
 #include <timing/timer.hpp>
 #include "screen.hpp"
@@ -37,85 +31,20 @@ void cursorPositionCallback(GLFWwindow *window, double x, double y);
 class Application
 {
 public:
-    Application()
-    {
-        // Initialize logger
-        static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
-        plog::init(plog::verbose, &consoleAppender);
+    Application();
+    ~Application();
 
-        // Seed random
-        srand(static_cast<unsigned>(time(0)));
+    virtual void OnInit() = 0;
 
-        // Initialize GLFW
-        if (!glfwInit())
-        {
-            PLOG_FATAL << "Could not initialize GLFW!";
-            exit(EXIT_FAILURE);
-        }
+    virtual void OnRender(float deltaTime) = 0;
 
-        // Create the window
-        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        _window = glfwCreateWindow(640, 340, "Entropy application", NULL, NULL);
-
-        if (!_window)
-        {
-            PLOG_FATAL << "Could not create the window!";
-            glfwTerminate();
-            exit(EXIT_FAILURE);
-        }
-
-        // Bind window callbacks
-        glfwSetWindowUserPointer(_window, this);
-        glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
-        glfwSetCursorPosCallback(_window, cursorPositionCallback);
-
-        // Get initial window framebuffer size
-        int width, height;
-        glfwGetFramebufferSize(_window, &width, &height);
-        screen.width = width;
-        screen.height = height;
-
-        VkExtent2D frame = {
-            .width = (uint32_t)width,
-            .height = (uint32_t)height};
-
-        // Initialize Vulkan context
-        VulkanContext::GetInstance()->Initialize(frame, _window);
-
-        // Create the renderer
-        _renderer = std::make_shared<Renderer>();
-
-        // Create 1ms Timer
-        _timer = new Timer(1.0f);
-    }
-
-    ~Application()
-    {
-        delete _timer;
-        glfwDestroyWindow(_window);
-        glfwTerminate();
-    }
+    void Run();
 
     // @todo make this more generic
     inline int GetScreenWidth() { return this->screen.width; };
 
-    /**
-     * On application initialization
-     */
-    virtual void OnInit() = 0;
-
-    /**
-     * On each render loop
-     */
-    virtual void OnRender(float deltaTime) = 0;
-
-    /**
-     * Start the application
-     */
-    void Run();
-
     // @todo this shouldn't be public
-    std::shared_ptr<Renderer> GetRenderer() { return this->_renderer; };
+    inline std::shared_ptr<Renderer> GetRenderer() { return this->_renderer; };
 
     // @todo look over if this should be protected..
 protected:
@@ -124,6 +53,46 @@ protected:
 
 private:
     std::shared_ptr<Renderer> _renderer;
+    Timer *_timer;
+    float _lastTick = 0.0f;
+    float _deltaTime = 0.0f;
+};
+
+#endif
+
+#if defined(BUILD_FOR_ANDROID)
+
+// @todo remove symbios namespace
+using namespace Symbios;
+using namespace Entropy::Global;
+using namespace Entropy::Graphics::Renderers;
+using namespace Entropy::Timing;
+
+class Application
+{
+public:
+    Application();
+    ~Application();
+
+    virtual void OnInit() = 0;
+
+    virtual void OnRender(float deltaTime) = 0;
+
+    void Run();
+
+    // @todo make this more generic
+    inline int GetScreenWidth() { return this->screen.width; };
+
+    // @todo this shouldn't be public
+    inline std::shared_ptr<Renderer> GetRenderer() { return this->_renderer; };
+
+    std::shared_ptr<Renderer> _renderer;
+
+    // @todo look over if this should be protected..
+protected:
+    Screen screen;
+
+private:
     Timer *_timer;
     float _lastTick = 0.0f;
     float _deltaTime = 0.0f;
@@ -240,8 +209,6 @@ public:
      */
     Application()
     {
-        static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
-        plog::init(plog::verbose, &consoleAppender);
 
         this->_autoreleasePool = NS::AutoreleasePool::alloc()->init();
     }

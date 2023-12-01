@@ -33,7 +33,9 @@ namespace UI
 	class Application : public NS::Referencing< Application >
 	{
 		public:
-            // A reference to the shared application instance.
+        Application() : Application() {}
+
+        // A reference to the shared application instance.
             // Returns null before UI::ApplicationMain is called
 			static Application* sharedApplication();
 

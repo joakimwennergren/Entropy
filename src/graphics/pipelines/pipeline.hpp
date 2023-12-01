@@ -32,7 +32,7 @@ namespace Entropy
                  * @param context
                  * @param renderPass
                  */
-                Pipeline(std::shared_ptr<RenderPass> renderPass);
+                Pipeline(std::shared_ptr<RenderPass> renderPass, char *vertContent, uint32_t vertSize, char *fragContent, uint32_t fragSize);
 
                 /**
                  * @brief Destroy the Pipeline object

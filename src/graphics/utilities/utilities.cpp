@@ -20,7 +20,6 @@ uint32_t Utility::FindMemoryTypeIndex(uint32_t typeFilter, VkMemoryPropertyFlags
     }
 
     // If none find print error and exit
-    PLOG_ERROR << "Failed to find memory type index!";
     exit(EXIT_FAILURE);
 }
 

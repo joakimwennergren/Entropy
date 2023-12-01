@@ -14,7 +14,6 @@ CommandBuffer::CommandBuffer()
 
     if (vkAllocateCommandBuffers(vkContext->logicalDevice, &allocInfo, &_commandBuffer) != VK_SUCCESS)
     {
-        PLOG_ERROR << "Failed to allocate command buffer!";
         exit(EXIT_FAILURE);
     }
 }
@@ -37,7 +36,6 @@ void CommandBuffer::Record()
 
     if (vkBeginCommandBuffer(_commandBuffer, &beginInfo) != VK_SUCCESS)
     {
-        PLOG_ERROR << "Failed to begin recording command buffer!";
         exit(EXIT_FAILURE);
     }
 }
@@ -46,7 +44,6 @@ void CommandBuffer::EndRecording()
 {
     if (vkEndCommandBuffer(_commandBuffer) != VK_SUCCESS)
     {
-        PLOG_ERROR << "Failed to end recording command buffer!";
         exit(EXIT_FAILURE);
     }
 }
@@ -57,7 +54,6 @@ void CommandBuffer::EndRecordingOnce()
 
     if (vkEndCommandBuffer(_commandBuffer) != VK_SUCCESS)
     {
-        PLOG_ERROR << "Failed to end recording command buffer!";
         exit(EXIT_FAILURE);
     }
 

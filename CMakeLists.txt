@@ -12,8 +12,6 @@ cmake_minimum_required(VERSION 3.6)
 # Declare project
 project(Entropy)
 
-set(PROJECT_BASEPATH ${PROJECT_SOURCE_DIR})
-
 # Detect platform
 include(cmake/platform.cmake)
 
@@ -21,10 +19,10 @@ include(cmake/platform.cmake)
 include(cmake/external_dependencies.cmake)
 
 # List source files
-file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp )
 
 # Create the library
-add_library(Entropy SHARED ${SOURCES})
+add_library(Entropy STATIC ${SOURCES})
 
 # Compiler flags
 target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17 -Wall -Wfloat-conversion)
@@ -37,22 +35,24 @@ target_include_directories(${PROJECT_NAME}
         ${Vulkan_INCLUDE_DIRS}
         external 
         external/vulkan-headers
+        external/lua-5.4.6/src
 )
 
 # Link common dependencies
 target_link_libraries(${PROJECT_NAME}
     sol2
-    plog
+    lua
     glm
     #asio::asio
     #libcurl_shared #libcurl_static 
     freetype
+    eventpp
 )
 
 # Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk)
 target_link_libraries(${PROJECT_NAME}
     ${Vulkan_LIBRARIES}
-    glfw
+    #glfw
 )
 
 # Build config file

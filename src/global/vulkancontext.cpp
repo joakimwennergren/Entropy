@@ -1,5 +1,9 @@
 #include "vulkancontext.hpp"
 
+#if defined(BUILD_FOR_ANDROID)
+#include <vulkan/vulkan_android.h>
+#endif
+
 using namespace Entropy::Global;
 
 VulkanContext *VulkanContext::pinstance_{nullptr};
@@ -28,6 +32,7 @@ VkImageView VulkanContext::CreateImageView(VkImage image, VkFormat format)
 
     return imageView;
 }
+
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_WINDOWS)
 void VulkanContext::Initialize(VkExtent2D frame, GLFWwindow *window)
 {
@@ -42,11 +47,18 @@ void VulkanContext::Initialize(VkExtent2D frame, GLFWwindow *window)
     CreateDesciptorsetLayout();
     CreateDescriptorSets();
 }
-#else
-void VulkanContext::Initialize(VkExtent2D frame)
+#endif
+
+#if defined(BUILD_FOR_ANDROID)
+
+VkInstance VulkanContext::Initialize(VkInstance instance)
 {
-    CreateInstance();
-    // CreateSurfaceMacOS(window);
+    _instance = instance;
+    // CreateInstance();
+    VkExtent2D frame = {
+        .width = 500,
+        .height = 1000,
+    };
     PickPhysicalDevice();
     CreateLogicalDevice();
     CreateSwapChain(frame);
@@ -55,6 +67,7 @@ void VulkanContext::Initialize(VkExtent2D frame)
     CreateDescriptorPool();
     CreateDesciptorsetLayout();
     CreateDescriptorSets();
+    return _instance;
 }
 #endif
 
@@ -77,22 +90,22 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 {
     if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT)
     {
-        PLOG_DEBUG << pCallbackData->pMessage;
+        __android_log_print(ANDROID_LOG_ERROR, "KAFFEKOPP", "%s", pCallbackData->pMessage);
     }
 
     if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
     {
-        PLOG_INFO << pCallbackData->pMessage;
+        __android_log_print(ANDROID_LOG_ERROR, "KAFFEKOPP", "%s", pCallbackData->pMessage);
     }
 
     if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
     {
-        PLOG_WARNING << pCallbackData->pMessage;
+        __android_log_print(ANDROID_LOG_ERROR, "KAFFEKOPP", "%s", pCallbackData->pMessage);
     }
 
     if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
     {
-        PLOG_ERROR << pCallbackData->pMessage;
+        __android_log_print(ANDROID_LOG_ERROR, "KAFFEKOPP", "%s", pCallbackData->pMessage);
     }
 
     return VK_FALSE;
@@ -109,7 +122,7 @@ VulkanContext *VulkanContext::GetInstance()
     return pinstance_;
 }
 
-void VulkanContext::CreateInstance()
+VkInstance VulkanContext::CreateInstance()
 {
     VkApplicationInfo appInfo{};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -142,6 +155,11 @@ void VulkanContext::CreateInstance()
     extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
 #endif
 
+#ifdef BUILD_FOR_ANDROID
+    extensions.push_back("VK_KHR_surface");
+    extensions.push_back("VK_KHR_android_surface");
+#endif
+
     createInfo.enabledExtensionCount = (uint32_t)extensions.size();
     createInfo.ppEnabledExtensionNames = extensions.data();
 
@@ -153,15 +171,15 @@ void VulkanContext::CreateInstance()
     }
     else
     {
-        PLOG_WARNING << "Validation layers requested, but not available!";
     }
 #endif
 
+    /*
     if (vkCreateInstance(&createInfo, nullptr, &this->_instance) != VK_SUCCESS)
     {
-        PLOG_FATAL << "Failed to create vulkan instance!";
         exit(EXIT_FAILURE);
     }
+    */
 
 #ifdef USE_VALIDATION_LAYERS
     VkDebugUtilsMessengerCreateInfoEXT createInfoDebugMessenger{};
@@ -173,10 +191,11 @@ void VulkanContext::CreateInstance()
 
     if (CreateDebugUtilsMessengerEXT(this->_instance, &createInfoDebugMessenger, nullptr, &_debugMessenger) != VK_SUCCESS)
     {
-        PLOG_FATAL << "Failed to set up debug messenger!";
         exit(EXIT_FAILURE);
     }
 #endif
+
+    return _instance;
 }
 
 bool VulkanContext::CheckValidationLayerSupport()
@@ -300,14 +319,13 @@ void VulkanContext::CreateSwapChain(VkExtent2D frame)
         createInfo.pQueueFamilyIndices = nullptr; // Optional
     }
     createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
-    createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+    createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR; // VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
     createInfo.presentMode = presentMode;
     createInfo.clipped = VK_TRUE;
     createInfo.oldSwapchain = VK_NULL_HANDLE;
 
     if (vkCreateSwapchainKHR(logicalDevice, &createInfo, nullptr, &swapChain) != VK_SUCCESS)
     {
-        PLOG_FATAL << "Failed to create swapchain!";
         exit(EXIT_FAILURE);
     }
 
@@ -326,7 +344,6 @@ void VulkanContext::PickPhysicalDevice()
 
     if (deviceCount == 0)
     {
-        PLOG_FATAL << "Failed to find GPUs with Vulkan support!";
         exit(EXIT_FAILURE);
     }
 
@@ -344,7 +361,6 @@ void VulkanContext::PickPhysicalDevice()
 
     if (physicalDevice == VK_NULL_HANDLE)
     {
-        PLOG_FATAL << "Failed to find a suitable GPU";
         exit(EXIT_FAILURE);
     }
 }
@@ -386,7 +402,6 @@ void VulkanContext::CreateLogicalDevice()
 
     if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &logicalDevice) != VK_SUCCESS)
     {
-        PLOG_FATAL << "Failed to create a logical device!";
         exit(EXIT_FAILURE);
     }
 
@@ -415,7 +430,6 @@ void VulkanContext::CreateDescriptorPool()
 
     if (vkCreateDescriptorPool(logicalDevice, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS)
     {
-        PLOG_ERROR << "Failed to create descriptorset pool!";
         exit(EXIT_FAILURE);
     }
 }
@@ -451,7 +465,6 @@ void VulkanContext::CreateDesciptorsetLayout()
 
     if (vkCreateDescriptorSetLayout(logicalDevice, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS)
     {
-        PLOG_ERROR << "Failed to create a descriptor set layout!";
         exit(EXIT_FAILURE);
     }
 }
@@ -470,7 +483,6 @@ void VulkanContext::CreateDescriptorSets()
 
     if (vkAllocateDescriptorSets(logicalDevice, &allocInfo, descriptorSets.data()) != VK_SUCCESS)
     {
-        PLOG_ERROR << "Failed to allocate descriptor sets!";
         exit(EXIT_FAILURE);
     }
 }
@@ -486,7 +498,6 @@ void VulkanContext::CreateCommandPool()
 
     if (vkCreateCommandPool(logicalDevice, &poolInfo, nullptr, &commandPool) != VK_SUCCESS)
     {
-        PLOG_ERROR << "Failed to create command pool!";
         exit(EXIT_FAILURE);
     }
 }

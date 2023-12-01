@@ -1,16 +1,16 @@
 #pragma once
 
-#include <plog/Log.h>
 #include <string>
 #include <mutex>
+#include <iostream>
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_WINDOWS)
 #include <GLFW/glfw3.h>
 #endif
 
-#include <contexts/utilities/vulkanutil.hpp>
+#include <utilities/vulkanutil.hpp>
 
-using namespace Entropy::Contexts::VulkanUtilities;
+using namespace Entropy::Utilities::VulkanUtilities;
 
 namespace Entropy
 {
@@ -26,10 +26,11 @@ namespace Entropy
 #ifdef BUILD_FOR_MACOS
             const std::vector<const char *> _deviceExtensions = {
                 VK_KHR_SWAPCHAIN_EXTENSION_NAME, "VK_KHR_portability_subset"};
+#endif
 
-#else
+#ifdef BUILD_FOR_ANDROID
             const std::vector<const char *> _deviceExtensions = {
-                VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+                "VK_KHR_swapchain"};
 #endif
 
 #ifdef BUILD_FOR_MACOS
@@ -37,7 +38,6 @@ namespace Entropy
             {
                 if (glfwCreateWindowSurface(this->_instance, window, nullptr, &_windowSurface) != VK_SUCCESS)
                 {
-                    PLOG_FATAL << "Could not create MacOS surface!";
                     exit(EXIT_FAILURE);
                 }
             }
@@ -45,8 +45,6 @@ namespace Entropy
 
             const std::vector<const char *> _validationLayers = {
                 "VK_LAYER_KHRONOS_validation"};
-
-            void CreateInstance();
 
             void CreateLogicalDevice();
             void PickPhysicalDevice();
@@ -91,11 +89,9 @@ namespace Entropy
             }
 
             // Instance and Debugmessenger
-            VkInstance _instance;
             VkDebugUtilsMessengerEXT _debugMessenger;
 
             // Window surface
-            VkSurfaceKHR _windowSurface;
 
             // Debug messenger & validation layers
             VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo, const VkAllocationCallbacks *pAllocator, VkDebugUtilsMessengerEXT *pDebugMessenger);
@@ -110,13 +106,17 @@ namespace Entropy
             void RecreateSwapChain(VkExtent2D frame);
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_WINDOWS)
             void Initialize(VkExtent2D frame, GLFWwindow *window);
-#else
+#endif
+#if defined(BUILD_FOR_ANDROID)
+            VkInstance Initialize(VkInstance instance);
+#endif
+#if defined(BUILD_FOR_IOS)
             void Initialize(VkExtent2D frame);
 #endif
 
             static VkImageView CreateImageView(VkImage image, VkFormat format);
 
-            // Raw vulkan device objects
+            // Devices
             VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
             VkDevice logicalDevice = VK_NULL_HANDLE;
 
@@ -136,8 +136,14 @@ namespace Entropy
             VkDescriptorSetLayout descriptorSetLayout;
             VkDescriptorPool descriptorPool;
 
-            // CommandBuffers
+            // Command pool
             VkCommandPool commandPool;
+
+            VkSurfaceKHR _windowSurface;
+
+            VkInstance _instance;
+
+            VkInstance CreateInstance();
         };
     }
 }

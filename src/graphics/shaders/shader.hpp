@@ -28,6 +28,8 @@ namespace Symbios
                  */
                 Shader(const std::string vert, const std::string frag);
 
+                Shader(char *vertContent, uint32_t vertSize, char *fragContent, uint32_t fragSize);
+
                 /**
                  * @brief Destroy the Shader object
                  *
@@ -78,6 +80,14 @@ namespace Symbios
                  * @return VkShaderModule
                  */
                 VkShaderModule BuildShader(std::vector<char> code);
+
+                /**
+                 * @brief
+                 *
+                 * @param code
+                 * @return VkShaderModule
+                 */
+                VkShaderModule BuildShader(char *code, uint32_t size);
 
             private:
                 std::vector<char> _vertCode;

@@ -74,7 +74,9 @@ namespace NS
 	class Application : public NS::Referencing< Application >
 	{
 		public:
-			static Application*		sharedApplication();
+        Application() : Application() {}
+
+        static Application*		sharedApplication();
 
 			void 					setDelegate( const ApplicationDelegate* pDelegate );
 

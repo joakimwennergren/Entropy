@@ -48,7 +48,6 @@ RenderPass::RenderPass()
 
     if (vkCreateRenderPass(vkContext->logicalDevice, &renderPassInfo, nullptr, &this->_renderPass) != VK_SUCCESS)
     {
-        PLOG_ERROR << "failed to create render pass!";
         exit(EXIT_FAILURE);
     }
 
@@ -113,7 +112,6 @@ void RenderPass::CreateFramebuffers()
 
         if (vkCreateFramebuffer(vkContext->logicalDevice, &framebufferInfo, nullptr, &this->_swapChainFramebuffers[i]) != VK_SUCCESS)
         {
-            PLOG_ERROR << "Failed to create framebuffer!";
             exit(EXIT_FAILURE);
         }
     }

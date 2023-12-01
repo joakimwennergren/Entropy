@@ -2,6 +2,6 @@
 
 struct Screen
 {
-    int width;
-    int height;
+    int width = 500;
+    int height = 1000;
 };

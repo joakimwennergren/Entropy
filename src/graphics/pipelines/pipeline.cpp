@@ -2,15 +2,19 @@
 
 using namespace Entropy::Graphics::Pipelines;
 
-Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass)
+Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, char *vertContent, uint32_t vertSize, char *fragContent, uint32_t fragSize)
 {
     VulkanContext *vkContext = VulkanContext::GetInstance();
+
+#if defined(BUILD_FOR_ANDROID)
+    _shader = std::make_unique<Shader>(vertContent, vertSize, fragContent, fragSize);
+#endif
 
     // Create Shader and store it
 #ifdef BUILD_FOR_IOS
     _shader = std::make_unique<Shader>(GetProjectBasePath() + "/vert.spv", GetProjectBasePath() + "/frag.spv");
 #else
-    _shader = std::make_unique<Shader>(GetShadersDir() + "vert.spv", GetShadersDir() + "/frag.spv");
+    //_shader = std::make_unique<Shader>(GetShadersDir() + "vert.spv", GetShadersDir() + "/frag.spv");
 #endif
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
@@ -166,7 +170,6 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass)
 
     if (vkCreatePipelineLayout(vkContext->logicalDevice, &pipelineLayoutInfo, nullptr, &this->_pipelineLayout) != VK_SUCCESS)
     {
-        PLOG_FATAL << "Failed to create default pipeline layout!";
         exit(EXIT_FAILURE);
     }
 
@@ -194,7 +197,6 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass)
 
     if (vkCreateGraphicsPipelines(vkContext->logicalDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &this->_pipeline) != VK_SUCCESS)
     {
-        PLOG_FATAL << "Failed to create default pipeline!";
         exit(EXIT_FAILURE);
     }
 }
