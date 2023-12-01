@@ -8,6 +8,7 @@
 
 # Set minimum cmake version
 cmake_minimum_required(VERSION 3.6)
+
 # Declare project
 project(Entropy)
 
