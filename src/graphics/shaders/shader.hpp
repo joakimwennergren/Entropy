@@ -28,7 +28,7 @@ namespace Symbios
                  */
                 Shader(const std::string vert, const std::string frag);
 
-                Shader(char *vertContent, uint32_t vertSize, char *fragContent, uint32_t fragSize);
+                Shader(uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize);
 
                 /**
                  * @brief Destroy the Shader object
@@ -87,7 +87,7 @@ namespace Symbios
                  * @param code
                  * @return VkShaderModule
                  */
-                VkShaderModule BuildShader(char *code, uint32_t size);
+                VkShaderModule BuildShader(uint32_t *code, uint32_t size);
 
             private:
                 std::vector<char> _vertCode;

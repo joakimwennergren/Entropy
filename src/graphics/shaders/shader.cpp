@@ -14,7 +14,7 @@ Shader::Shader(const std::string vert, const std::string frag)
     }
 }
 
-Shader::Shader(char *vertContent, uint32_t vertSize, char *fragContent, uint32_t fragSize)
+Shader::Shader(uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize)
 {
     this->_shaderModuleVert = this->BuildShader(vertContent, vertSize);
     this->_shaderModuleFrag = this->BuildShader(fragContent, fragSize);
@@ -67,14 +67,14 @@ VkShaderModule Shader::BuildShader(std::vector<char> code)
     return shaderModule;
 }
 
-VkShaderModule Shader::BuildShader(char *code, uint32_t size)
+VkShaderModule Shader::BuildShader(uint32_t *code, uint32_t size)
 {
     VulkanContext *vkContext = VulkanContext::GetInstance();
 
     VkShaderModuleCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
     createInfo.codeSize = size;
-    createInfo.pCode = (const uint32_t *)code;
+    createInfo.pCode = code;
 
     VkShaderModule shaderModule;
 

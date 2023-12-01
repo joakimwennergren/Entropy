@@ -2,7 +2,7 @@
 
 using namespace Entropy::Graphics::Pipelines;
 
-Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, char *vertContent, uint32_t vertSize, char *fragContent, uint32_t fragSize)
+Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize)
 {
     VulkanContext *vkContext = VulkanContext::GetInstance();
 

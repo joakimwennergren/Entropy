@@ -37,7 +37,7 @@ namespace Entropy
                 /**
                  * @brief Construct a new Renderer object
                  */
-                Renderer(char *vertContent, uint32_t vertSize, char *fragContent, uint32_t fragSize);
+                Renderer(uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize);
 
                 /**
                  * @brief

@@ -2,7 +2,7 @@
 
 using namespace Entropy::Graphics::Renderers;
 
-Renderer::Renderer(char *vertContent, uint32_t vertSize, char *fragContent, uint32_t fragSize)
+Renderer::Renderer(uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize)
 {
     VulkanContext *vkContext = VulkanContext::GetInstance();
 

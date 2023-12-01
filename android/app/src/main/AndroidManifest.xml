@@ -24,6 +24,8 @@
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="entropy_engine" />
+            <meta-data android:name="com.android.graphics.injectLayers.enable"
+                android:value="true"/>
         </activity>
     </application>
 

@@ -90,22 +90,19 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 {
     if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT)
     {
-        __android_log_print(ANDROID_LOG_ERROR, "KAFFEKOPP", "%s", pCallbackData->pMessage);
     }
 
     if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
     {
-        __android_log_print(ANDROID_LOG_ERROR, "KAFFEKOPP", "%s", pCallbackData->pMessage);
     }
 
     if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
     {
-        __android_log_print(ANDROID_LOG_ERROR, "KAFFEKOPP", "%s", pCallbackData->pMessage);
     }
 
     if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
     {
-        __android_log_print(ANDROID_LOG_ERROR, "KAFFEKOPP", "%s", pCallbackData->pMessage);
+        //__android_log_print(ANDROID_LOG_ERROR, "KAFFEKOPP", "%s", pCallbackData->pMessage);
     }
 
     return VK_FALSE;

@@ -16,10 +16,7 @@ find_package(game-activity REQUIRED CONFIG)
 
 # Configure libraries CMake uses to link your target library.
 target_link_libraries(entropy_engine
-        # The game activity
         game-activity::game-activity
         Entropy
-        # EGL and other dependent libraries required for drawing
-        # and interacting with Android system
         android
         log)
