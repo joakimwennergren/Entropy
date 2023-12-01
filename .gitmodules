@@ -34,3 +34,6 @@
 [submodule "eventpp"]
 	path = external/eventpp
 	url = https://github.com/wqking/eventpp.git
+[submodule "flatbuffers"]
+	path = external/flatbuffers
+	url = https://github.com/google/flatbuffers.git
