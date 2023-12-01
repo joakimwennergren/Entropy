@@ -106,7 +106,6 @@ void cursorPositionCallback(GLFWwindow *window, double x, double y)
 
 Application::Application()
 {
-
     // Seed random
     srand(static_cast<unsigned>(time(0)));
 
