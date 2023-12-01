@@ -2,7 +2,7 @@
 
 using namespace Entropy::Graphics::Renderers;
 
-Renderer::Renderer()
+Renderer::Renderer(char *vertContent, uint32_t vertSize, char *fragContent, uint32_t fragSize)
 {
     VulkanContext *vkContext = VulkanContext::GetInstance();
 
@@ -10,7 +10,7 @@ Renderer::Renderer()
     _renderPass = std::make_shared<RenderPass>();
 
     // Create pipeline(s)
-    _pipeline = std::make_unique<Pipeline>(_renderPass);
+    _pipeline = std::make_unique<Pipeline>(_renderPass, vertContent, vertSize, fragContent, fragSize);
 
     _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
 
@@ -72,7 +72,6 @@ void Renderer::Render()
     }
     else if (result != VK_SUCCESS)
     {
-        PLOG_ERROR << "Failed to acquire swap chain image!";
         exit(EXIT_FAILURE);
     }
 
@@ -209,7 +208,6 @@ void Renderer::SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex)
     // Submit queue
     if (vkQueueSubmit(vkContext->graphicsQueue, 1, &submitInfo, _synchronizer->GetFences()[_currentFrame]) != VK_SUCCESS)
     {
-        PLOG_ERROR << "failed to submit draw command buffer!";
         exit(EXIT_FAILURE);
     }
 
@@ -228,7 +226,6 @@ void Renderer::SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex)
     // Present
     if (vkQueuePresentKHR(vkContext->presentQueue, &presentInfo) != VK_SUCCESS)
     {
-        PLOG_ERROR << "failed to present!";
         exit(EXIT_FAILURE);
     }
 }

@@ -41,6 +41,46 @@ void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap)
     hasTexture = true;
 }
 
+void Texture::CreateTextureImageFromPixels(unsigned char *pixels, int width, int height)
+{
+#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
+    auto colorFormat = VK_FORMAT_R8G8B8A8_UNORM;
+#elif defined(BUILD_FOR_WINDOWS)
+    auto colorFormat = VK_FORMAT_R8G8B8A8_UNORM;
+#else
+    // auto colorFormat = VK_FORMAT_B8G8R8A8_SRGB;
+    auto colorFormat = VK_FORMAT_R8G8B8A8_UNORM;
+#endif
+
+    // stbi_set_flip_vertically_on_load(true);
+    VkDeviceSize imageSize = width * height * 4;
+    if (!pixels)
+    {
+        exit(EXIT_FAILURE);
+    }
+
+    StagedBuffer buffer(imageSize, pixels);
+
+    //stbi_image_free(pixels);
+
+    auto mem = buffer.GetBufferMemory();
+    auto buf = buffer.GetVulkanBuffer();
+
+    CreateImage(width, height, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _textureImage, mem);
+
+    TransitionImageLayout(_textureImage, colorFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+    TransitionImageLayout(_textureImage, colorFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+    _imageView = VulkanContext::CreateImageView(_textureImage, colorFormat);
+
+    hasTexture = true;
+
+#if USE_DEBUG_INFO == 1
+
+#endif
+}
+
 void Texture::CreateTextureImage(std::string path)
 {
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
@@ -60,7 +100,6 @@ void Texture::CreateTextureImage(std::string path)
 
     if (!pixels)
     {
-        PLOG_ERROR << stbi_failure_reason();
         exit(EXIT_FAILURE);
     }
 
@@ -82,7 +121,7 @@ void Texture::CreateTextureImage(std::string path)
     hasTexture = true;
 
 #if USE_DEBUG_INFO == 1
-    PLOG_DEBUG << "Successfully loaded texture: " + path;
+
 #endif
 }
 

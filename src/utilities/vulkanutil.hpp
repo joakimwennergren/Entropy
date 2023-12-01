@@ -52,7 +52,7 @@
 
 namespace Entropy
 {
-    namespace Contexts
+    namespace Utilities
     {
         namespace VulkanUtilities
         {
@@ -78,12 +78,12 @@ namespace Entropy
             {
             public:
                 static SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
-                static bool IsDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface, const std::vector<const char *> deviceExtensions);
-                static bool CheckDeviceExtensionSupport(VkPhysicalDevice device, const std::vector<const char *> extensions);
                 static QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR surface);
                 static VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats);
                 static VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes);
                 static VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities, VkExtent2D frame);
+                static bool IsDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface, const std::vector<const char *> deviceExtensions);
+                static bool CheckDeviceExtensionSupport(VkPhysicalDevice device, const std::vector<const char *> extensions);
             };
         }
     }

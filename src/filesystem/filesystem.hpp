@@ -11,80 +11,80 @@
 
 namespace Symbios
 {
-    namespace Filesystem
-    {
-        inline static std::string GetProjectBasePath()
+        namespace Filesystem
         {
+                inline static std::string GetProjectBasePath()
+                {
 
 #ifdef BUILD_FOR_WINDOWS
-            return "../..";
+                        return "../..";
 #endif
 
-#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
-            return ENGINE_BASEPATH;
+#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_ANDROID)
+                        return ENGINE_BASEPATH;
 #endif
 
 #ifdef BUILD_FOR_IOS
-            CFURLRef resourceURL = CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
-            char resourcePath[PATH_MAX];
-            if (CFURLGetFileSystemRepresentation(resourceURL, true,
-                                                 (UInt8 *)resourcePath,
-                                                 PATH_MAX))
-            {
-                if (resourceURL != NULL)
-                {
-                    CFRelease(resourceURL);
+                        CFURLRef resourceURL = CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
+                        char resourcePath[PATH_MAX];
+                        if (CFURLGetFileSystemRepresentation(resourceURL, true,
+                                                             (UInt8 *)resourcePath,
+                                                             PATH_MAX))
+                        {
+                                if (resourceURL != NULL)
+                                {
+                                        CFRelease(resourceURL);
+                                }
+                                return resourcePath;
+                        }
+#endif
+
+                        return "";
                 }
-                return resourcePath;
-            }
-#endif
 
-            return "";
-        }
-
-        inline static std::string GetTexturesDir()
-        {
+                inline static std::string GetTexturesDir()
+                {
 #ifdef BUILD_FOR_IOS
-            return Filesystem::GetProjectBasePath() + "/";
+                        return Filesystem::GetProjectBasePath() + "/";
 #else
-            return Filesystem::GetProjectBasePath() + "/resources/textures/";
+                        return Filesystem::GetProjectBasePath() + "/resources/textures/";
 #endif
-        }
+                }
 
-        inline static std::string GetScriptsDir()
-        {
+                inline static std::string GetScriptsDir()
+                {
 #ifdef BUILD_FOR_IOS
-            return Filesystem::GetProjectBasePath() + "/";
+                        return Filesystem::GetProjectBasePath() + "/";
 #else
-            return Filesystem::GetProjectBasePath() + "/resources/scripts/";
+                        return Filesystem::GetProjectBasePath() + "/resources/scripts/";
 #endif
-        }
+                }
 
-        inline static std::string GetSpritesDir()
-        {
+                inline static std::string GetSpritesDir()
+                {
 #ifdef BUILD_FOR_IOS
-            return Filesystem::GetProjectBasePath() + "/";
+                        return Filesystem::GetProjectBasePath() + "/";
 #else
-            return Filesystem::GetProjectBasePath() + "/resources/sprites/";
+                        return Filesystem::GetProjectBasePath() + "/resources/sprites/";
 #endif
-        }
+                }
 
-        inline static std::string GetShadersDir()
-        {
+                inline static std::string GetShadersDir()
+                {
 #ifdef BUILD_FOR_IOS
-            return Filesystem::GetProjectBasePath() + "/";
+                        return Filesystem::GetProjectBasePath() + "/";
 #else
-            return Filesystem::GetProjectBasePath() + "/shaders/basic/";
+                        return Filesystem::GetProjectBasePath() + "/shaders/basic/";
 #endif
-        }
+                }
 
-        inline static std::string GetFontsDir()
-        {
+                inline static std::string GetFontsDir()
+                {
 #ifdef BUILD_FOR_IOS
-            return Filesystem::GetProjectBasePath() + "/";
+                        return Filesystem::GetProjectBasePath() + "/";
 #else
-            return Filesystem::GetProjectBasePath() + "/resources/fonts/";
+                        return Filesystem::GetProjectBasePath() + "/resources/fonts/";
 #endif
+                }
         }
-    }
 }

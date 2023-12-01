@@ -47,6 +47,13 @@ namespace Entropy
                 void CreateTextureImage(std::string path);
 
                 /**
+                 * @brief Create a Texture Image object
+                 *
+                 * @param path
+                 */
+                void CreateTextureImageFromPixels(unsigned char *pixels, int width, int height);
+
+                /**
                  *
                  */
                 void CreateTextureImageFromBuffer(FT_Bitmap bitmap);

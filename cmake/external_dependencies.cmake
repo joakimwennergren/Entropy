@@ -1,7 +1,7 @@
 # External Dependencies
 
 # Logging 
-add_subdirectory(external/plog)
+#add_subdirectory(external/plog)
 
 # GLM matrix maths
 add_subdirectory(external/glm)
@@ -30,7 +30,7 @@ add_subdirectory(external/eventpp)
 find_package(Vulkan REQUIRED)
 
 # Windowing on desktop
-add_subdirectory(external/glfw)
+#add_subdirectory(external/glfw)
 
 # Lua SOL 2
 add_subdirectory(external/sol2)

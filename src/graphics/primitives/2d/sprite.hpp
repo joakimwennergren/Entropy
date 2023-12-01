@@ -31,6 +31,8 @@ namespace Symbios
                  */
                 Sprite(std::string path);
 
+                Sprite(unsigned char *pixels, int width, int height);
+
                 void New(std::string path, glm::vec3 position, glm::vec3 scale, glm::vec4 color)
                 {
                     this->position = position;

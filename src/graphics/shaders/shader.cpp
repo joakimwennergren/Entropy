@@ -14,6 +14,12 @@ Shader::Shader(const std::string vert, const std::string frag)
     }
 }
 
+Shader::Shader(char *vertContent, uint32_t vertSize, char *fragContent, uint32_t fragSize)
+{
+    this->_shaderModuleVert = this->BuildShader(vertContent, vertSize);
+    this->_shaderModuleFrag = this->BuildShader(fragContent, fragSize);
+}
+
 Shader::~Shader()
 {
     VulkanContext *vkContext = VulkanContext::GetInstance();
@@ -28,7 +34,6 @@ std::vector<char> Shader::ReadFile(std::string filename)
 
     if (!file.is_open())
     {
-        PLOG_FATAL << "Failed to open shader: " << filename;
         exit(EXIT_FAILURE);
     }
 
@@ -56,7 +61,25 @@ VkShaderModule Shader::BuildShader(std::vector<char> code)
 
     if (vkCreateShaderModule(vkContext->logicalDevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
     {
-        PLOG_FATAL << "failed to create shader module!";
+        exit(EXIT_FAILURE);
+    }
+
+    return shaderModule;
+}
+
+VkShaderModule Shader::BuildShader(char *code, uint32_t size)
+{
+    VulkanContext *vkContext = VulkanContext::GetInstance();
+
+    VkShaderModuleCreateInfo createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    createInfo.codeSize = size;
+    createInfo.pCode = (const uint32_t *)code;
+
+    VkShaderModule shaderModule;
+
+    if (vkCreateShaderModule(vkContext->logicalDevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
+    {
         exit(EXIT_FAILURE);
     }
 

@@ -1,6 +1,6 @@
 #include "vulkanutil.hpp"
 
-using namespace Entropy::Contexts::VulkanUtilities;
+using namespace Entropy::Utilities::VulkanUtilities;
 
 VkExtent2D VulkanUtility::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities, VkExtent2D frame)
 {
