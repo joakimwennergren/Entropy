@@ -10,9 +10,12 @@
 #include <global/scenegraph.hpp>
 #include <graphics/renderers/renderer.hpp>
 #include <application/application.hpp>
+#include <graphics/primitives/2d/sprite.hpp>
+#include <ft2build.h>
 
 using namespace Entropy::Global;
 using namespace Entropy::Graphics::Renderers;
+using namespace Symbios::Graphics::Primitives;
 
 class Game : public Application
 {
@@ -28,6 +31,13 @@ struct ShaderObject
     size_t size;
 };
 
+struct SpriteObject
+{
+    size_t length;
+    stbi_uc* content;
+    uint32_t width, height;
+};
+
 extern "C" {
 
     #include <game-activity/native_app_glue/android_native_app_glue.c>
@@ -37,9 +47,33 @@ extern "C" {
     ShaderObject vertShader;
     ShaderObject fragShader;
     Game game;
+    std::shared_ptr<Sprite> sprite;
+    SpriteObject spriteObj;
     std::shared_ptr<Renderer> renderer;
 
+    SpriteObject ReadSprite(std::string path, android_app *app)
+    {
+        // Read the file:
+        AAsset* file = AAssetManager_open(app->activity->assetManager,
+                                          path.c_str(), AASSET_MODE_BUFFER);
+        size_t fileLength = AAsset_getLength(file);
+        stbi_uc* fileContent = new unsigned char[fileLength];
+        AAsset_read(file, fileContent, fileLength);
+        AAsset_close(file);
 
+        uint32_t imgWidth, imgHeight, n;
+        unsigned char* imageData = stbi_load_from_memory(
+                fileContent, fileLength, reinterpret_cast<int*>(&imgWidth),
+                reinterpret_cast<int*>(&imgHeight), reinterpret_cast<int*>(&n), 4);
+        assert(n == 4);
+
+        return SpriteObject {
+            .length = fileLength,
+            .content = fileContent,
+            .width = imgWidth,
+            .height = imgHeight
+        };
+    }
 
     ShaderObject ReadShader(android_app *app, std::string filePath)
     {
@@ -149,6 +183,9 @@ extern "C" {
                 renderer = std::make_shared<Renderer>(vertShader.code, vertShader.size, fragShader.code, fragShader.size);
                 game._renderer = renderer;
                 pApp->userData = &game;
+                spriteObj = ReadSprite("logo.png", pApp);
+                sprite = std::make_shared<Sprite>(spriteObj.content, spriteObj.width, spriteObj.height);
+                SceneGraph::GetInstance()->renderables.push_back(sprite);
                 break;
             case APP_CMD_TERM_WINDOW:
                 // The window is being destroyed. Use this to clean up your userData to avoid leaking
@@ -195,6 +232,7 @@ extern "C" {
         // implemented in android_native_app_glue.c.
         android_app_set_motion_event_filter(pApp, motion_event_filter_func);
 
+        float y = 800.0;
         // This sets up a typical game/event loop. It will run until the app is destroyed.
         int events;
         android_poll_source *pSource;
@@ -217,7 +255,8 @@ extern "C" {
                 //pRenderer->handleInput();
 
                 // Render a frame
-
+                sprite->SetPosition(550.0, y * -1.0);
+                sprite->SetScale(400.0, 400.0);
                 game->_renderer->Render();
 
 
