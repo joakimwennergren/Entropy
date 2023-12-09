@@ -113,12 +113,6 @@ Application::Application()
         .width = (uint32_t)500,
         .height = (uint32_t)1000};
 
-    // Initialize Vulkan context
-    // VulkanContext::GetInstance()->Initialize(window);
-
-    // Create the renderer
-    //_renderer = std::make_shared<Renderer>();
-
     // Create 1ms Timer
     _timer = new Timer(1.0f);
 }
@@ -131,7 +125,6 @@ Application::~Application()
 void Application::Run()
 {
     this->OnInit();
-
     _timer->start();
     _lastTick = (float)_timer->get_tick();
 }
