@@ -69,7 +69,7 @@ extern "C" {
 
         return SpriteObject {
             .length = fileLength,
-            .content = fileContent,
+            .content = imageData,
             .width = imgWidth,
             .height = imgHeight
         };
