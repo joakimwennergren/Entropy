@@ -2,6 +2,55 @@
 
 using namespace Entropy::Graphics::Renderers;
 
+Renderer::Renderer()
+{
+    VulkanContext *vkContext = VulkanContext::GetInstance();
+
+    // Create renderpass
+    _renderPass = std::make_shared<RenderPass>();
+
+    // Create pipeline(s)
+    _pipeline = std::make_unique<Pipeline>(_renderPass);
+
+    _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+
+    for (uint32_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
+    {
+        _commandBuffers.push_back(std::make_shared<CommandBuffer>());
+    }
+
+    // Create buffers @todo temp!!!
+    for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
+    {
+        _uniformBuffers.push_back(new Entopy::Graphics::Buffers::UniformBuffer(sizeof(UniformBufferObject)));
+    }
+
+    for (unsigned int i = 0; i < _uniformBuffers.size(); i++)
+    {
+        auto rawBuffer = _uniformBuffers[i]->GetVulkanBuffer();
+        rawUniformBuffers.push_back(rawBuffer);
+    }
+
+    for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
+    {
+        std::array<VkWriteDescriptorSet, 1> descriptorWrites{};
+        VkDescriptorBufferInfo bufferInfo{};
+        bufferInfo.buffer = rawUniformBuffers[i];
+        bufferInfo.offset = 0;
+        bufferInfo.range = sizeof(UniformBufferObject);
+
+        descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[0].dstSet = vkContext->descriptorSets[i];
+        descriptorWrites[0].dstBinding = 0;
+        descriptorWrites[0].dstArrayElement = 0;
+        descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        descriptorWrites[0].descriptorCount = 1;
+        descriptorWrites[0].pBufferInfo = &bufferInfo;
+
+        vkUpdateDescriptorSets(vkContext->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+    }
+}
+
 Renderer::Renderer(uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize)
 {
     VulkanContext *vkContext = VulkanContext::GetInstance();

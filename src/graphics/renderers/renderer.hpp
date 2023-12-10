@@ -34,9 +34,7 @@ namespace Entropy
             class Renderer
             {
             public:
-                /**
-                 * @brief Construct a new Renderer object
-                 */
+                Renderer();
                 Renderer(uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize);
 
                 /**
@@ -54,10 +52,6 @@ namespace Entropy
                 std::vector<std::shared_ptr<CommandBuffer>> _commandBuffers;
 
                 std::unique_ptr<Pipeline> _pipeline;
-
-                std::vector<VkSemaphore> _imageAvailableSemaphores;
-                std::vector<VkSemaphore> _renderFinishedSemaphores;
-                std::vector<VkFence> _inFlightFences;
 
                 std::vector<VkBuffer> rawUniformBuffers;
                 std::vector<VkBuffer> uniformBuffersInstances;

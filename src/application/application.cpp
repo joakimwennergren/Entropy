@@ -9,7 +9,6 @@ Application::Application()
     // Initialize GLFW
     if (!glfwInit())
     {
-        PLOG_FATAL << "Could not initialize GLFW!";
         exit(EXIT_FAILURE);
     }
 
@@ -19,7 +18,6 @@ Application::Application()
 
     if (!_window)
     {
-        PLOG_FATAL << "Could not create the window!";
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
