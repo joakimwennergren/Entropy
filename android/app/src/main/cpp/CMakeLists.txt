@@ -3,6 +3,8 @@
 
 cmake_minimum_required(VERSION 3.22.1)
 
+set(OPENSSL_ROOT_DIR /opt/homebrew/bin/openssl)
+
 project("entropy_engine")
 
 add_subdirectory(/Users/joakim/Desktop/Entropy-Engine Entropy)

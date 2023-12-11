@@ -33,6 +33,16 @@ VkImageView VulkanContext::CreateImageView(VkImage image, VkFormat format)
     return imageView;
 }
 
+#ifdef BUILD_FOR_MACOS
+void VulkanContext::CreateSurfaceMacOS(GLFWwindow *window)
+{
+    if (glfwCreateWindowSurface(_instance, window, nullptr, &_windowSurface) != VK_SUCCESS)
+    {
+        exit(EXIT_FAILURE);
+    }
+}
+#endif
+
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_WINDOWS)
 void VulkanContext::Initialize(VkExtent2D frame, GLFWwindow *window)
 {

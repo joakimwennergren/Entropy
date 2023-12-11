@@ -24,6 +24,7 @@ namespace Entropy
             class Pipeline
             {
             public:
+                Pipeline() = default;
                 Pipeline(std::shared_ptr<RenderPass> renderPass);
                 Pipeline(std::shared_ptr<RenderPass> renderPass, uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize);
                 ~Pipeline();
@@ -31,7 +32,7 @@ namespace Entropy
                 inline VkPipeline GetPipeline() { return this->_pipeline; };
                 inline VkPipelineLayout GetPipelineLayout() { return this->_pipelineLayout; };
 
-            private:
+            protected:
                 std::array<VkPipelineShaderStageCreateInfo, 2> CreateShaderStages();
                 VkPipelineDynamicStateCreateInfo CreateDynamicState();
                 VkPipelineInputAssemblyStateCreateInfo CreateInputAssembly();
@@ -44,13 +45,12 @@ namespace Entropy
                 VkPushConstantRange CreatePushContantRange();
                 VkPipelineLayout CreatePipelineLayout(std::vector<VkDescriptorSetLayout> dsLayouts, VkPushConstantRange push_constant);
 
+            private:
                 std::unique_ptr<Shader> _shader;
                 std::shared_ptr<RenderPass> _renderPass;
-
                 VkPipelineLayout _pipelineLayout;
                 VkPipeline _pipeline;
                 VkDescriptorSetLayout _descriptorSetLayout;
-
                 VulkanContext *_vkContext;
             };
         }

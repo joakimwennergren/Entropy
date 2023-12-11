@@ -34,13 +34,7 @@ namespace Entropy
 #endif
 
 #ifdef BUILD_FOR_MACOS
-            inline void CreateSurfaceMacOS(GLFWwindow *window)
-            {
-                if (glfwCreateWindowSurface(this->_instance, window, nullptr, &_windowSurface) != VK_SUCCESS)
-                {
-                    exit(EXIT_FAILURE);
-                }
-            }
+            void CreateSurfaceMacOS(GLFWwindow *window);
 #endif
 
             const std::vector<const char *> _validationLayers = {

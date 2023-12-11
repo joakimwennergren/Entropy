@@ -217,10 +217,6 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass)
 {
     _vkContext = VulkanContext::GetInstance();
 
-#if defined(BUILD_FOR_ANDROID)
-    _shader = std::make_unique<Shader>(vertContent, vertSize, fragContent, fragSize);
-#endif
-
     // Create Shader and store it
 #ifdef BUILD_FOR_IOS
     _shader = std::make_unique<Shader>(GetProjectBasePath() + "/vert.spv", GetProjectBasePath() + "/frag.spv");
