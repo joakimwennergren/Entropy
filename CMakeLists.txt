@@ -49,7 +49,7 @@ target_link_libraries(${PROJECT_NAME}
     eventpp
 )
 
-# Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk)
+# Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk )
 target_link_libraries(${PROJECT_NAME}
     ${Vulkan_LIBRARIES}
     glfw
