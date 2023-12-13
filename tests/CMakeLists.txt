@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.6)
 
 project(
     Entropy-tests
@@ -8,8 +8,8 @@ project(
 add_subdirectory(../ Entropy)
 add_subdirectory(../external/Catch2 "Catch2")
 
-add_executable(Entropy-tests
-    unit/graphics/pipelines/pipeline.test.cpp
-)
+file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/unit/graphics/*.cpp)
+
+add_executable(Entropy-tests ${SOURCES})
 
 target_link_libraries(Entropy-tests PRIVATE Catch2::Catch2WithMain Entropy)
