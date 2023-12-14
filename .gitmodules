@@ -1,0 +1,39 @@
+[submodule "plog"]
+	path = external/plog
+	url = https://github.com/SergiusTheBest/plog.git
+[submodule "glfw"]
+	path = external/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "ios-cmake"]
+	path = external/ios-cmake
+	url = https://github.com/leetal/ios-cmake.git
+[submodule "Catch2"]
+	path = external/Catch2
+	url = https://github.com/catchorg/Catch2.git
+[submodule "glm"]
+	path = external/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "freetype"]
+	path = external/freetype
+	url = https://github.com/freetype/freetype.git
+[submodule "box2d"]
+	path = external/box2d
+	url = https://github.com/erincatto/box2d.git
+[submodule "asio.cmake"]
+	path = external/asio.cmake
+	url = https://github.com/OlivierLDff/asio.cmake.git
+[submodule "curl"]
+	path = external/curl
+	url = https://github.com/curl/curl.git
+[submodule "openssl"]
+	path = external/openssl
+	url = https://github.com/openssl/openssl.git
+[submodule "sol2"]
+	path = external/sol2
+	url = https://github.com/ThePhD/sol2.git
+[submodule "eventpp"]
+	path = external/eventpp
+	url = https://github.com/wqking/eventpp.git
+[submodule "flatbuffers"]
+	path = external/flatbuffers
+	url = https://github.com/google/flatbuffers.git
