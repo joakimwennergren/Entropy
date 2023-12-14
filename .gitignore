@@ -1,6 +1,0 @@
-.DS_Store
-.vscode
-build
-include/config.hpp
-docs
-**/.DS_Store
