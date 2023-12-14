@@ -8,7 +8,7 @@
 
 #include <graphics/surfaces/surface.hpp>
 #include <graphics/queuefamilies/queuefamily.hpp>
-#include <graphics/devices/physical_device.hpp>
+#include <graphics/devices/logical_device.hpp>
 
 using namespace Entropy::Graphics::Surfaces;
 using namespace Entropy::Graphics::QueueFamilies;
@@ -18,16 +18,14 @@ namespace Entropy
 {
     namespace Graphics
     {
-        namespace Devices
+        namespace DescriptorPools
         {
-            class LogicalDevice
+            class DescriptorPool
             {
             public:
-                LogicalDevice(PhysicalDevice physicalDevice, std::shared_ptr<WindowSurface> surface);
-                inline VkDevice Get() { return _logicalDevice; };
+                DescriptorPool(std::shared_ptr<LogicalDevice> logicallDevice);
 
             private:
-                VkDevice _logicalDevice;
             };
         }
     }

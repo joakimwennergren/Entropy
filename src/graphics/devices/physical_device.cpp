@@ -2,7 +2,7 @@
 
 using namespace Entropy::Graphics::Devices;
 
-PhysicalDevice::PhysicalDevice(std::shared_ptr<VulkanInstance> instance, WindowSurface surface)
+PhysicalDevice::PhysicalDevice(std::shared_ptr<VulkanInstance> instance, std::shared_ptr<WindowSurface> surface)
 {
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(instance->Get(), &deviceCount, nullptr);
@@ -17,7 +17,7 @@ PhysicalDevice::PhysicalDevice(std::shared_ptr<VulkanInstance> instance, WindowS
 
     for (const auto &device : devices)
     {
-        if (IsDeviceSuitable(device, surface.Get(), deviceExtensions))
+        if (IsDeviceSuitable(device, surface->Get(), deviceExtensions))
         {
             _physicalDevice = device;
             break;

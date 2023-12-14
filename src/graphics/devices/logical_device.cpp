@@ -2,9 +2,9 @@
 
 using namespace Entropy::Graphics::Devices;
 
-LogicalDevice::LogicalDevice(PhysicalDevice physicalDevice, WindowSurface surface)
+LogicalDevice::LogicalDevice(PhysicalDevice physicalDevice, std::shared_ptr<WindowSurface> surface)
 {
-    QueueFamilyIndices indices = QueueFamily::FindQueueFamilies(physicalDevice.Get(), surface.Get());
+    QueueFamilyIndices indices = QueueFamily::FindQueueFamilies(physicalDevice.Get(), surface->Get());
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
     std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(), indices.presentFamily.value()};

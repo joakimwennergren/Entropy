@@ -8,7 +8,7 @@
 
 #include <graphics/surfaces/surface.hpp>
 #include <graphics/queuefamilies/queuefamily.hpp>
-#include <graphics/devices/physical_device.hpp>
+#include <graphics/devices/logical_device.hpp>
 
 using namespace Entropy::Graphics::Surfaces;
 using namespace Entropy::Graphics::QueueFamilies;
@@ -18,16 +18,15 @@ namespace Entropy
 {
     namespace Graphics
     {
-        namespace Devices
+        namespace ImageViews
         {
-            class LogicalDevice
+            class ImageView
             {
             public:
-                LogicalDevice(PhysicalDevice physicalDevice, std::shared_ptr<WindowSurface> surface);
-                inline VkDevice Get() { return _logicalDevice; };
+                ImageView(std::shared_ptr<LogicalDevice> logicalDevice, VkImage image, VkFormat format);
 
             private:
-                VkDevice _logicalDevice;
+                VkImageView _imageView;
             };
         }
     }

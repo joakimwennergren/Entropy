@@ -37,14 +37,7 @@ namespace Entropy
                 Renderer();
                 Renderer(uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize);
 
-                /**
-                 * @brief
-                 */
                 void Render();
-
-                /**
-                 * @brief
-                 */
                 void SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex);
 
             private:

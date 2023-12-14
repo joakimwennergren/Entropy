@@ -3,6 +3,7 @@
 #include <graphics/instances/vk_instance.hpp>
 #include <graphics/surfaces/surface.hpp>
 #include <graphics/devices/physical_device.hpp>
+#include <graphics/devices/logical_device.hpp>
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_WINDOWS)
 #include <GLFW/glfw3.h>
@@ -12,7 +13,7 @@ using namespace Entropy::Graphics::Instances;
 using namespace Entropy::Graphics::Surfaces;
 using namespace Entropy::Graphics::Devices;
 
-TEST_CASE("Physical device can be created", "[PhysicalDevice]")
+TEST_CASE("Logical device can be created", "[LogicalDevice]")
 {
     // Create new vulkan instance
     auto vkInstance = std::make_shared<VulkanInstance>("Entropy tests");
@@ -33,6 +34,9 @@ TEST_CASE("Physical device can be created", "[PhysicalDevice]")
     // Create physical device
     auto physicalDevice = PhysicalDevice(vkInstance, surface);
 
+    // Create logical device
+    auto logicalDevice = LogicalDevice(physicalDevice, surface);
+
     // Assert
-    REQUIRE(physicalDevice.Get() != nullptr);
+    REQUIRE(logicalDevice.Get() != nullptr);
 }
