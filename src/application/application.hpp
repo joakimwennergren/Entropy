@@ -4,7 +4,6 @@
     @author Joakim Wennergren
     @version 1.0 2/11/2023
 */
-
 #pragma once
 
 #include <thread>
@@ -70,7 +69,6 @@ private:
     float _lastTick = 0.0f;
     float _deltaTime = 0.0f;
 };
-
 #endif
 
 #if defined(BUILD_FOR_ANDROID)
