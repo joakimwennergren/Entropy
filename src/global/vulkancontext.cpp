@@ -5,7 +5,6 @@
 #endif
 
 using namespace Entropy::Global;
-
 VulkanContext *VulkanContext::pinstance_{nullptr};
 std::mutex VulkanContext::mutex_;
 
@@ -60,7 +59,6 @@ void VulkanContext::Initialize(VkExtent2D frame, GLFWwindow *window)
 #endif
 
 #if defined(BUILD_FOR_ANDROID)
-
 VkInstance VulkanContext::Initialize(VkInstance instance)
 {
     _instance = instance;

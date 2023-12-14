@@ -30,21 +30,17 @@ Application::Application()
     // Get initial window framebuffer size
     int width, height;
     glfwGetFramebufferSize(_window, &width, &height);
-    screen.width = width;
-    screen.height = height;
-
     VkExtent2D frame = {
         .width = (uint32_t)width,
         .height = (uint32_t)height};
 
-    // Initialize Vulkan context
-    VulkanContext::GetInstance()->Initialize(frame, _window);
-
-    // Create the renderer
-    _renderer = std::make_shared<Renderer>();
-
     // Create 1ms Timer
     _timer = new Timer(1.0f);
+
+    // Add services to service locator
+    serviceLocator = std::make_shared<ServiceLocator>();
+
+    serviceLocator->registerService("LogicalDevice", std::make_shared<LogicalDevice>());
 }
 
 Application::~Application()
@@ -73,6 +69,7 @@ void Application::Run()
         screen.width = width;
         screen.height = height;
 
+        // On render
         this->_renderer->Render();
         this->OnRender(_deltaTime);
 
@@ -101,7 +98,6 @@ void cursorPositionCallback(GLFWwindow *window, double x, double y)
 #endif
 
 #if defined(BUILD_FOR_ANDROID)
-
 Application::Application()
 {
     // Seed random

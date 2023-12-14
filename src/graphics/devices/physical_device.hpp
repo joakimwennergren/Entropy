@@ -10,11 +10,14 @@
 #include <graphics/surfaces/surface.hpp>
 #include <graphics/queuefamilies/queuefamily.hpp>
 #include <graphics/swapchains/swapchain.hpp>
+#include <services/service.hpp>
 
 using namespace Entropy::Graphics::Instances;
 using namespace Entropy::Graphics::Surfaces;
 using namespace Entropy::Graphics::QueueFamilies;
 using namespace Entropy::Graphics::Swapchains;
+
+using namespace Entropy::Services;
 
 namespace Entropy
 {
@@ -22,7 +25,7 @@ namespace Entropy
     {
         namespace Devices
         {
-            class PhysicalDevice
+            class PhysicalDevice : Service
             {
             public:
                 PhysicalDevice(std::shared_ptr<VulkanInstance> instance, std::shared_ptr<WindowSurface> surface);

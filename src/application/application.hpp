@@ -4,6 +4,7 @@
     @author Joakim Wennergren
     @version 1.0 2/11/2023
 */
+
 #pragma once
 
 #include <thread>
@@ -12,7 +13,9 @@
 #include <config.hpp>
 
 #include <graphics/renderers/renderer.hpp>
+#include <servicelocators/servicelocator.hpp>
 #include <timing/timer.hpp>
+#include <graphics/devices/logical_device.hpp>
 #include "screen.hpp"
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
@@ -24,6 +27,7 @@ using namespace Symbios;
 using namespace Entropy::Global;
 using namespace Entropy::Graphics::Renderers;
 using namespace Entropy::Timing;
+using namespace Entropy::ServiceLocators;
 
 void framebufferResizeCallback(GLFWwindow *window, int width, int height);
 void cursorPositionCallback(GLFWwindow *window, double x, double y);
@@ -50,6 +54,7 @@ public:
 protected:
     Screen screen;
     GLFWwindow *_window;
+    std::shared_ptr<ServiceLocator> serviceLocator;
 
 private:
     std::shared_ptr<Renderer> _renderer;

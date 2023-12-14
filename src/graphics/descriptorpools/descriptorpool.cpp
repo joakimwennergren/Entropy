@@ -2,7 +2,7 @@
 
 using namespace Entropy::Graphics::DescriptorPools;
 
-DescriptorPool::DescriptorPool(std::shared_ptr<LogicalDevice> logicallDevice)
+DescriptorPool::DescriptorPool(std::shared_ptr<LogicalDevice> logicalDevice)
 {
     std::array<VkDescriptorPoolSize, 3> poolSizes{};
 
@@ -21,7 +21,7 @@ DescriptorPool::DescriptorPool(std::shared_ptr<LogicalDevice> logicallDevice)
     poolInfo.pPoolSizes = poolSizes.data();
     poolInfo.maxSets = 10000;
 
-    if (vkCreateDescriptorPool(logicalDevice->Get(), &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS)
+    if (vkCreateDescriptorPool(logicalDevice->Get(), &poolInfo, nullptr, &_descriptorPool) != VK_SUCCESS)
     {
         exit(EXIT_FAILURE);
     }

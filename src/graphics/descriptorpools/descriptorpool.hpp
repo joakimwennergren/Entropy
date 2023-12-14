@@ -23,9 +23,10 @@ namespace Entropy
             class DescriptorPool
             {
             public:
-                DescriptorPool(std::shared_ptr<LogicalDevice> logicallDevice);
+                DescriptorPool(std::shared_ptr<LogicalDevice> logicalDevice);
 
             private:
+                VkDescriptorPool _descriptorPool;
             };
         }
     }

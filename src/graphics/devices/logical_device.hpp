@@ -9,6 +9,7 @@
 #include <graphics/surfaces/surface.hpp>
 #include <graphics/queuefamilies/queuefamily.hpp>
 #include <graphics/devices/physical_device.hpp>
+#include <services/service.hpp>
 
 using namespace Entropy::Graphics::Surfaces;
 using namespace Entropy::Graphics::QueueFamilies;
@@ -20,7 +21,7 @@ namespace Entropy
     {
         namespace Devices
         {
-            class LogicalDevice
+            class LogicalDevice : public Service
             {
             public:
                 LogicalDevice(PhysicalDevice physicalDevice, std::shared_ptr<WindowSurface> surface);
