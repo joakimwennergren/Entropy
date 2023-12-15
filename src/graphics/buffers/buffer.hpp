@@ -74,7 +74,7 @@ namespace Entropy
                  * @param buffer
                  * @param bufferMemory
                  */
-                static void CreateBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory);
+                void CreateBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory);
 
                 /**
                  * @brief Copy One Buffer into another
@@ -93,6 +93,8 @@ namespace Entropy
 
                 // Mapped memory towards GPU?
                 void *_mappedMemory;
+
+                std::shared_ptr<LogicalDevice> _logicalDevice;
             };
         }
     }

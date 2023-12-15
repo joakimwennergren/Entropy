@@ -29,6 +29,7 @@ namespace Entropy
             {
             public:
                 Swapchain(VkPhysicalDevice physicalDevice, VkDevice logicalDevice, std::shared_ptr<WindowSurface> surface, VkExtent2D frame);
+                ~Swapchain();
                 static SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
                 std::vector<VkImageView> swapChainImageViews;
                 std::vector<VkImage> swapChainImages;
@@ -42,6 +43,7 @@ namespace Entropy
                 VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats);
                 VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes);
                 VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities, VkExtent2D frame);
+                VkDevice _logicalDevice;
             };
         }
     }

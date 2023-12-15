@@ -2,13 +2,19 @@
 
 using namespace Entropy::Graphics::Utilities;
 
-uint32_t Utility::FindMemoryTypeIndex(uint32_t typeFilter, VkMemoryPropertyFlags properties)
+uint32_t Utility::FindMemoryTypeIndex(std::shared_ptr<ServiceLocator> serviceLocator, uint32_t typeFilter, VkMemoryPropertyFlags properties)
 {
-    VulkanContext *vkContext = VulkanContext::GetInstance();
+    auto phyisicalDevice = std::dynamic_pointer_cast<PhysicalDevice>(serviceLocator->getService("PhysicalDevice"));
+
+    if (!phyisicalDevice->isValid())
+    {
+        spdlog::error("Trying to find memory type index with invalid physical device");
+        return 0;
+    }
 
     // Get the physical device's memory properties
     VkPhysicalDeviceMemoryProperties memProperties;
-    vkGetPhysicalDeviceMemoryProperties(vkContext->physicalDevice, &memProperties);
+    vkGetPhysicalDeviceMemoryProperties(phyisicalDevice->Get(), &memProperties);
 
     // Iterate over memoryproperties and return index of matched property
     for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)

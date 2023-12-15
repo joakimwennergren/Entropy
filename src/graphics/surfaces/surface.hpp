@@ -5,6 +5,7 @@
 #include <config.hpp>
 
 #include <graphics/instances/vk_instance.hpp>
+#include <services/service.hpp>
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_WINDOWS)
 #include <GLFW/glfw3.h>
@@ -17,6 +18,7 @@
 #endif
 
 using namespace Entropy::Graphics::Instances;
+using namespace Entropy::Services;
 
 namespace Entropy
 {
@@ -24,7 +26,7 @@ namespace Entropy
     {
         namespace Surfaces
         {
-            class WindowSurface
+            class WindowSurface : public Service
             {
             public:
 #ifdef BUILD_FOR_MACOS
@@ -39,6 +41,8 @@ namespace Entropy
                 {
                     return _surface;
                 };
+
+                inline bool isValid() override { return _surface != nullptr; };
 
             private:
                 std::shared_ptr<VulkanInstance> _instance;

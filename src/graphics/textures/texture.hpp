@@ -31,7 +31,7 @@ namespace Entropy
                  *
                  * @param context
                  */
-                Texture();
+                Texture(std::shared_ptr<ServiceLocator> serviceLocator);
 
                 /**
                  * @brief Destroy the Texture object
@@ -107,6 +107,8 @@ namespace Entropy
                 VkImage _textureImage;
                 VkImageView _imageView;
                 VkDeviceMemory _textureImageMemory;
+                std::shared_ptr<ServiceLocator> _serviceLocator;
+                std::shared_ptr<LogicalDevice> _logicalDevice;
             };
         }
     }

@@ -4,14 +4,11 @@ using namespace Entropy::Graphics::Buffers;
 
 Buffer::~Buffer()
 {
-    // Get vulkan context
-    VulkanContext *vkContext = VulkanContext::GetInstance();
-
     // Destroy the buffer
-    vkDestroyBuffer(vkContext->logicalDevice, _buffer, nullptr);
+    vkDestroyBuffer(_logicalDevice->Get(), _buffer, nullptr);
 
     // Free buffer memory
-    vkFreeMemory(vkContext->logicalDevice, _bufferMemory, nullptr);
+    vkFreeMemory(_logicalDevice->Get(), _bufferMemory, nullptr);
 }
 
 void Buffer::CreateBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory)
@@ -24,6 +21,8 @@ void Buffer::CreateBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkDevi
         spdlog::error("Trying to create buffer with invalid logical device");
         return;
     }
+
+    _logicalDevice = logicalDevice;
 
     VkBufferCreateInfo bufferInfo{};
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -42,7 +41,7 @@ void Buffer::CreateBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkDevi
     VkMemoryAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex = Utility::FindMemoryTypeIndex(memRequirements.memoryTypeBits, properties);
+    allocInfo.memoryTypeIndex = Utility::FindMemoryTypeIndex(serviceLocator, memRequirements.memoryTypeBits, properties);
 
     if (vkAllocateMemory(logicalDevice->Get(), &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
     {

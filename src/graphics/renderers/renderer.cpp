@@ -28,7 +28,7 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
     // Create buffers @todo temp!!!
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
-        _uniformBuffers.push_back(new Entopy::Graphics::Buffers::UniformBuffer(sizeof(UniformBufferObject)));
+        _uniformBuffers.push_back(new Entopy::Graphics::Buffers::UniformBuffer(serviceLocator, sizeof(UniformBufferObject)));
     }
 
     for (unsigned int i = 0; i < _uniformBuffers.size(); i++)

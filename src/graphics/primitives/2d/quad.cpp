@@ -14,10 +14,10 @@ Quad::Quad()
         {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
 
     // Create buffers @todo temp!!!
-    vertexBuffer = std::make_unique<VertexBuffer>(_vertices);
+    // vertexBuffer = std::make_unique<VertexBuffer>(_vertices);
 
-    indexBuffer = std::make_unique<Buffer>();
-    // indexBuffer->CreateIndexBufferUint16(_indices);
+    // indexBuffer = std::make_unique<Buffer>();
+    //  indexBuffer->CreateIndexBufferUint16(_indices);
 }
 
 Quad::~Quad()

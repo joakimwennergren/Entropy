@@ -17,6 +17,7 @@ using namespace Entropy::Graphics::Devices;
 
 TEST_CASE("Logical device can be created", "[LogicalDevice]")
 {
+
     // Create new vulkan instance
     auto vkInstance = std::make_shared<VulkanInstance>("Entropy tests");
 

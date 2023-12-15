@@ -8,7 +8,9 @@ project(
 add_subdirectory(../ Entropy)
 add_subdirectory(../external/Catch2 "Catch2")
 
-file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/unit/graphics/*.cpp)
+file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/unit/*.cpp ${PROJECT_SOURCE_DIR}/unit/utils/setup.cpp)
+
+include_directories(${PROJECT_SOURCE_DIR}/unit/utils)
 
 add_executable(Entropy-tests ${SOURCES})
 

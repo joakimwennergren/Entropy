@@ -4,6 +4,9 @@ using namespace Entropy::Graphics::Swapchains;
 
 Swapchain::Swapchain(VkPhysicalDevice physicalDevice, VkDevice logicalDevice, std::shared_ptr<WindowSurface> surface, VkExtent2D frame)
 {
+    std::cout << "CREATING SWAPCHAIN" << std::endl;
+    _logicalDevice = logicalDevice;
+
     SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(physicalDevice, surface->Get());
     VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
     VkPresentModeKHR presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);
@@ -58,6 +61,12 @@ Swapchain::Swapchain(VkPhysicalDevice physicalDevice, VkDevice logicalDevice, st
 
     swapChainImageFormat = surfaceFormat.format;
     swapChainExtent = extent;
+}
+
+Swapchain::~Swapchain()
+{
+    std::cout << "Destroying Swapchain!" << std::endl;
+    vkDestroySwapchainKHR(_logicalDevice, _swapChain, nullptr);
 }
 
 SwapChainSupportDetails Swapchain::QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface)

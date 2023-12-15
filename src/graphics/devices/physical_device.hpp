@@ -27,7 +27,7 @@ namespace Entropy
     {
         namespace Devices
         {
-            class PhysicalDevice : Service
+            class PhysicalDevice : public Service
             {
             public:
                 PhysicalDevice(std::shared_ptr<VulkanInstance> instance, std::shared_ptr<WindowSurface> surface);
