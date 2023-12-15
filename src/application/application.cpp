@@ -85,6 +85,7 @@ Application::Application()
     serviceLocator->registerService("PhysicalDevice", physicalDevice);
     serviceLocator->registerService("LogicalDevice", logicalDevice);
     serviceLocator->registerService("DescriptorSet", descriptorSet);
+    serviceLocator->registerService("DescriptorSetLayout", descriptorSetLayout);
     serviceLocator->registerService("SwapChain", swapChain);
     serviceLocator->registerService("CommandPool", commandPool);
     auto renderer = std::make_shared<Renderer>(serviceLocator);

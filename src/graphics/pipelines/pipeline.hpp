@@ -10,6 +10,8 @@
 #include <global/vulkancontext.hpp>
 #include <servicelocators/servicelocator.hpp>
 #include <graphics/devices/logical_device.hpp>
+#include <graphics/swapchains/swapchain.hpp>
+#include <graphics/descriptorsetlayouts/descriptorsetlayout.hpp>
 
 #include "spdlog/spdlog.h"
 
@@ -19,6 +21,8 @@ using namespace Entropy::Graphics::RenderPasses;
 using namespace Symbios::Filesystem;
 using namespace Entropy::Global;
 using namespace Entropy::ServiceLocators;
+using namespace Entropy::Graphics::Swapchains;
+using namespace Entropy::Graphics::DescriptorsetLayouts;
 using namespace Entropy::Graphics::Devices;
 
 namespace Entropy
@@ -59,6 +63,9 @@ namespace Entropy
                 VkDescriptorSetLayout _descriptorSetLayout;
                 VulkanContext *_vkContext;
                 std::shared_ptr<LogicalDevice> _logicalDevice;
+                std::shared_ptr<Swapchain> _swapchain;
+                std::shared_ptr<DescriptorsetLayout> _descriptorsetLayout;
+                std::shared_ptr<ServiceLocator> _serviceLocator;
             };
         }
     }

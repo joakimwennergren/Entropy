@@ -2,11 +2,12 @@
 
 using namespace Symbios::Graphics::Shaders;
 
-Shader::Shader(const std::string vert, const std::string frag)
+Shader::Shader(std::shared_ptr<ServiceLocator> serviceLocator, const std::string vert, const std::string frag)
 {
+    _logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
+
     this->_vertCode = this->ReadFile(vert);
     this->_fragCode = this->ReadFile(frag);
-
     if (this->_vertCode.size() > 0 && this->_fragCode.size() > 0)
     {
         this->_shaderModuleVert = this->BuildShader(this->_vertCode);
@@ -22,10 +23,8 @@ Shader::Shader(uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, 
 
 Shader::~Shader()
 {
-    VulkanContext *vkContext = VulkanContext::GetInstance();
-
-    vkDestroyShaderModule(vkContext->logicalDevice, this->_shaderModuleVert, nullptr);
-    vkDestroyShaderModule(vkContext->logicalDevice, this->_shaderModuleFrag, nullptr);
+    vkDestroyShaderModule(_logicalDevice->Get(), this->_shaderModuleVert, nullptr);
+    vkDestroyShaderModule(_logicalDevice->Get(), this->_shaderModuleFrag, nullptr);
 }
 
 std::vector<char> Shader::ReadFile(std::string filename)
@@ -50,8 +49,6 @@ std::vector<char> Shader::ReadFile(std::string filename)
 
 VkShaderModule Shader::BuildShader(std::vector<char> code)
 {
-    VulkanContext *vkContext = VulkanContext::GetInstance();
-
     VkShaderModuleCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
     createInfo.codeSize = code.size();
@@ -59,7 +56,7 @@ VkShaderModule Shader::BuildShader(std::vector<char> code)
 
     VkShaderModule shaderModule;
 
-    if (vkCreateShaderModule(vkContext->logicalDevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
+    if (vkCreateShaderModule(_logicalDevice->Get(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
     {
         exit(EXIT_FAILURE);
     }
@@ -69,8 +66,6 @@ VkShaderModule Shader::BuildShader(std::vector<char> code)
 
 VkShaderModule Shader::BuildShader(uint32_t *code, uint32_t size)
 {
-    VulkanContext *vkContext = VulkanContext::GetInstance();
-
     VkShaderModuleCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
     createInfo.codeSize = size;
@@ -78,7 +73,7 @@ VkShaderModule Shader::BuildShader(uint32_t *code, uint32_t size)
 
     VkShaderModule shaderModule;
 
-    if (vkCreateShaderModule(vkContext->logicalDevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
+    if (vkCreateShaderModule(_logicalDevice->Get(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
     {
         exit(EXIT_FAILURE);
     }

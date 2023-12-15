@@ -4,7 +4,7 @@ using namespace Entropy::Graphics::Pipelines;
 
 std::array<VkPipelineShaderStageCreateInfo, 2> Pipeline::CreateShaderStages()
 {
-    auto shader = std::make_unique<Shader>(GetShadersDir() + "vert.spv", GetShadersDir() + "/frag.spv");
+    auto shader = std::make_unique<Shader>(_serviceLocator, GetShadersDir() + "vert.spv", GetShadersDir() + "/frag.spv");
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -52,14 +52,14 @@ VkPipelineViewportStateCreateInfo Pipeline::CreateViewportState()
     VkViewport viewport{};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
-    viewport.width = (float)_vkContext->swapChainExtent.width;
-    viewport.height = (float)_vkContext->swapChainExtent.height;
+    viewport.width = (float)_swapchain->swapChainExtent.width;
+    viewport.height = (float)_swapchain->swapChainExtent.height;
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
 
     VkRect2D scissor{};
     scissor.offset = {0, 0};
-    scissor.extent = _vkContext->swapChainExtent;
+    scissor.extent = _swapchain->swapChainExtent;
 
     VkPipelineViewportStateCreateInfo viewportState{};
     viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -160,7 +160,7 @@ std::vector<VkDescriptorSetLayout> Pipeline::CreateDescriptorSetLayouts()
         throw std::runtime_error("failed to create descriptor set layout!");
     }
 
-    dsLayouts[0] = _vkContext->descriptorSetLayout;
+    dsLayouts[0] = _descriptorsetLayout->Get();
     dsLayouts[1] = tempLayout;
 
     return dsLayouts;
@@ -215,8 +215,11 @@ VkPipelineLayout Pipeline::CreatePipelineLayout(std::vector<VkDescriptorSetLayou
 
 Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator)
 {
+
     // Get required depenencies
     auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
+    auto swapChain = std::dynamic_pointer_cast<Swapchain>(serviceLocator->getService("SwapChain"));
+    auto descriptorSetLayout = std::dynamic_pointer_cast<DescriptorsetLayout>(serviceLocator->getService("DescriptorSetLayout"));
 
     if (!logicalDevice->isValid())
     {
@@ -224,14 +227,27 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<Servi
         return;
     }
 
+    if (!swapChain->isValid())
+    {
+        spdlog::error("Trying to create pipeline with invalid invalid swapchain");
+        return;
+    }
+
+    if (!descriptorSetLayout->isValid())
+    {
+        spdlog::error("Trying to create pipeline with invalid descriptorset");
+        return;
+    }
+
     _logicalDevice = logicalDevice;
+    _swapchain = swapChain;
+    _descriptorsetLayout = descriptorSetLayout;
+    _serviceLocator = serviceLocator;
 
     // Create Shader and store it
-#ifdef BUILD_FOR_IOS
-    _shader = std::make_unique<Shader>(GetProjectBasePath() + "/vert.spv", GetProjectBasePath() + "/frag.spv");
-#else
+    //_shader = std::make_unique<Shader>(GetProjectBasePath() + "/vert.spv", GetProjectBasePath() + "/frag.spv");
+
     auto shaderStages = CreateShaderStages();
-#endif
 
     auto dynamicState = CreateDynamicState();
 
