@@ -6,6 +6,8 @@
 #include <string>
 #include <config.hpp>
 
+#include "spdlog/spdlog.h"
+
 #include <graphics/instances/vk_instance.hpp>
 #include <graphics/surfaces/surface.hpp>
 #include <graphics/queuefamilies/queuefamily.hpp>
@@ -31,6 +33,7 @@ namespace Entropy
                 PhysicalDevice(std::shared_ptr<VulkanInstance> instance, std::shared_ptr<WindowSurface> surface);
                 inline VkPhysicalDevice Get() { return _physicalDevice; };
                 bool isValid() override { return _physicalDevice != nullptr; };
+
 #ifdef BUILD_FOR_MACOS
                 const std::vector<const char *> deviceExtensions = {
                     VK_KHR_SWAPCHAIN_EXTENSION_NAME, "VK_KHR_portability_subset"};
@@ -40,6 +43,7 @@ namespace Entropy
                 const std::vector<const char *> deviceExtensions = {
                     "VK_KHR_swapchain"};
 #endif
+
             private:
                 bool IsDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface, const std::vector<const char *> deviceExtensions);
                 bool CheckDeviceExtensionSupport(VkPhysicalDevice device, const std::vector<const char *> extensions);

@@ -41,4 +41,7 @@ LogicalDevice::LogicalDevice(std::shared_ptr<PhysicalDevice> physicalDevice, std
     {
         exit(EXIT_FAILURE);
     }
+
+    vkGetDeviceQueue(_logicalDevice, indices.graphicsFamily.value(), 0, &_graphicsQueue);
+    vkGetDeviceQueue(_logicalDevice, indices.presentFamily.value(), 0, &_presentQueue);
 }

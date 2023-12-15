@@ -7,6 +7,8 @@
 #include <graphics/swapchains/swapchain.hpp>
 #include <graphics/devices/logical_device.hpp>
 
+#include "spdlog/spdlog.h"
+
 using namespace Entropy::Graphics::CommandBuffers;
 using namespace Entropy::Global;
 using namespace Entropy::ServiceLocators;
@@ -67,6 +69,9 @@ namespace Entropy
                 void CreateFramebuffers();
                 VkRenderPass _renderPass;
                 std::vector<VkFramebuffer> _swapChainFramebuffers;
+
+                std::shared_ptr<Swapchain> _swapChain;
+                std::shared_ptr<LogicalDevice> _logicalDevice;
             };
         }
     }

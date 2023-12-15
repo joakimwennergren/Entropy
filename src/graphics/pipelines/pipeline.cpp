@@ -155,7 +155,7 @@ std::vector<VkDescriptorSetLayout> Pipeline::CreateDescriptorSetLayouts()
     layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
     layoutInfo.pBindings = bindings.data();
 
-    if (vkCreateDescriptorSetLayout(_vkContext->logicalDevice, &layoutInfo, nullptr, &tempLayout) != VK_SUCCESS)
+    if (vkCreateDescriptorSetLayout(_logicalDevice->Get(), &layoutInfo, nullptr, &tempLayout) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create descriptor set layout!");
     }
@@ -207,15 +207,24 @@ VkPipelineLayout Pipeline::CreatePipelineLayout(std::vector<VkDescriptorSetLayou
     pipelineLayoutInfo.pPushConstantRanges = &push_constant;
     pipelineLayoutInfo.pushConstantRangeCount = 1;
 
-    if (vkCreatePipelineLayout(_vkContext->logicalDevice, &pipelineLayoutInfo, nullptr, &this->_pipelineLayout) != VK_SUCCESS)
+    if (vkCreatePipelineLayout(_logicalDevice->Get(), &pipelineLayoutInfo, nullptr, &this->_pipelineLayout) != VK_SUCCESS)
     {
         exit(EXIT_FAILURE);
     }
 }
 
-Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass)
+Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator)
 {
-    _vkContext = VulkanContext::GetInstance();
+    // Get required depenencies
+    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
+
+    if (!logicalDevice->isValid())
+    {
+        spdlog::error("Trying to create pipeline with invalid invalid logical device");
+        return;
+    }
+
+    _logicalDevice = logicalDevice;
 
     // Create Shader and store it
 #ifdef BUILD_FOR_IOS
@@ -262,7 +271,7 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass)
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
     pipelineInfo.basePipelineIndex = -1;
 
-    if (vkCreateGraphicsPipelines(_vkContext->logicalDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &this->_pipeline) != VK_SUCCESS)
+    if (vkCreateGraphicsPipelines(logicalDevice->Get(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_pipeline) != VK_SUCCESS)
     {
         exit(EXIT_FAILURE);
     }
@@ -329,7 +338,13 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, uint32_t *vertContent
 
 Pipeline::~Pipeline()
 {
-    vkDestroyDescriptorSetLayout(_vkContext->logicalDevice, this->_descriptorSetLayout, nullptr);
-    vkDestroyPipeline(_vkContext->logicalDevice, this->_pipeline, nullptr);
-    vkDestroyPipelineLayout(_vkContext->logicalDevice, this->_pipelineLayout, nullptr);
+    if (!_logicalDevice->isValid())
+    {
+        spdlog::error("Couldn't clean up after pipeline since logicaldevice is invalid");
+        return;
+    }
+
+    vkDestroyDescriptorSetLayout(_logicalDevice->Get(), _descriptorSetLayout, nullptr);
+    vkDestroyPipeline(_logicalDevice->Get(), _pipeline, nullptr);
+    vkDestroyPipelineLayout(_logicalDevice->Get(), _pipelineLayout, nullptr);
 }

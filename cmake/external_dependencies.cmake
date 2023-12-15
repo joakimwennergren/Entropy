@@ -1,13 +1,13 @@
 # External Dependencies
 
-# Logging 
-#add_subdirectory(external/plog)
-
 # GLM matrix maths
 add_subdirectory(external/glm)
 
 # Events
 add_subdirectory(external/eventpp)
+
+# Logging
+add_subdirectory(external/spdlog)
 
 # Networking
 #add_subdirectory(external/asio.cmake)

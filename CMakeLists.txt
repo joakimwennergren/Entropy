@@ -22,7 +22,7 @@ include(cmake/external_dependencies.cmake)
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp )
 
 # Create the library
-add_library(Entropy STATIC ${SOURCES})
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
 # Compiler flags
 target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17 -Wall -Wfloat-conversion)
@@ -47,9 +47,10 @@ target_link_libraries(${PROJECT_NAME}
     #libcurl_shared #libcurl_static 
     freetype
     eventpp
+    spdlog
 )
 
-# Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk )
+# Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk)
 target_link_libraries(${PROJECT_NAME}
     ${Vulkan_LIBRARIES}
     glfw

@@ -17,6 +17,7 @@
 #include <renderables/renderable.hpp>
 
 #include <servicelocators/servicelocator.hpp>
+#include <graphics/descriptorsets/descriptorset.hpp>
 
 using namespace Entropy::Global;
 using namespace Entropy::Renderables;
@@ -26,6 +27,7 @@ using namespace Entropy::Graphics::Pipelines;
 using namespace Entropy::Graphics::RenderPasses;
 using namespace Entropy::Graphics::CommandBuffers;
 using namespace Entropy::Graphics::Synchronization;
+using namespace Entropy::Graphics::Descriptorsets;
 using namespace Entropy::ServiceLocators;
 
 namespace Entropy
@@ -55,7 +57,12 @@ namespace Entropy
                 std::vector<Entopy::Graphics::Buffers::UniformBuffer *> _uniformBuffers;
                 std::unique_ptr<Synchronizer> _synchronizer;
 
+                std::shared_ptr<ServiceLocator> _serviceLocator;
+
                 unsigned int _currentFrame = 0;
+
+                std::shared_ptr<Descriptorset> _descriptorSet;
+                std::shared_ptr<LogicalDevice> _logicalDevice;
             };
         }
     }

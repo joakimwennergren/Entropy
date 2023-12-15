@@ -26,6 +26,7 @@ TEST_CASE("Physical device can be created", "[PhysicalDevice]")
     // Create the window
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     auto window = glfwCreateWindow(640, 480, "Entropy tests", NULL, NULL);
+    glfwHideWindow(window);
 
     // Create new window surface
     auto surface = std::make_shared<WindowSurface>(vkInstance, window);

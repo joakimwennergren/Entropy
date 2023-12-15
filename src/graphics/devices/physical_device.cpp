@@ -4,12 +4,25 @@ using namespace Entropy::Graphics::Devices;
 
 PhysicalDevice::PhysicalDevice(std::shared_ptr<VulkanInstance> instance, std::shared_ptr<WindowSurface> surface)
 {
+    if (instance->Get() == nullptr)
+    {
+        spdlog::error("Trying to create physical device with invalid vulkan instance");
+        return;
+    }
+
+    if (surface->Get() == nullptr)
+    {
+        spdlog::error("Trying to create physical device with invalid window surface");
+        return;
+    }
+
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(instance->Get(), &deviceCount, nullptr);
 
     if (deviceCount == 0)
     {
-        exit(EXIT_FAILURE);
+        spdlog::error("Enumerate physical devices returned {} devices", deviceCount);
+        return;
     }
 
     std::vector<VkPhysicalDevice> devices(deviceCount);
@@ -26,7 +39,7 @@ PhysicalDevice::PhysicalDevice(std::shared_ptr<VulkanInstance> instance, std::sh
 
     if (_physicalDevice == VK_NULL_HANDLE)
     {
-        exit(EXIT_FAILURE);
+        spdlog::error("Couldn't find a suitable physical device regarding device extension and swapchain support");
     }
 }
 

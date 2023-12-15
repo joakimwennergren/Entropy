@@ -4,19 +4,25 @@ using namespace Entropy::Graphics::Renderers;
 
 Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
 {
-    VulkanContext *vkContext = VulkanContext::GetInstance();
+    // Store service locator
+    _serviceLocator = serviceLocator;
+
+    // Get required depenencies
+    _descriptorSet = std::dynamic_pointer_cast<Descriptorset>(serviceLocator->getService("DescriptorSet"));
+    _logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
 
     // Create renderpass
     _renderPass = std::make_shared<RenderPass>(serviceLocator);
 
     // Create pipeline(s)
-    _pipeline = std::make_unique<Pipeline>(_renderPass);
+    _pipeline = std::make_unique<Pipeline>(_renderPass, serviceLocator);
 
-    _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+    // Create synchronizer
+    _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT, serviceLocator);
 
     for (uint32_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
-        _commandBuffers.push_back(std::make_shared<CommandBuffer>());
+        _commandBuffers.push_back(std::make_shared<CommandBuffer>(serviceLocator));
     }
 
     // Create buffers @todo temp!!!
@@ -40,14 +46,14 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
         bufferInfo.range = sizeof(UniformBufferObject);
 
         descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptorWrites[0].dstSet = vkContext->descriptorSets[i];
+        descriptorWrites[0].dstSet = _descriptorSet->Get()[i];
         descriptorWrites[0].dstBinding = 0;
         descriptorWrites[0].dstArrayElement = 0;
         descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         descriptorWrites[0].descriptorCount = 1;
         descriptorWrites[0].pBufferInfo = &bufferInfo;
 
-        vkUpdateDescriptorSets(vkContext->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+        vkUpdateDescriptorSets(_logicalDevice->Get(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
     }
 }
 
@@ -114,7 +120,7 @@ void Renderer::Render()
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
     {
         _synchronizer.reset();
-        _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+        _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT, _serviceLocator);
 
         // vkContext->RecreateSwapChain();
         _renderPass->RecreateFrameBuffers();

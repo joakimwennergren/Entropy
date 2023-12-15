@@ -8,12 +8,18 @@
 #include <graphics/data/vertex.hpp>
 #include <graphics/data/pushcontant.hpp>
 #include <global/vulkancontext.hpp>
+#include <servicelocators/servicelocator.hpp>
+#include <graphics/devices/logical_device.hpp>
+
+#include "spdlog/spdlog.h"
 
 using namespace Symbios::Filesystem;
 using namespace Symbios::Graphics::Shaders;
 using namespace Entropy::Graphics::RenderPasses;
 using namespace Symbios::Filesystem;
 using namespace Entropy::Global;
+using namespace Entropy::ServiceLocators;
+using namespace Entropy::Graphics::Devices;
 
 namespace Entropy
 {
@@ -25,7 +31,7 @@ namespace Entropy
             {
             public:
                 Pipeline() = default;
-                Pipeline(std::shared_ptr<RenderPass> renderPass);
+                Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator);
                 Pipeline(std::shared_ptr<RenderPass> renderPass, uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize);
                 ~Pipeline();
 
@@ -52,6 +58,7 @@ namespace Entropy
                 VkPipeline _pipeline;
                 VkDescriptorSetLayout _descriptorSetLayout;
                 VulkanContext *_vkContext;
+                std::shared_ptr<LogicalDevice> _logicalDevice;
             };
         }
     }

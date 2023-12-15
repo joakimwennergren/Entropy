@@ -36,7 +36,7 @@ namespace Entopy
                  *
                  * @param context Vulkan context
                  */
-                UniformBuffer(VkDeviceSize bufferSize);
+                UniformBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkDeviceSize bufferSize);
 
             private:
             };

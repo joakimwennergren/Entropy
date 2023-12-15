@@ -61,7 +61,7 @@ void Texture::CreateTextureImageFromPixels(unsigned char *pixels, int width, int
 
     StagedBuffer buffer(imageSize, pixels);
 
-    //stbi_image_free(pixels);
+    // stbi_image_free(pixels);
 
     auto mem = buffer.GetBufferMemory();
     auto buf = buffer.GetVulkanBuffer();
@@ -75,10 +75,6 @@ void Texture::CreateTextureImageFromPixels(unsigned char *pixels, int width, int
     _imageView = VulkanContext::CreateImageView(_textureImage, colorFormat);
 
     hasTexture = true;
-
-#if USE_DEBUG_INFO == 1
-
-#endif
 }
 
 void Texture::CreateTextureImage(std::string path)
@@ -119,10 +115,6 @@ void Texture::CreateTextureImage(std::string path)
     _imageView = VulkanContext::CreateImageView(_textureImage, colorFormat);
 
     hasTexture = true;
-
-#if USE_DEBUG_INFO == 1
-
-#endif
 }
 
 void Texture::CreateImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory)
