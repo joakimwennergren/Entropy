@@ -1,5 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
+#include <config.hpp>
+
 #include <graphics/instances/vk_instance.hpp>
 #include <graphics/surfaces/surface.hpp>
 #include <graphics/devices/physical_device.hpp>
@@ -32,7 +34,7 @@ TEST_CASE("Logical device can be created", "[LogicalDevice]")
     auto surface = std::make_shared<WindowSurface>(vkInstance, window);
 
     // Create physical device
-    auto physicalDevice = PhysicalDevice(vkInstance, surface);
+    auto physicalDevice = std::make_shared<PhysicalDevice>(vkInstance, surface);
 
     // Create logical device
     auto logicalDevice = LogicalDevice(physicalDevice, surface);

@@ -16,6 +16,8 @@
 #include <global/scenegraph.hpp>
 #include <renderables/renderable.hpp>
 
+#include <servicelocators/servicelocator.hpp>
+
 using namespace Entropy::Global;
 using namespace Entropy::Renderables;
 using namespace Entropy::Graphics::Buffers;
@@ -24,6 +26,7 @@ using namespace Entropy::Graphics::Pipelines;
 using namespace Entropy::Graphics::RenderPasses;
 using namespace Entropy::Graphics::CommandBuffers;
 using namespace Entropy::Graphics::Synchronization;
+using namespace Entropy::ServiceLocators;
 
 namespace Entropy
 {
@@ -34,7 +37,7 @@ namespace Entropy
             class Renderer
             {
             public:
-                Renderer();
+                Renderer(std::shared_ptr<ServiceLocator> serviceLocator);
                 Renderer(uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize);
 
                 void Render();

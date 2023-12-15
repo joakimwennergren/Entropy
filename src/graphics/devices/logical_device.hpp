@@ -26,6 +26,10 @@ namespace Entropy
             public:
                 LogicalDevice(std::shared_ptr<PhysicalDevice> physicalDevice, std::shared_ptr<WindowSurface> surface);
                 inline VkDevice Get() { return _logicalDevice; };
+                bool isValid() override
+                {
+                    return _logicalDevice != nullptr;
+                }
 
             private:
                 VkDevice _logicalDevice;

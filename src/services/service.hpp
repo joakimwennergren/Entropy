@@ -9,7 +9,7 @@ namespace Entropy
         class Service
         {
         public:
-        private:
+            virtual bool isValid() = 0;
         };
     }
 }

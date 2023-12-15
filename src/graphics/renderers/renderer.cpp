@@ -2,12 +2,12 @@
 
 using namespace Entropy::Graphics::Renderers;
 
-Renderer::Renderer()
+Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
 {
     VulkanContext *vkContext = VulkanContext::GetInstance();
 
     // Create renderpass
-    _renderPass = std::make_shared<RenderPass>();
+    _renderPass = std::make_shared<RenderPass>(serviceLocator);
 
     // Create pipeline(s)
     _pipeline = std::make_unique<Pipeline>(_renderPass);
@@ -53,6 +53,7 @@ Renderer::Renderer()
 
 Renderer::Renderer(uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize)
 {
+    /*
     VulkanContext *vkContext = VulkanContext::GetInstance();
 
     // Create renderpass
@@ -98,6 +99,7 @@ Renderer::Renderer(uint32_t *vertContent, uint32_t vertSize, uint32_t *fragConte
 
         vkUpdateDescriptorSets(vkContext->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
     }
+    */
 }
 
 void Renderer::Render()

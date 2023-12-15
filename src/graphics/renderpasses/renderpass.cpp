@@ -2,12 +2,18 @@
 
 using namespace Entropy::Graphics::RenderPasses;
 
-RenderPass::RenderPass()
+RenderPass::RenderPass(std::shared_ptr<ServiceLocator> serviceLocator)
 {
-    VulkanContext *vkContext = VulkanContext::GetInstance();
+    auto swapChain = std::dynamic_pointer_cast<Swapchain>(serviceLocator->getService("SwapChain"));
+    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
+
+    if (swapChain->Get() == nullptr || !logicalDevice->isValid())
+    {
+        return;
+    }
 
     VkAttachmentDescription colorAttachment{};
-    colorAttachment.format = vkContext->swapChainImageFormat;
+    colorAttachment.format = swapChain->swapChainImageFormat;
     colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 
     colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
@@ -46,7 +52,7 @@ RenderPass::RenderPass()
     renderPassInfo.dependencyCount = 1;
     renderPassInfo.pDependencies = &dependency;
 
-    if (vkCreateRenderPass(vkContext->logicalDevice, &renderPassInfo, nullptr, &this->_renderPass) != VK_SUCCESS)
+    if (vkCreateRenderPass(logicalDevice->Get(), &renderPassInfo, nullptr, &_renderPass) != VK_SUCCESS)
     {
         exit(EXIT_FAILURE);
     }

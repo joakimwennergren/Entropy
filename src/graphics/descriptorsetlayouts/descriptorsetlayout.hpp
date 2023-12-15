@@ -2,12 +2,11 @@
 
 #include <vulkan/vulkan.hpp>
 #include <iostream>
+#include <vector>
 #include <set>
 #include <string>
 #include <config.hpp>
 
-#include <graphics/surfaces/surface.hpp>
-#include <graphics/queuefamilies/queuefamily.hpp>
 #include <graphics/devices/logical_device.hpp>
 
 using namespace Entropy::Graphics::Surfaces;
@@ -18,16 +17,16 @@ namespace Entropy
 {
     namespace Graphics
     {
-        namespace DescriptorPools
+        namespace DescriptorsetLayouts
         {
-            class DescriptorPool
+            class DescriptorsetLayout
             {
             public:
-                DescriptorPool(std::shared_ptr<LogicalDevice> logicalDevice);
-                inline VkDescriptorPool Get() { return _descriptorPool; };
+                DescriptorsetLayout(std::shared_ptr<LogicalDevice> logicalDevice, std::vector<VkDescriptorSetLayoutBinding> layoutBindings);
+                inline VkDescriptorSetLayout Get() { return _descriptorSetLayout; };
 
             private:
-                VkDescriptorPool _descriptorPool;
+                VkDescriptorSetLayout _descriptorSetLayout;
             };
         }
     }

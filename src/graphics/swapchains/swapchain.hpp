@@ -6,9 +6,11 @@
 
 #include <graphics/surfaces/surface.hpp>
 #include <graphics/queuefamilies/queuefamily.hpp>
+#include <services/service.hpp>
 
 using namespace Entropy::Graphics::Surfaces;
 using namespace Entropy::Graphics::QueueFamilies;
+using namespace Entropy::Services;
 
 namespace Entropy
 {
@@ -23,11 +25,17 @@ namespace Entropy
                 std::vector<VkPresentModeKHR> presentModes;
             };
 
-            class Swapchain
+            class Swapchain : public Service
             {
             public:
-                Swapchain(VkPhysicalDevice physicalDevice, VkDevice logicalDevice, WindowSurface surface, VkExtent2D frame);
+                Swapchain(VkPhysicalDevice physicalDevice, VkDevice logicalDevice, std::shared_ptr<WindowSurface> surface, VkExtent2D frame);
                 static SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
+                std::vector<VkImageView> swapChainImageViews;
+                std::vector<VkImage> swapChainImages;
+                VkExtent2D swapChainExtent;
+                VkFormat swapChainImageFormat;
+                inline VkSwapchainKHR Get() { return _swapChain; };
+                bool isValid() override { return _swapChain != nullptr; };
 
             private:
                 VkSwapchainKHR _swapChain;

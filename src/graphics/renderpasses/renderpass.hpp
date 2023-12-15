@@ -3,9 +3,15 @@
 #include <vulkan/vulkan.hpp>
 #include <global/vulkancontext.hpp>
 #include <graphics/commandbuffers/commandbuffer.hpp>
+#include <servicelocators/servicelocator.hpp>
+#include <graphics/swapchains/swapchain.hpp>
+#include <graphics/devices/logical_device.hpp>
 
 using namespace Entropy::Graphics::CommandBuffers;
 using namespace Entropy::Global;
+using namespace Entropy::ServiceLocators;
+using namespace Entropy::Graphics::Swapchains;
+using namespace Entropy::Graphics::Devices;
 
 namespace Entropy
 {
@@ -21,7 +27,7 @@ namespace Entropy
                  *
                  * @param context
                  */
-                RenderPass();
+                RenderPass(std::shared_ptr<ServiceLocator> serviceLocator);
 
                 /**
                  * @brief Destroy the Render Pass object

@@ -23,6 +23,7 @@ namespace Entropy
             class ImageView
             {
             public:
+                ImageView() = default;
                 ImageView(std::shared_ptr<LogicalDevice> logicalDevice, VkImage image, VkFormat format);
 
                 inline VkImageView Get() { return _imageView; };
