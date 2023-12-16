@@ -32,7 +32,6 @@ namespace Entropy
             class Pipeline
             {
             public:
-                Pipeline() = default;
                 Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator);
                 Pipeline(std::shared_ptr<RenderPass> renderPass, uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize);
                 ~Pipeline();
@@ -40,25 +39,11 @@ namespace Entropy
                 inline VkPipeline GetPipeline() { return this->_pipeline; };
                 inline VkPipelineLayout GetPipelineLayout() { return this->_pipelineLayout; };
 
-            protected:
-                std::array<VkPipelineShaderStageCreateInfo, 2> CreateShaderStages();
-                VkPipelineDynamicStateCreateInfo CreateDynamicState();
-                VkPipelineInputAssemblyStateCreateInfo CreateInputAssembly();
-                VkPipelineViewportStateCreateInfo CreateViewportState();
-                VkPipelineRasterizationStateCreateInfo CreateRasterizer();
-                VkPipelineMultisampleStateCreateInfo CreateMultisampling();
-                VkPipelineColorBlendStateCreateInfo CreateColorBlendning();
-                std::vector<VkDescriptorSetLayout> CreateDescriptorSetLayouts();
-                std::vector<VkPipelineVertexInputStateCreateInfo> CreateVertexInputStates();
-                VkPushConstantRange CreatePushContantRange();
-                VkPipelineLayout CreatePipelineLayout(std::vector<VkDescriptorSetLayout> dsLayouts, VkPushConstantRange push_constant);
-
             private:
-                std::unique_ptr<Shader> _shader;
-                std::shared_ptr<RenderPass> _renderPass;
                 VkPipelineLayout _pipelineLayout;
                 VkPipeline _pipeline;
                 VkDescriptorSetLayout _descriptorSetLayout;
+                std::shared_ptr<RenderPass> _renderPass;
                 std::shared_ptr<LogicalDevice> _logicalDevice;
                 std::shared_ptr<Swapchain> _swapchain;
                 std::shared_ptr<DescriptorsetLayout> _descriptorsetLayout;

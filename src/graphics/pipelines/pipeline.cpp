@@ -2,83 +2,8 @@
 
 using namespace Entropy::Graphics::Pipelines;
 
-std::array<VkPipelineShaderStageCreateInfo, 2> Pipeline::CreateShaderStages()
-{
-    auto shader = std::make_unique<Shader>(_serviceLocator, GetShadersDir() + "vert.spv", GetShadersDir() + "frag.spv");
-
-    std::cout << (shader->GetVertShaderModule() == VK_NULL_HANDLE) << std::endl;
-
-    VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
-    vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-    vertShaderStageInfo.module = shader->GetVertShaderModule();
-    vertShaderStageInfo.pName = "main";
-
-    VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
-    fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-    fragShaderStageInfo.module = shader->GetFragShaderModule();
-    fragShaderStageInfo.pName = "main";
-
-    std::array<VkPipelineShaderStageCreateInfo, 2> shaderStages = {vertShaderStageInfo, fragShaderStageInfo};
-
-    return shaderStages;
-}
-
-VkPipelineDynamicStateCreateInfo Pipeline::CreateDynamicState()
-{
-}
-
-VkPipelineInputAssemblyStateCreateInfo Pipeline::CreateInputAssembly()
-{
-}
-
-VkPipelineViewportStateCreateInfo Pipeline::CreateViewportState()
-{
-}
-
-VkPipelineRasterizationStateCreateInfo Pipeline::CreateRasterizer()
-{
-}
-
-VkPipelineColorBlendStateCreateInfo Pipeline::CreateColorBlendning()
-{
-}
-
-VkPipelineMultisampleStateCreateInfo Pipeline::CreateMultisampling()
-{
-}
-
-std::vector<VkDescriptorSetLayout> Pipeline::CreateDescriptorSetLayouts()
-{
-}
-
-VkPushConstantRange Pipeline::CreatePushContantRange()
-{
-}
-
-std::vector<VkPipelineVertexInputStateCreateInfo> Pipeline::CreateVertexInputStates()
-{
-}
-
-VkPipelineLayout Pipeline::CreatePipelineLayout(std::vector<VkDescriptorSetLayout> dsLayouts, VkPushConstantRange push_constant)
-{
-    VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = dsLayouts.size();
-    pipelineLayoutInfo.pSetLayouts = dsLayouts.data();
-    pipelineLayoutInfo.pPushConstantRanges = &push_constant;
-    pipelineLayoutInfo.pushConstantRangeCount = 1;
-
-    if (vkCreatePipelineLayout(_logicalDevice->Get(), &pipelineLayoutInfo, nullptr, &this->_pipelineLayout) != VK_SUCCESS)
-    {
-        exit(EXIT_FAILURE);
-    }
-}
-
 Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator)
 {
-
     // Get required depenencies
     auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
     auto swapChain = std::dynamic_pointer_cast<Swapchain>(serviceLocator->getService("SwapChain"));
@@ -102,6 +27,7 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<Servi
         return;
     }
 
+    // Assign services
     _logicalDevice = logicalDevice;
     _swapchain = swapChain;
     _descriptorsetLayout = descriptorSetLayout;
@@ -238,7 +164,8 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<Servi
 
     if (vkCreateDescriptorSetLayout(_logicalDevice->Get(), &layoutInfo, nullptr, &tempLayout) != VK_SUCCESS)
     {
-        throw std::runtime_error("failed to create descriptor set layout!");
+        spdlog::error("Failed to create descriptor set layout!");
+        return;
     }
 
     dsLayouts[0] = _descriptorsetLayout->Get();
@@ -253,7 +180,18 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<Servi
     // this push constant range is accessible only in the vertex shader
     push_constant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
-    CreatePipelineLayout(dsLayouts, push_constant);
+    VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    pipelineLayoutInfo.setLayoutCount = dsLayouts.size();
+    pipelineLayoutInfo.pSetLayouts = dsLayouts.data();
+    pipelineLayoutInfo.pPushConstantRanges = &push_constant;
+    pipelineLayoutInfo.pushConstantRangeCount = 1;
+
+    if (vkCreatePipelineLayout(_logicalDevice->Get(), &pipelineLayoutInfo, nullptr, &_pipelineLayout) != VK_SUCCESS)
+    {
+        spdlog::error("Failed to create pipeline layout!");
+        return;
+    }
 
     VkGraphicsPipelineCreateInfo pipelineInfo{};
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -275,7 +213,8 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<Servi
 
     if (vkCreateGraphicsPipelines(logicalDevice->Get(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_pipeline) != VK_SUCCESS)
     {
-        exit(EXIT_FAILURE);
+        spdlog::error("Failed to create pipeline!");
+        return;
     }
 }
 
