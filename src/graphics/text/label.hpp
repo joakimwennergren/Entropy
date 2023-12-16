@@ -11,7 +11,6 @@
 
 #include <graphics/primitives/2d/sprite.hpp>
 #include <filesystem/filesystem.hpp>
-#include <global/vulkancontext.hpp>
 #include <renderables/renderable.hpp>
 
 using namespace Entropy::Renderables;

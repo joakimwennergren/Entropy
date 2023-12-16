@@ -3,7 +3,6 @@
 #include <graphics/textures/texture.hpp>
 #include <graphics/buffers/vertexbuffer.hpp>
 #include <graphics/buffers/buffer.hpp>
-#include <global/vulkancontext.hpp>
 #include <graphics/descriptorpools/descriptorpool.hpp>
 
 #include <string>

@@ -7,7 +7,6 @@
 #include <filesystem/filesystem.hpp>
 #include <graphics/data/vertex.hpp>
 #include <graphics/data/pushcontant.hpp>
-#include <global/vulkancontext.hpp>
 #include <servicelocators/servicelocator.hpp>
 #include <graphics/devices/logical_device.hpp>
 #include <graphics/swapchains/swapchain.hpp>
@@ -19,7 +18,6 @@ using namespace Symbios::Filesystem;
 using namespace Symbios::Graphics::Shaders;
 using namespace Entropy::Graphics::RenderPasses;
 using namespace Symbios::Filesystem;
-using namespace Entropy::Global;
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Swapchains;
 using namespace Entropy::Graphics::DescriptorsetLayouts;
@@ -61,7 +59,6 @@ namespace Entropy
                 VkPipelineLayout _pipelineLayout;
                 VkPipeline _pipeline;
                 VkDescriptorSetLayout _descriptorSetLayout;
-                VulkanContext *_vkContext;
                 std::shared_ptr<LogicalDevice> _logicalDevice;
                 std::shared_ptr<Swapchain> _swapchain;
                 std::shared_ptr<DescriptorsetLayout> _descriptorsetLayout;

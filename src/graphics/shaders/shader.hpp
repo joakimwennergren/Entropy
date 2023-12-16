@@ -1,11 +1,9 @@
 #pragma once
 
 #include <fstream>
-#include <global/vulkancontext.hpp>
 #include <servicelocators/servicelocator.hpp>
 #include <graphics/devices/logical_device.hpp>
 
-using namespace Entropy::Global;
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Devices;
 

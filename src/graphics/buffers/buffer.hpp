@@ -15,9 +15,7 @@
 #include <graphics/data/vertex.hpp>
 #include <graphics/utilities/utilities.hpp>
 #include <graphics/commandbuffers/commandbuffer.hpp>
-#include <global/vulkancontext.hpp>
 
-using namespace Entropy::Global;
 using namespace Entropy::Graphics::Utilities;
 using namespace Entropy::Graphics::CommandBuffers;
 

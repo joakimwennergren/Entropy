@@ -44,8 +44,6 @@ using namespace Entropy::SceneGraphs;
 #include <GLFW/glfw3.h>
 
 // @todo remove symbios namespace
-using namespace Symbios;
-using namespace Entropy::Global;
 using namespace Entropy::Graphics::Renderers;
 using namespace Entropy::Timing;
 using namespace Entropy::ServiceLocators;

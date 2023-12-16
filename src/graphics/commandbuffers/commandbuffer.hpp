@@ -10,13 +10,10 @@
  */
 #pragma once
 
-#include <global/vulkancontext.hpp>
-
 #include <servicelocators/servicelocator.hpp>
 #include <graphics/commandpools/commandpool.hpp>
 #include <services/service.hpp>
 
-using namespace Entropy::Global;
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::CommandPools;
 using namespace Entropy::Services;

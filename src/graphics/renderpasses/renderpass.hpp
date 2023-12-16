@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vulkan/vulkan.hpp>
-#include <global/vulkancontext.hpp>
 #include <graphics/commandbuffers/commandbuffer.hpp>
 #include <servicelocators/servicelocator.hpp>
 #include <graphics/swapchains/swapchain.hpp>
@@ -10,7 +9,6 @@
 #include "spdlog/spdlog.h"
 
 using namespace Entropy::Graphics::CommandBuffers;
-using namespace Entropy::Global;
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Swapchains;
 using namespace Entropy::Graphics::Devices;

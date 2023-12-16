@@ -6,7 +6,6 @@
 #include <renderables/renderable.hpp>
 
 using namespace Entropy::Graphics::Textures;
-using namespace Entropy::Global;
 using namespace Entropy::Renderables;
 
 namespace Symbios

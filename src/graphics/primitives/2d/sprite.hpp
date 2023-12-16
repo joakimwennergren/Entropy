@@ -5,7 +5,6 @@
 #include <graphics/buffers/vertexbuffer.hpp>
 #include <renderables/renderable.hpp>
 #include <filesystem/filesystem.hpp>
-#include <global/vulkancontext.hpp>
 
 using namespace Entropy::Graphics::Textures;
 using namespace Entropy::Renderables;
