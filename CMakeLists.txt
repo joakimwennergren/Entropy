@@ -15,6 +15,7 @@ project(Entropy)
 # Detect platform
 include(cmake/platform.cmake)
 
+# Engine base path
 set(PROJECT_BASEPATH ${PROJECT_SOURCE_DIR})
 
 # Include dependencies
