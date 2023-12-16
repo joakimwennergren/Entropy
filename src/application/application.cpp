@@ -43,14 +43,6 @@ Application::Application()
     auto physicalDevice = std::make_shared<PhysicalDevice>(vkInstance, windowSurface);
     auto logicalDevice = std::make_shared<LogicalDevice>(physicalDevice, windowSurface);
     auto swapChain = std::make_shared<Swapchain>(physicalDevice->Get(), logicalDevice->Get(), windowSurface, frame);
-
-    std::vector<ImageView> swapChainImageViews;
-    swapChainImageViews.resize(swapChain->swapChainImages.size());
-    for (uint32_t i = 0; i < swapChain->swapChainImages.size(); i++)
-    {
-        swapChainImageViews[i] = ImageView(logicalDevice, swapChain->swapChainImages[i], swapChain->swapChainImageFormat);
-    }
-
     auto commandPool = std::make_shared<CommandPool>(logicalDevice, physicalDevice, windowSurface);
     auto descriptorPool = std::make_shared<DescriptorPool>(logicalDevice);
 
@@ -88,7 +80,8 @@ Application::Application()
     serviceLocator->registerService("DescriptorSetLayout", descriptorSetLayout);
     serviceLocator->registerService("SwapChain", swapChain);
     serviceLocator->registerService("CommandPool", commandPool);
-    auto renderer = std::make_shared<Renderer>(serviceLocator);
+
+    _renderer = std::make_shared<Renderer>(serviceLocator);
 }
 
 Application::~Application()

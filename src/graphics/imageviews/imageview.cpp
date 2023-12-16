@@ -2,7 +2,7 @@
 
 using namespace Entropy::Graphics::ImageViews;
 
-ImageView::ImageView(std::shared_ptr<LogicalDevice> logicalDevice, VkImage image, VkFormat format)
+ImageView::ImageView(VkDevice logicalDevice, VkImage image, VkFormat format)
 {
     VkImageViewCreateInfo viewInfo{};
     viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -15,7 +15,7 @@ ImageView::ImageView(std::shared_ptr<LogicalDevice> logicalDevice, VkImage image
     viewInfo.subresourceRange.baseArrayLayer = 0;
     viewInfo.subresourceRange.layerCount = 1;
 
-    if (vkCreateImageView(logicalDevice->Get(), &viewInfo, nullptr, &_imageView) != VK_SUCCESS)
+    if (vkCreateImageView(logicalDevice, &viewInfo, nullptr, &_imageView) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create texture image view!");
     }

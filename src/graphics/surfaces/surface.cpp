@@ -86,7 +86,7 @@ WindowSurface::~WindowSurface()
 {
     if (_instance != nullptr)
     {
-        std::cout << "destroying window surface!!" << std::endl;
+        std::cout << "destroying window surface!" << std::endl;
         vkDestroySurfaceKHR(_instance->Get(), _surface, nullptr);
     }
 }

@@ -7,9 +7,11 @@
 #include <graphics/surfaces/surface.hpp>
 #include <graphics/queuefamilies/queuefamily.hpp>
 #include <services/service.hpp>
+#include <graphics/imageviews/imageview.hpp>
 
 using namespace Entropy::Graphics::Surfaces;
 using namespace Entropy::Graphics::QueueFamilies;
+using namespace Entropy::Graphics::ImageViews;
 using namespace Entropy::Services;
 
 namespace Entropy
@@ -44,6 +46,7 @@ namespace Entropy
                 VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes);
                 VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities, VkExtent2D frame);
                 VkDevice _logicalDevice;
+                std::shared_ptr<WindowSurface> _surface;
             };
         }
     }

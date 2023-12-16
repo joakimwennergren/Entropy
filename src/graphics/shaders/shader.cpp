@@ -8,6 +8,7 @@ Shader::Shader(std::shared_ptr<ServiceLocator> serviceLocator, const std::string
 
     this->_vertCode = this->ReadFile(vert);
     this->_fragCode = this->ReadFile(frag);
+
     if (this->_vertCode.size() > 0 && this->_fragCode.size() > 0)
     {
         this->_shaderModuleVert = this->BuildShader(this->_vertCode);

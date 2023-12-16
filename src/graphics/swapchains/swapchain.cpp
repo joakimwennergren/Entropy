@@ -4,8 +4,8 @@ using namespace Entropy::Graphics::Swapchains;
 
 Swapchain::Swapchain(VkPhysicalDevice physicalDevice, VkDevice logicalDevice, std::shared_ptr<WindowSurface> surface, VkExtent2D frame)
 {
-    std::cout << "CREATING SWAPCHAIN" << std::endl;
     _logicalDevice = logicalDevice;
+    _surface = surface;
 
     SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(physicalDevice, surface->Get());
     VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
@@ -61,6 +61,14 @@ Swapchain::Swapchain(VkPhysicalDevice physicalDevice, VkDevice logicalDevice, st
 
     swapChainImageFormat = surfaceFormat.format;
     swapChainExtent = extent;
+
+    swapChainImageViews.resize(swapChainImages.size());
+
+    for (uint32_t i = 0; i < swapChainImages.size(); i++)
+    {
+        auto imageView = ImageView(_logicalDevice, swapChainImages[i], swapChainImageFormat);
+        swapChainImageViews[i] = imageView.Get();
+    }
 }
 
 Swapchain::~Swapchain()

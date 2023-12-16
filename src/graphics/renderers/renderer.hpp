@@ -18,6 +18,7 @@
 
 #include <servicelocators/servicelocator.hpp>
 #include <graphics/descriptorsets/descriptorset.hpp>
+#include <graphics/swapchains/swapchain.hpp>
 
 using namespace Entropy::Global;
 using namespace Entropy::Renderables;
@@ -29,6 +30,7 @@ using namespace Entropy::Graphics::CommandBuffers;
 using namespace Entropy::Graphics::Synchronization;
 using namespace Entropy::Graphics::Descriptorsets;
 using namespace Entropy::ServiceLocators;
+using namespace Entropy::Graphics::Swapchains;
 
 namespace Entropy
 {
@@ -63,6 +65,7 @@ namespace Entropy
 
                 std::shared_ptr<Descriptorset> _descriptorSet;
                 std::shared_ptr<LogicalDevice> _logicalDevice;
+                std::shared_ptr<Swapchain> _swapChain;
             };
         }
     }
