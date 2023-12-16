@@ -12,8 +12,32 @@
 #include <config.hpp>
 
 #include <graphics/renderers/renderer.hpp>
+#include <servicelocators/servicelocator.hpp>
 #include <timing/timer.hpp>
+#include <graphics/devices/logical_device.hpp>
 #include "screen.hpp"
+
+// new includes
+#include <graphics/instances/vk_instance.hpp>
+#include <graphics/surfaces/surface.hpp>
+#include <graphics/devices/physical_device.hpp>
+#include <graphics/swapchains/swapchain.hpp>
+#include <graphics/imageviews/imageview.hpp>
+#include <graphics/descriptorpools/descriptorpool.hpp>
+#include <graphics/descriptorsetlayouts/descriptorsetlayout.hpp>
+#include <graphics/descriptorsets/descriptorset.hpp>
+#include <graphics/commandpools/commandpool.hpp>
+#include <scenegraphs/scenegraph.hpp>
+
+using namespace Entropy::Graphics::Instances;
+using namespace Entropy::Graphics::Surfaces;
+using namespace Entropy::Graphics::Swapchains;
+using namespace Entropy::Graphics::ImageViews;
+using namespace Entropy::Graphics::CommandPools;
+using namespace Entropy::Graphics::DescriptorPools;
+using namespace Entropy::Graphics::DescriptorsetLayouts;
+using namespace Entropy::Graphics::Descriptorsets;
+using namespace Entropy::SceneGraphs;
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
 
@@ -24,6 +48,7 @@ using namespace Symbios;
 using namespace Entropy::Global;
 using namespace Entropy::Graphics::Renderers;
 using namespace Entropy::Timing;
+using namespace Entropy::ServiceLocators;
 
 void framebufferResizeCallback(GLFWwindow *window, int width, int height);
 void cursorPositionCallback(GLFWwindow *window, double x, double y);
@@ -50,6 +75,8 @@ public:
 protected:
     Screen screen;
     GLFWwindow *_window;
+    std::shared_ptr<ServiceLocator> serviceLocator;
+    std::shared_ptr<SceneGraph> sceneGraph;
 
 private:
     std::shared_ptr<Renderer> _renderer;
@@ -57,7 +84,6 @@ private:
     float _lastTick = 0.0f;
     float _deltaTime = 0.0f;
 };
-
 #endif
 
 #if defined(BUILD_FOR_ANDROID)

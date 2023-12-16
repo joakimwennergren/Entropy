@@ -2,27 +2,35 @@
 
 using namespace Entropy::Graphics::Renderers;
 
-Renderer::Renderer()
+Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
 {
-    VulkanContext *vkContext = VulkanContext::GetInstance();
+    // Store service locator
+    _serviceLocator = serviceLocator;
+
+    // Get required depenencies
+    _descriptorSet = std::dynamic_pointer_cast<Descriptorset>(serviceLocator->getService("DescriptorSet"));
+    _logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
+    _swapChain = std::dynamic_pointer_cast<Swapchain>(serviceLocator->getService("SwapChain"));
+    _sceneGraph = std::dynamic_pointer_cast<SceneGraph>(serviceLocator->getService("SceneGraph"));
 
     // Create renderpass
-    _renderPass = std::make_shared<RenderPass>();
+    _renderPass = std::make_shared<RenderPass>(serviceLocator);
 
     // Create pipeline(s)
-    _pipeline = std::make_unique<Pipeline>(_renderPass);
+    _pipeline = std::make_unique<Pipeline>(_renderPass, serviceLocator);
 
-    _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+    // Create synchronizer
+    _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT, serviceLocator);
 
     for (uint32_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
-        _commandBuffers.push_back(std::make_shared<CommandBuffer>());
+        _commandBuffers.push_back(std::make_shared<CommandBuffer>(serviceLocator));
     }
 
     // Create buffers @todo temp!!!
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
-        _uniformBuffers.push_back(new Entopy::Graphics::Buffers::UniformBuffer(sizeof(UniformBufferObject)));
+        _uniformBuffers.push_back(new Entopy::Graphics::Buffers::UniformBuffer(serviceLocator, sizeof(UniformBufferObject)));
     }
 
     for (unsigned int i = 0; i < _uniformBuffers.size(); i++)
@@ -40,19 +48,20 @@ Renderer::Renderer()
         bufferInfo.range = sizeof(UniformBufferObject);
 
         descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptorWrites[0].dstSet = vkContext->descriptorSets[i];
+        descriptorWrites[0].dstSet = _descriptorSet->Get()[i];
         descriptorWrites[0].dstBinding = 0;
         descriptorWrites[0].dstArrayElement = 0;
         descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         descriptorWrites[0].descriptorCount = 1;
         descriptorWrites[0].pBufferInfo = &bufferInfo;
 
-        vkUpdateDescriptorSets(vkContext->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+        vkUpdateDescriptorSets(_logicalDevice->Get(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
     }
 }
 
 Renderer::Renderer(uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize)
 {
+    /*
     VulkanContext *vkContext = VulkanContext::GetInstance();
 
     // Create renderpass
@@ -98,21 +107,20 @@ Renderer::Renderer(uint32_t *vertContent, uint32_t vertSize, uint32_t *fragConte
 
         vkUpdateDescriptorSets(vkContext->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
     }
+    */
 }
 
 void Renderer::Render()
 {
-    VulkanContext *vkContext = VulkanContext::GetInstance();
-
-    vkWaitForFences(vkContext->logicalDevice, 1, &_synchronizer->GetFences()[_currentFrame], VK_TRUE, UINT64_MAX);
+    vkWaitForFences(_logicalDevice->Get(), 1, &_synchronizer->GetFences()[_currentFrame], VK_TRUE, UINT64_MAX);
 
     uint32_t imageIndex;
-    VkResult result = vkAcquireNextImageKHR(vkContext->logicalDevice, vkContext->swapChain, UINT64_MAX, _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE, &imageIndex);
+    VkResult result = vkAcquireNextImageKHR(_logicalDevice->Get(), _swapChain->Get(), UINT64_MAX, _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE, &imageIndex);
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
     {
         _synchronizer.reset();
-        _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+        _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT, _serviceLocator);
 
         // vkContext->RecreateSwapChain();
         _renderPass->RecreateFrameBuffers();
@@ -126,10 +134,10 @@ void Renderer::Render()
 
     // current commandbuffer & descriptorset
     auto currentCmdBuffer = _commandBuffers[_currentFrame]->GetCommandBuffer();
-    auto currentDescriptorSet = vkContext->descriptorSets[_currentFrame];
+    auto currentDescriptorSet = _descriptorSet->Get()[_currentFrame];
 
     // Reset fences and current commandbuffer
-    vkResetFences(vkContext->logicalDevice, 1, &_synchronizer->GetFences()[_currentFrame]);
+    vkResetFences(_logicalDevice->Get(), 1, &_synchronizer->GetFences()[_currentFrame]);
     vkResetCommandBuffer(currentCmdBuffer, 0);
 
     // Begin renderpass and commandbuffer recording
@@ -143,8 +151,8 @@ void Renderer::Render()
     VkViewport viewport{};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
-    viewport.width = (float)vkContext->swapChainExtent.width;
-    viewport.height = (float)vkContext->swapChainExtent.height;
+    viewport.width = (float)_swapChain->swapChainExtent.width;
+    viewport.height = (float)_swapChain->swapChainExtent.height;
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
     vkCmdSetViewport(currentCmdBuffer, 0, 1, &viewport);
@@ -152,23 +160,23 @@ void Renderer::Render()
     // Scissor
     VkRect2D scissor{};
     scissor.offset = {0, 0};
-    scissor.extent = vkContext->swapChainExtent;
+    scissor.extent = _swapChain->swapChainExtent;
     vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissor);
 
     // Update UBO
     UniformBufferObject ubo{};
     ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    ubo.proj = glm::ortho(0.0f, (float)vkContext->swapChainExtent.width, (float)vkContext->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
+    ubo.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
     ubo.proj[1][1] *= -1;
     memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));
 
     // Sort renderables based on Zindex
-    sort(Global::SceneGraph::GetInstance()->renderables.begin(),
-         Global::SceneGraph::GetInstance()->renderables.end(),
+    sort(_sceneGraph->renderables.begin(),
+         _sceneGraph->renderables.end(),
          [](const std::shared_ptr<Renderable> &lhs, const std::shared_ptr<Renderable> &rhs)
          { return lhs->zIndex < rhs->zIndex; });
 
-    for (auto &renderable : Global::SceneGraph::GetInstance()->renderables)
+    for (auto &renderable : _sceneGraph->renderables)
     {
         if (!renderable->isAbleToRender())
         {
@@ -238,8 +246,6 @@ void Renderer::Render()
 
 void Renderer::SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex)
 {
-    VulkanContext *vkContext = VulkanContext::GetInstance();
-
     // Submit info
     VkSubmitInfo submitInfo{};
     VkSemaphore signalSemaphores[] = {_synchronizer->GetRenderFinishedSemaphores()[_currentFrame]};
@@ -255,7 +261,7 @@ void Renderer::SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex)
     submitInfo.pSignalSemaphores = signalSemaphores;
 
     // Submit queue
-    if (vkQueueSubmit(vkContext->graphicsQueue, 1, &submitInfo, _synchronizer->GetFences()[_currentFrame]) != VK_SUCCESS)
+    if (vkQueueSubmit(_logicalDevice->GetGraphicQueue(), 1, &submitInfo, _synchronizer->GetFences()[_currentFrame]) != VK_SUCCESS)
     {
         exit(EXIT_FAILURE);
     }
@@ -267,13 +273,13 @@ void Renderer::SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex)
     presentInfo.pWaitSemaphores = signalSemaphores;
 
     // SwapChains
-    VkSwapchainKHR swapChains[] = {vkContext->swapChain};
+    VkSwapchainKHR swapChains[] = {_swapChain->Get()};
     presentInfo.swapchainCount = 1;
     presentInfo.pSwapchains = swapChains;
     presentInfo.pImageIndices = &imageIndex;
 
     // Present
-    if (vkQueuePresentKHR(vkContext->presentQueue, &presentInfo) != VK_SUCCESS)
+    if (vkQueuePresentKHR(_logicalDevice->GetPresentQueue(), &presentInfo) != VK_SUCCESS)
     {
         exit(EXIT_FAILURE);
     }

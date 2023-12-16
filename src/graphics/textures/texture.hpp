@@ -11,11 +11,13 @@
 #include <graphics/commandbuffers/commandbuffer.hpp>
 #include <graphics/utilities/utilities.hpp>
 #include <graphics/buffers/stagedbuffer.hpp>
+#include <graphics/imageviews/imageview.hpp>
 
 using namespace Entropy::Global;
 using namespace Entropy::Graphics::Buffers;
 using namespace Entropy::Graphics::Utilities;
 using namespace Entropy::Graphics::CommandBuffers;
+using namespace Entropy::Graphics::ImageViews;
 
 namespace Entropy
 {
@@ -31,7 +33,7 @@ namespace Entropy
                  *
                  * @param context
                  */
-                Texture();
+                Texture(std::shared_ptr<ServiceLocator> serviceLocator);
 
                 /**
                  * @brief Destroy the Texture object
@@ -107,6 +109,8 @@ namespace Entropy
                 VkImage _textureImage;
                 VkImageView _imageView;
                 VkDeviceMemory _textureImageMemory;
+                std::shared_ptr<ServiceLocator> _serviceLocator;
+                std::shared_ptr<LogicalDevice> _logicalDevice;
             };
         }
     }

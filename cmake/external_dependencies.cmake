@@ -1,13 +1,13 @@
 # External Dependencies
 
-# Logging 
-#add_subdirectory(external/plog)
-
 # GLM matrix maths
 add_subdirectory(external/glm)
 
 # Events
 add_subdirectory(external/eventpp)
+
+# Logging
+add_subdirectory(external/spdlog)
 
 # Networking
 #add_subdirectory(external/asio.cmake)
@@ -37,7 +37,7 @@ add_subdirectory(external/sol2)
 
 # Text rendering
 set(FT_WITH_BZIP2 OFF)
-add_subdirectory(external/freetype-2.10.0)
+add_subdirectory(external/freetype-2.13.2)
 
 
 set(_LUA_SOURCE_DIR external/lua-5.4.6/src)
