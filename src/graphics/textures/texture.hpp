@@ -11,11 +11,13 @@
 #include <graphics/commandbuffers/commandbuffer.hpp>
 #include <graphics/utilities/utilities.hpp>
 #include <graphics/buffers/stagedbuffer.hpp>
+#include <graphics/imageviews/imageview.hpp>
 
 using namespace Entropy::Global;
 using namespace Entropy::Graphics::Buffers;
 using namespace Entropy::Graphics::Utilities;
 using namespace Entropy::Graphics::CommandBuffers;
+using namespace Entropy::Graphics::ImageViews;
 
 namespace Entropy
 {

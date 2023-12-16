@@ -1,6 +1,6 @@
 #include "sprite.hpp"
 
-using namespace Symbios::Graphics::Primitives;
+using namespace Entropy::Graphics::Primitives;
 
 Sprite::Sprite()
 {
@@ -74,7 +74,7 @@ Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator, std::string path)
     this->scale = glm::vec3(1.0, 1.0, 1.0);
     this->texture->CreateTextureImage(path);
 
-    UpdateImage();
+    UpdateImage(serviceLocator);
 }
 
 Sprite::Sprite(unsigned char *pixels, int width, int height)

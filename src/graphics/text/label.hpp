@@ -13,11 +13,9 @@
 #include <filesystem/filesystem.hpp>
 #include <global/vulkancontext.hpp>
 #include <renderables/renderable.hpp>
-#include <global/scenegraph.hpp>
 
 using namespace Entropy::Renderables;
-using namespace Symbios::Graphics::Primitives;
-using namespace Symbios;
+using namespace Entropy::Graphics::Primitives;
 
 namespace Symbios
 {

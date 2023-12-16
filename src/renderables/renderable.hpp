@@ -4,12 +4,14 @@
 #include <graphics/buffers/vertexbuffer.hpp>
 #include <graphics/buffers/buffer.hpp>
 #include <global/vulkancontext.hpp>
+#include <graphics/descriptorpools/descriptorpool.hpp>
 
 #include <string>
 #include <glm/glm.hpp>
 
 using namespace Entropy::Graphics::Textures;
 using namespace Entropy::Graphics::Buffers;
+using namespace Entropy::Graphics::DescriptorPools;
 
 namespace Entropy
 {
@@ -25,6 +27,7 @@ namespace Entropy
 
             ~Renderable()
             {
+                /*
                 VulkanContext *vkContext = VulkanContext::GetInstance();
 
                 vkDeviceWaitIdle(vkContext->logicalDevice);
@@ -42,6 +45,7 @@ namespace Entropy
                 {
                     vkDestroyDescriptorSetLayout(vkContext->logicalDevice, _descriptorSetLayout, nullptr);
                 }
+                */
             }
 
             bool isAbleToRender()
@@ -54,12 +58,20 @@ namespace Entropy
                 return true;
             }
 
-            void UpdateImage()
+            void UpdateImage(std::shared_ptr<ServiceLocator> serviceLocator)
             {
-                VulkanContext *vkContext = VulkanContext::GetInstance();
+                // Get required depenencies
+                auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
+                auto physicalDevice = std::dynamic_pointer_cast<PhysicalDevice>(serviceLocator->getService("PhysicalDevice"));
+                auto descriptorPool = std::dynamic_pointer_cast<DescriptorPool>(serviceLocator->getService("DescriptorPool"));
+                if (!logicalDevice->isValid())
+                {
+                    spdlog::error("Trying to create buffer with invalid logical device");
+                    return;
+                }
 
                 VkPhysicalDeviceProperties properties{};
-                vkGetPhysicalDeviceProperties(vkContext->physicalDevice, &properties);
+                vkGetPhysicalDeviceProperties(physicalDevice->Get(), &properties);
 
                 VkSamplerCreateInfo samplerInfo{};
                 samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -80,7 +92,7 @@ namespace Entropy
                 samplerInfo.minLod = 0.0f;
                 samplerInfo.maxLod = 0.0f;
 
-                if (vkCreateSampler(vkContext->logicalDevice, &samplerInfo, nullptr, &_textureSampler) != VK_SUCCESS)
+                if (vkCreateSampler(logicalDevice->Get(), &samplerInfo, nullptr, &_textureSampler) != VK_SUCCESS)
                 {
                     throw std::runtime_error("failed to create texture sampler!");
                 }
@@ -105,7 +117,7 @@ namespace Entropy
                 layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
                 layoutInfo.pBindings = bindings.data();
 
-                if (vkCreateDescriptorSetLayout(vkContext->logicalDevice, &layoutInfo, nullptr, &_descriptorSetLayout) != VK_SUCCESS)
+                if (vkCreateDescriptorSetLayout(logicalDevice->Get(), &layoutInfo, nullptr, &_descriptorSetLayout) != VK_SUCCESS)
                 {
                     throw std::runtime_error("failed to create descriptor set layout!");
                 }
@@ -114,11 +126,11 @@ namespace Entropy
 
                 VkDescriptorSetAllocateInfo allocInfo{};
                 allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-                allocInfo.descriptorPool = vkContext->descriptorPool;
+                allocInfo.descriptorPool = descriptorPool->Get();
                 allocInfo.descriptorSetCount = 1; // MAX_CONCURRENT_FRAMES_IN_FLIGHT;
                 allocInfo.pSetLayouts = layouts.data();
 
-                if (vkAllocateDescriptorSets(vkContext->logicalDevice, &allocInfo, &_descriptorSet) != VK_SUCCESS)
+                if (vkAllocateDescriptorSets(logicalDevice->Get(), &allocInfo, &_descriptorSet) != VK_SUCCESS)
                 {
                     throw std::runtime_error("failed to allocate descriptor sets!");
                 }
@@ -146,7 +158,7 @@ namespace Entropy
                 descriptorWrites[1].descriptorCount = 1;
                 descriptorWrites[1].pImageInfo = &imageInfo;
 
-                vkUpdateDescriptorSets(vkContext->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+                vkUpdateDescriptorSets(logicalDevice->Get(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
             }
 
             int zIndex = 0;

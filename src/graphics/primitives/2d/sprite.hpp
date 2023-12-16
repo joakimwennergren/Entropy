@@ -4,15 +4,13 @@
 #include <graphics/textures/texture.hpp>
 #include <graphics/buffers/vertexbuffer.hpp>
 #include <renderables/renderable.hpp>
-#include <global/scenegraph.hpp>
 #include <filesystem/filesystem.hpp>
 #include <global/vulkancontext.hpp>
 
 using namespace Entropy::Graphics::Textures;
-using namespace Entropy::Global;
 using namespace Entropy::Renderables;
 
-namespace Symbios
+namespace Entropy
 {
     namespace Graphics
     {

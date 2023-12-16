@@ -78,8 +78,12 @@ Application::Application()
     serviceLocator->registerService("LogicalDevice", logicalDevice);
     serviceLocator->registerService("DescriptorSet", descriptorSet);
     serviceLocator->registerService("DescriptorSetLayout", descriptorSetLayout);
+    serviceLocator->registerService("DescriptorPool", descriptorPool);
     serviceLocator->registerService("SwapChain", swapChain);
     serviceLocator->registerService("CommandPool", commandPool);
+
+    sceneGraph = std::make_shared<SceneGraph>();
+    serviceLocator->registerService("SceneGraph", sceneGraph);
 
     _renderer = std::make_shared<Renderer>(serviceLocator);
 }

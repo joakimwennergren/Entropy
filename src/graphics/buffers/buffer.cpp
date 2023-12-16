@@ -99,8 +99,6 @@ void Buffer::CreateIndexBufferUint16(std::shared_ptr<ServiceLocator> serviceLoca
         return;
     }
 
-    VulkanContext *vkContext = VulkanContext::GetInstance();
-
     VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
 
     VkBuffer stagingBuffer;
@@ -108,9 +106,9 @@ void Buffer::CreateIndexBufferUint16(std::shared_ptr<ServiceLocator> serviceLoca
     CreateBuffer(serviceLocator, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
     void *data;
-    vkMapMemory(vkContext->logicalDevice, stagingBufferMemory, 0, bufferSize, 0, &data);
+    vkMapMemory(logicalDevice->Get(), stagingBufferMemory, 0, bufferSize, 0, &data);
     memcpy(data, indices.data(), (size_t)bufferSize);
-    vkUnmapMemory(vkContext->logicalDevice, stagingBufferMemory);
+    vkUnmapMemory(logicalDevice->Get(), stagingBufferMemory);
 
     CreateBuffer(serviceLocator, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _buffer, _bufferMemory);
 

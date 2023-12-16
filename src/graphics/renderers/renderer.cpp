@@ -11,6 +11,7 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
     _descriptorSet = std::dynamic_pointer_cast<Descriptorset>(serviceLocator->getService("DescriptorSet"));
     _logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
     _swapChain = std::dynamic_pointer_cast<Swapchain>(serviceLocator->getService("SwapChain"));
+    _sceneGraph = std::dynamic_pointer_cast<SceneGraph>(serviceLocator->getService("SceneGraph"));
 
     // Create renderpass
     _renderPass = std::make_shared<RenderPass>(serviceLocator);
@@ -170,12 +171,12 @@ void Renderer::Render()
     memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));
 
     // Sort renderables based on Zindex
-    sort(Global::SceneGraph::GetInstance()->renderables.begin(),
-         Global::SceneGraph::GetInstance()->renderables.end(),
+    sort(_sceneGraph->renderables.begin(),
+         _sceneGraph->renderables.end(),
          [](const std::shared_ptr<Renderable> &lhs, const std::shared_ptr<Renderable> &rhs)
          { return lhs->zIndex < rhs->zIndex; });
 
-    for (auto &renderable : Global::SceneGraph::GetInstance()->renderables)
+    for (auto &renderable : _sceneGraph->renderables)
     {
         if (!renderable->isAbleToRender())
         {

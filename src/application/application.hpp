@@ -27,6 +27,7 @@
 #include <graphics/descriptorsetlayouts/descriptorsetlayout.hpp>
 #include <graphics/descriptorsets/descriptorset.hpp>
 #include <graphics/commandpools/commandpool.hpp>
+#include <scenegraphs/scenegraph.hpp>
 
 using namespace Entropy::Graphics::Instances;
 using namespace Entropy::Graphics::Surfaces;
@@ -36,6 +37,7 @@ using namespace Entropy::Graphics::CommandPools;
 using namespace Entropy::Graphics::DescriptorPools;
 using namespace Entropy::Graphics::DescriptorsetLayouts;
 using namespace Entropy::Graphics::Descriptorsets;
+using namespace Entropy::SceneGraphs;
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
 
@@ -74,6 +76,7 @@ protected:
     Screen screen;
     GLFWwindow *_window;
     std::shared_ptr<ServiceLocator> serviceLocator;
+    std::shared_ptr<SceneGraph> sceneGraph;
 
 private:
     std::shared_ptr<Renderer> _renderer;

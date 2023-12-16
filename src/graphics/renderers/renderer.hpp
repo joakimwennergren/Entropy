@@ -13,14 +13,14 @@
 #include <graphics/data/pushcontant.hpp>
 #include <graphics/data/ubo.hpp>
 #include <graphics/synchronization/synchronizer.hpp>
-#include <global/scenegraph.hpp>
 #include <renderables/renderable.hpp>
+#include <scenegraphs/scenegraph.hpp>
 
 #include <servicelocators/servicelocator.hpp>
 #include <graphics/descriptorsets/descriptorset.hpp>
 #include <graphics/swapchains/swapchain.hpp>
 
-using namespace Entropy::Global;
+using namespace Entropy::SceneGraphs;
 using namespace Entropy::Renderables;
 using namespace Entropy::Graphics::Buffers;
 using namespace Entropy::Graphics::Textures;
@@ -66,6 +66,8 @@ namespace Entropy
                 std::shared_ptr<Descriptorset> _descriptorSet;
                 std::shared_ptr<LogicalDevice> _logicalDevice;
                 std::shared_ptr<Swapchain> _swapChain;
+
+                std::shared_ptr<SceneGraph> _sceneGraph;
             };
         }
     }

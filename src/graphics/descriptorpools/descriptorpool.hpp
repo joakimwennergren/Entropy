@@ -9,10 +9,12 @@
 #include <graphics/surfaces/surface.hpp>
 #include <graphics/queuefamilies/queuefamily.hpp>
 #include <graphics/devices/logical_device.hpp>
+#include <services/service.hpp>
 
 using namespace Entropy::Graphics::Surfaces;
 using namespace Entropy::Graphics::QueueFamilies;
 using namespace Entropy::Graphics::Devices;
+using namespace Entropy::Services;
 
 namespace Entropy
 {
@@ -20,11 +22,12 @@ namespace Entropy
     {
         namespace DescriptorPools
         {
-            class DescriptorPool
+            class DescriptorPool : public Service
             {
             public:
                 DescriptorPool(std::shared_ptr<LogicalDevice> logicalDevice);
                 inline VkDescriptorPool Get() { return _descriptorPool; };
+                inline bool isValid() override { return _descriptorPool != nullptr; };
 
             private:
                 VkDescriptorPool _descriptorPool;

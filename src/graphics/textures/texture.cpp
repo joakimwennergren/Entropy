@@ -94,6 +94,15 @@ void Texture::CreateTextureImageFromPixels(unsigned char *pixels, int width, int
 
 void Texture::CreateTextureImage(std::string path)
 {
+
+    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(_serviceLocator->getService("LogicalDevice"));
+
+    if (!logicalDevice->isValid())
+    {
+        spdlog::error("Trying to create renderpass with invalid logical device");
+        return;
+    }
+
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
     auto colorFormat = VK_FORMAT_R8G8B8A8_UNORM;
 #elif defined(BUILD_FOR_WINDOWS)
@@ -127,7 +136,9 @@ void Texture::CreateTextureImage(std::string path)
     CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
     TransitionImageLayout(_textureImage, colorFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    _imageView = VulkanContext::CreateImageView(_textureImage, colorFormat);
+    auto imageView = ImageView(logicalDevice->Get(), _textureImage, colorFormat);
+
+    _imageView = imageView.Get();
 
     hasTexture = true;
 }
