@@ -63,6 +63,7 @@ namespace Entropy
                 auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
                 auto physicalDevice = std::dynamic_pointer_cast<PhysicalDevice>(serviceLocator->getService("PhysicalDevice"));
                 auto descriptorPool = std::dynamic_pointer_cast<DescriptorPool>(serviceLocator->getService("DescriptorPool"));
+
                 if (!logicalDevice->isValid())
                 {
                     spdlog::error("Trying to create buffer with invalid logical device");
@@ -188,8 +189,7 @@ namespace Entropy
 
             VkSampler _textureSampler;
 
-            inline void Translate(float x, float y) { this->position = glm::vec3(x, y, 0.0); }
-            inline void Scale(float s) { this->scale = glm::vec3(s, s, 0.0); }
+            inline void Translate2D(float x, float y) { this->position = glm::vec3(x, y, 0.0); }
             inline void Scale2D(float w, float h) { this->scale = glm::vec3(w, h, 0.0); }
 
             inline void Rotate(float r, int orientation)

@@ -51,6 +51,7 @@ target_link_libraries(${PROJECT_NAME}
     freetype
     eventpp
     spdlog
+    box2d
 )
 
 # Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk)

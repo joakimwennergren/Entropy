@@ -37,3 +37,6 @@
 [submodule "spdlog"]
 	path = external/spdlog
 	url = https://github.com/gabime/spdlog.git
+[submodule "tinygltf"]
+	path = external/tinygltf
+	url = https://github.com/syoyo/tinygltf.git

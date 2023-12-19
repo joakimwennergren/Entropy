@@ -34,10 +34,6 @@ namespace Entropy
 
                 inline void SetId(int id) { this->id = id; };
 
-                inline void SetPosition(float x, float y) { this->position = glm::vec3(x, y, 0.0); };
-
-                inline void SetScale(float x, float y) { this->scale = glm::vec3(x, y, 0.0); };
-
                 inline void SetZIndex(int z) { this->zIndex = z; };
 
                 inline void SetRotation(float r, int orientation)

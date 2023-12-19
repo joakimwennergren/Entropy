@@ -85,7 +85,15 @@ Application::Application()
     sceneGraph = std::make_shared<SceneGraph>();
     serviceLocator->registerService("SceneGraph", sceneGraph);
 
+    physics2d = std::make_shared<Physics2D>(serviceLocator);
+    serviceLocator->registerService("2DPhysics", physics2d);
+
+    lua = std::make_shared<Lua>(serviceLocator);
+
     _renderer = std::make_shared<Renderer>(serviceLocator);
+
+    // Store it into a variable first, then call
+    luaOnRender = lua->lua["OnRender"];
 }
 
 Application::~Application()
@@ -116,7 +124,13 @@ void Application::Run()
 
         // On render
         this->_renderer->Render();
+        luaOnRender();
         this->OnRender(_deltaTime);
+        float timeStep = 1.0f / 60.0f;
+        int32 velocityIterations = 6;
+        int32 positionIterations = 2;
+
+        physics2d->world->Step(timeStep, velocityIterations, positionIterations);
 
         // Poll events
         glfwPollEvents();

@@ -35,6 +35,11 @@ add_subdirectory(external/glfw)
 # Lua SOL 2
 add_subdirectory(external/sol2)
 
+# 2D Physics
+set(BOX2D_BUILD_UNIT_TESTS OFF)
+set(BOX2D_BUILD_TESTBED OFF)
+add_subdirectory(external/box2d)
+
 # Text rendering
 set(FT_WITH_BZIP2 OFF)
 add_subdirectory(external/freetype-2.13.2)
