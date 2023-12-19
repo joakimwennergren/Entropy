@@ -14,7 +14,7 @@ Application::Application()
 
     // Create the window
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    _window = glfwCreateWindow(640, 340, "Entropy application", NULL, NULL);
+    _window = glfwCreateWindow(1280, 720, "Entropy application", NULL, NULL);
 
     if (!_window)
     {

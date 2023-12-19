@@ -5,7 +5,3 @@ x = 200.0
 
 local dynBody = DynamicBody.new()
 
-function OnRender()
-    sprite:Translate(x, dynBody:GetPosition())
-    x = x + 2.0
-end

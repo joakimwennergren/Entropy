@@ -25,5 +25,9 @@ Lua::Lua(std::shared_ptr<ServiceLocator> serviceLocator)
                                                 return sprite; }),
                              "Translate", &Sprite::Translate2D, "Scale", &Sprite::Scale2D);
 
+    lua.set_function("onRender", [](sol::function cb)
+                     { cb(NULL, "THE USER"); });
+
     lua.script_file("/Users/joakim/Desktop/Entropy-Engine/resources/scripts/leaf.lua");
+    lua.script_file("/Users/joakim/Desktop/Entropy-Engine/resources/scripts/main.lua");
 }
