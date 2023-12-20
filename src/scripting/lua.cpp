@@ -13,7 +13,6 @@ Lua::Lua(std::shared_ptr<ServiceLocator> serviceLocator)
     lua.new_usertype<DynamicBody>("DynamicBody",
                                   sol::factories([physics2d]()
                                                  { auto dynBody = std::make_shared<DynamicBody>(physics2d);
-                                                   
                                                    return dynBody; }),
                                   "GetPosition", &DynamicBody::GetPosition);
 

@@ -9,7 +9,7 @@ Synchronizer::Synchronizer(unsigned int numObjects, std::shared_ptr<ServiceLocat
 
     if (!logicalDevice->isValid())
     {
-        spdlog::error("Trying to create renderpass with invalid invalid logical device");
+        spdlog::error("Trying to create synchronizer with invalid logical device");
         return;
     }
 
