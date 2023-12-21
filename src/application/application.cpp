@@ -1,5 +1,9 @@
 #include "application.hpp"
 
+void scriptExecutor(std::shared_ptr<ServiceLocator> serviceLocator)
+{
+}
+
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_WINDOWS)
 Application::Application()
 {
@@ -92,11 +96,36 @@ Application::Application()
     serviceLocator->registerService("Mouse", mouse);
 
     lua = std::make_shared<Lua>(serviceLocator);
+    serviceLocator->registerService("Lua", lua);
 
     _renderer = std::make_shared<Renderer>(serviceLocator);
 
-    // Store it into a variable first, then call
-    luaOnRender = lua->lua["OnRender"];
+    std::thread scriptExecutorThread(scriptExecutor, serviceLocator);
+    scriptExecutorThread.detach();
+}
+
+void Application::ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::shared_ptr<Lua> lua)
+{
+    for (auto renderable : sceneGraph->renderables)
+    {
+        if (!renderable->script->hasExecuted)
+        {
+            if (renderable->script->scriptFile.length() > 0)
+            {
+                lua->ExecuteScript("", renderable->script->scriptFile, renderable->script->environment);
+                auto test = lua->lua["Test"];
+                test();
+            }
+            else
+            {
+                lua->ExecuteScript(renderable->script->script, "", renderable->script->environment);
+                auto test = lua->lua["Test"];
+                test();
+            }
+
+            renderable->script->hasExecuted = true;
+        }
+    }
 }
 
 Application::~Application()
@@ -108,6 +137,9 @@ Application::~Application()
 
 void Application::Run()
 {
+    auto sceneGraph = std::dynamic_pointer_cast<SceneGraph>(serviceLocator->getService("SceneGraph"));
+    auto lua = std::dynamic_pointer_cast<Lua>(serviceLocator->getService("Lua"));
+
     this->OnInit();
 
     _timer->start();
@@ -127,13 +159,14 @@ void Application::Run()
 
         // On render
         this->_renderer->Render();
-        luaOnRender();
         this->OnRender(_deltaTime);
         float timeStep = 1.0f / 60.0f;
         int32 velocityIterations = 6;
         int32 positionIterations = 2;
 
         physics2d->world->Step(timeStep, velocityIterations, positionIterations);
+
+        ExecuteScripts(sceneGraph, lua);
 
         // Poll events
         glfwPollEvents();

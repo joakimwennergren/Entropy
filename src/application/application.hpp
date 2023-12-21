@@ -87,6 +87,7 @@ protected:
     sol::protected_function luaOnRender;
 
 private:
+    void ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::shared_ptr<Lua> lua);
     std::shared_ptr<Renderer> _renderer;
     Timer *_timer;
     float _lastTick = 0.0f;

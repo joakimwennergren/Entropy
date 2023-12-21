@@ -1,9 +1,12 @@
 #pragma once
 
+#include <memory>
+
 #include <graphics/textures/texture.hpp>
 #include <graphics/buffers/vertexbuffer.hpp>
 #include <graphics/buffers/buffer.hpp>
 #include <graphics/descriptorpools/descriptorpool.hpp>
+#include <scripting/script.hpp>
 
 #include <string>
 #include <glm/glm.hpp>
@@ -11,18 +14,30 @@
 using namespace Entropy::Graphics::Textures;
 using namespace Entropy::Graphics::Buffers;
 using namespace Entropy::Graphics::DescriptorPools;
+using namespace Entropy::Scripting;
 
 namespace Entropy
 {
     namespace Renderables
     {
-        class Renderable
+        class Renderable : public std::enable_shared_from_this<Renderable>
         {
         public:
             Renderable()
             {
                 this->id = rand() % UINT_MAX;
             }
+
+            void SetScript(std::string script)
+            {
+                this->script->script = script;
+            };
+
+            void SetScriptFile(std::shared_ptr<Renderable> parent, std::string scriptFile)
+            {
+                this->script->scriptFile = scriptFile;
+                this->parent = parent;
+            };
 
             ~Renderable()
             {
@@ -165,8 +180,6 @@ namespace Entropy
             unsigned int id = 0;
             std::string name;
 
-            std::vector<std::shared_ptr<Renderable>> children;
-
             bool visible = true;
 
             float rotationX = 0.0;
@@ -197,6 +210,7 @@ namespace Entropy
                 this->orientation = orientation;
                 this->rotationX = r;
             }
+
             inline void ZIndex(int z) { this->zIndex = z; }
 
             inline const std::vector<Vertex> GetVertices() { return this->_vertices; };
@@ -204,6 +218,11 @@ namespace Entropy
 
             std::vector<uint16_t> _indices;
             std::vector<Vertex> _vertices;
+
+            std::unique_ptr<Script> script;
+
+            std::shared_ptr<Renderable> parent;
+            std::vector<std::shared_ptr<Renderable>> children;
         };
     }
 }

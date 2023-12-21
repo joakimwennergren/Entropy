@@ -5,9 +5,11 @@
 #include <graphics/buffers/vertexbuffer.hpp>
 #include <renderables/renderable.hpp>
 #include <filesystem/filesystem.hpp>
+#include <scripting/script.hpp>
 
 using namespace Entropy::Graphics::Textures;
 using namespace Entropy::Renderables;
+using namespace Entropy::Scripting;
 
 namespace Entropy
 {

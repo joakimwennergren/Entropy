@@ -1,15 +1,16 @@
 local sprite = Sprite.new("/Users/joakim/Desktop/Entropy-Engine/resources/logo/entropy.png")
 sprite:Translate(400.0, -400.0)
 sprite:Scale(100.0, 100.0)
-x = 200.0
+sprite:SetScriptFile(sprite, "/Users/joakim/Desktop/Entropy-Engine/resources/scripts/leaf.lua")
 
-local dynBody = DynamicBody.new()
 
-local mousePos = GetMousePosition()
+--local dynBody = DynamicBody.new()
 
-function OnRender()
+--local mousePos = GetMousePosition()
 
-    sprite:Translate(x, dynBody:GetPosition())
-    x = x + 2.0
-	print("Main.lua")
-end
+--function OnRender()
+
+--    sprite:Translate(x, dynBody:GetPosition())
+--    x = x + 2.0
+--	print("Main.lua")
+--end
