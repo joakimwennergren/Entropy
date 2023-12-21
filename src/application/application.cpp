@@ -88,6 +88,9 @@ Application::Application()
     physics2d = std::make_shared<Physics2D>(serviceLocator);
     serviceLocator->registerService("2DPhysics", physics2d);
 
+    mouse = std::make_shared<Mouse>(_window);
+    serviceLocator->registerService("Mouse", mouse);
+
     lua = std::make_shared<Lua>(serviceLocator);
 
     _renderer = std::make_shared<Renderer>(serviceLocator);

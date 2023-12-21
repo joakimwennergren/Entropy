@@ -30,6 +30,7 @@
 #include <scenegraphs/scenegraph.hpp>
 #include <physics/2d/physics2d.hpp>
 #include <scripting/lua.hpp>
+#include <input/mouse/mouse.hpp>
 
 using namespace Entropy::Graphics::Instances;
 using namespace Entropy::Graphics::Surfaces;
@@ -42,6 +43,7 @@ using namespace Entropy::Graphics::Descriptorsets;
 using namespace Entropy::SceneGraphs;
 using namespace Entropy::Scripting;
 using namespace Entropy::Physics;
+using namespace Entropy::Input;
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
 
@@ -80,6 +82,7 @@ protected:
     std::shared_ptr<ServiceLocator> serviceLocator;
     std::shared_ptr<SceneGraph> sceneGraph;
     std::shared_ptr<Lua> lua;
+    std::shared_ptr<Mouse> mouse;
     std::shared_ptr<Physics2D> physics2d;
     sol::protected_function luaOnRender;
 

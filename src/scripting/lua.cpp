@@ -7,8 +7,11 @@ Lua::Lua(std::shared_ptr<ServiceLocator> serviceLocator)
     // Get required depenencies
     auto sceneGraph = std::dynamic_pointer_cast<SceneGraph>(serviceLocator->getService("SceneGraph"));
     auto physics2d = std::dynamic_pointer_cast<Physics2D>(serviceLocator->getService("2DPhysics"));
+    auto mouse = std::dynamic_pointer_cast<Mouse>(serviceLocator->getService("Mouse"));
 
     lua.open_libraries(sol::lib::base);
+
+    lua.new_usertype<Mouse>("Mouse", mouse);
 
     lua.new_usertype<DynamicBody>("DynamicBody",
                                   sol::factories([physics2d]()
@@ -23,9 +26,6 @@ Lua::Lua(std::shared_ptr<ServiceLocator> serviceLocator)
                                                 sceneGraph->renderables.push_back(sprite);
                                                 return sprite; }),
                              "Translate", &Sprite::Translate2D, "Scale", &Sprite::Scale2D);
-
-    lua.set_function("onRender", [](sol::function cb)
-                     { cb(NULL, "THE USER"); });
 
     lua.script_file("/Users/joakim/Desktop/Entropy-Engine/resources/scripts/leaf.lua");
     lua.script_file("/Users/joakim/Desktop/Entropy-Engine/resources/scripts/main.lua");
