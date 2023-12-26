@@ -100,8 +100,8 @@ Application::Application()
 
     _renderer = std::make_shared<Renderer>(serviceLocator);
 
-    std::thread scriptExecutorThread(scriptExecutor, serviceLocator);
-    scriptExecutorThread.detach();
+    // std::thread scriptExecutorThread(scriptExecutor, serviceLocator);
+    // scriptExecutorThread.detach();
 }
 
 void Application::ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::shared_ptr<Lua> lua)
@@ -113,14 +113,10 @@ void Application::ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::sh
             if (renderable->script->scriptFile.length() > 0)
             {
                 lua->ExecuteScript("", renderable->script->scriptFile, renderable->script->environment);
-                auto test = lua->lua["Test"];
-                test();
             }
             else
             {
                 lua->ExecuteScript(renderable->script->script, "", renderable->script->environment);
-                auto test = lua->lua["Test"];
-                test();
             }
 
             renderable->script->hasExecuted = true;

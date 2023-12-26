@@ -28,8 +28,7 @@ Lua::Lua(std::shared_ptr<ServiceLocator> serviceLocator)
         "Translate", &Sprite::Translate2D,
         "Scale", &Sprite::Scale2D,
         "SetScript", &Sprite::SetScript,
-        "SetScriptFile", [](Sprite &self)
-        { return self. },
+        "SetScriptFile", &Sprite::SetScriptFile,
         "Parent", sol::property(&Sprite::parent));
 
     // lua.script_file("/Users/joakim/Desktop/Entropy-Engine/resources/scripts/leaf.lua");
