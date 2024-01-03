@@ -34,14 +34,10 @@ namespace Entropy
                 if (script.length() > 0)
                 {
                     lua.script(script, env);
-                    auto test = lua["Test"];
-                    test();
                 }
                 if (scriptFile.length() > 0)
                 {
                     lua.script_file(scriptFile, env);
-                    auto test = lua["Test"];
-                    test();
                 }
             };
             inline bool isValid() override { return true; };

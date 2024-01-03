@@ -32,7 +32,7 @@ namespace Entropy
             public:
                 PhysicalDevice(std::shared_ptr<VulkanInstance> instance, std::shared_ptr<WindowSurface> surface);
                 inline VkPhysicalDevice Get() { return _physicalDevice; };
-                bool isValid() override { return _physicalDevice != nullptr; };
+                inline bool isValid() override { return _physicalDevice != nullptr; };
 
 #ifdef BUILD_FOR_MACOS
                 const std::vector<const char *> deviceExtensions = {

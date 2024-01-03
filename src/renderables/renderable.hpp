@@ -33,10 +33,10 @@ namespace Entropy
                 this->script->script = script;
             };
 
-            void SetScriptFile(std::shared_ptr<Renderable> parent, std::string scriptFile)
+            void SetScriptFile(std::string scriptFile)
             {
                 this->script->scriptFile = scriptFile;
-                this->parent = parent;
+                // this->parent = parent;
             };
 
             ~Renderable()

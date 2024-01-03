@@ -121,6 +121,13 @@ void Application::ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::sh
 
             renderable->script->hasExecuted = true;
         }
+
+        auto onRenderFunc = renderable->script->environment["OnRender"];
+
+        if (onRenderFunc.valid())
+        {
+            onRenderFunc();
+        }
     }
 }
 
