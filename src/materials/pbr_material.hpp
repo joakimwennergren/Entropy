@@ -1,6 +1,9 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <graphics/textures/texture.hpp>
+
+using namespace Entropy::Graphics::Textures;
 
 namespace Entropy
 {
@@ -23,11 +26,11 @@ namespace Entropy
             glm::vec4 baseColorFactor = glm::vec4(1.0f);
             glm::vec4 emissiveFactor = glm::vec4(0.0f);
 
-            vkglTF::Texture *baseColorTexture;
-            vkglTF::Texture *metallicRoughnessTexture;
-            vkglTF::Texture *normalTexture;
-            vkglTF::Texture *occlusionTexture;
-            vkglTF::Texture *emissiveTexture;
+            std::unique_ptr<Texture> baseColorTexture;
+            std::unique_ptr<Texture> metallicRoughnessTexture;
+            std::unique_ptr<Texture> normalTexture;
+            std::unique_ptr<Texture> occlusionTexture;
+            std::unique_ptr<Texture> emissiveTexture;
 
             bool doubleSided = false;
 
@@ -43,8 +46,8 @@ namespace Entropy
 
             struct Extension
             {
-                vkglTF::Texture *specularGlossinessTexture;
-                vkglTF::Texture *diffuseTexture;
+                std::unique_ptr<Texture> specularGlossinessTexture;
+                std::unique_ptr<Texture> diffuseTexture;
                 glm::vec4 diffuseFactor = glm::vec4(1.0f);
                 glm::vec3 specularFactor = glm::vec3(0.0f);
             } extension;

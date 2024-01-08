@@ -18,7 +18,7 @@ Application::Application()
 
     // Create the window
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    _window = glfwCreateWindow(1280, 720, "Entropy application", NULL, NULL);
+    _window = glfwCreateWindow(640, 480, "Entropy application", NULL, NULL);
 
     if (!_window)
     {
@@ -99,9 +99,6 @@ Application::Application()
     serviceLocator->registerService("Lua", lua);
 
     _renderer = std::make_shared<Renderer>(serviceLocator);
-
-    // std::thread scriptExecutorThread(scriptExecutor, serviceLocator);
-    // scriptExecutorThread.detach();
 }
 
 void Application::ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::shared_ptr<Lua> lua)
@@ -169,7 +166,7 @@ void Application::Run()
 
         physics2d->world->Step(timeStep, velocityIterations, positionIterations);
 
-        ExecuteScripts(sceneGraph, lua);
+        // ExecuteScripts(sceneGraph, lua);
 
         // Poll events
         glfwPollEvents();

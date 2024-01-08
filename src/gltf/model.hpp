@@ -9,9 +9,6 @@ namespace Entropy
     {
         struct Model
         {
-
-            vks::VulkanDevice *device;
-
             struct Vertex
             {
                 glm::vec3 pos;

@@ -3,7 +3,7 @@
 using namespace Entropy::GLTF;
 
 // Primitive
-Primitive::Primitive(uint32_t firstIndex, uint32_t indexCount, uint32_t vertexCount, Material &material) : firstIndex(firstIndex), indexCount(indexCount), vertexCount(vertexCount), material(material)
+Primitive::Primitive(uint32_t firstIndex, uint32_t indexCount, uint32_t vertexCount, PBRMaterial &material) : firstIndex(firstIndex), indexCount(indexCount), vertexCount(vertexCount), material(material)
 {
     hasIndices = indexCount > 0;
 };

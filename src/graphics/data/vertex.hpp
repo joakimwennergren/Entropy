@@ -8,8 +8,13 @@
 struct Vertex
 {
     glm::vec3 position;
+    glm::vec3 normal;
+    glm::vec2 uv0;
+    glm::vec2 uv1;
+    glm::vec4 joint0;
+    glm::vec4 weight0;
     glm::vec3 color;
-    glm::vec2 texCoord;
+    glm::vec2 texCoord; // @todo obsolute, replaced by uv0
 
     // @todo add uv, bones etc..
 
