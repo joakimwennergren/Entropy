@@ -133,8 +133,8 @@ void Renderer::Render()
     }
 
     // current commandbuffer & descriptorset
-    auto currentCmdBuffer = _commandBuffers[_currentFrame]->GetCommandBuffer();
-    auto currentDescriptorSet = _descriptorSet->Get()[_currentFrame];
+    currentCmdBuffer = _commandBuffers[_currentFrame]->GetCommandBuffer();
+    currentDescriptorSet = _descriptorSet->Get()[_currentFrame];
 
     // Reset fences and current commandbuffer
     vkResetFences(_logicalDevice->Get(), 1, &_synchronizer->GetFences()[_currentFrame]);
@@ -166,7 +166,7 @@ void Renderer::Render()
     // Update UBO
     UniformBufferObject ubo{};
     ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    ubo.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
+    ubo.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width * 2.0f, (float)_swapChain->swapChainExtent.height * 2.0f, 0.0f, -1.0f, 1.0f);
     ubo.proj[1][1] *= -1;
     memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));
 
@@ -178,59 +178,17 @@ void Renderer::Render()
 
     for (auto &renderable : _sceneGraph->renderables)
     {
-        if (!renderable->isAbleToRender())
+        if (renderable->children.size() == 0)
         {
-            continue;
+            DrawRenderable(renderable);
         }
-
-        // Bind vertex & index buffers
-        // Bind descriptor sets
-        VkBuffer vertexBuffers[] = {renderable->vertexBuffer->GetVulkanBuffer()};
-        VkDeviceSize offsets[] = {0};
-        vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
-        vkCmdBindIndexBuffer(currentCmdBuffer, renderable->indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT16);
-        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 0, nullptr);
-        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 1, 1, &renderable->_descriptorSet, 0, nullptr);
-
-        // @todo refactors this
-        auto translate = glm::translate(glm::mat4(1.0f), renderable->position);
-        auto scale = glm::scale(glm::mat4(1.0), renderable->scale);
-        auto rotate = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
-
-        auto o = glm::vec3(0.0, 0.0, 0.0);
-
-        if (renderable->orientation == 1)
+        else
         {
-            o.x = 1;
+            for (auto &child : renderable->children)
+            {
+                DrawRenderable(child);
+            }
         }
-
-        if (renderable->orientation == 2)
-        {
-            o.y = 1;
-        }
-
-        if (renderable->orientation == 3)
-        {
-            o.z = 1;
-        }
-
-        auto modelRotation = glm::rotate(glm::mat4(1.0f), glm::radians(renderable->rotationX), o);
-        // @todo end
-
-        // if (renderable->texture->GetImageView() != nullptr)
-        // {
-
-        // }
-
-        // Update push constant and upload to GPU
-        PushConstant constant;
-        constant.modelMatrix = translate * scale * rotate * modelRotation;
-        constant.color = renderable->color;
-        constant.textureId = renderable->textureId;
-        vkCmdPushConstants(currentCmdBuffer, _pipeline->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstant), &constant);
-
-        // Draw current renderable
-        vkCmdDrawIndexed(currentCmdBuffer, renderable->GetIndices().size(), 1, 0, 0, 0);
     }
 
     // End renderpass and commandbuffer recording
@@ -242,6 +200,63 @@ void Renderer::Render()
 
     // Increment current frame
     _currentFrame = (_currentFrame + 1) % MAX_CONCURRENT_FRAMES_IN_FLIGHT;
+}
+
+void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable)
+{
+    if (!renderable->isAbleToRender())
+    {
+        return;
+    }
+
+    // Bind vertex & index buffers
+    // Bind descriptor sets
+    VkBuffer vertexBuffers[] = {renderable->vertexBuffer->GetVulkanBuffer()};
+    VkDeviceSize offsets[] = {0};
+    vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
+    vkCmdBindIndexBuffer(currentCmdBuffer, renderable->indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT16);
+    vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 0, nullptr);
+    vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 1, 1, &renderable->_descriptorSet, 0, nullptr);
+
+    // @todo refactors this
+    auto translate = glm::translate(glm::mat4(1.0f), renderable->position);
+    auto scale = glm::scale(glm::mat4(1.0), renderable->scale);
+    auto rotate = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+
+    auto o = glm::vec3(0.0, 0.0, 0.0);
+
+    if (renderable->orientation == 1)
+    {
+        o.x = 1;
+    }
+
+    if (renderable->orientation == 2)
+    {
+        o.y = 1;
+    }
+
+    if (renderable->orientation == 3)
+    {
+        o.z = 1;
+    }
+
+    auto modelRotation = glm::rotate(glm::mat4(1.0f), glm::radians(renderable->rotationX), o);
+    // @todo end
+
+    // if (renderable->texture->GetImageView() != nullptr)
+    // {
+
+    // }
+
+    // Update push constant and upload to GPU
+    PushConstant constant;
+    constant.modelMatrix = translate * scale * rotate * modelRotation;
+    constant.color = renderable->color;
+    constant.textureId = renderable->textureId;
+    vkCmdPushConstants(currentCmdBuffer, _pipeline->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstant), &constant);
+
+    // Draw current renderable
+    vkCmdDrawIndexed(currentCmdBuffer, renderable->GetIndices().size(), 1, 0, 0, 0);
 }
 
 void Renderer::SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex)

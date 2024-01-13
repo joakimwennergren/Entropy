@@ -22,7 +22,7 @@ namespace Entropy
             public:
                 Sprite();
 
-                Sprite(FT_Bitmap bitmap);
+                Sprite(std::shared_ptr<ServiceLocator> serviceLocator, FT_Bitmap bitmap);
                 /**
                  * @brief Construct a new Quad object
                  *

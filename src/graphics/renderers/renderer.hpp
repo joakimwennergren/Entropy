@@ -46,6 +46,7 @@ namespace Entropy
 
                 void Render();
                 void SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex);
+                void DrawRenderable(std::shared_ptr<Renderable> renderable);
 
             private:
                 std::shared_ptr<RenderPass> _renderPass;
@@ -68,6 +69,9 @@ namespace Entropy
                 std::shared_ptr<Swapchain> _swapChain;
 
                 std::shared_ptr<SceneGraph> _sceneGraph;
+
+                VkCommandBuffer currentCmdBuffer;
+                VkDescriptorSet currentDescriptorSet;
             };
         }
     }

@@ -32,12 +32,13 @@ Texture::~Texture()
 
 void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap)
 {
-    /*
+    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(_serviceLocator->getService("LogicalDevice"));
+
     int texWidth = bitmap.width, texHeight = bitmap.rows;
 
     VkDeviceSize imageSize = texWidth * texHeight;
 
-    StagedBuffer buffer(imageSize, bitmap.buffer);
+    StagedBuffer buffer(_serviceLocator, imageSize, bitmap.buffer);
 
     auto mem = buffer.GetBufferMemory();
     auto buf = buffer.GetVulkanBuffer();
@@ -48,10 +49,11 @@ void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap)
     CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
     TransitionImageLayout(_textureImage, VK_FORMAT_R8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    _imageView = VulkanContext::CreateImageView(_textureImage, VK_FORMAT_R8_UNORM);
+    auto imageView = ImageView(logicalDevice->Get(), _textureImage, VK_FORMAT_R8_UNORM);
+
+    _imageView = imageView.Get();
 
     hasTexture = true;
-    */
 }
 
 void Texture::CreateTextureImageFromPixels(unsigned char *pixels, int width, int height)

@@ -60,6 +60,8 @@ namespace Entropy
                     vkDestroyDescriptorSetLayout(vkContext->logicalDevice, _descriptorSetLayout, nullptr);
                 }
                 */
+
+                delete texture;
             }
 
             bool isAbleToRender()

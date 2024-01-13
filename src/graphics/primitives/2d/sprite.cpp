@@ -24,9 +24,10 @@ Sprite::Sprite()
     */
 }
 
-Sprite::Sprite(FT_Bitmap bitmap)
+Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator, FT_Bitmap bitmap)
 {
-    /*
+    script = std::make_unique<Script>();
+
     _indices = {
         0, 1, 2, 2, 3, 0};
 
@@ -36,18 +37,16 @@ Sprite::Sprite(FT_Bitmap bitmap)
         {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
         {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
 
-    texture = new Texture();
+    texture = new Texture(serviceLocator);
 
     // Create buffers @todo temp!!!
-    vertexBuffer = std::make_unique<VertexBuffer>(_vertices);
+    vertexBuffer = std::make_unique<VertexBuffer>(serviceLocator, _vertices);
     indexBuffer = std::make_unique<Buffer>();
-
-    indexBuffer->CreateIndexBufferUint16(_indices);
+    indexBuffer->CreateIndexBufferUint16(serviceLocator, _indices);
 
     texture->CreateTextureImageFromBuffer(bitmap);
 
-    UpdateImage();
-    */
+    UpdateImage(serviceLocator);
 }
 
 Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator, std::string path)
