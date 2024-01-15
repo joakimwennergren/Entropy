@@ -70,8 +70,8 @@ namespace Entropy
                 this->children.clear();
 
                 this->text = text;
-                float x = 200.0;
-                float y = -340.0;
+                float x = position.x;
+                float y = position.y;
 
                 for (unsigned int i = 0; i < text.size(); i++)
                 {
@@ -91,12 +91,10 @@ namespace Entropy
 
                     auto yAdvance = _font->glyphs[text[i]].glyphslot->bitmap_top - h;
 
-                    std::cout << yAdvance << std::endl;
-
                     g->position = glm::vec3(xpos, ypos - yAdvance, 0.0);
                     g->textureId = 2;
                     g->scale = glm::vec3(w, h, 0.0);
-                    g->color = glm::vec4(1.0, 1.0, 1.0, 1.0);
+                    g->color = this->color;
                     g->zIndex = 999;
 
                     // now advance cursors for next glyph (note that advance is number of 1/64 pixels)

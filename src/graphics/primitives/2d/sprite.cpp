@@ -76,6 +76,8 @@ Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator, std::string path)
     this->texture->CreateTextureImage(path);
 
     UpdateImage(serviceLocator);
+
+    type = 1;
 }
 
 Sprite::Sprite(unsigned char *pixels, int width, int height)

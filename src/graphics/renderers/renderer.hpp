@@ -44,9 +44,9 @@ namespace Entropy
                 Renderer(std::shared_ptr<ServiceLocator> serviceLocator);
                 Renderer(uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize);
 
-                void Render();
+                void Render(int width, int height);
                 void SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex);
-                void DrawRenderable(std::shared_ptr<Renderable> renderable);
+                void DrawRenderable(std::shared_ptr<Renderable> renderable, int width, int height);
 
             private:
                 std::shared_ptr<RenderPass> _renderPass;

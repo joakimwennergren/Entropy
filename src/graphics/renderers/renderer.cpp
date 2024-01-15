@@ -110,7 +110,7 @@ Renderer::Renderer(uint32_t *vertContent, uint32_t vertSize, uint32_t *fragConte
     */
 }
 
-void Renderer::Render()
+void Renderer::Render(int width, int height)
 {
     vkWaitForFences(_logicalDevice->Get(), 1, &_synchronizer->GetFences()[_currentFrame], VK_TRUE, UINT64_MAX);
 
@@ -121,8 +121,7 @@ void Renderer::Render()
     {
         _synchronizer.reset();
         _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT, _serviceLocator);
-
-        // vkContext->RecreateSwapChain();
+        _swapChain->RecreateSwapChain();
         _renderPass->RecreateFrameBuffers();
 
         return;
@@ -163,13 +162,6 @@ void Renderer::Render()
     scissor.extent = _swapChain->swapChainExtent;
     vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissor);
 
-    // Update UBO
-    UniformBufferObject ubo{};
-    ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    ubo.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width * 2.0f, (float)_swapChain->swapChainExtent.height * 2.0f, 0.0f, -1.0f, 1.0f);
-    ubo.proj[1][1] *= -1;
-    memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));
-
     // Sort renderables based on Zindex
     sort(_sceneGraph->renderables.begin(),
          _sceneGraph->renderables.end(),
@@ -180,13 +172,13 @@ void Renderer::Render()
     {
         if (renderable->children.size() == 0)
         {
-            DrawRenderable(renderable);
+            DrawRenderable(renderable, width, height);
         }
         else
         {
             for (auto &child : renderable->children)
             {
-                DrawRenderable(child);
+                DrawRenderable(child, width, height);
             }
         }
     }
@@ -202,12 +194,22 @@ void Renderer::Render()
     _currentFrame = (_currentFrame + 1) % MAX_CONCURRENT_FRAMES_IN_FLIGHT;
 }
 
-void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable)
+void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width, int height)
 {
     if (!renderable->isAbleToRender())
     {
         return;
     }
+
+    // Update UBO
+    UniformBufferObject ubo{};
+    ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    ubo.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
+    ubo.proj[1][1] *= -1;
+
+    ubo.screen = glm::vec2((float)width, (float)height);
+
+    memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));
 
     // Bind vertex & index buffers
     // Bind descriptor sets
@@ -216,10 +218,20 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable)
     vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
     vkCmdBindIndexBuffer(currentCmdBuffer, renderable->indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT16);
     vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 0, nullptr);
-    vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 1, 1, &renderable->_descriptorSet, 0, nullptr);
+    if (renderable->_descriptorSet != nullptr)
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 1, 1, &renderable->_descriptorSet, 0, nullptr);
 
     // @todo refactors this
-    auto translate = glm::translate(glm::mat4(1.0f), renderable->position);
+
+    auto translate = glm::mat4(1.0f);
+    if (renderable->type == 0)
+    {
+        translate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, 0.0));
+    }
+    else
+    {
+        translate = glm::translate(glm::mat4(1.0f), renderable->position);
+    }
     auto scale = glm::scale(glm::mat4(1.0), renderable->scale);
     auto rotate = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
 
@@ -248,11 +260,16 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable)
 
     // }
 
+    glm::mat4 modelMatrix = glm::mat4(1.0f);
+
+    modelMatrix = translate * scale * rotate * modelRotation;
+
     // Update push constant and upload to GPU
     PushConstant constant;
-    constant.modelMatrix = translate * scale * rotate * modelRotation;
+    constant.modelMatrix = modelMatrix;
     constant.color = renderable->color;
     constant.textureId = renderable->textureId;
+    constant.position = renderable->position;
     vkCmdPushConstants(currentCmdBuffer, _pipeline->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstant), &constant);
 
     // Draw current renderable

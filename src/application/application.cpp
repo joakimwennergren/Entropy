@@ -158,7 +158,7 @@ void Application::Run()
         screen.height = height;
 
         // On render
-        this->_renderer->Render();
+        this->_renderer->Render(width, height);
         this->OnRender(_deltaTime);
         float timeStep = 1.0f / 60.0f;
         int32 velocityIterations = 6;
@@ -178,7 +178,7 @@ void framebufferResizeCallback(GLFWwindow *window, int width, int height)
     auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
     if (app != nullptr)
     {
-        app->GetRenderer()->Render();
+        // app->GetRenderer()->Render();
     }
 }
 

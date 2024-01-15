@@ -193,6 +193,7 @@ namespace Entropy
             glm::vec4 color = glm::vec4(1.0);
 
             int textureId = -1;
+            int type = 0;
 
             Texture *texture = nullptr;
             std::unique_ptr<Entropy::Graphics::Buffers::VertexBuffer> vertexBuffer;
@@ -206,6 +207,7 @@ namespace Entropy
 
             inline void Translate2D(float x, float y) { this->position = glm::vec3(x, y, 0.0); }
             inline void Scale2D(float w, float h) { this->scale = glm::vec3(w, h, 0.0); }
+            inline void Color(float r, float g, float b, float a) { this->color = glm::vec4(r, g, b, a); };
 
             inline void Rotate(float r, int orientation)
             {
@@ -221,7 +223,7 @@ namespace Entropy
             std::vector<uint16_t> _indices;
             std::vector<Vertex> _vertices;
 
-            std::unique_ptr<Script> script;
+            std::unique_ptr<Script> script = nullptr;
 
             std::shared_ptr<Renderable> parent;
             std::vector<std::shared_ptr<Renderable>> children;

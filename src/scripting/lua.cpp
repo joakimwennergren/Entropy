@@ -32,5 +32,5 @@ Lua::Lua(std::shared_ptr<ServiceLocator> serviceLocator)
         "Parent", sol::property(&Sprite::parent));
 
     // lua.script_file("/Users/joakim/Desktop/Entropy-Engine/resources/scripts/leaf.lua");
-    // lua.script_file("/Users/joakim/Desktop/Entropy-Engine/resources/scripts/main.lua");
+    lua.script_file("/Users/joakim/Desktop/Entropy-Engine/resources/scripts/main.lua");
 }

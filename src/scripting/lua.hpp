@@ -10,6 +10,8 @@
 
 // Bound entities
 #include <graphics/primitives/2d/sprite.hpp>
+#include <graphics/text/label.hpp>
+#include <graphics/text/font.hpp>
 
 #include <physics/2d/physics2d.hpp>
 

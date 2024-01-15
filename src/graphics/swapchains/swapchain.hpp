@@ -32,6 +32,8 @@ namespace Entropy
             public:
                 Swapchain(VkPhysicalDevice physicalDevice, VkDevice logicalDevice, std::shared_ptr<WindowSurface> surface, VkExtent2D frame);
                 ~Swapchain();
+                void CreateSwapChain();
+                void RecreateSwapChain();
                 static SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
                 std::vector<VkImageView> swapChainImageViews;
                 std::vector<VkImage> swapChainImages;
@@ -39,6 +41,7 @@ namespace Entropy
                 VkFormat swapChainImageFormat;
                 inline VkSwapchainKHR Get() { return _swapChain; };
                 bool isValid() override { return _swapChain != nullptr; };
+                std::shared_ptr<WindowSurface> _surface;
 
             private:
                 VkSwapchainKHR _swapChain;
@@ -46,7 +49,9 @@ namespace Entropy
                 VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes);
                 VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities, VkExtent2D frame);
                 VkDevice _logicalDevice;
-                std::shared_ptr<WindowSurface> _surface;
+                VkPhysicalDevice _physicalDevice;
+
+                VkExtent2D _frame;
             };
         }
     }
