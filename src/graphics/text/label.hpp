@@ -93,6 +93,7 @@ namespace Entropy
 
                     g->position = glm::vec3(xpos, ypos - yAdvance, 0.0);
                     g->textureId = 2;
+                    g->type = 3;
                     g->scale = glm::vec3(w, h, 0.0);
                     g->color = this->color;
                     g->zIndex = 999;
@@ -108,7 +109,6 @@ namespace Entropy
             FT_Face face;
             std::string text;
             std::map<unsigned char, Character> _characters;
-            std::shared_ptr<ServiceLocator> _serviceLocator;
             std::shared_ptr<Font> _font;
         };
     }

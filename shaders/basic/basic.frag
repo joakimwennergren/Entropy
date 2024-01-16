@@ -33,11 +33,11 @@ void main()
 
         vec2 iResolution = vec2(screen.x, screen.y);
 
-        vec2  u_rectSize   = vec2(60.0, screen.y * 2.0);     // The pixel-space scale of the rectangle.
-        vec2  u_rectCenter = vec2(position.x, position.y); // The pixel-space rectangle center location
+        vec2  u_rectSize   = vec2(400.0, 400.0);     // The pixel-space scale of the rectangle.
+        vec2  u_rectCenter = vec2(position.x, position.y * -1.0f); // The pixel-space rectangle center location
         
         float u_edgeSoftness   = 2.0; // How soft the edges should be (in pixels). Higher values could be used to simulate a drop shadow.
-        vec4  u_cornerRadiuses = vec4(0.0, 40.0, 40.0, 40.0); // The radiuses of the corners(in pixels): [topRight, bottomRight, topLeft, bottomLeft]
+        vec4  u_cornerRadiuses = vec4(20.0, 20.0, 20.0, 20.0); // The radiuses of the corners(in pixels): [topRight, bottomRight, topLeft, bottomLeft]
         
         // Border
         float u_borderThickness = 0.0; // The border size (in pixels) 
@@ -48,8 +48,8 @@ void main()
         vec2  u_shadowOffset   = vec2(0.0, 0.0); // The pixel-space shadow offset from rectangle center
         
         // Colors
-        vec4  u_colorBg     = vec4(0.93, 0.93, 0.93, 0.0); // The color of background
-        vec4  u_colorRect   = vec4(1.0,  0.30, 0.45, 0.6); // The color of rectangle
+        vec4  u_colorBg     = vec4(0.0, 0.0, 0.0, 0.0); // The color of background
+        vec4  u_colorRect   = vec4(1.0,  1.0, 1.0, 1.0); // The color of rectangle
         vec4  u_colorBorder = vec4(0.7,  0.25, 0.55, 1.0); // The color of (internal) border
         vec4  u_colorShadow = vec4(0.4,  0.4,  0.4,  1.0); // The color of shadow
         

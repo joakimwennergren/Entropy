@@ -218,6 +218,7 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
     vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
     vkCmdBindIndexBuffer(currentCmdBuffer, renderable->indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT16);
     vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 0, nullptr);
+
     if (renderable->_descriptorSet != nullptr)
         vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 1, 1, &renderable->_descriptorSet, 0, nullptr);
 
@@ -232,7 +233,9 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
     {
         translate = glm::translate(glm::mat4(1.0f), renderable->position);
     }
-    auto scale = glm::scale(glm::mat4(1.0), renderable->scale);
+
+    auto scale = glm::scale(glm::mat4(1.0f), renderable->scale);
+
     auto rotate = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
 
     auto o = glm::vec3(0.0, 0.0, 0.0);
@@ -268,8 +271,9 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
     PushConstant constant;
     constant.modelMatrix = modelMatrix;
     constant.color = renderable->color;
-    constant.textureId = renderable->textureId;
     constant.position = renderable->position;
+    constant.textureId = renderable->textureId;
+
     vkCmdPushConstants(currentCmdBuffer, _pipeline->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstant), &constant);
 
     // Draw current renderable

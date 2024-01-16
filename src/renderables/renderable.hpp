@@ -41,27 +41,27 @@ namespace Entropy
 
             ~Renderable()
             {
-                /*
-                VulkanContext *vkContext = VulkanContext::GetInstance();
+                auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(_serviceLocator->getService("LogicalDevice"));
+                auto descriptorPool = std::dynamic_pointer_cast<DescriptorPool>(_serviceLocator->getService("DescriptorPool"));
 
-                vkDeviceWaitIdle(vkContext->logicalDevice);
+                vkDeviceWaitIdle(logicalDevice->Get());
 
                 if (_descriptorSet != VK_NULL_HANDLE)
                 {
                     vkFreeDescriptorSets(
-                        vkContext->logicalDevice,
-                        vkContext->descriptorPool,
+                        logicalDevice->Get(),
+                        descriptorPool->Get(),
                         1,
                         &_descriptorSet);
                 }
 
                 if (_descriptorSetLayout != VK_NULL_HANDLE)
                 {
-                    vkDestroyDescriptorSetLayout(vkContext->logicalDevice, _descriptorSetLayout, nullptr);
+                    vkDestroyDescriptorSetLayout(logicalDevice->Get(), _descriptorSetLayout, nullptr);
                 }
-                */
 
-                delete texture;
+                if (texture != nullptr)
+                    delete texture;
             }
 
             bool isAbleToRender()
@@ -227,6 +227,8 @@ namespace Entropy
 
             std::shared_ptr<Renderable> parent;
             std::vector<std::shared_ptr<Renderable>> children;
+
+            std::shared_ptr<ServiceLocator> _serviceLocator;
         };
     }
 }

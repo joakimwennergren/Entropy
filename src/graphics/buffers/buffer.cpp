@@ -4,6 +4,8 @@ using namespace Entropy::Graphics::Buffers;
 
 Buffer::~Buffer()
 {
+    vkDeviceWaitIdle(_logicalDevice->Get());
+
     // Destroy the buffer
     vkDestroyBuffer(_logicalDevice->Get(), _buffer, nullptr);
 

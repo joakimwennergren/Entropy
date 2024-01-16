@@ -36,6 +36,6 @@ void main() {
     color = pc.color;
     screen = ubo.screen;
     position = pc.position;
-
+    
     gl_Position = ubo.proj * ubo.view * pc.modelMatrix * vec4(inPosition, 1.);
 }

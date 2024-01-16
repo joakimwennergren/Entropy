@@ -11,7 +11,7 @@ Font::Font(std::string path)
     {
         FT_New_Face(ft, path.c_str(), 0, &face);
 
-        FT_Set_Pixel_Sizes(face, 0, 16);
+        FT_Set_Pixel_Sizes(face, 0, 48);
 
         auto glyph_index = FT_Get_Char_Index(face, n);
         auto error = FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER);

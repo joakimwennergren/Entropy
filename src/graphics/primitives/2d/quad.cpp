@@ -4,6 +4,9 @@ using namespace Entropy::Graphics::Primitives;
 
 Quad::Quad(std::shared_ptr<ServiceLocator> serviceLocator)
 {
+
+    _serviceLocator = serviceLocator;
+
     script = std::make_unique<Script>();
 
     _indices = {

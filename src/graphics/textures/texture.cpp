@@ -25,6 +25,7 @@ Texture::Texture(std::shared_ptr<ServiceLocator> serviceLocator)
 
 Texture::~Texture()
 {
+    vkDeviceWaitIdle(_logicalDevice->Get());
     vkDestroyImageView(_logicalDevice->Get(), _imageView, nullptr);
     vkDestroyImage(_logicalDevice->Get(), _textureImage, nullptr);
     vkFreeMemory(_logicalDevice->Get(), _textureImageMemory, nullptr);
