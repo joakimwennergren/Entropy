@@ -1,5 +1,3 @@
-#define STB_IMAGE_IMPLEMENTATION
-#define STBI_FAILURE_USERMSG
 #include <stb_image.h>
 
 #include "texture.hpp"
@@ -30,6 +28,69 @@ Texture::~Texture()
     vkDestroyImage(_logicalDevice->Get(), _textureImage, nullptr);
     vkFreeMemory(_logicalDevice->Get(), _textureImageMemory, nullptr);
 }
+
+void Texture::CreateTextureFromGLTFImage(tinygltf::Image &gltfimage, GLTF::TextureSampler textureSampler)
+{
+
+    auto physicalDevice = std::dynamic_pointer_cast<PhysicalDevice>(_serviceLocator->getService("PhysicalDevice"));
+
+    unsigned char *buffer = nullptr;
+    VkDeviceSize bufferSize = 0;
+    bool deleteBuffer = false;
+    if (gltfimage.component == 3)
+    {
+        // Most devices don't support RGB only on Vulkan so convert if necessary
+        // TODO: Check actual format support and transform only if required
+        bufferSize = gltfimage.width * gltfimage.height * 4;
+        buffer = new unsigned char[bufferSize];
+        unsigned char *rgba = buffer;
+        unsigned char *rgb = &gltfimage.image[0];
+        for (int32_t i = 0; i < gltfimage.width * gltfimage.height; ++i)
+        {
+            for (int32_t j = 0; j < 3; ++j)
+            {
+                rgba[j] = rgb[j];
+            }
+            rgba += 4;
+            rgb += 3;
+        }
+        deleteBuffer = true;
+    }
+    else
+    {
+        buffer = &gltfimage.image[0];
+        bufferSize = gltfimage.image.size();
+    }
+
+    VkFormat format = VK_FORMAT_R8G8B8A8_UNORM;
+
+    VkFormatProperties formatProperties;
+
+    int width = gltfimage.width;
+    int height = gltfimage.height;
+    int mipLevels = static_cast<uint32_t>(floor(log2(std::max(width, height))) + 1.0);
+
+    vkGetPhysicalDeviceFormatProperties(physicalDevice->Get(), format, &formatProperties);
+    assert(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_BLIT_SRC_BIT);
+    assert(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_BLIT_DST_BIT);
+
+    StagedBuffer stagedBuffer(_serviceLocator, bufferSize, buffer);
+
+    auto mem = stagedBuffer.GetBufferMemory();
+    auto buf = stagedBuffer.GetVulkanBuffer();
+
+    CreateImage(width, height, VK_FORMAT_R8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _textureImage, mem);
+
+    TransitionImageLayout(_textureImage, VK_FORMAT_R8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+    TransitionImageLayout(_textureImage, VK_FORMAT_R8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+    auto imageView = ImageView(_logicalDevice->Get(), _textureImage, format);
+
+    _imageView = imageView.Get();
+
+    hasTexture = true;
+};
 
 void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap)
 {

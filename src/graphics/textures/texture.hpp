@@ -7,11 +7,14 @@
 
 #include "config.hpp"
 
+#include "tiny_gltf.h"
+
 #include <graphics/buffers/buffer.hpp>
 #include <graphics/commandbuffers/commandbuffer.hpp>
 #include <graphics/utilities/utilities.hpp>
 #include <graphics/buffers/stagedbuffer.hpp>
 #include <graphics/imageviews/imageview.hpp>
+#include <gltf/texturesampler.hpp>
 
 using namespace Entropy::Graphics::Buffers;
 using namespace Entropy::Graphics::Utilities;
@@ -27,6 +30,7 @@ namespace Entropy
             class Texture
             {
             public:
+                Texture() = default;
                 /**
                  * @brief Construct a new Texture object
                  *
@@ -58,6 +62,8 @@ namespace Entropy
                  *
                  */
                 void CreateTextureImageFromBuffer(FT_Bitmap bitmap);
+
+                void CreateTextureFromGLTFImage(tinygltf::Image &gltfimage, GLTF::TextureSampler textureSampler);
 
                 /**
                  * @brief Get the Image View object

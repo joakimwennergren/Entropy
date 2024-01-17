@@ -57,6 +57,11 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
 
         vkUpdateDescriptorSets(_logicalDevice->Get(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
     }
+
+    _camera = std::make_shared<Camera>();
+
+    _camera->setPosition({0.0f, 0.0f, 1.0f});
+    _camera->setRotation({0.0f, 0.0f, 0.0f});
 }
 
 Renderer::Renderer(uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize)
@@ -196,27 +201,26 @@ void Renderer::Render(int width, int height)
 
 void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width, int height)
 {
+    /*
     if (!renderable->isAbleToRender())
     {
+        std::cout << "ERRROR" << std::endl;
         return;
     }
+    */
 
     // Update UBO
     UniformBufferObject ubo{};
-    ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    ubo.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
-    ubo.proj[1][1] *= -1;
+    // ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    // ubo.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
+    // ubo.proj[1][1] *= -1;
+    ubo.view = _camera->matrices.view;
+    ubo.proj = _camera->matrices.perspective;
 
     ubo.screen = glm::vec2((float)width, (float)height);
 
     memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));
 
-    // Bind vertex & index buffers
-    // Bind descriptor sets
-    VkBuffer vertexBuffers[] = {renderable->vertexBuffer->GetVulkanBuffer()};
-    VkDeviceSize offsets[] = {0};
-    vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
-    vkCmdBindIndexBuffer(currentCmdBuffer, renderable->indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT16);
     vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 0, nullptr);
 
     if (renderable->_descriptorSet != nullptr)
@@ -276,8 +280,22 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
 
     vkCmdPushConstants(currentCmdBuffer, _pipeline->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstant), &constant);
 
-    // Draw current renderable
-    vkCmdDrawIndexed(currentCmdBuffer, renderable->GetIndices().size(), 1, 0, 0, 0);
+    if (renderable->type == 4)
+    {
+        auto model = std::dynamic_pointer_cast<Model>(renderable);
+        model->draw(currentCmdBuffer);
+    }
+    else
+    {
+        // Bind vertex & index buffers
+        // Bind descriptor sets
+        VkBuffer vertexBuffers[] = {renderable->vertexBuffer->GetVulkanBuffer()};
+        VkDeviceSize offsets[] = {0};
+        vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
+        vkCmdBindIndexBuffer(currentCmdBuffer, renderable->indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT16);
+        // Draw current renderable
+        vkCmdDrawIndexed(currentCmdBuffer, renderable->GetIndices().size(), 1, 0, 0, 0);
+    }
 }
 
 void Renderer::SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex)

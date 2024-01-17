@@ -215,6 +215,8 @@ namespace Entropy
                 this->rotationX = r;
             }
 
+            virtual void Test(){};
+
             inline void ZIndex(int z) { this->zIndex = z; }
 
             inline const std::vector<Vertex> GetVertices() { return this->_vertices; };

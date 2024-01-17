@@ -59,7 +59,7 @@ public:
         lookat,
         firstperson
     };
-    CameraType type = CameraType::lookat;
+    CameraType type = CameraType::firstperson;
 
     glm::vec3 rotation = glm::vec3();
     glm::vec3 position = glm::vec3();

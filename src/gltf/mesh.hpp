@@ -1,7 +1,18 @@
 #pragma once
 
+#include <vulkan/vulkan.hpp>
 #include <glm/glm.hpp>
 #include "primitive.hpp"
+#include <servicelocators/servicelocator.hpp>
+#include <graphics/devices/logical_device.hpp>
+#include <graphics/buffers/uniformbuffer.hpp>
+
+// Changing this value here also requires changing it in the vertex shader
+#define MAX_NUM_JOINTS 128u
+
+using namespace Entropy::ServiceLocators;
+using namespace Entropy::Graphics::Devices;
+using namespace Entropy::Graphics::Buffers;
 
 namespace Entropy
 {
@@ -13,15 +24,6 @@ namespace Entropy
             BoundingBox bb;
             BoundingBox aabb;
 
-            struct UniformBuffer
-            {
-                VkBuffer buffer;
-                VkDeviceMemory memory;
-                VkDescriptorBufferInfo descriptor;
-                VkDescriptorSet descriptorSet;
-                void *mapped;
-            } uniformBuffer;
-
             struct UniformBlock
             {
                 glm::mat4 matrix;
@@ -29,8 +31,11 @@ namespace Entropy
                 float jointcount{0};
             } uniformBlock;
 
-            Mesh(vks::VulkanDevice *device, glm::mat4 matrix);
+            Mesh(std::shared_ptr<ServiceLocator> serviceLocator, glm::mat4 matrix);
             ~Mesh();
+
+            std::unique_ptr<Entopy::Graphics::Buffers::UniformBuffer> _buffer;
+            std::shared_ptr<LogicalDevice> _logicalDevice;
 
             void setBoundingBox(glm::vec3 min, glm::vec3 max);
         };

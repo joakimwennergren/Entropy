@@ -55,6 +55,8 @@ namespace Entropy
 
                 void CreateIndexBufferUint16(std::shared_ptr<ServiceLocator> serviceLocator, std::vector<uint16_t> indices);
 
+                void CreateIndexBufferUint32(std::shared_ptr<ServiceLocator> serviceLocator, std::vector<uint32_t> indices);
+
                 /**
                  * @brief Get the Mapped Memory object
                  *

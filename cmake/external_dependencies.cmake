@@ -82,3 +82,5 @@ set(_LUA_LIB_SRC
 )
 
 add_library(lua OBJECT ${_LUA_LIB_SRC})
+
+add_subdirectory(external/tinygltf)

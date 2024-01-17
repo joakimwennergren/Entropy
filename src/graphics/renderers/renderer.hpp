@@ -19,6 +19,8 @@
 #include <servicelocators/servicelocator.hpp>
 #include <graphics/descriptorsets/descriptorset.hpp>
 #include <graphics/swapchains/swapchain.hpp>
+#include <gltf/model.hpp>
+#include <graphics/cameras/perspective_camera.hpp>
 
 using namespace Entropy::SceneGraphs;
 using namespace Entropy::Renderables;
@@ -31,6 +33,7 @@ using namespace Entropy::Graphics::Synchronization;
 using namespace Entropy::Graphics::Descriptorsets;
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Swapchains;
+using namespace Entropy::GLTF;
 
 namespace Entropy
 {
@@ -69,6 +72,7 @@ namespace Entropy
                 std::shared_ptr<Swapchain> _swapChain;
 
                 std::shared_ptr<SceneGraph> _sceneGraph;
+                std::shared_ptr<Camera> _camera;
 
                 VkCommandBuffer currentCmdBuffer;
                 VkDescriptorSet currentDescriptorSet;

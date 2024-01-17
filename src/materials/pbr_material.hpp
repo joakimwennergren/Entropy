@@ -26,11 +26,11 @@ namespace Entropy
             glm::vec4 baseColorFactor = glm::vec4(1.0f);
             glm::vec4 emissiveFactor = glm::vec4(0.0f);
 
-            std::unique_ptr<Texture> baseColorTexture;
-            std::unique_ptr<Texture> metallicRoughnessTexture;
-            std::unique_ptr<Texture> normalTexture;
-            std::unique_ptr<Texture> occlusionTexture;
-            std::unique_ptr<Texture> emissiveTexture;
+            Texture *baseColorTexture;
+            Texture *metallicRoughnessTexture;
+            Texture *normalTexture;
+            Texture *occlusionTexture;
+            Texture *emissiveTexture;
 
             bool doubleSided = false;
 
@@ -46,8 +46,8 @@ namespace Entropy
 
             struct Extension
             {
-                std::unique_ptr<Texture> specularGlossinessTexture;
-                std::unique_ptr<Texture> diffuseTexture;
+                Texture *specularGlossinessTexture;
+                Texture *diffuseTexture;
                 glm::vec4 diffuseFactor = glm::vec4(1.0f);
                 glm::vec3 specularFactor = glm::vec3(0.0f);
             } extension;
