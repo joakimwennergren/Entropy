@@ -114,7 +114,6 @@ namespace Entropy
 
             std::vector<Node *> nodes;
             std::vector<Node *> linearNodes;
-
             std::vector<Skin *> skins;
 
             std::vector<Texture *> textures;
