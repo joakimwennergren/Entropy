@@ -53,6 +53,8 @@ Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator, FT_Bitmap bitmap)
 
 Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator, std::string path)
 {
+    _serviceLocator = serviceLocator;
+
     script = std::make_unique<Script>();
 
     _indices = {0, 1, 2, 2, 3, 0};

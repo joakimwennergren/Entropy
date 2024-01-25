@@ -22,6 +22,8 @@
 #include <gltf/model.hpp>
 #include <graphics/cameras/perspective_camera.hpp>
 
+#include <graphics/primitives/2d/sprite.hpp>
+
 using namespace Entropy::SceneGraphs;
 using namespace Entropy::Renderables;
 using namespace Entropy::Graphics::Buffers;
@@ -33,6 +35,7 @@ using namespace Entropy::Graphics::Synchronization;
 using namespace Entropy::Graphics::Descriptorsets;
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Swapchains;
+using namespace Entropy::Graphics::Primitives;
 using namespace Entropy::GLTF;
 
 namespace Entropy

@@ -1,9 +1,5 @@
 #include "application.hpp"
 
-void scriptExecutor(std::shared_ptr<ServiceLocator> serviceLocator)
-{
-}
-
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_WINDOWS)
 Application::Application()
 {

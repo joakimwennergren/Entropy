@@ -211,11 +211,12 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
 
     // Update UBO
     UniformBufferObject ubo{};
-    // ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    // ubo.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
-    // ubo.proj[1][1] *= -1;
-    ubo.view = _camera->matrices.view;
-    ubo.proj = _camera->matrices.perspective;
+    ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    ubo.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
+    ubo.proj[1][1] *= -1;
+    // ubo.view = _camera->matrices.view;
+    // ubo.proj = _camera->matrices.perspective;
+    //_camera->update(0.1);
 
     ubo.screen = glm::vec2((float)width, (float)height);
 
@@ -223,8 +224,11 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
 
     vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 0, nullptr);
 
-    if (renderable->_descriptorSet != nullptr)
-        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 1, 1, &renderable->_descriptorSet, 0, nullptr);
+    if (renderable->type == 1)
+    {
+        auto sprite = std::dynamic_pointer_cast<Sprite>(renderable);
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 1, 1, &sprite->_descriptorSet, 0, nullptr);
+    }
 
     // @todo refactors this
 

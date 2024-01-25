@@ -41,6 +41,7 @@ namespace Entropy
 
             ~Renderable()
             {
+                /*
                 auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(_serviceLocator->getService("LogicalDevice"));
                 auto descriptorPool = std::dynamic_pointer_cast<DescriptorPool>(_serviceLocator->getService("DescriptorPool"));
 
@@ -59,6 +60,7 @@ namespace Entropy
                 {
                     vkDestroyDescriptorSetLayout(logicalDevice->Get(), _descriptorSetLayout, nullptr);
                 }
+                */
 
                 if (texture != nullptr)
                     delete texture;
