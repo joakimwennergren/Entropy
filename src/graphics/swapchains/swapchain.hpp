@@ -1,5 +1,6 @@
 #pragma once
 
+#include <limits>
 #include <vulkan/vulkan.hpp>
 #include <iostream>
 #include <config.hpp>

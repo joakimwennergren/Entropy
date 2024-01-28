@@ -11,6 +11,7 @@ Cube::Cube(std::shared_ptr<ServiceLocator> serviceLocator)
     _indices = {
         0, 1, 2, 2, 3, 0};
 
+    /*
     _vertices = {
 
         {-1, -1, 0.5},
@@ -22,7 +23,8 @@ Cube::Cube(std::shared_ptr<ServiceLocator> serviceLocator)
         {-1, 1, -0.5},
         {1, 1, -0.5},
     };
-
+    */
+   
     _vertices = {
         {{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
         {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},

@@ -26,7 +26,7 @@ WindowSurface::WindowSurface(std::shared_ptr<VulkanInstance> instance, GLFWwindo
 #endif
 
 #ifdef BUILD_FOR_WINDOWS
-void Context::CreateSurfaceWindows(std::shared_ptr<VulkanInstance> instance, GLFWwindow *window)
+WindowSurface::WindowSurface(std::shared_ptr<VulkanInstance> instance, GLFWwindow *window)
 {
     if (instance == nullptr)
     {
@@ -35,7 +35,7 @@ void Context::CreateSurfaceWindows(std::shared_ptr<VulkanInstance> instance, GLF
 
     _instance = instance;
 
-    if (layer == nullptr)
+    if (window == nullptr)
     {
         return;
     }
@@ -47,7 +47,6 @@ void Context::CreateSurfaceWindows(std::shared_ptr<VulkanInstance> instance, GLF
 
     if (vkCreateWin32SurfaceKHR(instance->Get(), &createInfo, nullptr, &this->_surface) != VK_SUCCESS)
     {
-        PLOG_FATAL << "Could not create Windows surface!";
         exit(EXIT_FAILURE);
     }
 }

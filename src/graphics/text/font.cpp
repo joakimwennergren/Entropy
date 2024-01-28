@@ -16,8 +16,7 @@ Font::Font(std::string path)
         auto glyph_index = FT_Get_Char_Index(face, n);
         auto error = FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER);
 
-        auto glyph = Glyph{
-            .glyphslot = face->glyph};
+        auto glyph = Glyph{ face->glyph };
 
         glyphs.insert(std::pair<uint8_t, Glyph>(n, glyph));
     }

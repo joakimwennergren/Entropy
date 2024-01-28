@@ -33,6 +33,8 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<Servi
     _descriptorsetLayout = descriptorSetLayout;
     _serviceLocator = serviceLocator;
 
+    std::cout << GetShadersDir() << std::endl;
+
     auto shader = std::make_unique<Shader>(_serviceLocator, GetShadersDir() + "vert.spv", GetShadersDir() + "frag.spv");
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};

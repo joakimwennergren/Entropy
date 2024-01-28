@@ -1,5 +1,6 @@
 #pragma once
 
+#include <limits>
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
@@ -74,7 +75,7 @@ namespace Entropy
                 std::vector<AnimationSampler> samplers;
                 std::vector<AnimationChannel> channels;
                 float start = std::numeric_limits<float>::max();
-                float end = std::numeric_limits<float>::min();
+                float end = std::numeric_limits<float>::lowest();
             };
 
             struct Node

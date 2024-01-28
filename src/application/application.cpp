@@ -30,9 +30,7 @@ Application::Application()
     // Get initial window framebuffer size
     int width, height;
     glfwGetFramebufferSize(_window, &width, &height);
-    VkExtent2D frame = {
-        .width = (uint32_t)width,
-        .height = (uint32_t)height};
+    VkExtent2D frame = { (uint32_t)width, (uint32_t)height };
 
     // Create 1ms Timer
     _timer = new Timer(1.0f);

@@ -41,6 +41,8 @@ namespace Entropy
                 {
                     lua.script_file(scriptFile, env);
                 }
+
+                return true;
             };
             inline bool isValid() override { return true; };
             sol::state lua;

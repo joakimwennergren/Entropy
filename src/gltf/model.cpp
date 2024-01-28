@@ -300,8 +300,8 @@ void Model::loadNode(Node *parent, const tinygltf::Node &node, uint32_t nodeInde
                 newMesh->bb = p->bb;
                 newMesh->bb.valid = true;
             }
-            newMesh->bb.min = glm::min(newMesh->bb.min, p->bb.min);
-            newMesh->bb.max = glm::max(newMesh->bb.max, p->bb.max);
+            //newMesh->bb.min = glm::min(newMesh->bb.min, p->bb.min);
+            //newMesh->bb.max = glm::max(newMesh->bb.max, p->bb.max);
         }
         newNode->mesh = newMesh;
     }
@@ -874,8 +874,8 @@ void Model::calculateBoundingBox(Node *node, Node *parent)
         }
     }
 
-    parentBvh.min = glm::min(parentBvh.min, node->bvh.min);
-    parentBvh.max = glm::min(parentBvh.max, node->bvh.max);
+    //parentBvh.min = glm::min(parentBvh.min, node->bvh.min);
+    //parentBvh.max = glm::min(parentBvh.max, node->bvh.max);
 
     for (auto &child : node->children)
     {
@@ -898,8 +898,8 @@ void Model::getSceneDimensions()
     {
         if (node->bvh.valid)
         {
-            dimensions.min = glm::min(dimensions.min, node->bvh.min);
-            dimensions.max = glm::max(dimensions.max, node->bvh.max);
+            //dimensions.min = glm::min<glm::vec3>(dimensions.min, node->bvh.min);
+            //dimensions.max = glm::max<glm::vec3>(dimensions.max, node->bvh.max);
         }
     }
 

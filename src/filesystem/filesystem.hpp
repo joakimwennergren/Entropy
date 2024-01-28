@@ -17,7 +17,7 @@ namespace Symbios
                 {
 
 #ifdef BUILD_FOR_WINDOWS
-                        return "../..";
+                        return ENGINE_BASEPATH;
 #endif
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_ANDROID)
