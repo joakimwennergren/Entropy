@@ -31,7 +31,7 @@ add_library(${PROJECT_NAME} STATIC ${SOURCES})
 if(MSVC)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
 endif(MSVC)
-#target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17 -Wall)
+target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17)
 
 # Include headers
 target_include_directories(${PROJECT_NAME} 

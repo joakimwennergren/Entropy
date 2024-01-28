@@ -30,7 +30,7 @@ Application::Application()
     // Get initial window framebuffer size
     int width, height;
     glfwGetFramebufferSize(_window, &width, &height);
-    VkExtent2D frame = { (uint32_t)width, (uint32_t)height };
+    VkExtent2D frame = {(uint32_t)width, (uint32_t)height};
 
     // Create 1ms Timer
     _timer = new Timer(1.0f);
@@ -152,8 +152,9 @@ void Application::Run()
         screen.height = height;
 
         // On render
-        this->_renderer->Render(width, height);
         this->OnRender(_deltaTime);
+        this->_renderer->Render(width, height);
+
         float timeStep = 1.0f / 60.0f;
         int32 velocityIterations = 6;
         int32 positionIterations = 2;
