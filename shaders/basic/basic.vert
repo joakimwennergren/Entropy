@@ -11,8 +11,8 @@ layout (binding = 0) uniform UboView
 
 layout (binding = 1) uniform UboInstance 
 {
+	vec4 color;
 	mat4 model; 
-    vec4 color;
 } uboInstance;
 
 layout (location = 0) out vec3 outColor;

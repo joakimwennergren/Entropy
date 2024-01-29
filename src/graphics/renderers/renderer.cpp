@@ -42,7 +42,7 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
 
     vkGetPhysicalDeviceProperties(physicalDevice->Get(), &properties);
     size_t minUboAlignment = properties.limits.minUniformBufferOffsetAlignment;
-    dynamicAlignment = sizeof(glm::mat4);
+    dynamicAlignment = 128;
     if (minUboAlignment > 0)
     {
         dynamicAlignment = (dynamicAlignment + minUboAlignment - 1) & ~(minUboAlignment - 1);
@@ -217,6 +217,8 @@ void Renderer::Render(int width, int height)
         {
             uint32_t dynamicOffset = modelIndex * static_cast<uint32_t>(dynamicAlignment);
 
+            std::cout << "OFFSET = " << dynamicOffset << std::endl;
+
             glm::mat4 *modelMat = (glm::mat4 *)(((uint64_t)uboDataDynamic.model + (modelIndex * dynamicAlignment)));
             glm::vec4 *color = (glm::vec4 *)(((uint64_t)uboDataDynamic.color + (modelIndex * dynamicAlignment)));
             *color = glm::vec4(1.0, 1.0, 1.0, 1.0);
@@ -247,11 +249,9 @@ void Renderer::Render(int width, int height)
 
             vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &dynamicOffset);
 
-            memcpy(dynUbo->GetMappedMemory(), uboDataDynamic.model, bufferSize);
+            memcpy(dynUbo->GetMappedMemory(), &uboDataDynamic, bufferSize);
 
             DrawRenderable(renderable, width, height);
-
-            modelIndex++;
         }
         else
         {
@@ -260,6 +260,18 @@ void Renderer::Render(int width, int height)
                 DrawRenderable(child, width, height);
             }
         }
+
+        /*
+        VkMappedMemoryRange memoryRange;
+        memoryRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+        memoryRange.memory = dynUbo->GetBufferMemory();
+        memoryRange.size = bufferSize;
+        memoryRange.pNext = nullptr;
+        vkFlushMappedMemoryRanges(_logicalDevice->Get(), 1, &memoryRange);
+
+        */
+
+        modelIndex++;
     }
 
     // End renderpass and commandbuffer recording

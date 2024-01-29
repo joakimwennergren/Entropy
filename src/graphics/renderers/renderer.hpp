@@ -91,8 +91,8 @@ namespace Entropy
                 // Note that we need to manually allocate the data to cope for GPU-specific uniform buffer offset alignments
                 struct UboDataDynamic
                 {
-                    glm::mat4 *model{nullptr};
                     glm::vec4 *color{nullptr};
+                    glm::mat4 *model{nullptr};
                 } uboDataDynamic;
 
                 std::unique_ptr<UniformBuffer> dynUbo;
