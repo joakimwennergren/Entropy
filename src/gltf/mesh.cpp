@@ -6,7 +6,7 @@ Mesh::Mesh(std::shared_ptr<ServiceLocator> serviceLocator, glm::mat4 matrix)
 {
     _logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
 
-    _buffer = std::make_unique<Entopy::Graphics::Buffers::UniformBuffer>(serviceLocator, (VkDeviceSize)sizeof(uniformBlock));
+    _buffer = std::make_unique<UniformBuffer>(serviceLocator, (VkDeviceSize)sizeof(uniformBlock));
 
     this->uniformBlock.matrix = matrix;
 };

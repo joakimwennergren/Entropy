@@ -16,7 +16,7 @@
 
 using namespace Entropy::Graphics::Buffers;
 
-namespace Entopy
+namespace Entropy
 {
     namespace Graphics
     {

@@ -12,6 +12,7 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
     _logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
     _swapChain = std::dynamic_pointer_cast<Swapchain>(serviceLocator->getService("SwapChain"));
     _sceneGraph = std::dynamic_pointer_cast<SceneGraph>(serviceLocator->getService("SceneGraph"));
+    auto physicalDevice = std::dynamic_pointer_cast<PhysicalDevice>(serviceLocator->getService("PhysicalDevice"));
 
     // Create renderpass
     _renderPass = std::make_shared<RenderPass>(serviceLocator);
@@ -30,7 +31,7 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
     // Create buffers @todo temp!!!
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
-        _uniformBuffers.push_back(new Entopy::Graphics::Buffers::UniformBuffer(serviceLocator, sizeof(UniformBufferObject)));
+        _uniformBuffers.push_back(new UniformBuffer(serviceLocator, sizeof(UniformBufferObject)));
     }
 
     for (unsigned int i = 0; i < _uniformBuffers.size(); i++)
@@ -39,13 +40,37 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
         rawUniformBuffers.push_back(rawBuffer);
     }
 
+    vkGetPhysicalDeviceProperties(physicalDevice->Get(), &properties);
+    size_t minUboAlignment = properties.limits.minUniformBufferOffsetAlignment;
+    dynamicAlignment = 128;
+    if (minUboAlignment > 0)
+    {
+        dynamicAlignment = (dynamicAlignment + minUboAlignment - 1) & ~(minUboAlignment - 1);
+    }
+    bufferSize = 1000 * dynamicAlignment;
+
+    uboDataDynamic.model = (glm::mat4 *)Utility::AlignedAlloc(bufferSize, dynamicAlignment);
+    uboDataDynamic.color = (glm::vec4 *)Utility::AlignedAlloc(bufferSize, dynamicAlignment);
+    assert(uboDataDynamic.model);
+
+    std::cout << "minUniformBufferOffsetAlignment = " << minUboAlignment << std::endl;
+    std::cout << "dynamicAlignment = " << dynamicAlignment << std::endl;
+
+    dynUbo = std::make_unique<UniformBuffer>(serviceLocator, bufferSize);
+
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
-        std::array<VkWriteDescriptorSet, 1> descriptorWrites{};
+        std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
+
         VkDescriptorBufferInfo bufferInfo{};
         bufferInfo.buffer = rawUniformBuffers[i];
         bufferInfo.offset = 0;
         bufferInfo.range = sizeof(UniformBufferObject);
+
+        VkDescriptorBufferInfo bufferInfo2{};
+        bufferInfo2.buffer = dynUbo->GetVulkanBuffer();
+        bufferInfo2.offset = 0;
+        bufferInfo2.range = 64;
 
         descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[0].dstSet = _descriptorSet->Get()[i];
@@ -55,13 +80,22 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
         descriptorWrites[0].descriptorCount = 1;
         descriptorWrites[0].pBufferInfo = &bufferInfo;
 
+        descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[1].dstSet = _descriptorSet->Get()[i];
+        descriptorWrites[1].dstBinding = 1;
+        descriptorWrites[1].dstArrayElement = 0;
+        descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+        descriptorWrites[1].descriptorCount = 1;
+        descriptorWrites[1].pBufferInfo = &bufferInfo2;
+
         vkUpdateDescriptorSets(_logicalDevice->Get(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
     }
 
     _camera = std::make_shared<Camera>();
 
-    _camera->setPosition({0.0f, 0.0f, 1.0f});
-    _camera->setRotation({0.0f, 0.0f, 0.0f});
+    _camera->type = Camera::CameraType::firstperson;
+    _camera->setPosition(glm::vec3(0.0f, 0.0f, -30.0f));
+    _camera->setRotation(glm::vec3(0.0f));
 }
 
 Renderer::Renderer(uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize)
@@ -117,6 +151,8 @@ Renderer::Renderer(uint32_t *vertContent, uint32_t vertSize, uint32_t *fragConte
 
 void Renderer::Render(int width, int height)
 {
+    _camera->setPerspective(60.0f, (float)width / (float)height, 0.1f, 256.0f);
+
     vkWaitForFences(_logicalDevice->Get(), 1, &_synchronizer->GetFences()[_currentFrame], VK_TRUE, UINT64_MAX);
 
     uint32_t imageIndex;
@@ -173,10 +209,48 @@ void Renderer::Render(int width, int height)
          [](const std::shared_ptr<Renderable> &lhs, const std::shared_ptr<Renderable> &rhs)
          { return lhs->zIndex < rhs->zIndex; });
 
+    uint modelIndex = 0;
+
     for (auto &renderable : _sceneGraph->renderables)
     {
         if (renderable->children.size() == 0)
         {
+            uint32_t dynamicOffset = modelIndex * static_cast<uint32_t>(dynamicAlignment);
+
+            std::cout << "OFFSET = " << dynamicOffset << std::endl;
+
+            glm::mat4 *modelMat = (glm::mat4 *)(((uint64_t)uboDataDynamic.model + (modelIndex * dynamicAlignment)));
+            glm::vec4 *color = (glm::vec4 *)(((uint64_t)uboDataDynamic.color + (modelIndex * dynamicAlignment)));
+            *color = glm::vec4(1.0, 1.0, 1.0, 1.0);
+
+            auto translate = glm::translate(glm::mat4(1.0f), renderable->position);
+            auto scale = glm::scale(glm::mat4(1.0f), renderable->scale);
+            auto rotate = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+
+            auto o = glm::vec3(0.0, 0.0, 0.0);
+
+            if (renderable->orientation == 1)
+            {
+                o.x = 1;
+            }
+
+            if (renderable->orientation == 2)
+            {
+                o.y = 1;
+            }
+
+            if (renderable->orientation == 3)
+            {
+                o.z = 1;
+            }
+            auto modelRotation = glm::rotate(glm::mat4(1.0f), glm::radians(renderable->rotationX), o);
+
+            *modelMat = translate * scale * modelRotation;
+
+            vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &dynamicOffset);
+
+            memcpy(dynUbo->GetMappedMemory(), &uboDataDynamic, bufferSize);
+
             DrawRenderable(renderable, width, height);
         }
         else
@@ -186,6 +260,18 @@ void Renderer::Render(int width, int height)
                 DrawRenderable(child, width, height);
             }
         }
+
+        /*
+        VkMappedMemoryRange memoryRange;
+        memoryRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+        memoryRange.memory = dynUbo->GetBufferMemory();
+        memoryRange.size = bufferSize;
+        memoryRange.pNext = nullptr;
+        vkFlushMappedMemoryRanges(_logicalDevice->Get(), 1, &memoryRange);
+
+        */
+
+        modelIndex++;
     }
 
     // End renderpass and commandbuffer recording
@@ -211,18 +297,16 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
 
     // Update UBO
     UniformBufferObject ubo{};
-    ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    ubo.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
-    ubo.proj[1][1] *= -1;
-    // ubo.view = _camera->matrices.view;
-    // ubo.proj = _camera->matrices.perspective;
-    //_camera->update(0.1);
+    // ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    // ubo.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
+    // ubo.proj[1][1] *= -1;
+    ubo.view = _camera->matrices.view;
+    ubo.proj = _camera->matrices.perspective;
+    _camera->update(0.1);
 
-    ubo.screen = glm::vec2((float)width, (float)height);
+    // ubo.screen = glm::vec2((float)width, (float)height);
 
     memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));
-
-    vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 0, nullptr);
 
     if (renderable->type == 1)
     {
@@ -273,7 +357,7 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
 
     glm::mat4 modelMatrix = glm::mat4(1.0f);
 
-    modelMatrix = translate * scale * rotate * modelRotation;
+    modelMatrix = translate * scale * modelRotation;
 
     // Update push constant and upload to GPU
     PushConstant constant;

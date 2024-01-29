@@ -100,7 +100,7 @@ namespace Entropy
             VkSampler _textureSampler;
 
             inline void Translate2D(float x, float y) { this->position = glm::vec3(x, y, 0.0); }
-            inline void Scale2D(float w, float h) { this->scale = glm::vec3(w, h, 0.0); }
+            inline void Scale2D(float w, float h) { this->scale = glm::vec3(w, h, 5.0); }
             inline void Color(float r, float g, float b, float a) { this->color = glm::vec4(r, g, b, a); };
 
             inline void Rotate(float r, int orientation)

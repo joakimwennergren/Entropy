@@ -51,21 +51,28 @@ Application::Application()
     uboLayoutBinding.pImmutableSamplers = nullptr;
     uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
+    VkDescriptorSetLayoutBinding uboDynLayoutBinding{};
+    uboDynLayoutBinding.binding = 1;
+    uboDynLayoutBinding.descriptorCount = 1;
+    uboDynLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+    uboDynLayoutBinding.pImmutableSamplers = nullptr;
+    uboDynLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+
     VkDescriptorSetLayoutBinding samplerLayoutBinding{};
-    samplerLayoutBinding.binding = 1;
+    samplerLayoutBinding.binding = 2;
     samplerLayoutBinding.descriptorCount = 1;
     samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
     samplerLayoutBinding.pImmutableSamplers = nullptr;
     samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
     VkDescriptorSetLayoutBinding textureLayoutBinding{};
-    textureLayoutBinding.binding = 2;
+    textureLayoutBinding.binding = 3;
     textureLayoutBinding.descriptorCount = 1;
     textureLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
     textureLayoutBinding.pImmutableSamplers = nullptr;
     textureLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-    std::vector<VkDescriptorSetLayoutBinding> bindings = {uboLayoutBinding, samplerLayoutBinding, textureLayoutBinding};
+    std::vector<VkDescriptorSetLayoutBinding> bindings = {uboLayoutBinding, uboDynLayoutBinding, samplerLayoutBinding, textureLayoutBinding};
 
     auto descriptorSetLayout = std::make_shared<DescriptorsetLayout>(logicalDevice, bindings);
     auto descriptorSet = std::make_shared<Descriptorset>(logicalDevice, descriptorPool, descriptorSetLayout);

@@ -1,41 +1,33 @@
 #version 450
 
-// Uniform Buffer Object
-layout(binding=0) uniform UniformBufferObject {
-    mat4 view;
-    mat4 proj;
-    vec2 screen;
-} ubo;
+layout (location = 0) in vec3 inPos;
+layout (location = 6) in vec3 inColor;
 
-// Vertex Attributes
-layout(location=0)in vec3 inPosition;
-layout(location=1)in vec3 inColor;
-layout(location=2)in vec2 inTexCoord;
+layout (binding = 0) uniform UboView 
+{
+	mat4 projection;
+	mat4 view;
+} uboView;
 
-// Push Constant (per instance)
-layout(push_constant) uniform constants {
-    mat4 modelMatrix;
-    vec4 color;
-    vec3 position;
-    int textureId;
-} pc;
+layout (binding = 1) uniform UboInstance 
+{
+	vec4 color;
+	mat4 model; 
+} uboInstance;
 
-// Attributes to fragment shader
-layout(location=0)out vec3 fragColor;
-layout(location=1)out vec2 fragTexCoord;
-layout(location=2)out int texId;
-layout(location=3)out vec4 color;
-layout(location=4)out vec2 screen;
-layout(location=5)out vec3 position;
+layout (location = 0) out vec3 outColor;
+layout (location = 1) out vec4 modelColor;
 
-void main() {
-    // @todo refactor this..
-    fragColor=inColor;
-    fragTexCoord=inTexCoord;
-    texId = pc.textureId;
-    color = pc.color;
-    screen = ubo.screen;
-    position = pc.position;
-    
-    gl_Position = ubo.proj * ubo.view * pc.modelMatrix * vec4(inPosition, 1.);
+out gl_PerVertex 
+{
+	vec4 gl_Position;   
+};
+
+void main() 
+{
+	outColor = inColor;
+    modelColor = uboInstance.color;
+	mat4 modelView = uboView.view * uboInstance.model;
+	vec3 worldPos = vec3(modelView * vec4(inPos, 1.0));
+	gl_Position = uboView.projection * modelView * vec4(inPos.xyz, 1.0);
 }

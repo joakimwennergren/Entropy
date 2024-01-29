@@ -1,6 +1,6 @@
 #include "uniformbuffer.hpp"
 
-Entopy::Graphics::Buffers::UniformBuffer::UniformBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkDeviceSize bufferSize)
+Entropy::Graphics::Buffers::UniformBuffer::UniformBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkDeviceSize bufferSize)
 {
     // Get required depenencies
     auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
