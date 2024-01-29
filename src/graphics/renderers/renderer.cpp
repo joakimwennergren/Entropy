@@ -2,8 +2,105 @@
 
 using namespace Entropy::Graphics::Renderers;
 
-Renderer::Renderer(char *vertContent, uint32_t vertSize, char *fragContent, uint32_t fragSize)
+Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
 {
+    // Store service locator
+    _serviceLocator = serviceLocator;
+
+    // Get required depenencies
+    _descriptorSet = std::dynamic_pointer_cast<Descriptorset>(serviceLocator->getService("DescriptorSet"));
+    _logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
+    _swapChain = std::dynamic_pointer_cast<Swapchain>(serviceLocator->getService("SwapChain"));
+    _sceneGraph = std::dynamic_pointer_cast<SceneGraph>(serviceLocator->getService("SceneGraph"));
+    auto physicalDevice = std::dynamic_pointer_cast<PhysicalDevice>(serviceLocator->getService("PhysicalDevice"));
+
+    // Create renderpass
+    _renderPass = std::make_shared<RenderPass>(serviceLocator);
+
+    // Create pipeline(s)
+    _pipeline = std::make_unique<Pipeline>(_renderPass, serviceLocator);
+
+    // Create synchronizer
+    _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT, serviceLocator);
+
+    for (uint32_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
+    {
+        _commandBuffers.push_back(std::make_shared<CommandBuffer>(serviceLocator));
+    }
+
+    // Create buffers @todo temp!!!
+    for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
+    {
+        _uniformBuffers.push_back(new UniformBuffer(serviceLocator, sizeof(UniformBufferObject)));
+    }
+
+    for (unsigned int i = 0; i < _uniformBuffers.size(); i++)
+    {
+        auto rawBuffer = _uniformBuffers[i]->GetVulkanBuffer();
+        rawUniformBuffers.push_back(rawBuffer);
+    }
+
+    vkGetPhysicalDeviceProperties(physicalDevice->Get(), &properties);
+    size_t minUboAlignment = properties.limits.minUniformBufferOffsetAlignment;
+    dynamicAlignment = 128;
+    if (minUboAlignment > 0)
+    {
+        dynamicAlignment = (dynamicAlignment + minUboAlignment - 1) & ~(minUboAlignment - 1);
+    }
+    bufferSize = 1000 * dynamicAlignment;
+
+    uboDataDynamic.model = (glm::mat4 *)Utility::AlignedAlloc(bufferSize, dynamicAlignment);
+    uboDataDynamic.color = (glm::vec4 *)Utility::AlignedAlloc(bufferSize, dynamicAlignment);
+    assert(uboDataDynamic.model);
+
+    std::cout << "minUniformBufferOffsetAlignment = " << minUboAlignment << std::endl;
+    std::cout << "dynamicAlignment = " << dynamicAlignment << std::endl;
+
+    dynUbo = std::make_unique<UniformBuffer>(serviceLocator, bufferSize);
+
+    for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
+    {
+        std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
+
+        VkDescriptorBufferInfo bufferInfo{};
+        bufferInfo.buffer = rawUniformBuffers[i];
+        bufferInfo.offset = 0;
+        bufferInfo.range = sizeof(UniformBufferObject);
+
+        VkDescriptorBufferInfo bufferInfo2{};
+        bufferInfo2.buffer = dynUbo->GetVulkanBuffer();
+        bufferInfo2.offset = 0;
+        bufferInfo2.range = 64;
+
+        descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[0].dstSet = _descriptorSet->Get()[i];
+        descriptorWrites[0].dstBinding = 0;
+        descriptorWrites[0].dstArrayElement = 0;
+        descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        descriptorWrites[0].descriptorCount = 1;
+        descriptorWrites[0].pBufferInfo = &bufferInfo;
+
+        descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[1].dstSet = _descriptorSet->Get()[i];
+        descriptorWrites[1].dstBinding = 1;
+        descriptorWrites[1].dstArrayElement = 0;
+        descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+        descriptorWrites[1].descriptorCount = 1;
+        descriptorWrites[1].pBufferInfo = &bufferInfo2;
+
+        vkUpdateDescriptorSets(_logicalDevice->Get(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+    }
+
+    _camera = std::make_shared<Camera>();
+
+    _camera->type = Camera::CameraType::firstperson;
+    _camera->setPosition(glm::vec3(0.0f, 0.0f, -30.0f));
+    _camera->setRotation(glm::vec3(0.0f));
+}
+
+Renderer::Renderer(uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize)
+{
+    /*
     VulkanContext *vkContext = VulkanContext::GetInstance();
 
     // Create renderpass
@@ -49,23 +146,23 @@ Renderer::Renderer(char *vertContent, uint32_t vertSize, char *fragContent, uint
 
         vkUpdateDescriptorSets(vkContext->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
     }
+    */
 }
 
-void Renderer::Render()
+void Renderer::Render(int width, int height)
 {
-    VulkanContext *vkContext = VulkanContext::GetInstance();
+    _camera->setPerspective(60.0f, (float)width / (float)height, 0.1f, 256.0f);
 
-    vkWaitForFences(vkContext->logicalDevice, 1, &_synchronizer->GetFences()[_currentFrame], VK_TRUE, UINT64_MAX);
+    vkWaitForFences(_logicalDevice->Get(), 1, &_synchronizer->GetFences()[_currentFrame], VK_TRUE, UINT64_MAX);
 
     uint32_t imageIndex;
-    VkResult result = vkAcquireNextImageKHR(vkContext->logicalDevice, vkContext->swapChain, UINT64_MAX, _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE, &imageIndex);
+    VkResult result = vkAcquireNextImageKHR(_logicalDevice->Get(), _swapChain->Get(), UINT64_MAX, _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE, &imageIndex);
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
     {
         _synchronizer.reset();
-        _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
-
-        // vkContext->RecreateSwapChain();
+        _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT, _serviceLocator);
+        _swapChain->RecreateSwapChain();
         _renderPass->RecreateFrameBuffers();
 
         return;
@@ -76,11 +173,11 @@ void Renderer::Render()
     }
 
     // current commandbuffer & descriptorset
-    auto currentCmdBuffer = _commandBuffers[_currentFrame]->GetCommandBuffer();
-    auto currentDescriptorSet = vkContext->descriptorSets[_currentFrame];
+    currentCmdBuffer = _commandBuffers[_currentFrame]->GetCommandBuffer();
+    currentDescriptorSet = _descriptorSet->Get()[_currentFrame];
 
     // Reset fences and current commandbuffer
-    vkResetFences(vkContext->logicalDevice, 1, &_synchronizer->GetFences()[_currentFrame]);
+    vkResetFences(_logicalDevice->Get(), 1, &_synchronizer->GetFences()[_currentFrame]);
     vkResetCommandBuffer(currentCmdBuffer, 0);
 
     // Begin renderpass and commandbuffer recording
@@ -94,8 +191,8 @@ void Renderer::Render()
     VkViewport viewport{};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
-    viewport.width = (float)vkContext->swapChainExtent.width;
-    viewport.height = (float)vkContext->swapChainExtent.height;
+    viewport.width = (float)_swapChain->swapChainExtent.width;
+    viewport.height = (float)_swapChain->swapChainExtent.height;
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
     vkCmdSetViewport(currentCmdBuffer, 0, 1, &viewport);
@@ -103,77 +200,78 @@ void Renderer::Render()
     // Scissor
     VkRect2D scissor{};
     scissor.offset = {0, 0};
-    scissor.extent = vkContext->swapChainExtent;
+    scissor.extent = _swapChain->swapChainExtent;
     vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissor);
 
-    // Update UBO
-    UniformBufferObject ubo{};
-    ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    ubo.proj = glm::ortho(0.0f, (float)vkContext->swapChainExtent.width, (float)vkContext->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
-    ubo.proj[1][1] *= -1;
-    memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));
-
     // Sort renderables based on Zindex
-    sort(Global::SceneGraph::GetInstance()->renderables.begin(),
-         Global::SceneGraph::GetInstance()->renderables.end(),
+    sort(_sceneGraph->renderables.begin(),
+         _sceneGraph->renderables.end(),
          [](const std::shared_ptr<Renderable> &lhs, const std::shared_ptr<Renderable> &rhs)
          { return lhs->zIndex < rhs->zIndex; });
 
-    for (auto &renderable : Global::SceneGraph::GetInstance()->renderables)
+    uint modelIndex = 0;
+
+    for (auto &renderable : _sceneGraph->renderables)
     {
-        if (!renderable->isAbleToRender())
+        if (renderable->children.size() == 0)
         {
-            continue;
+            uint32_t dynamicOffset = modelIndex * static_cast<uint32_t>(dynamicAlignment);
+
+            std::cout << "OFFSET = " << dynamicOffset << std::endl;
+
+            glm::mat4 *modelMat = (glm::mat4 *)(((uint64_t)uboDataDynamic.model + (modelIndex * dynamicAlignment)));
+            glm::vec4 *color = (glm::vec4 *)(((uint64_t)uboDataDynamic.color + (modelIndex * dynamicAlignment)));
+            *color = glm::vec4(1.0, 1.0, 1.0, 1.0);
+
+            auto translate = glm::translate(glm::mat4(1.0f), renderable->position);
+            auto scale = glm::scale(glm::mat4(1.0f), renderable->scale);
+            auto rotate = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+
+            auto o = glm::vec3(0.0, 0.0, 0.0);
+
+            if (renderable->orientation == 1)
+            {
+                o.x = 1;
+            }
+
+            if (renderable->orientation == 2)
+            {
+                o.y = 1;
+            }
+
+            if (renderable->orientation == 3)
+            {
+                o.z = 1;
+            }
+            auto modelRotation = glm::rotate(glm::mat4(1.0f), glm::radians(renderable->rotationX), o);
+
+            *modelMat = translate * scale * modelRotation;
+
+            vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &dynamicOffset);
+
+            memcpy(dynUbo->GetMappedMemory(), &uboDataDynamic, bufferSize);
+
+            DrawRenderable(renderable, width, height);
+        }
+        else
+        {
+            for (auto &child : renderable->children)
+            {
+                DrawRenderable(child, width, height);
+            }
         }
 
-        // Bind vertex & index buffers
-        // Bind descriptor sets
-        VkBuffer vertexBuffers[] = {renderable->vertexBuffer->GetVulkanBuffer()};
-        VkDeviceSize offsets[] = {0};
-        vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
-        vkCmdBindIndexBuffer(currentCmdBuffer, renderable->indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT16);
-        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 0, nullptr);
-        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 1, 1, &renderable->_descriptorSet, 0, nullptr);
+        /*
+        VkMappedMemoryRange memoryRange;
+        memoryRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+        memoryRange.memory = dynUbo->GetBufferMemory();
+        memoryRange.size = bufferSize;
+        memoryRange.pNext = nullptr;
+        vkFlushMappedMemoryRanges(_logicalDevice->Get(), 1, &memoryRange);
 
-        // @todo refactors this
-        auto translate = glm::translate(glm::mat4(1.0f), renderable->position);
-        auto scale = glm::scale(glm::mat4(1.0), renderable->scale);
-        auto rotate = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+        */
 
-        auto o = glm::vec3(0.0, 0.0, 0.0);
-
-        if (renderable->orientation == 1)
-        {
-            o.x = 1;
-        }
-
-        if (renderable->orientation == 2)
-        {
-            o.y = 1;
-        }
-
-        if (renderable->orientation == 3)
-        {
-            o.z = 1;
-        }
-
-        auto modelRotation = glm::rotate(glm::mat4(1.0f), glm::radians(renderable->rotationX), o);
-        // @todo end
-
-        // if (renderable->texture->GetImageView() != nullptr)
-        // {
-
-        // }
-
-        // Update push constant and upload to GPU
-        PushConstant constant;
-        constant.modelMatrix = translate * scale * rotate * modelRotation;
-        constant.color = renderable->color;
-        constant.textureId = renderable->textureId;
-        vkCmdPushConstants(currentCmdBuffer, _pipeline->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstant), &constant);
-
-        // Draw current renderable
-        vkCmdDrawIndexed(currentCmdBuffer, renderable->GetIndices().size(), 1, 0, 0, 0);
+        modelIndex++;
     }
 
     // End renderpass and commandbuffer recording
@@ -187,10 +285,109 @@ void Renderer::Render()
     _currentFrame = (_currentFrame + 1) % MAX_CONCURRENT_FRAMES_IN_FLIGHT;
 }
 
+void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width, int height)
+{
+    /*
+    if (!renderable->isAbleToRender())
+    {
+        std::cout << "ERRROR" << std::endl;
+        return;
+    }
+    */
+
+    // Update UBO
+    UniformBufferObject ubo{};
+    // ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    // ubo.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
+    // ubo.proj[1][1] *= -1;
+    ubo.view = _camera->matrices.view;
+    ubo.proj = _camera->matrices.perspective;
+    _camera->update(0.1);
+
+    // ubo.screen = glm::vec2((float)width, (float)height);
+
+    memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));
+
+    if (renderable->type == 1)
+    {
+        auto sprite = std::dynamic_pointer_cast<Sprite>(renderable);
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 1, 1, &sprite->_descriptorSet, 0, nullptr);
+    }
+
+    // @todo refactors this
+
+    auto translate = glm::mat4(1.0f);
+    if (renderable->type == 0)
+    {
+        translate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, 0.0));
+    }
+    else
+    {
+        translate = glm::translate(glm::mat4(1.0f), renderable->position);
+    }
+
+    auto scale = glm::scale(glm::mat4(1.0f), renderable->scale);
+
+    auto rotate = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+
+    auto o = glm::vec3(0.0, 0.0, 0.0);
+
+    if (renderable->orientation == 1)
+    {
+        o.x = 1;
+    }
+
+    if (renderable->orientation == 2)
+    {
+        o.y = 1;
+    }
+
+    if (renderable->orientation == 3)
+    {
+        o.z = 1;
+    }
+
+    auto modelRotation = glm::rotate(glm::mat4(1.0f), glm::radians(renderable->rotationX), o);
+    // @todo end
+
+    // if (renderable->texture->GetImageView() != nullptr)
+    // {
+
+    // }
+
+    glm::mat4 modelMatrix = glm::mat4(1.0f);
+
+    modelMatrix = translate * scale * modelRotation;
+
+    // Update push constant and upload to GPU
+    PushConstant constant;
+    constant.modelMatrix = modelMatrix;
+    constant.color = renderable->color;
+    constant.position = renderable->position;
+    constant.textureId = renderable->textureId;
+
+    vkCmdPushConstants(currentCmdBuffer, _pipeline->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstant), &constant);
+
+    if (renderable->type == 4)
+    {
+        auto model = std::dynamic_pointer_cast<Model>(renderable);
+        model->draw(currentCmdBuffer);
+    }
+    else
+    {
+        // Bind vertex & index buffers
+        // Bind descriptor sets
+        VkBuffer vertexBuffers[] = {renderable->vertexBuffer->GetVulkanBuffer()};
+        VkDeviceSize offsets[] = {0};
+        vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
+        vkCmdBindIndexBuffer(currentCmdBuffer, renderable->indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT16);
+        // Draw current renderable
+        vkCmdDrawIndexed(currentCmdBuffer, renderable->GetIndices().size(), 1, 0, 0, 0);
+    }
+}
+
 void Renderer::SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex)
 {
-    VulkanContext *vkContext = VulkanContext::GetInstance();
-
     // Submit info
     VkSubmitInfo submitInfo{};
     VkSemaphore signalSemaphores[] = {_synchronizer->GetRenderFinishedSemaphores()[_currentFrame]};
@@ -206,7 +403,7 @@ void Renderer::SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex)
     submitInfo.pSignalSemaphores = signalSemaphores;
 
     // Submit queue
-    if (vkQueueSubmit(vkContext->graphicsQueue, 1, &submitInfo, _synchronizer->GetFences()[_currentFrame]) != VK_SUCCESS)
+    if (vkQueueSubmit(_logicalDevice->GetGraphicQueue(), 1, &submitInfo, _synchronizer->GetFences()[_currentFrame]) != VK_SUCCESS)
     {
         exit(EXIT_FAILURE);
     }
@@ -218,13 +415,13 @@ void Renderer::SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex)
     presentInfo.pWaitSemaphores = signalSemaphores;
 
     // SwapChains
-    VkSwapchainKHR swapChains[] = {vkContext->swapChain};
+    VkSwapchainKHR swapChains[] = {_swapChain->Get()};
     presentInfo.swapchainCount = 1;
     presentInfo.pSwapchains = swapChains;
     presentInfo.pImageIndices = &imageIndex;
 
     // Present
-    if (vkQueuePresentKHR(vkContext->presentQueue, &presentInfo) != VK_SUCCESS)
+    if (vkQueuePresentKHR(_logicalDevice->GetPresentQueue(), &presentInfo) != VK_SUCCESS)
     {
         exit(EXIT_FAILURE);
     }

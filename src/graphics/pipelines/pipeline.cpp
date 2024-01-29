@@ -2,34 +2,54 @@
 
 using namespace Entropy::Graphics::Pipelines;
 
-Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, char *vertContent, uint32_t vertSize, char *fragContent, uint32_t fragSize)
+Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator)
 {
-    VulkanContext *vkContext = VulkanContext::GetInstance();
+    // Get required depenencies
+    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
+    auto swapChain = std::dynamic_pointer_cast<Swapchain>(serviceLocator->getService("SwapChain"));
+    auto descriptorSetLayout = std::dynamic_pointer_cast<DescriptorsetLayout>(serviceLocator->getService("DescriptorSetLayout"));
 
-#if defined(BUILD_FOR_ANDROID)
-    _shader = std::make_unique<Shader>(vertContent, vertSize, fragContent, fragSize);
-#endif
+    if (!logicalDevice->isValid())
+    {
+        spdlog::error("Trying to create pipeline with invalid invalid logical device");
+        return;
+    }
 
-    // Create Shader and store it
-#ifdef BUILD_FOR_IOS
-    _shader = std::make_unique<Shader>(GetProjectBasePath() + "/vert.spv", GetProjectBasePath() + "/frag.spv");
-#else
-    //_shader = std::make_unique<Shader>(GetShadersDir() + "vert.spv", GetShadersDir() + "/frag.spv");
-#endif
+    if (!swapChain->isValid())
+    {
+        spdlog::error("Trying to create pipeline with invalid invalid swapchain");
+        return;
+    }
+
+    if (!descriptorSetLayout->isValid())
+    {
+        spdlog::error("Trying to create pipeline with invalid descriptorset");
+        return;
+    }
+
+    // Assign services
+    _logicalDevice = logicalDevice;
+    _swapchain = swapChain;
+    _descriptorsetLayout = descriptorSetLayout;
+    _serviceLocator = serviceLocator;
+
+    std::cout << GetShadersDir() << std::endl;
+
+    auto shader = std::make_unique<Shader>(_serviceLocator, GetShadersDir() + "vert.spv", GetShadersDir() + "frag.spv");
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-    vertShaderStageInfo.module = _shader->GetVertShaderModule();
+    vertShaderStageInfo.module = shader->GetVertShaderModule();
     vertShaderStageInfo.pName = "main";
 
     VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
     fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-    fragShaderStageInfo.module = _shader->GetFragShaderModule();
+    fragShaderStageInfo.module = shader->GetFragShaderModule();
     fragShaderStageInfo.pName = "main";
 
-    VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
+    std::vector<VkPipelineShaderStageCreateInfo> shaderStages = {vertShaderStageInfo, fragShaderStageInfo};
 
     std::vector<VkDynamicState> dynamicStates = {
         VK_DYNAMIC_STATE_VIEWPORT,
@@ -39,6 +59,11 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, char *vertContent, ui
     dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
     dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
     dynamicState.pDynamicStates = dynamicStates.data();
+
+    VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
+    inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    inputAssembly.primitiveRestartEnable = VK_FALSE;
 
     auto bindingDescriptionVertex = Vertex::getBindingDescription();
     auto attributeDescriptionsVertex = Vertex::getAttributeDescriptions();
@@ -53,22 +78,17 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, char *vertContent, ui
     std::vector<VkPipelineVertexInputStateCreateInfo> vertexInputStates(1);
     vertexInputStates[0] = vertexInputInfo;
 
-    VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
-    inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-    inputAssembly.primitiveRestartEnable = VK_FALSE;
-
     VkViewport viewport{};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
-    viewport.width = (float)vkContext->swapChainExtent.width;
-    viewport.height = (float)vkContext->swapChainExtent.height;
+    viewport.width = (float)_swapchain->swapChainExtent.width;
+    viewport.height = (float)_swapchain->swapChainExtent.height;
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
 
     VkRect2D scissor{};
     scissor.offset = {0, 0};
-    scissor.extent = vkContext->swapChainExtent;
+    scissor.extent = _swapchain->swapChainExtent;
 
     VkPipelineViewportStateCreateInfo viewportState{};
     viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -122,7 +142,7 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, char *vertContent, ui
 
     std::vector<VkDescriptorSetLayout> dsLayouts(2);
 
-    VkDescriptorSetLayout _tempLayout;
+    VkDescriptorSetLayout tempLayout;
 
     VkDescriptorSetLayoutBinding samplerLayoutBinding{};
     samplerLayoutBinding.binding = 1;
@@ -144,13 +164,14 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, char *vertContent, ui
     layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
     layoutInfo.pBindings = bindings.data();
 
-    if (vkCreateDescriptorSetLayout(vkContext->logicalDevice, &layoutInfo, nullptr, &_tempLayout) != VK_SUCCESS)
+    if (vkCreateDescriptorSetLayout(_logicalDevice->Get(), &layoutInfo, nullptr, &tempLayout) != VK_SUCCESS)
     {
-        throw std::runtime_error("failed to create descriptor set layout!");
+        spdlog::error("Failed to create descriptor set layout!");
+        return;
     }
 
-    dsLayouts[0] = vkContext->descriptorSetLayout;
-    dsLayouts[1] = _tempLayout;
+    dsLayouts[0] = _descriptorsetLayout->Get();
+    dsLayouts[1] = tempLayout;
 
     // setup push constants
     VkPushConstantRange push_constant;
@@ -168,43 +189,107 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, char *vertContent, ui
     pipelineLayoutInfo.pPushConstantRanges = &push_constant;
     pipelineLayoutInfo.pushConstantRangeCount = 1;
 
-    if (vkCreatePipelineLayout(vkContext->logicalDevice, &pipelineLayoutInfo, nullptr, &this->_pipelineLayout) != VK_SUCCESS)
+    if (vkCreatePipelineLayout(_logicalDevice->Get(), &pipelineLayoutInfo, nullptr, &_pipelineLayout) != VK_SUCCESS)
     {
-        exit(EXIT_FAILURE);
+        spdlog::error("Failed to create pipeline layout!");
+        return;
     }
 
     VkGraphicsPipelineCreateInfo pipelineInfo{};
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
     pipelineInfo.stageCount = 2;
-    pipelineInfo.pStages = shaderStages;
-
+    pipelineInfo.pStages = shaderStages.data();
     pipelineInfo.pVertexInputState = vertexInputStates.data();
     pipelineInfo.pInputAssemblyState = &inputAssembly;
     pipelineInfo.pViewportState = &viewportState;
     pipelineInfo.pRasterizationState = &rasterizer;
     pipelineInfo.pMultisampleState = &multisampling;
-    pipelineInfo.pDepthStencilState = nullptr; // Optional
+    pipelineInfo.pDepthStencilState = nullptr;
     pipelineInfo.pColorBlendState = &colorBlending;
     pipelineInfo.pDynamicState = &dynamicState;
-
-    pipelineInfo.layout = this->_pipelineLayout;
-
+    pipelineInfo.layout = _pipelineLayout;
     pipelineInfo.renderPass = renderPass->GetRenderPass();
     pipelineInfo.subpass = 0;
+    pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+    pipelineInfo.basePipelineIndex = -1;
 
-    pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
-    pipelineInfo.basePipelineIndex = -1;              // Optional
+    if (vkCreateGraphicsPipelines(logicalDevice->Get(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_pipeline) != VK_SUCCESS)
+    {
+        spdlog::error("Failed to create pipeline!");
+        return;
+    }
+}
 
-    if (vkCreateGraphicsPipelines(vkContext->logicalDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &this->_pipeline) != VK_SUCCESS)
+Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize)
+{
+    /*
+    _vkContext = VulkanContext::GetInstance();
+
+#if defined(BUILD_FOR_ANDROID)
+    _shader = std::make_unique<Shader>(vertContent, vertSize, fragContent, fragSize);
+#endif
+
+    // Create Shader and store it
+#ifdef BUILD_FOR_IOS
+    _shader = std::make_unique<Shader>(GetProjectBasePath() + "/vert.spv", GetProjectBasePath() + "/frag.spv");
+#else
+    auto shaderStages = CreateShaderStages();
+#endif
+
+    auto dynamicState = CreateDynamicState();
+
+    auto inputAssembly = CreateInputAssembly();
+
+    auto vertexInputStates = CreateVertexInputStates();
+
+    auto viewportState = CreateViewportState();
+
+    auto rasterizer = CreateRasterizer();
+
+    auto multisampling = CreateMultisampling();
+
+    auto colorBlending = CreateColorBlendning();
+
+    auto dsLayouts = CreateDescriptorSetLayouts();
+
+    auto push_constant = CreatePushContantRange();
+
+    CreatePipelineLayout(dsLayouts, push_constant);
+
+    VkGraphicsPipelineCreateInfo pipelineInfo{};
+    pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+    pipelineInfo.stageCount = 2;
+    pipelineInfo.pStages = shaderStages.data();
+    pipelineInfo.pVertexInputState = vertexInputStates.data();
+    pipelineInfo.pInputAssemblyState = &inputAssembly;
+    pipelineInfo.pViewportState = &viewportState;
+    pipelineInfo.pRasterizationState = &rasterizer;
+    pipelineInfo.pMultisampleState = &multisampling;
+    pipelineInfo.pDepthStencilState = nullptr;
+    pipelineInfo.pColorBlendState = &colorBlending;
+    pipelineInfo.pDynamicState = &dynamicState;
+    pipelineInfo.layout = this->_pipelineLayout;
+    pipelineInfo.renderPass = renderPass->GetRenderPass();
+    pipelineInfo.subpass = 0;
+    pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+    pipelineInfo.basePipelineIndex = -1;
+
+    if (vkCreateGraphicsPipelines(_vkContext->logicalDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &this->_pipeline) != VK_SUCCESS)
     {
         exit(EXIT_FAILURE);
     }
+    */
 }
 
 Pipeline::~Pipeline()
 {
-    VulkanContext *vkContext = VulkanContext::GetInstance();
-    vkDestroyDescriptorSetLayout(vkContext->logicalDevice, this->_descriptorSetLayout, nullptr);
-    vkDestroyPipeline(vkContext->logicalDevice, this->_pipeline, nullptr);
-    vkDestroyPipelineLayout(vkContext->logicalDevice, this->_pipelineLayout, nullptr);
+    if (!_logicalDevice->isValid())
+    {
+        spdlog::error("Couldn't clean up after pipeline since logicaldevice is invalid");
+        return;
+    }
+
+    vkDestroyDescriptorSetLayout(_logicalDevice->Get(), _descriptorSetLayout, nullptr);
+    vkDestroyPipeline(_logicalDevice->Get(), _pipeline, nullptr);
+    vkDestroyPipelineLayout(_logicalDevice->Get(), _pipelineLayout, nullptr);
 }

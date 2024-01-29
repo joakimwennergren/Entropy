@@ -7,7 +7,7 @@
 #define @CMAKE_PLATFORM@
 
 // Debugging
-// #define USE_DEBUG_INFO 0
+#define USE_DEBUG_INFO
 #define USE_VALIDATION_LAYERS
 
 // Render settings

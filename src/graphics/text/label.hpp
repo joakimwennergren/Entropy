@@ -4,22 +4,23 @@
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
-#include FT_GLYPH_H
-#include <freetype/ftglyph.h>
 
 #include <glm/glm.hpp>
 
 #include <graphics/primitives/2d/sprite.hpp>
 #include <filesystem/filesystem.hpp>
-#include <global/vulkancontext.hpp>
 #include <renderables/renderable.hpp>
-#include <global/scenegraph.hpp>
+#include <servicelocators/servicelocator.hpp>
+#include <scenegraphs/scenegraph.hpp>
+#include <graphics/text/font.hpp>
 
 using namespace Entropy::Renderables;
-using namespace Symbios::Graphics::Primitives;
-using namespace Symbios;
+using namespace Entropy::Graphics::Primitives;
+using namespace Entropy::ServiceLocators;
+using namespace Entropy::SceneGraphs;
+using namespace Entropy::Text;
 
-namespace Symbios
+namespace Entropy
 {
     namespace Text
     {
@@ -34,8 +35,9 @@ namespace Symbios
 
         class Label : public Renderable
         {
+
         public:
-            Label();
+            Label(std::shared_ptr<ServiceLocator> serviceLocator, std::shared_ptr<Font> font);
             ~Label();
             std::vector<std::shared_ptr<Sprite>> sprites;
 
@@ -68,41 +70,46 @@ namespace Symbios
                 this->children.clear();
 
                 this->text = text;
-                std::string::const_iterator c;
+                float x = position.x;
+                float y = position.y;
 
-                float x = 300.0;
-                float y = -340.0;
-
-                for (c = text.begin(); c != text.end(); c++)
+                for (unsigned int i = 0; i < text.size(); i++)
                 {
-                    Character &ch = _characters[*c];
+                    if (text[i] == 32)
+                    {
+                        x += 20;
+                        continue;
+                    }
 
-                    float xpos = x + ch.Size.x;
-                    float ypos = y - (ch.Bearing.y);
+                    float xpos = x + _font->glyphs[text[i]].glyphslot->bitmap.width;
+                    float ypos = y - (_font->glyphs[text[i]].glyphslot->bitmap_top);
 
-                    float w = ch.Size.x;
-                    float h = ch.Size.y;
+                    float w = _font->glyphs[text[i]].glyphslot->bitmap.width;
+                    float h = _font->glyphs[text[i]].glyphslot->bitmap.rows;
 
-                    auto g = std::make_shared<Sprite>(ch.bitmap);
+                    auto g = std::make_shared<Sprite>(_serviceLocator, _font->glyphs[text[i]].glyphslot->bitmap);
 
-                    g->position = glm::vec3(xpos, ypos, 0.0);
+                    auto yAdvance = _font->glyphs[text[i]].glyphslot->bitmap_top - h;
+
+                    g->position = glm::vec3(xpos, ypos - yAdvance, 0.0);
                     g->textureId = 2;
+                    g->type = 3;
                     g->scale = glm::vec3(w, h, 0.0);
-                    g->color = glm::vec4(1.0, 1.0, 1.0, 1.0);
+                    g->color = this->color;
                     g->zIndex = 999;
 
                     // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-                    x += (ch.Advance >> 6) * 2.0f; // bitshift by 6 to get value in pixels (2^6 = 64)
+                    x += (_font->glyphs[text[i]].glyphslot->advance.x >> 6) * 2.0f; // bitshift by 6 to get value in pixels (2^6 = 64)
                     this->children.push_back(g);
                 }
             }
 
         private:
             FT_Library ft;
-
             FT_Face face;
             std::string text;
-            std::map<char, Character> _characters;
+            std::map<unsigned char, Character> _characters;
+            std::shared_ptr<Font> _font;
         };
     }
 }

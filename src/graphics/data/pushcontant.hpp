@@ -7,5 +7,6 @@ struct PushConstant
 {
     glm::mat4 modelMatrix;
     glm::vec4 color;
+    glm::vec3 position;
     int textureId;
 };
