@@ -23,8 +23,12 @@
 #include <graphics/cameras/perspective_camera.hpp>
 
 #include <graphics/primitives/2d/sprite.hpp>
+#include <graphics/buffers/uniformbuffer.hpp>
+
+#include <graphics/utilities/utilities.hpp>
 
 using namespace Entropy::SceneGraphs;
+using namespace Entropy::Graphics::Utilities;
 using namespace Entropy::Renderables;
 using namespace Entropy::Graphics::Buffers;
 using namespace Entropy::Graphics::Textures;
@@ -63,7 +67,7 @@ namespace Entropy
                 std::vector<VkBuffer> rawUniformBuffers;
                 std::vector<VkBuffer> uniformBuffersInstances;
 
-                std::vector<Entopy::Graphics::Buffers::UniformBuffer *> _uniformBuffers;
+                std::vector<UniformBuffer *> _uniformBuffers;
                 std::unique_ptr<Synchronizer> _synchronizer;
 
                 std::shared_ptr<ServiceLocator> _serviceLocator;
@@ -79,6 +83,22 @@ namespace Entropy
 
                 VkCommandBuffer currentCmdBuffer;
                 VkDescriptorSet currentDescriptorSet;
+
+                /** @brief Properties of the physical device including limits that the application can check against */
+                VkPhysicalDeviceProperties properties;
+
+                // One big uniform buffer that contains all matrices
+                // Note that we need to manually allocate the data to cope for GPU-specific uniform buffer offset alignments
+                struct UboDataDynamic
+                {
+                    glm::mat4 *model{nullptr};
+                    glm::vec4 *color{nullptr};
+                } uboDataDynamic;
+
+                std::unique_ptr<UniformBuffer> dynUbo;
+                size_t bufferSize;
+
+                size_t dynamicAlignment{0};
             };
         }
     }

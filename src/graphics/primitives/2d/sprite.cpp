@@ -155,14 +155,14 @@ void Sprite::UpdateDescriptorSets()
     }
 
     VkDescriptorSetLayoutBinding samplerLayoutBinding{};
-    samplerLayoutBinding.binding = 1;
+    samplerLayoutBinding.binding = 2;
     samplerLayoutBinding.descriptorCount = 1;
     samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
     samplerLayoutBinding.pImmutableSamplers = nullptr;
     samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
     VkDescriptorSetLayoutBinding texturesLayoutBinding{};
-    texturesLayoutBinding.binding = 2;
+    texturesLayoutBinding.binding = 3;
     texturesLayoutBinding.descriptorCount = 1;
     texturesLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
     texturesLayoutBinding.pImmutableSamplers = nullptr;

@@ -34,7 +34,7 @@ namespace Entropy
             Mesh(std::shared_ptr<ServiceLocator> serviceLocator, glm::mat4 matrix);
             ~Mesh();
 
-            std::unique_ptr<Entopy::Graphics::Buffers::UniformBuffer> _buffer;
+            std::unique_ptr<UniformBuffer> _buffer;
             std::shared_ptr<LogicalDevice> _logicalDevice;
 
             void setBoundingBox(glm::vec3 min, glm::vec3 max);

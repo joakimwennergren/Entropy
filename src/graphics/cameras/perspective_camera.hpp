@@ -69,7 +69,7 @@ public:
     float movementSpeed = 1.0f;
 
     bool updated = true;
-    bool flipY = true;
+    bool flipY = false;
 
     struct
     {
