@@ -56,7 +56,7 @@ Application::Application()
     uboDynLayoutBinding.descriptorCount = 1;
     uboDynLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
     uboDynLayoutBinding.pImmutableSamplers = nullptr;
-    uboDynLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+    uboDynLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
     VkDescriptorSetLayoutBinding samplerLayoutBinding{};
     samplerLayoutBinding.binding = 2;

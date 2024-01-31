@@ -793,24 +793,20 @@ void Model::loadFromFile(std::string filename, float scale)
 
     assert(vertexBufferSize > 0);
 
-    std::cout << vertexBufferSize << std::endl;
-
     struct StagingBuffer
     {
         VkBuffer buffer;
         VkDeviceMemory memory;
     } vertexStaging, indexStaging;
 
-    std::vector<Vertex> vertices;
-
-    for (int i = 0; i < vertexBufferSize; i++)
+    for (int i = 0; i < vertexCount; i++)
     {
-        vertices.push_back(loaderInfo.vertexBuffer[i]);
+        vertices_temp.push_back(loaderInfo.vertexBuffer[i]);
     }
 
     // Create staging buffers
     // Vertex data
-    _vertexBuffer = std::make_unique<VertexBuffer>(_serviceLocator, vertices);
+    _vertexBuffer = std::make_unique<VertexBuffer>(_serviceLocator, vertices_temp);
 
     // Index data
     if (indexBufferSize > 0)

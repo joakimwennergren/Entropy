@@ -2,6 +2,18 @@
 
 using namespace Entropy::Graphics::Renderers;
 
+size_t Renderer::pad_uniform_buffer_size(size_t originalSize)
+{
+    // Calculate required alignment based on minimum device offset alignment
+    size_t minUboAlignment = properties.limits.minUniformBufferOffsetAlignment;
+    size_t alignedSize = originalSize;
+    if (minUboAlignment > 0) {
+        alignedSize = (alignedSize + minUboAlignment - 1) & ~(minUboAlignment - 1);
+    }
+    return alignedSize;
+}
+
+
 Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
 {
     // Store service locator
@@ -42,19 +54,24 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
 
     vkGetPhysicalDeviceProperties(physicalDevice->Get(), &properties);
     size_t minUboAlignment = properties.limits.minUniformBufferOffsetAlignment;
-    dynamicAlignment = 128;
+    dynamicAlignment = sizeof(UboDataDynamic);
     if (minUboAlignment > 0)
     {
         dynamicAlignment = (dynamicAlignment + minUboAlignment - 1) & ~(minUboAlignment - 1);
     }
     bufferSize = 1000 * dynamicAlignment;
+    /*
+
 
     uboDataDynamic.model = (glm::mat4 *)Utility::AlignedAlloc(bufferSize, dynamicAlignment);
     uboDataDynamic.color = (glm::vec4 *)Utility::AlignedAlloc(bufferSize, dynamicAlignment);
     assert(uboDataDynamic.model);
 
+
     std::cout << "minUniformBufferOffsetAlignment = " << minUboAlignment << std::endl;
     std::cout << "dynamicAlignment = " << dynamicAlignment << std::endl;
+
+    */
 
     dynUbo = std::make_unique<UniformBuffer>(serviceLocator, bufferSize);
 
@@ -70,7 +87,7 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
         VkDescriptorBufferInfo bufferInfo2{};
         bufferInfo2.buffer = dynUbo->GetVulkanBuffer();
         bufferInfo2.offset = 0;
-        bufferInfo2.range = 64;
+        bufferInfo2.range = sizeof(UboDataDynamic);
 
         descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[0].dstSet = _descriptorSet->Get()[i];
@@ -209,12 +226,14 @@ void Renderer::Render(int width, int height)
          [](const std::shared_ptr<Renderable> &lhs, const std::shared_ptr<Renderable> &rhs)
          { return lhs->zIndex < rhs->zIndex; });
 
-    uint modelIndex = 0;
+    uint32_t modelIndex = 0;
 
     for (auto &renderable : _sceneGraph->renderables)
     {
         if (renderable->children.size() == 0)
         {
+
+            /*
             uint32_t dynamicOffset = modelIndex * static_cast<uint32_t>(dynamicAlignment);
 
             std::cout << "OFFSET = " << dynamicOffset << std::endl;
@@ -222,6 +241,8 @@ void Renderer::Render(int width, int height)
             glm::mat4 *modelMat = (glm::mat4 *)(((uint64_t)uboDataDynamic.model + (modelIndex * dynamicAlignment)));
             glm::vec4 *color = (glm::vec4 *)(((uint64_t)uboDataDynamic.color + (modelIndex * dynamicAlignment)));
             *color = glm::vec4(1.0, 1.0, 1.0, 1.0);
+            * 
+            * */
 
             auto translate = glm::translate(glm::mat4(1.0f), renderable->position);
             auto scale = glm::scale(glm::mat4(1.0f), renderable->scale);
@@ -245,11 +266,16 @@ void Renderer::Render(int width, int height)
             }
             auto modelRotation = glm::rotate(glm::mat4(1.0f), glm::radians(renderable->rotationX), o);
 
-            *modelMat = translate * scale * modelRotation;
+            UboDataDynamic ubodyn{};
 
-            vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &dynamicOffset);
+            ubodyn.model = translate * scale * modelRotation;
+            ubodyn.color = renderable->color;
 
-            memcpy(dynUbo->GetMappedMemory(), &uboDataDynamic, bufferSize);
+            uint32_t uniform_offset = modelIndex * static_cast<uint32_t>(dynamicAlignment);
+
+            vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &uniform_offset);
+
+            memcpy(dynUbo->GetMappedMemory(), &ubodyn, sizeof(UboDataDynamic));
 
             DrawRenderable(renderable, width, height);
         }

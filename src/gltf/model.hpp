@@ -1,5 +1,8 @@
 #pragma once
 
+#define NOMINMAX
+
+#include <vector>
 #include <limits>
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -139,6 +142,8 @@ namespace Entropy
 
             std::unique_ptr<VertexBuffer> _vertexBuffer;
             std::unique_ptr<Buffer> _indexBuffer;
+            std::vector<Vertex> vertices_temp;
+
 
             Model(std::shared_ptr<ServiceLocator> serviceLocator);
             void destroy(VkDevice device);

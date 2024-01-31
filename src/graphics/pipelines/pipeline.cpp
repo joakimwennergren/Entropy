@@ -289,7 +289,7 @@ Pipeline::~Pipeline()
         return;
     }
 
-    vkDestroyDescriptorSetLayout(_logicalDevice->Get(), _descriptorSetLayout, nullptr);
+    //vkDestroyDescriptorSetLayout(_logicalDevice->Get(), _descriptorSetLayout, nullptr);
     vkDestroyPipeline(_logicalDevice->Get(), _pipeline, nullptr);
     vkDestroyPipelineLayout(_logicalDevice->Get(), _pipelineLayout, nullptr);
 }
