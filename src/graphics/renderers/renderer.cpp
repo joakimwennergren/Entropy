@@ -44,7 +44,7 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
         _uniformBuffers.push_back(new UniformBuffer(serviceLocator, sizeof(UniformBufferObject)));
-        dynUbos.push_back(new UniformBuffer(serviceLocator, sizeof(UboDataDynamic) * 2));
+        dynUbos.push_back(new UniformBuffer(serviceLocator, sizeof(UboDataDynamic) * 3));
     }
 
     for (unsigned int i = 0; i < _uniformBuffers.size(); i++)
@@ -60,7 +60,7 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
     {
         dynamicAlignment = (dynamicAlignment + minUboAlignment - 1) & ~(minUboAlignment - 1);
     }
-    const size_t bufferSize = MAX_CONCURRENT_FRAMES_IN_FLIGHT * pad_uniform_buffer_size(sizeof(UboDataDynamic));
+    // const size_t bufferSize = 3 * pad_uniform_buffer_size(sizeof(UboDataDynamic));
     /*
 
 
