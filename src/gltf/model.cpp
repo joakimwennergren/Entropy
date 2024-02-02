@@ -799,6 +799,7 @@ void Model::loadFromFile(std::string filename, float scale)
         VkDeviceMemory memory;
     } vertexStaging, indexStaging;
 
+
     for (int i = 0; i < vertexCount; i++)
     {
         vertices_temp.push_back(loaderInfo.vertexBuffer[i]);
