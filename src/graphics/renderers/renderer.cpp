@@ -110,7 +110,7 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
     _camera = std::make_shared<Camera>();
 
     _camera->type = Camera::CameraType::firstperson;
-    _camera->setPosition(glm::vec3(0.0f, 0.0f, -30.0f));
+    _camera->setPosition(glm::vec3(0.0f, 0.0f, -5.0f));
     _camera->setRotation(glm::vec3(0.0f));
 }
 
@@ -329,12 +329,14 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
 
     modelMatrix = translate * scale * modelRotation;
 
+    /*
     // Update push constant and upload to GPU
     PushConstant constant;
     constant.modelMatrix = modelMatrix;
     constant.color = renderable->color;
     constant.position = renderable->position;
     constant.textureId = renderable->textureId;
+    */
 
     UboDataDynamic ubodyn{};
 
@@ -356,12 +358,12 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
     vkFlushMappedMemoryRanges(_logicalDevice->Get(), 1, &memoryRange);
     */
 
-    vkCmdPushConstants(currentCmdBuffer, _pipeline->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstant), &constant);
+    // vkCmdPushConstants(currentCmdBuffer, _pipeline->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstant), &constant);
 
     if (renderable->type == 4)
     {
         auto model = std::dynamic_pointer_cast<Model>(renderable);
-        model->draw(currentCmdBuffer);
+        model->draw(currentCmdBuffer, _pipeline->GetPipelineLayout());
     }
     else
     {

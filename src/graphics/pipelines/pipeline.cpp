@@ -140,7 +140,7 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<Servi
     colorBlending.blendConstants[2] = 0.0f; // Optional
     colorBlending.blendConstants[3] = 0.0f; // Optional
 
-    std::vector<VkDescriptorSetLayout> dsLayouts(2);
+    std::vector<VkDescriptorSetLayout> dsLayouts(3);
 
     VkDescriptorSetLayout tempLayout;
 
@@ -170,8 +170,29 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<Servi
         return;
     }
 
+    VkDescriptorSetLayout tempLayout2;
+    VkDescriptorSetLayoutBinding ssboBinding{};
+    ssboBinding.binding = 0;
+    ssboBinding.descriptorCount = 1;
+    ssboBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    ssboBinding.pImmutableSamplers = nullptr;
+    ssboBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+    std::array<VkDescriptorSetLayoutBinding, 1> bindings2 = {ssboBinding};
+    VkDescriptorSetLayoutCreateInfo layoutInfo2{};
+    layoutInfo2.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    layoutInfo2.bindingCount = static_cast<uint32_t>(bindings2.size());
+    layoutInfo2.pBindings = bindings2.data();
+
+    if (vkCreateDescriptorSetLayout(_logicalDevice->Get(), &layoutInfo2, nullptr, &tempLayout2) != VK_SUCCESS)
+    {
+        spdlog::error("Failed to create descriptor set layout!");
+        return;
+    }
+
     dsLayouts[0] = _descriptorsetLayout->Get();
     dsLayouts[1] = tempLayout;
+    dsLayouts[2] = tempLayout2;
 
     // setup push constants
     VkPushConstantRange push_constant;
@@ -289,7 +310,7 @@ Pipeline::~Pipeline()
         return;
     }
 
-    //vkDestroyDescriptorSetLayout(_logicalDevice->Get(), _descriptorSetLayout, nullptr);
+    // vkDestroyDescriptorSetLayout(_logicalDevice->Get(), _descriptorSetLayout, nullptr);
     vkDestroyPipeline(_logicalDevice->Get(), _pipeline, nullptr);
     vkDestroyPipelineLayout(_logicalDevice->Get(), _pipelineLayout, nullptr);
 }

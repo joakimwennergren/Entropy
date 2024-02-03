@@ -13,10 +13,6 @@ Mesh::Mesh(std::shared_ptr<ServiceLocator> serviceLocator, glm::mat4 matrix)
 
 Mesh::~Mesh()
 {
-    vkDestroyBuffer(_logicalDevice->Get(), _buffer->GetVulkanBuffer(), nullptr);
-    vkFreeMemory(_logicalDevice->Get(), _buffer->GetBufferMemory(), nullptr);
-    for (Primitive *p : primitives)
-        delete p;
 }
 
 void Mesh::setBoundingBox(glm::vec3 min, glm::vec3 max)
