@@ -454,15 +454,15 @@ void Model::LoadFromFile(std::string filename, float size = 1.0f)
     if (fileLoaded)
     {
         // loadImages(glTFInput);
-        loadMaterials(glTFInput);
-        //loadTextures(glTFInput);
+        // loadMaterials(glTFInput);
+        // loadTextures(glTFInput);
         const tinygltf::Scene &scene = glTFInput.scenes[0];
         for (size_t i = 0; i < scene.nodes.size(); i++)
         {
             const tinygltf::Node node = glTFInput.nodes[scene.nodes[i]];
             loadNode(node, glTFInput, nullptr, scene.nodes[i], indexBuffer, vertexBuffer);
         }
-        loadSkins(glTFInput);
+        // loadSkins(glTFInput);
 
         // Get required depenencies
         auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(_serviceLocator->getService("LogicalDevice"));
@@ -579,17 +579,44 @@ void Model::drawNode(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLay
         // Traverse the node hierarchy to the top-most parent to get the final matrix of the current node
         glm::mat4 nodeMatrix = node->matrix;
         Node *currentParent = node->parent;
+
         while (currentParent)
         {
             nodeMatrix = currentParent->matrix * nodeMatrix;
             currentParent = currentParent->parent;
         }
 
+        auto translate = glm::translate(glm::mat4(1.0f), position);
+        auto scaling = glm::scale(glm::mat4(1.0f), this->scale);
+
+        auto o = glm::vec3(0.0, 0.0, 0.0);
+        if (orientation == 1)
+        {
+            o.x = 1;
+        }
+
+        if (orientation == 2)
+        {
+            o.y = 1;
+        }
+
+        if (orientation == 3)
+        {
+            o.z = 1;
+        }
+
+        auto modelRotation = glm::rotate(glm::mat4(1.0f), glm::radians(rotationX), o);
+
+        nodeMatrix *= translate * scaling * modelRotation;
+
         // Pass the final matrix to the vertex shader using push constants
         vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(glm::mat4), &nodeMatrix);
 
-        // Bind SSBO with skin data for this node to set 1
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 2, 1, &skins[node->skin].descriptorSet, 0, nullptr);
+        if (node->skin != -1)
+        {
+            // Bind SSBO with skin data for this node to set 1
+            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 2, 1, &skins[node->skin].descriptorSet, 0, nullptr);
+        }
 
         for (Primitive &primitive : node->mesh.primitives)
         {
