@@ -444,7 +444,7 @@ void Model::LoadFromFile(std::string filename, float size = 1.0f)
 #if defined(__ANDROID__)
     // On Android all assets are packed with the apk in a compressed form, so we need to open them using the asset manager
     // We let tinygltf handle this, by passing the asset manager of our app
-    tinygltf::asset_manager = androidApp->activity->assetManager;
+//tinygltf::asset_manager = androidApp->activity->assetManager;
 #endif
     bool fileLoaded = gltfContext.LoadASCIIFromFile(&glTFInput, &error, &warning, filename);
 

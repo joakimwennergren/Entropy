@@ -55,7 +55,7 @@ namespace Entropy
                     return _surface;
                 };
 
-                inline bool isValid() override { return _surface != nullptr; };
+                inline bool isValid() override { return true; };
 
             private:
                 std::shared_ptr<VulkanInstance> _instance;

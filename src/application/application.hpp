@@ -43,7 +43,7 @@ using namespace Entropy::Graphics::Descriptorsets;
 using namespace Entropy::SceneGraphs;
 using namespace Entropy::Scripting;
 using namespace Entropy::Physics;
-using namespace Entropy::Input;
+// using namespace Entropy::Input;
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
 
@@ -97,9 +97,8 @@ private:
 
 #if defined(BUILD_FOR_ANDROID)
 
-// @todo remove symbios namespace
-using namespace Symbios;
-using namespace Entropy::Global;
+#include "android_native_app_glue.h"
+
 using namespace Entropy::Graphics::Renderers;
 using namespace Entropy::Timing;
 

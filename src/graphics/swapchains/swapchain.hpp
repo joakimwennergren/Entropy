@@ -41,7 +41,7 @@ namespace Entropy
                 VkExtent2D swapChainExtent;
                 VkFormat swapChainImageFormat;
                 inline VkSwapchainKHR Get() { return _swapChain; };
-                bool isValid() override { return _swapChain != nullptr; };
+                bool isValid() override { return true; };
                 std::shared_ptr<WindowSurface> _surface;
 
             private:

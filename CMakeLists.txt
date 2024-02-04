@@ -7,7 +7,8 @@
 # Game Engine version 1.0
 
 # Set minimum cmake version
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.27.8)
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
 # Declare project
 project(Entropy)
@@ -18,21 +19,28 @@ include(cmake/platform.cmake)
 # Engine base path
 set(PROJECT_BASEPATH ${PROJECT_SOURCE_DIR})
 
+
 # Include dependencies
 include(cmake/external_dependencies.cmake)
 
 # List source files
-file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp )
+file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp  external/android_native_app_glue.c)
+
 
 # Create the library
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
+set(CMAKE_SHARED_LINKER_FLAGS
+    "${CMAKE_SHARED_LINKER_FLAGS} -u \
+    Java_com_google_androidgamesdk_GameActivity_initializeNativeCode")
+
 # Compiler flags
 if(MSVC)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
+    add_definitions(-w)
 endif(MSVC)
-add_definitions(-w)
-target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17)
+
+#target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17)
 
 # Include headers
 target_include_directories(${PROJECT_NAME} 
@@ -63,7 +71,7 @@ target_link_libraries(${PROJECT_NAME}
 # Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk)
 target_link_libraries(${PROJECT_NAME}
     ${Vulkan_LIBRARIES}
-    glfw
+    #glfw
 )
 
 # Build config file

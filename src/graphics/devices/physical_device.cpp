@@ -4,18 +4,6 @@ using namespace Entropy::Graphics::Devices;
 
 PhysicalDevice::PhysicalDevice(std::shared_ptr<VulkanInstance> instance, std::shared_ptr<WindowSurface> surface)
 {
-    if (instance->Get() == nullptr)
-    {
-        spdlog::error("Trying to create physical device with invalid vulkan instance");
-        return;
-    }
-
-    if (surface->Get() == nullptr)
-    {
-        spdlog::error("Trying to create physical device with invalid window surface");
-        return;
-    }
-
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(instance->Get(), &deviceCount, nullptr);
 

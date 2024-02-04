@@ -19,7 +19,7 @@ using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Primitives;
 using namespace Entropy::SceneGraphs;
 using namespace Entropy::Physics;
-using namespace Entropy::Input;
+//using namespace Entropy::Input;
 using namespace Entropy::Vectors;
 using namespace Entropy::Services;
 
