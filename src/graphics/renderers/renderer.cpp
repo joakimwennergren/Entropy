@@ -56,23 +56,11 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
     vkGetPhysicalDeviceProperties(physicalDevice->Get(), &properties);
     size_t minUboAlignment = properties.limits.minUniformBufferOffsetAlignment;
     dynamicAlignment = sizeof(UboDataDynamic);
+
     if (minUboAlignment > 0)
     {
         dynamicAlignment = (dynamicAlignment + minUboAlignment - 1) & ~(minUboAlignment - 1);
     }
-    // const size_t bufferSize = 3 * pad_uniform_buffer_size(sizeof(UboDataDynamic));
-    /*
-
-
-    uboDataDynamic.model = (glm::mat4 *)Utility::AlignedAlloc(bufferSize, dynamicAlignment);
-    uboDataDynamic.color = (glm::vec4 *)Utility::AlignedAlloc(bufferSize, dynamicAlignment);
-    assert(uboDataDynamic.model);
-
-
-    std::cout << "minUniformBufferOffsetAlignment = " << minUboAlignment << std::endl;
-    std::cout << "dynamicAlignment = " << dynamicAlignment << std::endl;
-
-    */
 
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
@@ -108,9 +96,8 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
     }
 
     _camera = std::make_shared<Camera>();
-
     _camera->type = Camera::CameraType::firstperson;
-    _camera->setPosition(glm::vec3(0.0f, 0.0f, -30.0f));
+    _camera->setPosition(glm::vec3(0.0f, 0.0f, -10.0f));
     _camera->setRotation(glm::vec3(0.0f));
 }
 
@@ -270,14 +257,6 @@ void Renderer::Render(int width, int height)
 
 void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width, int height, uint32_t modelIndex)
 {
-    /*
-    if (!renderable->isAbleToRender())
-    {
-        std::cout << "ERRROR" << std::endl;
-        return;
-    }
-    */
-
     if (renderable->type == 1)
     {
         auto sprite = std::dynamic_pointer_cast<Sprite>(renderable);
@@ -287,6 +266,7 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
     // @todo refactors this
 
     auto translate = glm::mat4(1.0f);
+
     if (renderable->type == 0)
     {
         translate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, 0.0));
@@ -329,12 +309,14 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
 
     modelMatrix = translate * scale * modelRotation;
 
+    /*
     // Update push constant and upload to GPU
     PushConstant constant;
     constant.modelMatrix = modelMatrix;
     constant.color = renderable->color;
     constant.position = renderable->position;
     constant.textureId = renderable->textureId;
+    */
 
     UboDataDynamic ubodyn{};
 
@@ -356,12 +338,12 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
     vkFlushMappedMemoryRanges(_logicalDevice->Get(), 1, &memoryRange);
     */
 
-    vkCmdPushConstants(currentCmdBuffer, _pipeline->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstant), &constant);
+    // vkCmdPushConstants(currentCmdBuffer, _pipeline->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstant), &constant);
 
     if (renderable->type == 4)
     {
         auto model = std::dynamic_pointer_cast<Model>(renderable);
-        model->draw(currentCmdBuffer);
+        model->draw(currentCmdBuffer, _pipeline->GetPipelineLayout());
     }
     else
     {
