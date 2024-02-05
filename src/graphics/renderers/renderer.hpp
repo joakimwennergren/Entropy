@@ -56,7 +56,7 @@ namespace Entropy
 
                 void Render(int width, int height);
                 void SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex);
-                void DrawRenderable(std::shared_ptr<Renderable> renderable, int width, int height);
+                void DrawRenderable(std::shared_ptr<Renderable> renderable, int width, int height, uint32_t modelIndex);
 
             private:
                 std::shared_ptr<RenderPass> _renderPass;
@@ -91,14 +91,16 @@ namespace Entropy
                 // Note that we need to manually allocate the data to cope for GPU-specific uniform buffer offset alignments
                 struct UboDataDynamic
                 {
-                    glm::vec4 *color{nullptr};
-                    glm::mat4 *model{nullptr};
-                } uboDataDynamic;
+                    glm::vec4 color;
+                    glm::mat4 model;
+                };
 
-                std::unique_ptr<UniformBuffer> dynUbo;
+                std::vector<UniformBuffer *> dynUbos;
                 size_t bufferSize;
 
                 size_t dynamicAlignment{0};
+
+                size_t pad_uniform_buffer_size(size_t originalSize);
             };
         }
     }

@@ -1,4 +1,6 @@
 # External Dependencies
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+add_compile_definitions(HAVE_FCNTL_H=1)
 
 # GLM matrix maths
 add_subdirectory(external/glm)
@@ -44,7 +46,6 @@ add_subdirectory(external/box2d)
 set(FT_WITH_BZIP2 OFF)
 add_subdirectory(external/freetype-2.13.2)
 
-
 set(_LUA_SOURCE_DIR external/lua-5.4.6/src)
 set(_LUA_LIB_SRC
   "${_LUA_SOURCE_DIR}/lapi.c"
@@ -82,5 +83,7 @@ set(_LUA_LIB_SRC
 )
 
 add_library(lua OBJECT ${_LUA_LIB_SRC})
+
+include_directories(${ANDROID_NDK}/sources/android/native_app_glue)
 
 add_subdirectory(external/tinygltf)

@@ -1,5 +1,9 @@
 #pragma once
 
+#define NOMINMAX
+
+#include <vector>
+#include <memory>
 #include <limits>
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -18,29 +22,48 @@
 #include <graphics/buffers/vertexbuffer.hpp>
 #include <renderables/renderable.hpp>
 #include <graphics/data/vertex.hpp>
-
+#include <graphics/buffers/storagebuffer.hpp>
 #include "tiny_gltf.h"
+#include <graphics/descriptorpools/descriptorpool.hpp>
 
 using namespace Entropy::Materials;
 using namespace Entropy::Graphics::Buffers;
 using namespace Entropy::Renderables;
 using namespace Entropy::GLTF;
+using namespace Entropy::Graphics::DescriptorPools;
 
 namespace Entropy
 {
     namespace GLTF
     {
+
+        class Node
+        {
+        public:
+            Node() = default;
+            Node *parent;
+            uint32_t index;
+            std::vector<Node *> children;
+            Mesh mesh;
+            glm::vec3 translation{};
+            glm::vec3 scale{1.0f};
+            glm::quat rotation{};
+            int32_t skin = -1;
+            glm::mat4 matrix;
+            glm::mat4 getLocalMatrix();
+        };
+
         class Model : public Renderable
         {
         public:
-            struct Node;
-
             struct Skin
             {
                 std::string name;
                 Node *skeletonRoot = nullptr;
                 std::vector<glm::mat4> inverseBindMatrices;
                 std::vector<Node *> joints;
+                std::unique_ptr<StorageBuffer> ssbo;
+                VkDescriptorSet descriptorSet;
             };
 
             struct AnimationChannel
@@ -51,10 +74,12 @@ namespace Entropy
                     ROTATION,
                     SCALE
                 };
-                PathType path;
+                std::string path;
                 Node *node;
                 uint32_t samplerIndex;
             };
+
+            uint32_t activeAnimation = 0;
 
             struct AnimationSampler
             {
@@ -64,7 +89,7 @@ namespace Entropy
                     STEP,
                     CUBICSPLINE
                 };
-                InterpolationType interpolation;
+                std::string interpolation;
                 std::vector<float> inputs;
                 std::vector<glm::vec4> outputsVec4;
             };
@@ -76,27 +101,7 @@ namespace Entropy
                 std::vector<AnimationChannel> channels;
                 float start = std::numeric_limits<float>::max();
                 float end = std::numeric_limits<float>::lowest();
-            };
-
-            struct Node
-            {
-                Node *parent;
-                uint32_t index;
-                std::vector<Node *> children;
-                glm::mat4 matrix;
-                std::string name;
-                Mesh *mesh;
-                Skin *skin;
-                int32_t skinIndex = -1;
-                glm::vec3 translation{};
-                glm::vec3 scale{1.0f};
-                glm::quat rotation{};
-                BoundingBox bvh;
-                BoundingBox aabb;
-                glm::mat4 localMatrix();
-                glm::mat4 getMatrix();
-                void update();
-                ~Node();
+                float currentTime = 0.0f;
             };
 
             struct Vertices
@@ -115,7 +120,7 @@ namespace Entropy
 
             std::vector<Node *> nodes;
             std::vector<Node *> linearNodes;
-            std::vector<Skin *> skins;
+            std::vector<Skin> skins;
 
             std::vector<Texture *> textures;
             std::vector<TextureSampler> textureSamplers;
@@ -139,27 +144,26 @@ namespace Entropy
 
             std::unique_ptr<VertexBuffer> _vertexBuffer;
             std::unique_ptr<Buffer> _indexBuffer;
+            std::vector<Vertex> vertices_temp;
 
             Model(std::shared_ptr<ServiceLocator> serviceLocator);
             void destroy(VkDevice device);
-            void loadNode(Node *parent, const tinygltf::Node &node, uint32_t nodeIndex, const tinygltf::Model &model, LoaderInfo &loaderInfo, float globalscale);
-            void getNodeProps(const tinygltf::Node &node, const tinygltf::Model &model, size_t &vertexCount, size_t &indexCount);
+            void loadNode(const tinygltf::Node &inputNode, const tinygltf::Model &input, Node *parent, uint32_t nodeIndex, std::vector<uint32_t> &indexBuffer, std::vector<Vertex> &vertexBuffer);
             void loadSkins(tinygltf::Model &gltfModel);
-            void loadTextures(tinygltf::Model &gltfModel);
+            void loadTextures(tinygltf::Model &input);
+            void loadImages(tinygltf::Model &input);
             VkSamplerAddressMode getVkWrapMode(int32_t wrapMode);
             VkFilter getVkFilterMode(int32_t filterMode);
             void loadTextureSamplers(tinygltf::Model &gltfModel);
             void loadMaterials(tinygltf::Model &gltfModel);
             void loadAnimations(tinygltf::Model &gltfModel);
-            void loadFromFile(std::string filename, float scale = 1.0f);
-            void drawNode(Node *node, VkCommandBuffer commandBuffer);
-            void draw(VkCommandBuffer commandBuffer);
-            void calculateBoundingBox(Node *node, Node *parent);
-            void getSceneDimensions();
-            void updateAnimation(uint32_t index, float time);
+            void LoadFromFile(std::string filename, float size);
+            void drawNode(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, Node *node);
+            void draw(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout);
+            void updateAnimation(float deltaTime);
             Node *findNode(Node *parent, uint32_t index);
             Node *nodeFromIndex(uint32_t index);
-
+            void updateJoints(Node *node);
             std::shared_ptr<ServiceLocator> _serviceLocator;
         };
     }

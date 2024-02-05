@@ -2,6 +2,18 @@
 
 using namespace Entropy::Graphics::Renderers;
 
+size_t Renderer::pad_uniform_buffer_size(size_t originalSize)
+{
+    // Calculate required alignment based on minimum device offset alignment
+    size_t minUboAlignment = properties.limits.minUniformBufferOffsetAlignment;
+    size_t alignedSize = originalSize;
+    if (minUboAlignment > 0)
+    {
+        alignedSize = (alignedSize + minUboAlignment - 1) & ~(minUboAlignment - 1);
+    }
+    return alignedSize;
+}
+
 Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
 {
     // Store service locator
@@ -32,6 +44,7 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
         _uniformBuffers.push_back(new UniformBuffer(serviceLocator, sizeof(UniformBufferObject)));
+        dynUbos.push_back(new UniformBuffer(serviceLocator, sizeof(UboDataDynamic) * 3));
     }
 
     for (unsigned int i = 0; i < _uniformBuffers.size(); i++)
@@ -42,21 +55,12 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
 
     vkGetPhysicalDeviceProperties(physicalDevice->Get(), &properties);
     size_t minUboAlignment = properties.limits.minUniformBufferOffsetAlignment;
-    dynamicAlignment = 128;
+    dynamicAlignment = sizeof(UboDataDynamic);
+
     if (minUboAlignment > 0)
     {
         dynamicAlignment = (dynamicAlignment + minUboAlignment - 1) & ~(minUboAlignment - 1);
     }
-    bufferSize = 1000 * dynamicAlignment;
-
-    uboDataDynamic.model = (glm::mat4 *)Utility::AlignedAlloc(bufferSize, dynamicAlignment);
-    uboDataDynamic.color = (glm::vec4 *)Utility::AlignedAlloc(bufferSize, dynamicAlignment);
-    assert(uboDataDynamic.model);
-
-    std::cout << "minUniformBufferOffsetAlignment = " << minUboAlignment << std::endl;
-    std::cout << "dynamicAlignment = " << dynamicAlignment << std::endl;
-
-    dynUbo = std::make_unique<UniformBuffer>(serviceLocator, bufferSize);
 
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
@@ -68,9 +72,9 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
         bufferInfo.range = sizeof(UniformBufferObject);
 
         VkDescriptorBufferInfo bufferInfo2{};
-        bufferInfo2.buffer = dynUbo->GetVulkanBuffer();
+        bufferInfo2.buffer = dynUbos[i]->GetVulkanBuffer();
         bufferInfo2.offset = 0;
-        bufferInfo2.range = 64;
+        bufferInfo2.range = sizeof(UboDataDynamic);
 
         descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[0].dstSet = _descriptorSet->Get()[i];
@@ -92,9 +96,8 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
     }
 
     _camera = std::make_shared<Camera>();
-
     _camera->type = Camera::CameraType::firstperson;
-    _camera->setPosition(glm::vec3(0.0f, 0.0f, -30.0f));
+    _camera->setPosition(glm::vec3(0.0f, 0.0f, -10.0f));
     _camera->setRotation(glm::vec3(0.0f));
 }
 
@@ -209,67 +212,34 @@ void Renderer::Render(int width, int height)
          [](const std::shared_ptr<Renderable> &lhs, const std::shared_ptr<Renderable> &rhs)
          { return lhs->zIndex < rhs->zIndex; });
 
-    uint modelIndex = 0;
+    uint32_t modelIndex = 0;
+
+    // Update UBO
+    UniformBufferObject ubo{};
+    // ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    // ubo.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
+    // ubo.proj[1][1] *= -1;
+    ubo.view = _camera->matrices.view;
+    ubo.proj = _camera->matrices.perspective;
+    _camera->update(0.1);
+
+    // ubo.screen = glm::vec2((float)width, (float)height);
+
+    memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));
 
     for (auto &renderable : _sceneGraph->renderables)
     {
         if (renderable->children.size() == 0)
         {
-            uint32_t dynamicOffset = modelIndex * static_cast<uint32_t>(dynamicAlignment);
-
-            std::cout << "OFFSET = " << dynamicOffset << std::endl;
-
-            glm::mat4 *modelMat = (glm::mat4 *)(((uint64_t)uboDataDynamic.model + (modelIndex * dynamicAlignment)));
-            glm::vec4 *color = (glm::vec4 *)(((uint64_t)uboDataDynamic.color + (modelIndex * dynamicAlignment)));
-            *color = glm::vec4(1.0, 1.0, 1.0, 1.0);
-
-            auto translate = glm::translate(glm::mat4(1.0f), renderable->position);
-            auto scale = glm::scale(glm::mat4(1.0f), renderable->scale);
-            auto rotate = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
-
-            auto o = glm::vec3(0.0, 0.0, 0.0);
-
-            if (renderable->orientation == 1)
-            {
-                o.x = 1;
-            }
-
-            if (renderable->orientation == 2)
-            {
-                o.y = 1;
-            }
-
-            if (renderable->orientation == 3)
-            {
-                o.z = 1;
-            }
-            auto modelRotation = glm::rotate(glm::mat4(1.0f), glm::radians(renderable->rotationX), o);
-
-            *modelMat = translate * scale * modelRotation;
-
-            vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &dynamicOffset);
-
-            memcpy(dynUbo->GetMappedMemory(), &uboDataDynamic, bufferSize);
-
-            DrawRenderable(renderable, width, height);
+            DrawRenderable(renderable, width, height, modelIndex);
         }
         else
         {
             for (auto &child : renderable->children)
             {
-                DrawRenderable(child, width, height);
+                DrawRenderable(child, width, height, modelIndex);
             }
         }
-
-        /*
-        VkMappedMemoryRange memoryRange;
-        memoryRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
-        memoryRange.memory = dynUbo->GetBufferMemory();
-        memoryRange.size = bufferSize;
-        memoryRange.pNext = nullptr;
-        vkFlushMappedMemoryRanges(_logicalDevice->Get(), 1, &memoryRange);
-
-        */
 
         modelIndex++;
     }
@@ -285,29 +255,8 @@ void Renderer::Render(int width, int height)
     _currentFrame = (_currentFrame + 1) % MAX_CONCURRENT_FRAMES_IN_FLIGHT;
 }
 
-void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width, int height)
+void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width, int height, uint32_t modelIndex)
 {
-    /*
-    if (!renderable->isAbleToRender())
-    {
-        std::cout << "ERRROR" << std::endl;
-        return;
-    }
-    */
-
-    // Update UBO
-    UniformBufferObject ubo{};
-    // ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    // ubo.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
-    // ubo.proj[1][1] *= -1;
-    ubo.view = _camera->matrices.view;
-    ubo.proj = _camera->matrices.perspective;
-    _camera->update(0.1);
-
-    // ubo.screen = glm::vec2((float)width, (float)height);
-
-    memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));
-
     if (renderable->type == 1)
     {
         auto sprite = std::dynamic_pointer_cast<Sprite>(renderable);
@@ -317,6 +266,7 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
     // @todo refactors this
 
     auto translate = glm::mat4(1.0f);
+
     if (renderable->type == 0)
     {
         translate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, 0.0));
@@ -359,19 +309,41 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
 
     modelMatrix = translate * scale * modelRotation;
 
+    /*
     // Update push constant and upload to GPU
     PushConstant constant;
     constant.modelMatrix = modelMatrix;
     constant.color = renderable->color;
     constant.position = renderable->position;
     constant.textureId = renderable->textureId;
+    */
 
-    vkCmdPushConstants(currentCmdBuffer, _pipeline->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstant), &constant);
+    UboDataDynamic ubodyn{};
+
+    ubodyn.model = translate * scale * modelRotation;
+    ubodyn.color = renderable->color;
+
+    uint32_t offset = dynamicAlignment * modelIndex;
+
+    vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &offset);
+
+    memcpy((char *)dynUbos[_currentFrame]->GetMappedMemory() + offset, &ubodyn, sizeof(UboDataDynamic));
+
+    /*
+    VkMappedMemoryRange memoryRange;
+    memoryRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+    memoryRange.memory = dynUbo->GetBufferMemory();
+    memoryRange.size = bufferSize;
+    memoryRange.pNext = nullptr;
+    vkFlushMappedMemoryRanges(_logicalDevice->Get(), 1, &memoryRange);
+    */
+
+    // vkCmdPushConstants(currentCmdBuffer, _pipeline->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstant), &constant);
 
     if (renderable->type == 4)
     {
         auto model = std::dynamic_pointer_cast<Model>(renderable);
-        model->draw(currentCmdBuffer);
+        model->draw(currentCmdBuffer, _pipeline->GetPipelineLayout());
     }
     else
     {

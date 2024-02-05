@@ -56,7 +56,7 @@ Application::Application()
     uboDynLayoutBinding.descriptorCount = 1;
     uboDynLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
     uboDynLayoutBinding.pImmutableSamplers = nullptr;
-    uboDynLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+    uboDynLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
     VkDescriptorSetLayoutBinding samplerLayoutBinding{};
     samplerLayoutBinding.binding = 2;
@@ -92,9 +92,6 @@ Application::Application()
 
     physics2d = std::make_shared<Physics2D>(serviceLocator);
     serviceLocator->registerService("2DPhysics", physics2d);
-
-    mouse = std::make_shared<Mouse>(_window);
-    serviceLocator->registerService("Mouse", mouse);
 
     lua = std::make_shared<Lua>(serviceLocator);
     serviceLocator->registerService("Lua", lua);
@@ -195,17 +192,78 @@ void cursorPositionCallback(GLFWwindow *window, double x, double y)
 #endif
 
 #if defined(BUILD_FOR_ANDROID)
-Application::Application()
+Application::Application(struct android_app *app)
 {
     // Seed random
     srand(static_cast<unsigned>(time(0)));
 
-    VkExtent2D frame = {
-        .width = (uint32_t)500,
-        .height = (uint32_t)1000};
-
     // Create 1ms Timer
     _timer = new Timer(1.0f);
+
+    VkExtent2D frame = {500, 500};
+
+    // Create items for vulkan
+    auto vkInstance = std::make_shared<VulkanInstance>("Entropy tests");
+    auto windowSurface = std::make_shared<WindowSurface>(vkInstance, app);
+    auto physicalDevice = std::make_shared<PhysicalDevice>(vkInstance, windowSurface);
+    auto logicalDevice = std::make_shared<LogicalDevice>(physicalDevice, windowSurface);
+    auto swapChain = std::make_shared<Swapchain>(physicalDevice->Get(), logicalDevice->Get(), windowSurface, frame);
+    auto commandPool = std::make_shared<CommandPool>(logicalDevice, physicalDevice, windowSurface);
+    auto descriptorPool = std::make_shared<DescriptorPool>(logicalDevice);
+
+    VkDescriptorSetLayoutBinding uboLayoutBinding{};
+    uboLayoutBinding.binding = 0;
+    uboLayoutBinding.descriptorCount = 1;
+    uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    uboLayoutBinding.pImmutableSamplers = nullptr;
+    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+    VkDescriptorSetLayoutBinding uboDynLayoutBinding{};
+    uboDynLayoutBinding.binding = 1;
+    uboDynLayoutBinding.descriptorCount = 1;
+    uboDynLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+    uboDynLayoutBinding.pImmutableSamplers = nullptr;
+    uboDynLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+    VkDescriptorSetLayoutBinding samplerLayoutBinding{};
+    samplerLayoutBinding.binding = 2;
+    samplerLayoutBinding.descriptorCount = 1;
+    samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
+    samplerLayoutBinding.pImmutableSamplers = nullptr;
+    samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+    VkDescriptorSetLayoutBinding textureLayoutBinding{};
+    textureLayoutBinding.binding = 3;
+    textureLayoutBinding.descriptorCount = 1;
+    textureLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+    textureLayoutBinding.pImmutableSamplers = nullptr;
+    textureLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+    std::vector<VkDescriptorSetLayoutBinding> bindings = {uboLayoutBinding, uboDynLayoutBinding, samplerLayoutBinding, textureLayoutBinding};
+
+    auto descriptorSetLayout = std::make_shared<DescriptorsetLayout>(logicalDevice, bindings);
+    auto descriptorSet = std::make_shared<Descriptorset>(logicalDevice, descriptorPool, descriptorSetLayout);
+
+    // Add services to service locator
+    serviceLocator = std::make_shared<ServiceLocator>();
+    serviceLocator->registerService("PhysicalDevice", physicalDevice);
+    serviceLocator->registerService("LogicalDevice", logicalDevice);
+    serviceLocator->registerService("DescriptorSet", descriptorSet);
+    serviceLocator->registerService("DescriptorSetLayout", descriptorSetLayout);
+    serviceLocator->registerService("DescriptorPool", descriptorPool);
+    serviceLocator->registerService("SwapChain", swapChain);
+    serviceLocator->registerService("CommandPool", commandPool);
+
+    sceneGraph = std::make_shared<SceneGraph>();
+    serviceLocator->registerService("SceneGraph", sceneGraph);
+
+    physics2d = std::make_shared<Physics2D>(serviceLocator);
+    serviceLocator->registerService("2DPhysics", physics2d);
+
+    lua = std::make_shared<Lua>(serviceLocator);
+    serviceLocator->registerService("Lua", lua);
+
+    _renderer = std::make_shared<Renderer>(serviceLocator);
 }
 
 Application::~Application()

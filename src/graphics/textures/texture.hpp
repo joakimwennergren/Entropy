@@ -73,6 +73,7 @@ namespace Entropy
                 inline VkImageView GetImageView() { return this->_imageView; };
 
                 bool hasTexture = false;
+                int imageIndex = -1;
 
             private:
                 /**

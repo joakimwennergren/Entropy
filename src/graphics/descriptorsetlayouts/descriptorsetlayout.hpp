@@ -26,7 +26,7 @@ namespace Entropy
             public:
                 DescriptorsetLayout(std::shared_ptr<LogicalDevice> logicalDevice, std::vector<VkDescriptorSetLayoutBinding> layoutBindings);
                 inline VkDescriptorSetLayout Get() { return _descriptorSetLayout; };
-                inline bool isValid() { return _descriptorSetLayout != nullptr; };
+                inline bool isValid() { return true; };
 
             private:
                 VkDescriptorSetLayout _descriptorSetLayout;

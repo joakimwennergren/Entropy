@@ -9,31 +9,11 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<Servi
     auto swapChain = std::dynamic_pointer_cast<Swapchain>(serviceLocator->getService("SwapChain"));
     auto descriptorSetLayout = std::dynamic_pointer_cast<DescriptorsetLayout>(serviceLocator->getService("DescriptorSetLayout"));
 
-    if (!logicalDevice->isValid())
-    {
-        spdlog::error("Trying to create pipeline with invalid invalid logical device");
-        return;
-    }
-
-    if (!swapChain->isValid())
-    {
-        spdlog::error("Trying to create pipeline with invalid invalid swapchain");
-        return;
-    }
-
-    if (!descriptorSetLayout->isValid())
-    {
-        spdlog::error("Trying to create pipeline with invalid descriptorset");
-        return;
-    }
-
     // Assign services
     _logicalDevice = logicalDevice;
     _swapchain = swapChain;
     _descriptorsetLayout = descriptorSetLayout;
     _serviceLocator = serviceLocator;
-
-    std::cout << GetShadersDir() << std::endl;
 
     auto shader = std::make_unique<Shader>(_serviceLocator, GetShadersDir() + "vert.spv", GetShadersDir() + "frag.spv");
 
@@ -140,7 +120,7 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<Servi
     colorBlending.blendConstants[2] = 0.0f; // Optional
     colorBlending.blendConstants[3] = 0.0f; // Optional
 
-    std::vector<VkDescriptorSetLayout> dsLayouts(2);
+    std::vector<VkDescriptorSetLayout> dsLayouts(3);
 
     VkDescriptorSetLayout tempLayout;
 
@@ -170,8 +150,29 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<Servi
         return;
     }
 
+    VkDescriptorSetLayout tempLayout2;
+    VkDescriptorSetLayoutBinding ssboBinding{};
+    ssboBinding.binding = 0;
+    ssboBinding.descriptorCount = 1;
+    ssboBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    ssboBinding.pImmutableSamplers = nullptr;
+    ssboBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+    std::array<VkDescriptorSetLayoutBinding, 1> bindings2 = {ssboBinding};
+    VkDescriptorSetLayoutCreateInfo layoutInfo2{};
+    layoutInfo2.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    layoutInfo2.bindingCount = static_cast<uint32_t>(bindings2.size());
+    layoutInfo2.pBindings = bindings2.data();
+
+    if (vkCreateDescriptorSetLayout(_logicalDevice->Get(), &layoutInfo2, nullptr, &tempLayout2) != VK_SUCCESS)
+    {
+        spdlog::error("Failed to create descriptor set layout!");
+        return;
+    }
+
     dsLayouts[0] = _descriptorsetLayout->Get();
     dsLayouts[1] = tempLayout;
+    dsLayouts[2] = tempLayout2;
 
     // setup push constants
     VkPushConstantRange push_constant;
@@ -220,67 +221,6 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<Servi
     }
 }
 
-Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize)
-{
-    /*
-    _vkContext = VulkanContext::GetInstance();
-
-#if defined(BUILD_FOR_ANDROID)
-    _shader = std::make_unique<Shader>(vertContent, vertSize, fragContent, fragSize);
-#endif
-
-    // Create Shader and store it
-#ifdef BUILD_FOR_IOS
-    _shader = std::make_unique<Shader>(GetProjectBasePath() + "/vert.spv", GetProjectBasePath() + "/frag.spv");
-#else
-    auto shaderStages = CreateShaderStages();
-#endif
-
-    auto dynamicState = CreateDynamicState();
-
-    auto inputAssembly = CreateInputAssembly();
-
-    auto vertexInputStates = CreateVertexInputStates();
-
-    auto viewportState = CreateViewportState();
-
-    auto rasterizer = CreateRasterizer();
-
-    auto multisampling = CreateMultisampling();
-
-    auto colorBlending = CreateColorBlendning();
-
-    auto dsLayouts = CreateDescriptorSetLayouts();
-
-    auto push_constant = CreatePushContantRange();
-
-    CreatePipelineLayout(dsLayouts, push_constant);
-
-    VkGraphicsPipelineCreateInfo pipelineInfo{};
-    pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-    pipelineInfo.stageCount = 2;
-    pipelineInfo.pStages = shaderStages.data();
-    pipelineInfo.pVertexInputState = vertexInputStates.data();
-    pipelineInfo.pInputAssemblyState = &inputAssembly;
-    pipelineInfo.pViewportState = &viewportState;
-    pipelineInfo.pRasterizationState = &rasterizer;
-    pipelineInfo.pMultisampleState = &multisampling;
-    pipelineInfo.pDepthStencilState = nullptr;
-    pipelineInfo.pColorBlendState = &colorBlending;
-    pipelineInfo.pDynamicState = &dynamicState;
-    pipelineInfo.layout = this->_pipelineLayout;
-    pipelineInfo.renderPass = renderPass->GetRenderPass();
-    pipelineInfo.subpass = 0;
-    pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
-    pipelineInfo.basePipelineIndex = -1;
-
-    if (vkCreateGraphicsPipelines(_vkContext->logicalDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &this->_pipeline) != VK_SUCCESS)
-    {
-        exit(EXIT_FAILURE);
-    }
-    */
-}
-
 Pipeline::~Pipeline()
 {
     if (!_logicalDevice->isValid())
@@ -289,7 +229,7 @@ Pipeline::~Pipeline()
         return;
     }
 
-    vkDestroyDescriptorSetLayout(_logicalDevice->Get(), _descriptorSetLayout, nullptr);
+    // vkDestroyDescriptorSetLayout(_logicalDevice->Get(), _descriptorSetLayout, nullptr);
     vkDestroyPipeline(_logicalDevice->Get(), _pipeline, nullptr);
     vkDestroyPipelineLayout(_logicalDevice->Get(), _pipelineLayout, nullptr);
 }

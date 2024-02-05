@@ -20,7 +20,7 @@ namespace Entropy
     {
         struct Mesh
         {
-            std::vector<Primitive *> primitives;
+            std::vector<Primitive> primitives;
             BoundingBox bb;
             BoundingBox aabb;
 
@@ -31,6 +31,7 @@ namespace Entropy
                 float jointcount{0};
             } uniformBlock;
 
+            Mesh() = default;
             Mesh(std::shared_ptr<ServiceLocator> serviceLocator, glm::mat4 matrix);
             ~Mesh();
 

@@ -7,7 +7,8 @@
 # Game Engine version 1.0
 
 # Set minimum cmake version
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.27.8)
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
 # Declare project
 project(Entropy)
@@ -21,16 +22,21 @@ set(PROJECT_BASEPATH ${PROJECT_SOURCE_DIR})
 # Include dependencies
 include(cmake/external_dependencies.cmake)
 
-# List source files
-file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp )
+if(CMAKE_PLATFORM STREQUAL "BUILD_FOR_ANDROID")
+    file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp  external/android_native_app_glue.c)
+else()
+    file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+endif()
 
 # Create the library
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
 # Compiler flags
 if(MSVC)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
+    add_definitions(-w)
 endif(MSVC)
+
 target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17)
 
 # Include headers
