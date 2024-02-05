@@ -7,15 +7,19 @@
 
 #include "config.hpp"
 
+#include "tiny_gltf.h"
+
 #include <graphics/buffers/buffer.hpp>
 #include <graphics/commandbuffers/commandbuffer.hpp>
 #include <graphics/utilities/utilities.hpp>
 #include <graphics/buffers/stagedbuffer.hpp>
+#include <graphics/imageviews/imageview.hpp>
+#include <gltf/texturesampler.hpp>
 
-using namespace Entropy::Global;
 using namespace Entropy::Graphics::Buffers;
 using namespace Entropy::Graphics::Utilities;
 using namespace Entropy::Graphics::CommandBuffers;
+using namespace Entropy::Graphics::ImageViews;
 
 namespace Entropy
 {
@@ -26,12 +30,13 @@ namespace Entropy
             class Texture
             {
             public:
+                Texture() = default;
                 /**
                  * @brief Construct a new Texture object
                  *
                  * @param context
                  */
-                Texture();
+                Texture(std::shared_ptr<ServiceLocator> serviceLocator);
 
                 /**
                  * @brief Destroy the Texture object
@@ -47,9 +52,18 @@ namespace Entropy
                 void CreateTextureImage(std::string path);
 
                 /**
+                 * @brief Create a Texture Image object
+                 *
+                 * @param path
+                 */
+                void CreateTextureImageFromPixels(unsigned char *pixels, int width, int height);
+
+                /**
                  *
                  */
                 void CreateTextureImageFromBuffer(FT_Bitmap bitmap);
+
+                void CreateTextureFromGLTFImage(tinygltf::Image &gltfimage, GLTF::TextureSampler textureSampler);
 
                 /**
                  * @brief Get the Image View object
@@ -59,6 +73,7 @@ namespace Entropy
                 inline VkImageView GetImageView() { return this->_imageView; };
 
                 bool hasTexture = false;
+                int imageIndex = -1;
 
             private:
                 /**
@@ -100,6 +115,8 @@ namespace Entropy
                 VkImage _textureImage;
                 VkImageView _imageView;
                 VkDeviceMemory _textureImageMemory;
+                std::shared_ptr<ServiceLocator> _serviceLocator;
+                std::shared_ptr<LogicalDevice> _logicalDevice;
             };
         }
     }

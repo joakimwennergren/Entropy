@@ -15,9 +15,7 @@
 #include <graphics/data/vertex.hpp>
 #include <graphics/utilities/utilities.hpp>
 #include <graphics/commandbuffers/commandbuffer.hpp>
-#include <global/vulkancontext.hpp>
 
-using namespace Entropy::Global;
 using namespace Entropy::Graphics::Utilities;
 using namespace Entropy::Graphics::CommandBuffers;
 
@@ -55,7 +53,9 @@ namespace Entropy
                  */
                 inline VkDeviceMemory GetBufferMemory() { return this->_bufferMemory; };
 
-                void CreateIndexBufferUint16(std::vector<uint16_t> indices);
+                void CreateIndexBufferUint16(std::shared_ptr<ServiceLocator> serviceLocator, std::vector<uint16_t> indices);
+
+                void CreateIndexBufferUint32(std::shared_ptr<ServiceLocator> serviceLocator, std::vector<uint32_t> indices);
 
                 /**
                  * @brief Get the Mapped Memory object
@@ -74,7 +74,7 @@ namespace Entropy
                  * @param buffer
                  * @param bufferMemory
                  */
-                static void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory);
+                void CreateBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory);
 
                 /**
                  * @brief Copy One Buffer into another
@@ -83,7 +83,7 @@ namespace Entropy
                  * @param dstBuffer VkBuffer destination
                  * @param size srcBuffer size
                  */
-                void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+                void CopyBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
                 // Vulkan buffer
                 VkBuffer _buffer;
@@ -93,6 +93,8 @@ namespace Entropy
 
                 // Mapped memory towards GPU?
                 void *_mappedMemory;
+
+                std::shared_ptr<LogicalDevice> _logicalDevice;
             };
         }
     }

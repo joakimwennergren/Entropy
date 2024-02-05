@@ -2,30 +2,34 @@
 
 using namespace Entropy::Graphics::Pipelines;
 
-Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass)
+Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator)
 {
-    VulkanContext *vkContext = VulkanContext::GetInstance();
+    // Get required depenencies
+    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
+    auto swapChain = std::dynamic_pointer_cast<Swapchain>(serviceLocator->getService("SwapChain"));
+    auto descriptorSetLayout = std::dynamic_pointer_cast<DescriptorsetLayout>(serviceLocator->getService("DescriptorSetLayout"));
 
-    // Create Shader and store it
-#ifdef BUILD_FOR_IOS
-    _shader = std::make_unique<Shader>(GetProjectBasePath() + "/vert.spv", GetProjectBasePath() + "/frag.spv");
-#else
-    _shader = std::make_unique<Shader>(GetShadersDir() + "vert.spv", GetShadersDir() + "/frag.spv");
-#endif
+    // Assign services
+    _logicalDevice = logicalDevice;
+    _swapchain = swapChain;
+    _descriptorsetLayout = descriptorSetLayout;
+    _serviceLocator = serviceLocator;
+
+    auto shader = std::make_unique<Shader>(_serviceLocator, GetShadersDir() + "vert.spv", GetShadersDir() + "frag.spv");
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-    vertShaderStageInfo.module = _shader->GetVertShaderModule();
+    vertShaderStageInfo.module = shader->GetVertShaderModule();
     vertShaderStageInfo.pName = "main";
 
     VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
     fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-    fragShaderStageInfo.module = _shader->GetFragShaderModule();
+    fragShaderStageInfo.module = shader->GetFragShaderModule();
     fragShaderStageInfo.pName = "main";
 
-    VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
+    std::vector<VkPipelineShaderStageCreateInfo> shaderStages = {vertShaderStageInfo, fragShaderStageInfo};
 
     std::vector<VkDynamicState> dynamicStates = {
         VK_DYNAMIC_STATE_VIEWPORT,
@@ -35,6 +39,11 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass)
     dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
     dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
     dynamicState.pDynamicStates = dynamicStates.data();
+
+    VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
+    inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    inputAssembly.primitiveRestartEnable = VK_FALSE;
 
     auto bindingDescriptionVertex = Vertex::getBindingDescription();
     auto attributeDescriptionsVertex = Vertex::getAttributeDescriptions();
@@ -49,22 +58,17 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass)
     std::vector<VkPipelineVertexInputStateCreateInfo> vertexInputStates(1);
     vertexInputStates[0] = vertexInputInfo;
 
-    VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
-    inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-    inputAssembly.primitiveRestartEnable = VK_FALSE;
-
     VkViewport viewport{};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
-    viewport.width = (float)vkContext->swapChainExtent.width;
-    viewport.height = (float)vkContext->swapChainExtent.height;
+    viewport.width = (float)_swapchain->swapChainExtent.width;
+    viewport.height = (float)_swapchain->swapChainExtent.height;
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
 
     VkRect2D scissor{};
     scissor.offset = {0, 0};
-    scissor.extent = vkContext->swapChainExtent;
+    scissor.extent = _swapchain->swapChainExtent;
 
     VkPipelineViewportStateCreateInfo viewportState{};
     viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -116,9 +120,9 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass)
     colorBlending.blendConstants[2] = 0.0f; // Optional
     colorBlending.blendConstants[3] = 0.0f; // Optional
 
-    std::vector<VkDescriptorSetLayout> dsLayouts(2);
+    std::vector<VkDescriptorSetLayout> dsLayouts(3);
 
-    VkDescriptorSetLayout _tempLayout;
+    VkDescriptorSetLayout tempLayout;
 
     VkDescriptorSetLayoutBinding samplerLayoutBinding{};
     samplerLayoutBinding.binding = 1;
@@ -140,13 +144,35 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass)
     layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
     layoutInfo.pBindings = bindings.data();
 
-    if (vkCreateDescriptorSetLayout(vkContext->logicalDevice, &layoutInfo, nullptr, &_tempLayout) != VK_SUCCESS)
+    if (vkCreateDescriptorSetLayout(_logicalDevice->Get(), &layoutInfo, nullptr, &tempLayout) != VK_SUCCESS)
     {
-        throw std::runtime_error("failed to create descriptor set layout!");
+        spdlog::error("Failed to create descriptor set layout!");
+        return;
     }
 
-    dsLayouts[0] = vkContext->descriptorSetLayout;
-    dsLayouts[1] = _tempLayout;
+    VkDescriptorSetLayout tempLayout2;
+    VkDescriptorSetLayoutBinding ssboBinding{};
+    ssboBinding.binding = 0;
+    ssboBinding.descriptorCount = 1;
+    ssboBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    ssboBinding.pImmutableSamplers = nullptr;
+    ssboBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+    std::array<VkDescriptorSetLayoutBinding, 1> bindings2 = {ssboBinding};
+    VkDescriptorSetLayoutCreateInfo layoutInfo2{};
+    layoutInfo2.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    layoutInfo2.bindingCount = static_cast<uint32_t>(bindings2.size());
+    layoutInfo2.pBindings = bindings2.data();
+
+    if (vkCreateDescriptorSetLayout(_logicalDevice->Get(), &layoutInfo2, nullptr, &tempLayout2) != VK_SUCCESS)
+    {
+        spdlog::error("Failed to create descriptor set layout!");
+        return;
+    }
+
+    dsLayouts[0] = _descriptorsetLayout->Get();
+    dsLayouts[1] = tempLayout;
+    dsLayouts[2] = tempLayout2;
 
     // setup push constants
     VkPushConstantRange push_constant;
@@ -164,45 +190,46 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass)
     pipelineLayoutInfo.pPushConstantRanges = &push_constant;
     pipelineLayoutInfo.pushConstantRangeCount = 1;
 
-    if (vkCreatePipelineLayout(vkContext->logicalDevice, &pipelineLayoutInfo, nullptr, &this->_pipelineLayout) != VK_SUCCESS)
+    if (vkCreatePipelineLayout(_logicalDevice->Get(), &pipelineLayoutInfo, nullptr, &_pipelineLayout) != VK_SUCCESS)
     {
-        PLOG_FATAL << "Failed to create default pipeline layout!";
-        exit(EXIT_FAILURE);
+        spdlog::error("Failed to create pipeline layout!");
+        return;
     }
 
     VkGraphicsPipelineCreateInfo pipelineInfo{};
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
     pipelineInfo.stageCount = 2;
-    pipelineInfo.pStages = shaderStages;
-
+    pipelineInfo.pStages = shaderStages.data();
     pipelineInfo.pVertexInputState = vertexInputStates.data();
     pipelineInfo.pInputAssemblyState = &inputAssembly;
     pipelineInfo.pViewportState = &viewportState;
     pipelineInfo.pRasterizationState = &rasterizer;
     pipelineInfo.pMultisampleState = &multisampling;
-    pipelineInfo.pDepthStencilState = nullptr; // Optional
+    pipelineInfo.pDepthStencilState = nullptr;
     pipelineInfo.pColorBlendState = &colorBlending;
     pipelineInfo.pDynamicState = &dynamicState;
-
-    pipelineInfo.layout = this->_pipelineLayout;
-
+    pipelineInfo.layout = _pipelineLayout;
     pipelineInfo.renderPass = renderPass->GetRenderPass();
     pipelineInfo.subpass = 0;
+    pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+    pipelineInfo.basePipelineIndex = -1;
 
-    pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
-    pipelineInfo.basePipelineIndex = -1;              // Optional
-
-    if (vkCreateGraphicsPipelines(vkContext->logicalDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &this->_pipeline) != VK_SUCCESS)
+    if (vkCreateGraphicsPipelines(logicalDevice->Get(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_pipeline) != VK_SUCCESS)
     {
-        PLOG_FATAL << "Failed to create default pipeline!";
-        exit(EXIT_FAILURE);
+        spdlog::error("Failed to create pipeline!");
+        return;
     }
 }
 
 Pipeline::~Pipeline()
 {
-    VulkanContext *vkContext = VulkanContext::GetInstance();
-    vkDestroyDescriptorSetLayout(vkContext->logicalDevice, this->_descriptorSetLayout, nullptr);
-    vkDestroyPipeline(vkContext->logicalDevice, this->_pipeline, nullptr);
-    vkDestroyPipelineLayout(vkContext->logicalDevice, this->_pipelineLayout, nullptr);
+    if (!_logicalDevice->isValid())
+    {
+        spdlog::error("Couldn't clean up after pipeline since logicaldevice is invalid");
+        return;
+    }
+
+    // vkDestroyDescriptorSetLayout(_logicalDevice->Get(), _descriptorSetLayout, nullptr);
+    vkDestroyPipeline(_logicalDevice->Get(), _pipeline, nullptr);
+    vkDestroyPipelineLayout(_logicalDevice->Get(), _pipelineLayout, nullptr);
 }

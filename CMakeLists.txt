@@ -7,27 +7,37 @@
 # Game Engine version 1.0
 
 # Set minimum cmake version
-cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.27.8)
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
 # Declare project
 project(Entropy)
 
-set(PROJECT_BASEPATH ${PROJECT_SOURCE_DIR})
-
 # Detect platform
 include(cmake/platform.cmake)
+
+# Engine base path
+set(PROJECT_BASEPATH ${PROJECT_SOURCE_DIR})
 
 # Include dependencies
 include(cmake/external_dependencies.cmake)
 
-# List source files
-file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+if(CMAKE_PLATFORM STREQUAL "BUILD_FOR_ANDROID")
+    file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp  external/android_native_app_glue.c)
+else()
+    file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+endif()
 
 # Create the library
-add_library(Entropy SHARED ${SOURCES})
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
 # Compiler flags
-target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17 -Wall -Wfloat-conversion)
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
+    add_definitions(-w)
+endif(MSVC)
+
+target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17)
 
 # Include headers
 target_include_directories(${PROJECT_NAME} 
@@ -37,19 +47,25 @@ target_include_directories(${PROJECT_NAME}
         ${Vulkan_INCLUDE_DIRS}
         external 
         external/vulkan-headers
+        external/lua-5.4.6/src
 )
 
-# Link dependencies
+# Link common dependencies
 target_link_libraries(${PROJECT_NAME}
     sol2
-    plog
+    lua
     glm
     #asio::asio
     #libcurl_shared #libcurl_static 
     freetype
+    eventpp
+    spdlog
+    box2d
+    eventpp
+    tinygltf
 )
 
-# Link dependencies for desktop
+# Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk)
 target_link_libraries(${PROJECT_NAME}
     ${Vulkan_LIBRARIES}
     glfw

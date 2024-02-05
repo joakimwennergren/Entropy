@@ -6,7 +6,7 @@
 #pragma once
 
 #include <chrono>
-#include <plog/Log.h>
+#include <cmath>
 
 namespace Entropy
 {

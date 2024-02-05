@@ -1,2 +1,2 @@
-C:\VulkanSDK\1.3.268.0\Bin\glslc.exe "C:\Entropy-Engine\shaders\basic\basic.vert" -o "C:\Entropy-Engine\shaders\basic\vert.spv"
-C:\VulkanSDK\1.3.268.0\Bin\glslc.exe "C:\Entropy-Engine\shaders\basic\basic.frag" -o "C:\Entropy-Engine\shaders\basic\frag.spv"
+C:\VulkanSDK\1.3.275.0\Bin\glslc.exe "C:\Users\joaki\Desktop\Entropy-Engine\shaders\basic\basic.vert" -o "C:\Users\joaki\Desktop\Entropy-Engine\shaders\basic\vert.spv"
+C:\VulkanSDK\1.3.275.0\Bin\glslc.exe "C:\Users\joaki\Desktop\Entropy-Engine\shaders\basic\basic.frag" -o "C:\Users\joaki\Desktop\Entropy-Engine\shaders\basic\frag.spv"

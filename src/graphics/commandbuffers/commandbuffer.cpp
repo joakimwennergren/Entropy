@@ -2,19 +2,28 @@
 
 using namespace Entropy::Graphics::CommandBuffers;
 
-CommandBuffer::CommandBuffer()
+CommandBuffer::CommandBuffer(std::shared_ptr<ServiceLocator> serviceLocator)
 {
-    VulkanContext *vkContext = VulkanContext::GetInstance();
+    // Get required depenencies
+    auto commandPool = std::dynamic_pointer_cast<CommandPool>(serviceLocator->getService("CommandPool"));
+    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
+
+    if (!commandPool->isValid() || !logicalDevice->isValid())
+    {
+        spdlog::error("Trying to create commandbuffer with invalid swapchain or invalid logical device");
+        return;
+    }
+
+    _logicalDevice = logicalDevice;
 
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.commandPool = vkContext->commandPool;
+    allocInfo.commandPool = commandPool->Get();
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     allocInfo.commandBufferCount = 1;
 
-    if (vkAllocateCommandBuffers(vkContext->logicalDevice, &allocInfo, &_commandBuffer) != VK_SUCCESS)
+    if (vkAllocateCommandBuffers(logicalDevice->Get(), &allocInfo, &_commandBuffer) != VK_SUCCESS)
     {
-        PLOG_ERROR << "Failed to allocate command buffer!";
         exit(EXIT_FAILURE);
     }
 }
@@ -37,7 +46,6 @@ void CommandBuffer::Record()
 
     if (vkBeginCommandBuffer(_commandBuffer, &beginInfo) != VK_SUCCESS)
     {
-        PLOG_ERROR << "Failed to begin recording command buffer!";
         exit(EXIT_FAILURE);
     }
 }
@@ -46,18 +54,14 @@ void CommandBuffer::EndRecording()
 {
     if (vkEndCommandBuffer(_commandBuffer) != VK_SUCCESS)
     {
-        PLOG_ERROR << "Failed to end recording command buffer!";
         exit(EXIT_FAILURE);
     }
 }
 
 void CommandBuffer::EndRecordingOnce()
 {
-    VulkanContext *vkContext = VulkanContext::GetInstance();
-
     if (vkEndCommandBuffer(_commandBuffer) != VK_SUCCESS)
     {
-        PLOG_ERROR << "Failed to end recording command buffer!";
         exit(EXIT_FAILURE);
     }
 
@@ -66,6 +70,6 @@ void CommandBuffer::EndRecordingOnce()
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &_commandBuffer;
 
-    vkQueueSubmit(vkContext->graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-    vkQueueWaitIdle(vkContext->graphicsQueue);
+    vkQueueSubmit(_logicalDevice->GetPresentQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+    vkQueueWaitIdle(_logicalDevice->GetGraphicQueue());
 }

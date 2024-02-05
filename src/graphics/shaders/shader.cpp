@@ -2,8 +2,10 @@
 
 using namespace Symbios::Graphics::Shaders;
 
-Shader::Shader(const std::string vert, const std::string frag)
+Shader::Shader(std::shared_ptr<ServiceLocator> serviceLocator, const std::string vert, const std::string frag)
 {
+    _logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
+
     this->_vertCode = this->ReadFile(vert);
     this->_fragCode = this->ReadFile(frag);
 
@@ -14,12 +16,16 @@ Shader::Shader(const std::string vert, const std::string frag)
     }
 }
 
+Shader::Shader(uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize)
+{
+    this->_shaderModuleVert = this->BuildShader(vertContent, vertSize);
+    this->_shaderModuleFrag = this->BuildShader(fragContent, fragSize);
+}
+
 Shader::~Shader()
 {
-    VulkanContext *vkContext = VulkanContext::GetInstance();
-
-    vkDestroyShaderModule(vkContext->logicalDevice, this->_shaderModuleVert, nullptr);
-    vkDestroyShaderModule(vkContext->logicalDevice, this->_shaderModuleFrag, nullptr);
+    vkDestroyShaderModule(_logicalDevice->Get(), this->_shaderModuleVert, nullptr);
+    vkDestroyShaderModule(_logicalDevice->Get(), this->_shaderModuleFrag, nullptr);
 }
 
 std::vector<char> Shader::ReadFile(std::string filename)
@@ -28,7 +34,6 @@ std::vector<char> Shader::ReadFile(std::string filename)
 
     if (!file.is_open())
     {
-        PLOG_FATAL << "Failed to open shader: " << filename;
         exit(EXIT_FAILURE);
     }
 
@@ -45,8 +50,6 @@ std::vector<char> Shader::ReadFile(std::string filename)
 
 VkShaderModule Shader::BuildShader(std::vector<char> code)
 {
-    VulkanContext *vkContext = VulkanContext::GetInstance();
-
     VkShaderModuleCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
     createInfo.codeSize = code.size();
@@ -54,9 +57,25 @@ VkShaderModule Shader::BuildShader(std::vector<char> code)
 
     VkShaderModule shaderModule;
 
-    if (vkCreateShaderModule(vkContext->logicalDevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
+    if (vkCreateShaderModule(_logicalDevice->Get(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
     {
-        PLOG_FATAL << "failed to create shader module!";
+        exit(EXIT_FAILURE);
+    }
+
+    return shaderModule;
+}
+
+VkShaderModule Shader::BuildShader(uint32_t *code, uint32_t size)
+{
+    VkShaderModuleCreateInfo createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    createInfo.codeSize = size;
+    createInfo.pCode = code;
+
+    VkShaderModule shaderModule;
+
+    if (vkCreateShaderModule(_logicalDevice->Get(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
+    {
         exit(EXIT_FAILURE);
     }
 
