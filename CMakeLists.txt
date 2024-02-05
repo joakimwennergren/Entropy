@@ -19,20 +19,17 @@ include(cmake/platform.cmake)
 # Engine base path
 set(PROJECT_BASEPATH ${PROJECT_SOURCE_DIR})
 
-
 # Include dependencies
 include(cmake/external_dependencies.cmake)
 
-# List source files
-file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp  external/android_native_app_glue.c)
-
+if(CMAKE_PLATFORM STREQUAL "BUILD_FOR_ANDROID")
+    file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp  external/android_native_app_glue.c)
+else()
+    file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+endif()
 
 # Create the library
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
-
-set(CMAKE_SHARED_LINKER_FLAGS
-    "${CMAKE_SHARED_LINKER_FLAGS} -u \
-    Java_com_google_androidgamesdk_GameActivity_initializeNativeCode")
 
 # Compiler flags
 if(MSVC)
@@ -40,7 +37,7 @@ if(MSVC)
     add_definitions(-w)
 endif(MSVC)
 
-#target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17)
+target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17)
 
 # Include headers
 target_include_directories(${PROJECT_NAME} 
@@ -71,7 +68,7 @@ target_link_libraries(${PROJECT_NAME}
 # Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk)
 target_link_libraries(${PROJECT_NAME}
     ${Vulkan_LIBRARIES}
-    #glfw
+    glfw
 )
 
 # Build config file

@@ -24,6 +24,12 @@
 #include <MetalKit/MetalKit.hpp>
 #endif
 
+#ifdef BUILD_FOR_ANDROID
+#include <vulkan/vulkan.hpp>
+#include <vulkan/vulkan_android.h>
+#include "android_native_app_glue.h"
+#endif
+
 #include <graphics/instances/vk_instance.hpp>
 #include <services/service.hpp>
 
@@ -47,6 +53,9 @@ namespace Entropy
 #endif
 #ifdef BUILD_FOR_IOS
                 WindowSurface(std::shared_ptr<VulkanInstance> instance, CA::MetalLayer *layer);
+#endif
+#ifdef BUILD_FOR_ANDROID
+                WindowSurface(std::shared_ptr<VulkanInstance> instance, struct android_app *app);
 #endif
                 ~WindowSurface();
 

@@ -33,7 +33,6 @@ namespace Entropy
             {
             public:
                 Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator);
-                Pipeline(std::shared_ptr<RenderPass> renderPass, uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize);
                 ~Pipeline();
 
                 inline VkPipeline GetPipeline() { return this->_pipeline; };

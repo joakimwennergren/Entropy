@@ -82,7 +82,6 @@ protected:
     std::shared_ptr<ServiceLocator> serviceLocator;
     std::shared_ptr<SceneGraph> sceneGraph;
     std::shared_ptr<Lua> lua;
-    std::shared_ptr<Mouse> mouse;
     std::shared_ptr<Physics2D> physics2d;
     sol::protected_function luaOnRender;
 
@@ -97,6 +96,7 @@ private:
 
 #if defined(BUILD_FOR_ANDROID)
 
+#include <vulkan/vulkan_android.h>
 #include "android_native_app_glue.h"
 
 using namespace Entropy::Graphics::Renderers;
@@ -105,7 +105,7 @@ using namespace Entropy::Timing;
 class Application
 {
 public:
-    Application();
+    Application(struct android_app *app);
     ~Application();
 
     virtual void OnInit() = 0;
@@ -120,16 +120,20 @@ public:
     // @todo this shouldn't be public
     inline std::shared_ptr<Renderer> GetRenderer() { return this->_renderer; };
 
-    std::shared_ptr<Renderer> _renderer;
-
     // @todo look over if this should be protected..
 protected:
     Screen screen;
+    std::shared_ptr<ServiceLocator> serviceLocator;
+    std::shared_ptr<SceneGraph> sceneGraph;
+    std::shared_ptr<Lua> lua;
+    std::shared_ptr<Physics2D> physics2d;
+    sol::protected_function luaOnRender;
 
 private:
     Timer *_timer;
     float _lastTick = 0.0f;
     float _deltaTime = 0.0f;
+    std::shared_ptr<Renderer> _renderer;
 };
 
 #endif

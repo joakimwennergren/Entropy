@@ -28,11 +28,6 @@ layout (binding = 1) uniform UboInstance
 layout (location = 0) out vec3 outColor;
 layout (location = 1) out vec4 modelColor;
 
-out gl_PerVertex 
-{
-	vec4 gl_Position;   
-};
-
 void main() 
 {
 	outColor = inColor;
@@ -47,6 +42,4 @@ void main()
 		weight0.w * jointMatrices[int(joint0.w)];
 
 	gl_Position = uboView.projection * uboView.view * primitive.model * skinMat * vec4(inPos.xyz, 1.0);
-
-	//gl_Position = uboView.projection * modelView * vec4(inPos.xyz, 1.0);
 }
