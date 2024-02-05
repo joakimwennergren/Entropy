@@ -1,9 +1,14 @@
 #include "quad.hpp"
 
-using namespace Symbios::Graphics::Primitives;
+using namespace Entropy::Graphics::Primitives;
 
-Quad::Quad()
+Quad::Quad(std::shared_ptr<ServiceLocator> serviceLocator)
 {
+
+    _serviceLocator = serviceLocator;
+
+    script = std::make_unique<Script>();
+
     _indices = {
         0, 1, 2, 2, 3, 0};
 
@@ -13,11 +18,16 @@ Quad::Quad()
         {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
         {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
 
-    // Create buffers @todo temp!!!
-    vertexBuffer = std::make_unique<VertexBuffer>(_vertices);
+    this->position = glm::vec3(0.0f, 0.0f, 0.0f);
+    this->textureId = -1;
+    this->color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    this->scale = glm::vec3(1.0, 1.0, 1.0);
 
+    vertexBuffer = std::make_unique<VertexBuffer>(serviceLocator, _vertices);
     indexBuffer = std::make_unique<Buffer>();
-    indexBuffer->CreateIndexBufferUint16(_indices);
+    indexBuffer->CreateIndexBufferUint16(serviceLocator, _indices);
+
+    type = 0;
 }
 
 Quad::~Quad()

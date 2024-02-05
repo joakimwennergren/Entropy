@@ -1,35 +1,45 @@
 #version 450
 
-// Uniform Buffer Object
-layout(binding=0) uniform UniformBufferObject {
-    mat4 view;
-    mat4 proj;
-} ubo;
+layout (location = 0) in vec3 inPos;
+layout (location = 4) in vec4 joint0;
+layout (location = 5) in vec4 weight0;
+layout (location = 6) in vec3 inColor;
 
-// Vertex Attributes
-layout(location=0)in vec3 inPosition;
-layout(location=1)in vec3 inColor;
-layout(location=2)in vec2 inTexCoord;
+layout(std430, set = 2, binding = 0) readonly buffer JointMatrices {
+	mat4 jointMatrices[];
+};
 
-// Push Constant (per instance)
-layout(push_constant) uniform constants {
-    mat4 modelMatrix;
-    vec4 color;
-    int textureId;
-} pc;
+layout(push_constant) uniform PushConsts {
+	mat4 model;
+} primitive;
 
-// Attributes to fragment shader
-layout(location=0)out vec3 fragColor;
-layout(location=1)out vec2 fragTexCoord;
-layout(location=2)out int texId;
-layout(location=3)out vec4 color;
+layout (binding = 0) uniform UboView 
+{
+	mat4 projection;
+	mat4 view;
+} uboView;
 
-void main() {
-    // @todo refactor this..
-    fragColor=inColor;
-    fragTexCoord=inTexCoord;
-    texId = pc.textureId;
-    color = pc.color;
+layout (binding = 1) uniform UboInstance 
+{
+	vec4 color;
+	mat4 model; 
+} uboInstance;
 
-    gl_Position = ubo.proj * ubo.view * pc.modelMatrix * vec4(inPosition, 1.);
+layout (location = 0) out vec3 outColor;
+layout (location = 1) out vec4 modelColor;
+
+void main() 
+{
+	outColor = inColor;
+    modelColor = uboInstance.color;
+	mat4 modelView = uboView.view * uboInstance.model;
+	vec3 worldPos = vec3(modelView * vec4(inPos, 1.0));
+
+	mat4 skinMat = 
+		weight0.x * jointMatrices[int(joint0.x)] +
+		weight0.y * jointMatrices[int(joint0.y)] +
+		weight0.z * jointMatrices[int(joint0.z)] +
+		weight0.w * jointMatrices[int(joint0.w)];
+
+	gl_Position = uboView.projection * uboView.view * primitive.model * skinMat * vec4(inPos.xyz, 1.0);
 }
