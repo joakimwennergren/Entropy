@@ -14,7 +14,6 @@
 #include <graphics/utilities/utilities.hpp>
 #include <graphics/buffers/stagedbuffer.hpp>
 #include <graphics/imageviews/imageview.hpp>
-#include <gltf/texturesampler.hpp>
 
 using namespace Entropy::Graphics::Buffers;
 using namespace Entropy::Graphics::Utilities;
@@ -63,7 +62,7 @@ namespace Entropy
                  */
                 void CreateTextureImageFromBuffer(FT_Bitmap bitmap);
 
-                void CreateTextureFromGLTFImage(tinygltf::Image &gltfimage, GLTF::TextureSampler textureSampler);
+                void CreateTextureFromGLTFImage(tinygltf::Image &gltfimage);
 
                 /**
                  * @brief Get the Image View object

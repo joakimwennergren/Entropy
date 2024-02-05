@@ -25,7 +25,7 @@ namespace Entropy
                 std::type_index index(typeid(T));
                 if (services.count(std::type_index(typeid(T))) != 0)
                 {
-                    return static_pointer_cast<T>(services[index]);
+                    return std::static_pointer_cast<T>(services[index]);
                 }
                 else
                 {

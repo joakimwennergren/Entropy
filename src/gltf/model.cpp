@@ -532,7 +532,7 @@ void Model::loadTextures(tinygltf::Model &gltfModel)
             textureSampler = textureSamplers[tex.sampler];
         }
         Texture *texture = new Texture();
-        // texture.CreateTextureFromGLTFImage(image, textureSampler);
+        texture->CreateTextureFromGLTFImage(image);
         textures.push_back(texture);
     }
 }

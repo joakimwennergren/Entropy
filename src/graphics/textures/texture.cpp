@@ -23,7 +23,7 @@ Texture::~Texture()
     vkFreeMemory(_logicalDevice->Get(), _textureImageMemory, nullptr);
 }
 
-void Texture::CreateTextureFromGLTFImage(tinygltf::Image &gltfimage, GLTF::TextureSampler textureSampler)
+void Texture::CreateTextureFromGLTFImage(tinygltf::Image &gltfimage)
 {
 
     auto physicalDevice = _serviceLocator->GetService<PhysicalDevice>();

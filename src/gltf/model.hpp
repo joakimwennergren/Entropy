@@ -8,11 +8,14 @@
 
 #pragma once
 
+#define NOMINMAX
+
 #include <iostream>
 #include <stdlib.h>
 #include <string>
 #include <fstream>
 #include <vector>
+#include <limits>
 
 #include "vulkan/vulkan.h"
 
@@ -209,7 +212,7 @@ struct Animation
     std::vector<AnimationSampler> samplers;
     std::vector<AnimationChannel> channels;
     float start = std::numeric_limits<float>::max();
-    float end = std::numeric_limits<float>::min();
+    float end = std::numeric_limits<float>::lowest();
 };
 
 class Model : public Renderable

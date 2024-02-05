@@ -40,7 +40,6 @@ using namespace Entropy::Graphics::Descriptorsets;
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Swapchains;
 using namespace Entropy::Graphics::Primitives;
-using namespace Entropy::GLTF;
 
 namespace Entropy
 {
