@@ -12,8 +12,10 @@ DescriptorPool::DescriptorPool(std::shared_ptr<LogicalDevice> logicalDevice)
     poolSizes[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
     poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
 
-    poolSizes[2].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-    poolSizes[2].descriptorCount = static_cast<uint32_t>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+    poolSizes[2].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    poolSizes[2].descriptorCount = 10000;
+    // poolSizes[2].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    // poolSizes[2].descriptorCount = static_cast<uint32_t>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
 
     poolSizes[3].type = VK_DESCRIPTOR_TYPE_SAMPLER;
     poolSizes[3].descriptorCount = 10000;

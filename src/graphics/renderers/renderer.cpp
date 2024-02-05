@@ -343,7 +343,10 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
     if (renderable->type == 4)
     {
         auto model = std::dynamic_pointer_cast<Model>(renderable);
-        model->draw(currentCmdBuffer, _pipeline->GetPipelineLayout());
+        for (auto node : model->nodes)
+        {
+            model->renderNode(node, currentCmdBuffer, _pipeline->GetPipelineLayout(), Material::ALPHAMODE_OPAQUE);
+        }
     }
     else
     {

@@ -156,7 +156,7 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<Servi
     VkDescriptorSetLayoutBinding ssboBinding{};
     ssboBinding.binding = 0;
     ssboBinding.descriptorCount = 1;
-    ssboBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    ssboBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     ssboBinding.pImmutableSamplers = nullptr;
     ssboBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
@@ -176,6 +176,7 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<Servi
     dsLayouts[1] = tempLayout;
     dsLayouts[2] = tempLayout2;
 
+    /*
     // setup push constants
     VkPushConstantRange push_constant;
     // this push constant range starts at the beginning
@@ -184,13 +185,14 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<Servi
     push_constant.size = sizeof(PushConstant);
     // this push constant range is accessible only in the vertex shader
     push_constant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    */
 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipelineLayoutInfo.setLayoutCount = dsLayouts.size();
     pipelineLayoutInfo.pSetLayouts = dsLayouts.data();
-    pipelineLayoutInfo.pPushConstantRanges = &push_constant;
-    pipelineLayoutInfo.pushConstantRangeCount = 1;
+    pipelineLayoutInfo.pPushConstantRanges = nullptr; //&push_constant;
+    pipelineLayoutInfo.pushConstantRangeCount = 0;
 
     if (vkCreatePipelineLayout(_logicalDevice->Get(), &pipelineLayoutInfo, nullptr, &_pipelineLayout) != VK_SUCCESS)
     {

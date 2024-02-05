@@ -1,11 +1,11 @@
 #version 450
 
-layout (location = 0) in vec3 inColor;
-layout (location = 1) in vec4 modelColor;
+
+layout (location = 4) in vec4 outColor0;
 
 layout (location = 0) out vec4 outFragColor;
 
 void main() 
 {
-	outFragColor = modelColor;
+	outFragColor = outColor0;
 }
