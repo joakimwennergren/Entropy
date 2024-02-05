@@ -1,8 +1,8 @@
 #pragma once
 
-#include <unordered_map>
+#include <map>
 #include <memory>
-#include <string>
+#include <typeindex>
 #include <services/service.hpp>
 
 using namespace Entropy::Services;
@@ -14,11 +14,27 @@ namespace Entropy
         class ServiceLocator
         {
         public:
-            void registerService(const std::string &serviceName, std::shared_ptr<Service> service);
-            std::shared_ptr<Service> getService(const std::string &serviceName);
+            void AddService(std::shared_ptr<Service> service)
+            {
+                services[std::type_index(typeid(*service))] = service;
+            }
+
+            template <typename T>
+            std::shared_ptr<T> GetService()
+            {
+                std::type_index index(typeid(T));
+                if (services.count(std::type_index(typeid(T))) != 0)
+                {
+                    return static_pointer_cast<T>(services[index]);
+                }
+                else
+                {
+                    return nullptr;
+                }
+            }
 
         private:
-            std::unordered_map<std::string, std::shared_ptr<Service>> services;
+            std::map<std::type_index, std::shared_ptr<Service>> services;
         };
     }
 }

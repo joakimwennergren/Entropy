@@ -7,6 +7,7 @@
 #pragma once
 
 #include <thread>
+#include <memory>
 #include "stb_image.h"
 
 #include <config.hpp>

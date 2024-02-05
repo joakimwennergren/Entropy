@@ -64,8 +64,6 @@ namespace Entropy
                     return _surface;
                 };
 
-                inline bool isValid() override { return true; };
-
             private:
                 std::shared_ptr<VulkanInstance> _instance;
                 VkSurfaceKHR _surface = VK_NULL_HANDLE;

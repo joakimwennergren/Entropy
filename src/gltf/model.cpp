@@ -437,6 +437,12 @@ void Model::loadAnimations(tinygltf::Model &input)
 
 void Model::LoadFromFile(std::string filename, float size = 1.0f)
 {
+
+    // Get required depenencies
+    auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
+    // Get required depenencies
+    auto descriptorPool = _serviceLocator->GetService<DescriptorPool>();
+
     tinygltf::Model glTFInput;
     tinygltf::TinyGLTF gltfContext;
     std::string error, warning;
@@ -464,11 +470,6 @@ void Model::LoadFromFile(std::string filename, float size = 1.0f)
         }
 
         loadSkins(glTFInput);
-
-        // Get required depenencies
-        auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(_serviceLocator->getService("LogicalDevice"));
-        // Get required depenencies
-        auto descriptorPool = std::dynamic_pointer_cast<DescriptorPool>(_serviceLocator->getService("DescriptorPool"));
 
         VkDescriptorSetLayoutBinding skinBinding{};
         skinBinding.binding = 0;

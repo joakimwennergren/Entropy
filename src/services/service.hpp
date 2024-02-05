@@ -10,7 +10,7 @@ namespace Entropy
         {
         public:
             virtual ~Service() = default;
-            virtual bool isValid() = 0;
+            virtual void Dummy(){};
         };
     }
 }

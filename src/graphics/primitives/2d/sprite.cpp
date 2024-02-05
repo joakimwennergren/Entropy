@@ -117,15 +117,9 @@ Sprite::Sprite(unsigned char *pixels, int width, int height)
 void Sprite::UpdateDescriptorSets()
 {
     // Get required depenencies
-    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(_serviceLocator->getService("LogicalDevice"));
-    auto physicalDevice = std::dynamic_pointer_cast<PhysicalDevice>(_serviceLocator->getService("PhysicalDevice"));
-    auto descriptorPool = std::dynamic_pointer_cast<DescriptorPool>(_serviceLocator->getService("DescriptorPool"));
-
-    if (!logicalDevice->isValid())
-    {
-        spdlog::error("Trying to create buffer with invalid logical device");
-        return;
-    }
+    auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
+    auto physicalDevice = _serviceLocator->GetService<PhysicalDevice>();
+    auto descriptorPool = _serviceLocator->GetService<DescriptorPool>();
 
     VkPhysicalDeviceProperties properties{};
     vkGetPhysicalDeviceProperties(physicalDevice->Get(), &properties);

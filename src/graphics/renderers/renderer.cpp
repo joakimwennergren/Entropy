@@ -20,11 +20,11 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
     _serviceLocator = serviceLocator;
 
     // Get required depenencies
-    _descriptorSet = std::dynamic_pointer_cast<Descriptorset>(serviceLocator->getService("DescriptorSet"));
-    _logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
-    _swapChain = std::dynamic_pointer_cast<Swapchain>(serviceLocator->getService("SwapChain"));
-    _sceneGraph = std::dynamic_pointer_cast<SceneGraph>(serviceLocator->getService("SceneGraph"));
-    auto physicalDevice = std::dynamic_pointer_cast<PhysicalDevice>(serviceLocator->getService("PhysicalDevice"));
+    _descriptorSet = serviceLocator->GetService<Descriptorset>();
+    _logicalDevice = serviceLocator->GetService<LogicalDevice>();
+    _swapChain = serviceLocator->GetService<Swapchain>();
+    _sceneGraph = serviceLocator->GetService<SceneGraph>();
+    auto physicalDevice = serviceLocator->GetService<PhysicalDevice>();
 
     // Create renderpass
     _renderPass = std::make_shared<RenderPass>(serviceLocator);

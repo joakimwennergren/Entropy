@@ -16,13 +16,7 @@ Buffer::~Buffer()
 void Buffer::CreateBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory)
 {
     // Get required depenencies
-    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
-
-    if (!logicalDevice->isValid())
-    {
-        spdlog::error("Trying to create buffer with invalid logical device");
-        return;
-    }
+    auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
 
     _logicalDevice = logicalDevice;
 
@@ -55,14 +49,7 @@ void Buffer::CreateBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkDevi
 
 void Buffer::CopyBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
 {
-    // Get required depenencies
-    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
-
-    if (!logicalDevice->isValid())
-    {
-        spdlog::error("Trying to create buffer with invalid logical device");
-        return;
-    }
+    auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
 
     // Create a commandBuffer
     auto cmdBuffer = CommandBuffer(serviceLocator);
@@ -92,14 +79,7 @@ void Buffer::CopyBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkBuffer
 
 void Buffer::CreateIndexBufferUint16(std::shared_ptr<ServiceLocator> serviceLocator, std::vector<uint16_t> indices)
 {
-    // Get required depenencies
-    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
-
-    if (!logicalDevice->isValid())
-    {
-        spdlog::error("Trying to create buffer with invalid logical device");
-        return;
-    }
+    auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
 
     VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
 
@@ -122,14 +102,7 @@ void Buffer::CreateIndexBufferUint16(std::shared_ptr<ServiceLocator> serviceLoca
 
 void Buffer::CreateIndexBufferUint32(std::shared_ptr<ServiceLocator> serviceLocator, std::vector<uint32_t> indices)
 {
-    // Get required depenencies
-    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
-
-    if (!logicalDevice->isValid())
-    {
-        spdlog::error("Trying to create buffer with invalid logical device");
-        return;
-    }
+    auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
 
     VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
 

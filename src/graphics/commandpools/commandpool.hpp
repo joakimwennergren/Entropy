@@ -29,7 +29,6 @@ namespace Entropy
             public:
                 CommandPool(std::shared_ptr<LogicalDevice> logicalDevice, std::shared_ptr<PhysicalDevice> physicalDevice, std::shared_ptr<WindowSurface> surface);
                 inline VkCommandPool Get() { return _commandPool; };
-                inline bool isValid() override { return true; };
 
             private:
                 VkCommandPool _commandPool;

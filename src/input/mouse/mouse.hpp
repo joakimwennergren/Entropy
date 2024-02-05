@@ -18,7 +18,6 @@ namespace Entropy
         {
         public:
             Mouse(GLFWwindow *window);
-            inline bool isValid() override { return _window != nullptr; };
 
             inline Vec2 Position()
             {

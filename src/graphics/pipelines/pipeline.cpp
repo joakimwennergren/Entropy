@@ -5,9 +5,11 @@ using namespace Entropy::Graphics::Pipelines;
 Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator)
 {
     // Get required depenencies
-    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
-    auto swapChain = std::dynamic_pointer_cast<Swapchain>(serviceLocator->getService("SwapChain"));
-    auto descriptorSetLayout = std::dynamic_pointer_cast<DescriptorsetLayout>(serviceLocator->getService("DescriptorSetLayout"));
+    auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
+    auto swapChain = serviceLocator->GetService<Swapchain>();
+    // auto descriptorSetLayout = std::dynamic_pointer_cast<DescriptorsetLayout>(serviceLocator->getService("DescriptorSetLayout"));
+
+    auto descriptorSetLayout = serviceLocator->GetService<DescriptorsetLayout>();
 
     // Assign services
     _logicalDevice = logicalDevice;
@@ -170,7 +172,7 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<Servi
         return;
     }
 
-    dsLayouts[0] = _descriptorsetLayout->Get();
+    dsLayouts[0] = descriptorSetLayout->Get();
     dsLayouts[1] = tempLayout;
     dsLayouts[2] = tempLayout2;
 
@@ -223,13 +225,6 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<Servi
 
 Pipeline::~Pipeline()
 {
-    if (!_logicalDevice->isValid())
-    {
-        spdlog::error("Couldn't clean up after pipeline since logicaldevice is invalid");
-        return;
-    }
-
-    // vkDestroyDescriptorSetLayout(_logicalDevice->Get(), _descriptorSetLayout, nullptr);
     vkDestroyPipeline(_logicalDevice->Get(), _pipeline, nullptr);
     vkDestroyPipelineLayout(_logicalDevice->Get(), _pipelineLayout, nullptr);
 }

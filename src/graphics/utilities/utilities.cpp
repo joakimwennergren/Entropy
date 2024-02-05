@@ -4,13 +4,7 @@ using namespace Entropy::Graphics::Utilities;
 
 uint32_t Utility::FindMemoryTypeIndex(std::shared_ptr<ServiceLocator> serviceLocator, uint32_t typeFilter, VkMemoryPropertyFlags properties)
 {
-    auto phyisicalDevice = std::dynamic_pointer_cast<PhysicalDevice>(serviceLocator->getService("PhysicalDevice"));
-
-    if (!phyisicalDevice->isValid())
-    {
-        spdlog::error("Trying to find memory type index with invalid physical device");
-        return 0;
-    }
+    auto phyisicalDevice = serviceLocator->GetService<PhysicalDevice>();
 
     // Get the physical device's memory properties
     VkPhysicalDeviceMemoryProperties memProperties;

@@ -21,8 +21,6 @@ namespace Entropy
         public:
             Physics2D(std::shared_ptr<ServiceLocator> serviceLocator);
 
-            inline bool isValid() override { return world != nullptr; };
-
             inline b2Body *CreateBody(float x, float y)
             {
                 b2BodyDef groundBodyDef;

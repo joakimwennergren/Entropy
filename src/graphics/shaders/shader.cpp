@@ -4,7 +4,7 @@ using namespace Symbios::Graphics::Shaders;
 
 Shader::Shader(std::shared_ptr<ServiceLocator> serviceLocator, const std::string vert, const std::string frag)
 {
-    _logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
+    _logicalDevice = serviceLocator->GetService<LogicalDevice>();
 
     this->_vertCode = this->ReadFile(vert);
     this->_fragCode = this->ReadFile(frag);

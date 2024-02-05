@@ -5,9 +5,9 @@ using namespace Entropy::Scripting;
 Lua::Lua(std::shared_ptr<ServiceLocator> serviceLocator)
 {
     // Get required depenencies
-    auto sceneGraph = std::dynamic_pointer_cast<SceneGraph>(serviceLocator->getService("SceneGraph"));
-    auto physics2d = std::dynamic_pointer_cast<Physics2D>(serviceLocator->getService("2DPhysics"));
-    //auto mouse = std::dynamic_pointer_cast<Mouse>(serviceLocator->getService("Mouse"));
+    auto sceneGraph = serviceLocator->GetService<SceneGraph>();
+    auto physics2d = serviceLocator->GetService<Physics2D>();
+    // auto mouse = std::dynamic_pointer_cast<Mouse>(serviceLocator->getService("Mouse"));
 
     lua.open_libraries(sol::lib::base);
 

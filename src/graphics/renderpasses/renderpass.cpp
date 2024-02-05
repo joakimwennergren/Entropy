@@ -5,14 +5,8 @@ using namespace Entropy::Graphics::RenderPasses;
 RenderPass::RenderPass(std::shared_ptr<ServiceLocator> serviceLocator)
 {
     // Get required depenencies
-    auto swapChain = std::dynamic_pointer_cast<Swapchain>(serviceLocator->getService("SwapChain"));
-    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
-
-    if (!swapChain->isValid() || !logicalDevice->isValid())
-    {
-        spdlog::error("Trying to create renderpass with invalid swapchain or invalid logical device");
-        return;
-    }
+    auto swapChain = serviceLocator->GetService<Swapchain>();
+    auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
 
     // Store swapchain and logical device
     _swapChain = swapChain;
@@ -64,11 +58,6 @@ RenderPass::RenderPass(std::shared_ptr<ServiceLocator> serviceLocator)
 
 RenderPass::~RenderPass()
 {
-    if (!_logicalDevice->isValid())
-    {
-        spdlog::error("Couldn't clean up after renderpass since logicaldevice is invalid");
-        return;
-    }
 
     for (auto framebuffer : this->_swapChainFramebuffers)
     {
@@ -80,12 +69,6 @@ RenderPass::~RenderPass()
 
 void RenderPass::Begin(std::shared_ptr<CommandBuffer> commandBuffer, uint32_t imageIndex)
 {
-    if (!_swapChain->isValid())
-    {
-        spdlog::error("Couldn't begin renderpass since swapchain is invalid");
-        return;
-    }
-
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassInfo.renderPass = _renderPass;
@@ -108,18 +91,6 @@ void RenderPass::End(std::shared_ptr<CommandBuffer> commandBuffer)
 
 void RenderPass::CreateFramebuffers()
 {
-    if (!_swapChain->isValid())
-    {
-        spdlog::error("Couldn't create framebuffers since swapchain is invalid");
-        return;
-    }
-
-    if (!_logicalDevice->isValid())
-    {
-        spdlog::error("Couldn't create framebuffers since logical device is invalid");
-        return;
-    }
-
     this->_swapChainFramebuffers.resize(_swapChain->swapChainImageViews.size());
 
     for (size_t i = 0; i < _swapChain->swapChainImageViews.size(); i++)
@@ -145,12 +116,6 @@ void RenderPass::CreateFramebuffers()
 
 void RenderPass::RecreateFrameBuffers()
 {
-    if (!_logicalDevice->isValid())
-    {
-        spdlog::error("Couldn't recreate framebuffers since logical device is invalid");
-        return;
-    }
-
     for (auto framebuffer : _swapChainFramebuffers)
     {
         vkDestroyFramebuffer(_logicalDevice->Get(), framebuffer, nullptr);

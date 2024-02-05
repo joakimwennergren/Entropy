@@ -10,13 +10,7 @@ Texture::Texture(std::shared_ptr<ServiceLocator> serviceLocator)
     _serviceLocator = serviceLocator;
 
     // Get required depenencies
-    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
-
-    if (!logicalDevice->isValid())
-    {
-        spdlog::error("Trying to create texture with invalid logical device");
-        return;
-    }
+    auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
 
     _logicalDevice = logicalDevice;
 }
@@ -32,7 +26,7 @@ Texture::~Texture()
 void Texture::CreateTextureFromGLTFImage(tinygltf::Image &gltfimage, GLTF::TextureSampler textureSampler)
 {
 
-    auto physicalDevice = std::dynamic_pointer_cast<PhysicalDevice>(_serviceLocator->getService("PhysicalDevice"));
+    auto physicalDevice = _serviceLocator->GetService<PhysicalDevice>();
 
     unsigned char *buffer = nullptr;
     VkDeviceSize bufferSize = 0;
@@ -94,7 +88,7 @@ void Texture::CreateTextureFromGLTFImage(tinygltf::Image &gltfimage, GLTF::Textu
 
 void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap)
 {
-    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(_serviceLocator->getService("LogicalDevice"));
+    auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
 
     int texWidth = bitmap.width, texHeight = bitmap.rows;
 
@@ -159,13 +153,7 @@ void Texture::CreateTextureImageFromPixels(unsigned char *pixels, int width, int
 void Texture::CreateTextureImage(std::string path)
 {
 
-    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(_serviceLocator->getService("LogicalDevice"));
-
-    if (!logicalDevice->isValid())
-    {
-        spdlog::error("Trying to create renderpass with invalid logical device");
-        return;
-    }
+    auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
     auto colorFormat = VK_FORMAT_R8G8B8A8_UNORM;

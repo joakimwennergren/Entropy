@@ -28,7 +28,6 @@ namespace Entropy
                 inline VkDevice Get() { return _logicalDevice; };
                 VkQueue GetGraphicQueue() { return _graphicsQueue; };
                 VkQueue GetPresentQueue() { return _presentQueue; };
-                bool isValid() override { return _logicalDevice != nullptr; };
 
             private:
                 VkDevice _logicalDevice;

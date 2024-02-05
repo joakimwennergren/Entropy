@@ -5,14 +5,8 @@ using namespace Entropy::Graphics::CommandBuffers;
 CommandBuffer::CommandBuffer(std::shared_ptr<ServiceLocator> serviceLocator)
 {
     // Get required depenencies
-    auto commandPool = std::dynamic_pointer_cast<CommandPool>(serviceLocator->getService("CommandPool"));
-    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
-
-    if (!commandPool->isValid() || !logicalDevice->isValid())
-    {
-        spdlog::error("Trying to create commandbuffer with invalid swapchain or invalid logical device");
-        return;
-    }
+    auto commandPool = serviceLocator->GetService<CommandPool>();
+    auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
 
     _logicalDevice = logicalDevice;
 

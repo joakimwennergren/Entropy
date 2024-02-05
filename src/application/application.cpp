@@ -79,22 +79,22 @@ Application::Application()
 
     // Add services to service locator
     serviceLocator = std::make_shared<ServiceLocator>();
-    serviceLocator->registerService("PhysicalDevice", physicalDevice);
-    serviceLocator->registerService("LogicalDevice", logicalDevice);
-    serviceLocator->registerService("DescriptorSet", descriptorSet);
-    serviceLocator->registerService("DescriptorSetLayout", descriptorSetLayout);
-    serviceLocator->registerService("DescriptorPool", descriptorPool);
-    serviceLocator->registerService("SwapChain", swapChain);
-    serviceLocator->registerService("CommandPool", commandPool);
+    serviceLocator->AddService(physicalDevice);
+    serviceLocator->AddService(logicalDevice);
+    serviceLocator->AddService(descriptorSet);
+    serviceLocator->AddService(descriptorSetLayout);
+    serviceLocator->AddService(descriptorPool);
+    serviceLocator->AddService(swapChain);
+    serviceLocator->AddService(commandPool);
 
     sceneGraph = std::make_shared<SceneGraph>();
-    serviceLocator->registerService("SceneGraph", sceneGraph);
+    serviceLocator->AddService(sceneGraph);
 
     physics2d = std::make_shared<Physics2D>(serviceLocator);
-    serviceLocator->registerService("2DPhysics", physics2d);
+    serviceLocator->AddService(physics2d);
 
     lua = std::make_shared<Lua>(serviceLocator);
-    serviceLocator->registerService("Lua", lua);
+    serviceLocator->AddService(lua);
 
     _renderer = std::make_shared<Renderer>(serviceLocator);
 }
@@ -135,8 +135,8 @@ Application::~Application()
 
 void Application::Run()
 {
-    auto sceneGraph = std::dynamic_pointer_cast<SceneGraph>(serviceLocator->getService("SceneGraph"));
-    auto lua = std::dynamic_pointer_cast<Lua>(serviceLocator->getService("Lua"));
+    auto sceneGraph = serviceLocator->GetService<SceneGraph>();
+    auto lua = serviceLocator->GetService<Lua>();
 
     this->OnInit();
 

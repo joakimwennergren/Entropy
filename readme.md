@@ -6,9 +6,11 @@
 
 ## What is this?
 
-Entropy..
+Entropy is a 2D/3D game engine 
 
 ## Target
+
+Windows, MacOS, Linux, iOS & Android
 
 ## Resources
 
@@ -23,9 +25,3 @@ might be good for inspiration regarding drawing functions etc.
 ### Similar projects
 * https://github.com/mosra/magnum
 * https://github.com/amzeratul/halley
-
-### Organization Tips ( Since vulkan requires alot of code )
-* https://www.reddit.com/r/vulkan/comments/78ousv/how_to_organize_my_vulkan_code/
-* https://github.com/Noxagonal/Vulkan-API-Tutorials
-* https://en.cppreference.com/w/cpp/language/raii
-* https://en.wikipedia.org/wiki/Resource_acquisition_is_initialization

@@ -27,7 +27,6 @@ namespace Entropy
             public:
                 DescriptorPool(std::shared_ptr<LogicalDevice> logicalDevice);
                 inline VkDescriptorPool Get() { return _descriptorPool; };
-                inline bool isValid() override { return true; };
 
             private:
                 VkDescriptorPool _descriptorPool;

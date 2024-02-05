@@ -16,7 +16,6 @@ namespace Entropy
         public:
             SceneGraph();
             std::vector<std::shared_ptr<Renderable>> renderables;
-            inline bool isValid() override { return true; };
 
         private:
         };

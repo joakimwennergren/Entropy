@@ -5,13 +5,7 @@ using namespace Entropy::Graphics::Synchronization;
 Synchronizer::Synchronizer(unsigned int numObjects, std::shared_ptr<ServiceLocator> serviceLocator)
 {
     // Get required depenencies
-    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
-
-    if (!logicalDevice->isValid())
-    {
-        spdlog::error("Trying to create synchronizer with invalid logical device");
-        return;
-    }
+    auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
 
     _logicalDevice = logicalDevice;
     _numObjects = numObjects;
