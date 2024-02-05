@@ -141,30 +141,14 @@ private:
 
 #ifdef BUILD_FOR_IOS
 
-#include <chrono>
-
 #include <Metal/Metal.hpp>
 #include <UIKit/UIKit.hpp>
 #include <MetalKit/MetalKit.hpp>
-
-#include "filesystem.hpp"
-#include "quad.hpp"
-#include "sprite.hpp"
-#include "label.hpp"
-#include "easing.hpp"
-
-using namespace Symbios;
-using namespace Symbios::Text;
-using namespace Symbios::Animation;
 
 using namespace std::chrono;
 
 extern "C" UI::ViewController *get_native_bounds(UI::View *view, UI::Screen *screen);
 extern "C" CGPoint touch();
-
-#include "renderer.hpp"
-
-using namespace Symbios::Graphics::Renderers;
 
 class Application : public UI::ApplicationDelegate
 {
@@ -173,24 +157,12 @@ public:
     {
     public:
         std::shared_ptr<SceneGraph> graph;
-        /**
-         * @brief Construct a new MTKViewDelegate object
-         *
-         */
+        
         MTKViewDelegate(Application *app) : MTK::ViewDelegate()
         {
             this->app = app;
         }
-
-        inline void SetRenderer(std::shared_ptr<Renderer> renderer)
-        {
-            _renderer = renderer;
-        }
-
-        /**
-         * @brief Destroy the MTKViewDelegate object
-         *
-         */
+        
         virtual ~MTKViewDelegate() override
         {
         }
@@ -198,20 +170,6 @@ public:
         CGRect frame;
 
     private:
-        float RandomFloat(float a, float b)
-        {
-            float random = ((float)rand()) / (float)RAND_MAX;
-            float diff = b - a;
-            float r = random * diff;
-            return a + r;
-        }
-
-        double GetTimeAsDouble()
-        {
-            using namespace std::chrono;
-            using SecondsFP = std::chrono::duration<double>;
-            return duration_cast<SecondsFP>(high_resolution_clock::now().time_since_epoch()).count();
-        }
 
         /**
          * @brief
@@ -220,6 +178,7 @@ public:
          */
         inline virtual void drawInMTKView(MTK::View *pView) override
         {
+            /*
             auto tick_time = (float)GetTimeAsDouble();
 
             deltaTime = tick_time - lastTick;
@@ -234,9 +193,8 @@ public:
             app->screen.height = app->frame.size.height * 3.3;
 
             _renderer->Render();
+             */
         }
-
-        std::shared_ptr<Renderer> _renderer;
 
         float lastTick = 0.0;
         float deltaTime = 0.0;
@@ -301,6 +259,8 @@ public:
         _pWindow->setRootViewController(_pViewController);
 
         _pWindow->makeKeyAndVisible();
+        
+        /*
 
         CA::MetalLayer *layer = _pMtkView->currentDrawable()->layer();
 
@@ -312,6 +272,8 @@ public:
         _pViewDelegate->frame = frame;
 
         this->_context = Global::VulkanContext::GetInstance()->GetVulkanContext();
+         
+         */
 
         OnInit();
 

@@ -103,7 +103,7 @@ void Model::loadNode(const tinygltf::Node &inputNode, const tinygltf::Model &inp
                 const float *positionBuffer = nullptr;
                 const float *normalsBuffer = nullptr;
                 const float *texCoordsBuffer = nullptr;
-                const uint16_t *jointIndicesBuffer = nullptr;
+                const uint8_t *jointIndicesBuffer = nullptr;
                 const float *jointWeightsBuffer = nullptr;
                 size_t vertexCount = 0;
 
@@ -137,7 +137,7 @@ void Model::loadNode(const tinygltf::Node &inputNode, const tinygltf::Model &inp
                 {
                     const tinygltf::Accessor &accessor = input.accessors[glTFPrimitive.attributes.find("JOINTS_0")->second];
                     const tinygltf::BufferView &view = input.bufferViews[accessor.bufferView];
-                    jointIndicesBuffer = reinterpret_cast<const uint16_t *>(&(input.buffers[view.buffer].data[accessor.byteOffset + view.byteOffset]));
+                    jointIndicesBuffer = reinterpret_cast<const uint8_t *>(&(input.buffers[view.buffer].data[accessor.byteOffset + view.byteOffset]));
                 }
                 // Get vertex joint weights
                 if (glTFPrimitive.attributes.find("WEIGHTS_0") != glTFPrimitive.attributes.end())
