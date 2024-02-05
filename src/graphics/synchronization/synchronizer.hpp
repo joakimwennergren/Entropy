@@ -1,9 +1,14 @@
 #pragma once
 
+#include <vulkan/vulkan.hpp>
 #include <vector>
-#include <global/vulkancontext.hpp>
+#include <servicelocators/servicelocator.hpp>
+#include <graphics/devices/logical_device.hpp>
 
-using namespace Entropy::Global;
+#include "spdlog/spdlog.h"
+
+using namespace Entropy::ServiceLocators;
+using namespace Entropy::Graphics::Devices;
 
 namespace Entropy
 {
@@ -19,7 +24,7 @@ namespace Entropy
                  *
                  * @param context
                  */
-                Synchronizer(unsigned int numObjects);
+                Synchronizer(unsigned int numObjects, std::shared_ptr<ServiceLocator> serviceLocator);
 
                 /**
                  * @brief
@@ -27,12 +32,12 @@ namespace Entropy
                  */
                 ~Synchronizer();
 
-                inline std::vector<VkSemaphore> GetImageSemaphores() { return this->_imageSemaphores; };
-                inline std::vector<VkSemaphore> GetRenderFinishedSemaphores() { return this->_renderFinishedSemaphores; };
-                inline std::vector<VkFence> GetFences() { return this->_fences; };
+                inline std::vector<VkSemaphore> GetImageSemaphores() { return _imageSemaphores; };
+                inline std::vector<VkSemaphore> GetRenderFinishedSemaphores() { return _renderFinishedSemaphores; };
+                inline std::vector<VkFence> GetFences() { return _fences; };
 
             private:
-                unsigned int numObjects;
+                unsigned int _numObjects;
 
                 // Semaphores
                 std::vector<VkSemaphore> _imageSemaphores;
@@ -40,6 +45,8 @@ namespace Entropy
 
                 // Fences
                 std::vector<VkFence> _fences;
+
+                std::shared_ptr<LogicalDevice> _logicalDevice;
             };
         }
     }

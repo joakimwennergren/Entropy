@@ -10,9 +10,13 @@
  */
 #pragma once
 
-#include <global/vulkancontext.hpp>
+#include <servicelocators/servicelocator.hpp>
+#include <graphics/commandpools/commandpool.hpp>
+#include <services/service.hpp>
 
-using namespace Entropy::Global;
+using namespace Entropy::ServiceLocators;
+using namespace Entropy::Graphics::CommandPools;
+using namespace Entropy::Services;
 
 namespace Entropy
 {
@@ -32,7 +36,7 @@ namespace Entropy
                  *
                  * @param context
                  */
-                CommandBuffer();
+                CommandBuffer(std::shared_ptr<ServiceLocator> serviceLocator);
 
                 /**
                  * @brief
@@ -68,6 +72,7 @@ namespace Entropy
 
             private:
                 VkCommandBuffer _commandBuffer;
+                std::shared_ptr<LogicalDevice> _logicalDevice;
             };
         }
     }

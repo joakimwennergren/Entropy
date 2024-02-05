@@ -12,18 +12,47 @@
 #include <config.hpp>
 
 #include <graphics/renderers/renderer.hpp>
+#include <servicelocators/servicelocator.hpp>
 #include <timing/timer.hpp>
+#include <graphics/devices/logical_device.hpp>
 #include "screen.hpp"
+
+// new includes
+#include <graphics/instances/vk_instance.hpp>
+#include <graphics/surfaces/surface.hpp>
+#include <graphics/devices/physical_device.hpp>
+#include <graphics/swapchains/swapchain.hpp>
+#include <graphics/imageviews/imageview.hpp>
+#include <graphics/descriptorpools/descriptorpool.hpp>
+#include <graphics/descriptorsetlayouts/descriptorsetlayout.hpp>
+#include <graphics/descriptorsets/descriptorset.hpp>
+#include <graphics/commandpools/commandpool.hpp>
+#include <scenegraphs/scenegraph.hpp>
+#include <physics/2d/physics2d.hpp>
+#include <scripting/lua.hpp>
+#include <input/mouse/mouse.hpp>
+
+using namespace Entropy::Graphics::Instances;
+using namespace Entropy::Graphics::Surfaces;
+using namespace Entropy::Graphics::Swapchains;
+using namespace Entropy::Graphics::ImageViews;
+using namespace Entropy::Graphics::CommandPools;
+using namespace Entropy::Graphics::DescriptorPools;
+using namespace Entropy::Graphics::DescriptorsetLayouts;
+using namespace Entropy::Graphics::Descriptorsets;
+using namespace Entropy::SceneGraphs;
+using namespace Entropy::Scripting;
+using namespace Entropy::Physics;
+// using namespace Entropy::Input;
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
 
 #include <GLFW/glfw3.h>
 
 // @todo remove symbios namespace
-using namespace Symbios;
-using namespace Entropy::Global;
 using namespace Entropy::Graphics::Renderers;
 using namespace Entropy::Timing;
+using namespace Entropy::ServiceLocators;
 
 void framebufferResizeCallback(GLFWwindow *window, int width, int height);
 void cursorPositionCallback(GLFWwindow *window, double x, double y);
@@ -50,28 +79,33 @@ public:
 protected:
     Screen screen;
     GLFWwindow *_window;
+    std::shared_ptr<ServiceLocator> serviceLocator;
+    std::shared_ptr<SceneGraph> sceneGraph;
+    std::shared_ptr<Lua> lua;
+    std::shared_ptr<Physics2D> physics2d;
+    sol::protected_function luaOnRender;
 
 private:
+    void ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::shared_ptr<Lua> lua);
     std::shared_ptr<Renderer> _renderer;
     Timer *_timer;
     float _lastTick = 0.0f;
     float _deltaTime = 0.0f;
 };
-
 #endif
 
 #if defined(BUILD_FOR_ANDROID)
 
-// @todo remove symbios namespace
-using namespace Symbios;
-using namespace Entropy::Global;
+#include <vulkan/vulkan_android.h>
+#include "android_native_app_glue.h"
+
 using namespace Entropy::Graphics::Renderers;
 using namespace Entropy::Timing;
 
 class Application
 {
 public:
-    Application();
+    Application(struct android_app *app);
     ~Application();
 
     virtual void OnInit() = 0;
@@ -86,16 +120,20 @@ public:
     // @todo this shouldn't be public
     inline std::shared_ptr<Renderer> GetRenderer() { return this->_renderer; };
 
-    std::shared_ptr<Renderer> _renderer;
-
     // @todo look over if this should be protected..
 protected:
     Screen screen;
+    std::shared_ptr<ServiceLocator> serviceLocator;
+    std::shared_ptr<SceneGraph> sceneGraph;
+    std::shared_ptr<Lua> lua;
+    std::shared_ptr<Physics2D> physics2d;
+    sol::protected_function luaOnRender;
 
 private:
     Timer *_timer;
     float _lastTick = 0.0f;
     float _deltaTime = 0.0f;
+    std::shared_ptr<Renderer> _renderer;
 };
 
 #endif

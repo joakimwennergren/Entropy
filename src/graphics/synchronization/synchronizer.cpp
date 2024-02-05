@@ -2,11 +2,19 @@
 
 using namespace Entropy::Graphics::Synchronization;
 
-Synchronizer::Synchronizer(unsigned int numObjects)
+Synchronizer::Synchronizer(unsigned int numObjects, std::shared_ptr<ServiceLocator> serviceLocator)
 {
-    this->numObjects = numObjects;
+    // Get required depenencies
+    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
 
-    VulkanContext *vkContext = VulkanContext::GetInstance();
+    if (!logicalDevice->isValid())
+    {
+        spdlog::error("Trying to create synchronizer with invalid logical device");
+        return;
+    }
+
+    _logicalDevice = logicalDevice;
+    _numObjects = numObjects;
 
     _imageSemaphores.resize(numObjects);
     _renderFinishedSemaphores.resize(numObjects);
@@ -19,11 +27,11 @@ Synchronizer::Synchronizer(unsigned int numObjects)
     fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
     fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-    for (size_t i = 0; i < numObjects; i++)
+    for (size_t i = 0; i < _numObjects; i++)
     {
-        if (vkCreateSemaphore(vkContext->logicalDevice, &semaphoreInfo, nullptr, &_imageSemaphores[i]) != VK_SUCCESS ||
-            vkCreateSemaphore(vkContext->logicalDevice, &semaphoreInfo, nullptr, &_renderFinishedSemaphores[i]) != VK_SUCCESS ||
-            vkCreateFence(vkContext->logicalDevice, &fenceInfo, nullptr, &_fences[i]) != VK_SUCCESS)
+        if (vkCreateSemaphore(logicalDevice->Get(), &semaphoreInfo, nullptr, &_imageSemaphores[i]) != VK_SUCCESS ||
+            vkCreateSemaphore(logicalDevice->Get(), &semaphoreInfo, nullptr, &_renderFinishedSemaphores[i]) != VK_SUCCESS ||
+            vkCreateFence(logicalDevice->Get(), &fenceInfo, nullptr, &_fences[i]) != VK_SUCCESS)
         {
             exit(EXIT_FAILURE);
         }
@@ -32,14 +40,12 @@ Synchronizer::Synchronizer(unsigned int numObjects)
 
 Synchronizer::~Synchronizer()
 {
-    VulkanContext *vkContext = VulkanContext::GetInstance();
+    vkDeviceWaitIdle(_logicalDevice->Get());
 
-    vkDeviceWaitIdle(vkContext->logicalDevice);
-
-    for (size_t i = 0; i < this->numObjects; i++)
+    for (size_t i = 0; i < _numObjects; i++)
     {
-        vkDestroySemaphore(vkContext->logicalDevice, _imageSemaphores[i], nullptr);
-        vkDestroySemaphore(vkContext->logicalDevice, _renderFinishedSemaphores[i], nullptr);
-        vkDestroyFence(vkContext->logicalDevice, _fences[i], nullptr);
+        vkDestroySemaphore(_logicalDevice->Get(), _imageSemaphores[i], nullptr);
+        vkDestroySemaphore(_logicalDevice->Get(), _renderFinishedSemaphores[i], nullptr);
+        vkDestroyFence(_logicalDevice->Get(), _fences[i], nullptr);
     }
 }

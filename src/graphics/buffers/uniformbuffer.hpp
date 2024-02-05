@@ -14,10 +14,9 @@
 #include <graphics/buffers/buffer.hpp>
 #include <graphics/data/vertex.hpp>
 
-using namespace Entropy::Global;
 using namespace Entropy::Graphics::Buffers;
 
-namespace Entopy
+namespace Entropy
 {
     namespace Graphics
     {
@@ -36,7 +35,7 @@ namespace Entopy
                  *
                  * @param context Vulkan context
                  */
-                UniformBuffer(VkDeviceSize bufferSize);
+                UniformBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkDeviceSize bufferSize);
 
             private:
             };

@@ -1,31 +1,106 @@
-#define STB_IMAGE_IMPLEMENTATION
-#define STBI_FAILURE_USERMSG
 #include <stb_image.h>
 
 #include "texture.hpp"
 
 using namespace Entropy::Graphics::Textures;
 
-Texture::Texture()
+Texture::Texture(std::shared_ptr<ServiceLocator> serviceLocator)
 {
-    _commandBuffer = std::make_unique<CommandBuffer>();
+    _commandBuffer = std::make_unique<CommandBuffer>(serviceLocator);
+    _serviceLocator = serviceLocator;
+
+    // Get required depenencies
+    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
+
+    if (!logicalDevice->isValid())
+    {
+        spdlog::error("Trying to create texture with invalid logical device");
+        return;
+    }
+
+    _logicalDevice = logicalDevice;
 }
 
 Texture::~Texture()
 {
-    VulkanContext *vkContext = VulkanContext::GetInstance();
-    vkDestroyImageView(vkContext->logicalDevice, _imageView, nullptr);
-    vkDestroyImage(vkContext->logicalDevice, _textureImage, nullptr);
-    vkFreeMemory(vkContext->logicalDevice, _textureImageMemory, nullptr);
+    vkDeviceWaitIdle(_logicalDevice->Get());
+    vkDestroyImageView(_logicalDevice->Get(), _imageView, nullptr);
+    vkDestroyImage(_logicalDevice->Get(), _textureImage, nullptr);
+    vkFreeMemory(_logicalDevice->Get(), _textureImageMemory, nullptr);
 }
+
+void Texture::CreateTextureFromGLTFImage(tinygltf::Image &gltfimage, GLTF::TextureSampler textureSampler)
+{
+
+    auto physicalDevice = std::dynamic_pointer_cast<PhysicalDevice>(_serviceLocator->getService("PhysicalDevice"));
+
+    unsigned char *buffer = nullptr;
+    VkDeviceSize bufferSize = 0;
+    bool deleteBuffer = false;
+    if (gltfimage.component == 3)
+    {
+        // Most devices don't support RGB only on Vulkan so convert if necessary
+        // TODO: Check actual format support and transform only if required
+        bufferSize = gltfimage.width * gltfimage.height * 4;
+        buffer = new unsigned char[bufferSize];
+        unsigned char *rgba = buffer;
+        unsigned char *rgb = &gltfimage.image[0];
+        for (int32_t i = 0; i < gltfimage.width * gltfimage.height; ++i)
+        {
+            for (int32_t j = 0; j < 3; ++j)
+            {
+                rgba[j] = rgb[j];
+            }
+            rgba += 4;
+            rgb += 3;
+        }
+        deleteBuffer = true;
+    }
+    else
+    {
+        buffer = &gltfimage.image[0];
+        bufferSize = gltfimage.image.size();
+    }
+
+    VkFormat format = VK_FORMAT_R8G8B8A8_UNORM;
+
+    VkFormatProperties formatProperties;
+
+    int width = gltfimage.width;
+    int height = gltfimage.height;
+    int mipLevels = static_cast<uint32_t>(floor(log2(std::max(width, height))) + 1.0);
+
+    vkGetPhysicalDeviceFormatProperties(physicalDevice->Get(), format, &formatProperties);
+    assert(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_BLIT_SRC_BIT);
+    assert(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_BLIT_DST_BIT);
+
+    StagedBuffer stagedBuffer(_serviceLocator, bufferSize, buffer);
+
+    auto mem = stagedBuffer.GetBufferMemory();
+    auto buf = stagedBuffer.GetVulkanBuffer();
+
+    CreateImage(width, height, VK_FORMAT_R8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _textureImage, mem);
+
+    TransitionImageLayout(_textureImage, VK_FORMAT_R8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+    TransitionImageLayout(_textureImage, VK_FORMAT_R8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+    auto imageView = ImageView(_logicalDevice->Get(), _textureImage, format);
+
+    _imageView = imageView.Get();
+
+    hasTexture = true;
+};
 
 void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap)
 {
+    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(_serviceLocator->getService("LogicalDevice"));
+
     int texWidth = bitmap.width, texHeight = bitmap.rows;
 
     VkDeviceSize imageSize = texWidth * texHeight;
 
-    StagedBuffer buffer(imageSize, bitmap.buffer);
+    StagedBuffer buffer(_serviceLocator, imageSize, bitmap.buffer);
 
     auto mem = buffer.GetBufferMemory();
     auto buf = buffer.GetVulkanBuffer();
@@ -36,13 +111,16 @@ void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap)
     CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
     TransitionImageLayout(_textureImage, VK_FORMAT_R8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    _imageView = VulkanContext::CreateImageView(_textureImage, VK_FORMAT_R8_UNORM);
+    auto imageView = ImageView(logicalDevice->Get(), _textureImage, VK_FORMAT_R8_UNORM);
+
+    _imageView = imageView.Get();
 
     hasTexture = true;
 }
 
 void Texture::CreateTextureImageFromPixels(unsigned char *pixels, int width, int height)
 {
+    /*
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
     auto colorFormat = VK_FORMAT_R8G8B8A8_UNORM;
 #elif defined(BUILD_FOR_WINDOWS)
@@ -61,7 +139,7 @@ void Texture::CreateTextureImageFromPixels(unsigned char *pixels, int width, int
 
     StagedBuffer buffer(imageSize, pixels);
 
-    //stbi_image_free(pixels);
+    // stbi_image_free(pixels);
 
     auto mem = buffer.GetBufferMemory();
     auto buf = buffer.GetVulkanBuffer();
@@ -75,14 +153,20 @@ void Texture::CreateTextureImageFromPixels(unsigned char *pixels, int width, int
     _imageView = VulkanContext::CreateImageView(_textureImage, colorFormat);
 
     hasTexture = true;
-
-#if USE_DEBUG_INFO == 1
-
-#endif
+    */
 }
 
 void Texture::CreateTextureImage(std::string path)
 {
+
+    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(_serviceLocator->getService("LogicalDevice"));
+
+    if (!logicalDevice->isValid())
+    {
+        spdlog::error("Trying to create renderpass with invalid logical device");
+        return;
+    }
+
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
     auto colorFormat = VK_FORMAT_R8G8B8A8_UNORM;
 #elif defined(BUILD_FOR_WINDOWS)
@@ -103,7 +187,7 @@ void Texture::CreateTextureImage(std::string path)
         exit(EXIT_FAILURE);
     }
 
-    StagedBuffer buffer(imageSize, pixels);
+    StagedBuffer buffer(_serviceLocator, imageSize, pixels);
 
     stbi_image_free(pixels);
 
@@ -116,19 +200,15 @@ void Texture::CreateTextureImage(std::string path)
     CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
     TransitionImageLayout(_textureImage, colorFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    _imageView = VulkanContext::CreateImageView(_textureImage, colorFormat);
+    auto imageView = ImageView(logicalDevice->Get(), _textureImage, colorFormat);
+
+    _imageView = imageView.Get();
 
     hasTexture = true;
-
-#if USE_DEBUG_INFO == 1
-
-#endif
 }
 
 void Texture::CreateImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory)
 {
-    VulkanContext *vkContext = VulkanContext::GetInstance();
-
     VkImageCreateInfo imageInfo{};
     imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
     imageInfo.imageType = VK_IMAGE_TYPE_2D;
@@ -144,25 +224,25 @@ void Texture::CreateImage(uint32_t width, uint32_t height, VkFormat format, VkIm
     imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
     imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-    if (vkCreateImage(vkContext->logicalDevice, &imageInfo, nullptr, &image) != VK_SUCCESS)
+    if (vkCreateImage(_logicalDevice->Get(), &imageInfo, nullptr, &image) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create image!");
     }
 
     VkMemoryRequirements memRequirements;
-    vkGetImageMemoryRequirements(vkContext->logicalDevice, image, &memRequirements);
+    vkGetImageMemoryRequirements(_logicalDevice->Get(), image, &memRequirements);
 
     VkMemoryAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex = Utility::FindMemoryTypeIndex(memRequirements.memoryTypeBits, properties);
+    allocInfo.memoryTypeIndex = Utility::FindMemoryTypeIndex(_serviceLocator, memRequirements.memoryTypeBits, properties);
 
-    if (vkAllocateMemory(vkContext->logicalDevice, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
+    if (vkAllocateMemory(_logicalDevice->Get(), &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to allocate image memory!");
     }
 
-    vkBindImageMemory(vkContext->logicalDevice, image, imageMemory, 0);
+    vkBindImageMemory(_logicalDevice->Get(), image, imageMemory, 0);
 }
 
 void Texture::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)

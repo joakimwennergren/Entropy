@@ -6,10 +6,9 @@
 #include <renderables/renderable.hpp>
 
 using namespace Entropy::Graphics::Textures;
-using namespace Entropy::Global;
 using namespace Entropy::Renderables;
 
-namespace Symbios
+namespace Entropy
 {
     namespace Graphics
     {
@@ -23,23 +22,13 @@ namespace Symbios
                  *
                  * @param context
                  */
-                Quad();
+                Quad(std::shared_ptr<ServiceLocator> serviceLocator);
 
                 /**
                  * @brief Destroy the Quad object
                  *
                  */
                 ~Quad();
-
-                void New(glm::vec3 position, glm::vec3 scale, glm::vec4 color)
-                {
-                    this->position = position;
-                    this->textureId = -1;
-                    this->color = color;
-                    this->scale = scale;
-                }
-
-                void SetPosition(glm::vec3 newPosition) { this->position = newPosition; };
             };
         }
     }
