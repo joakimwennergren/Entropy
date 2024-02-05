@@ -1,13 +1,15 @@
 # External Dependencies
-
-# Logging 
-#add_subdirectory(external/plog)
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+add_compile_definitions(HAVE_FCNTL_H=1)
 
 # GLM matrix maths
 add_subdirectory(external/glm)
 
 # Events
 add_subdirectory(external/eventpp)
+
+# Logging
+add_subdirectory(external/spdlog)
 
 # Networking
 #add_subdirectory(external/asio.cmake)
@@ -30,15 +32,19 @@ add_subdirectory(external/eventpp)
 find_package(Vulkan REQUIRED)
 
 # Windowing on desktop
-#add_subdirectory(external/glfw)
+add_subdirectory(external/glfw)
 
 # Lua SOL 2
 add_subdirectory(external/sol2)
 
+# 2D Physics
+set(BOX2D_BUILD_UNIT_TESTS OFF)
+set(BOX2D_BUILD_TESTBED OFF)
+add_subdirectory(external/box2d)
+
 # Text rendering
 set(FT_WITH_BZIP2 OFF)
-add_subdirectory(external/freetype-2.10.0)
-
+add_subdirectory(external/freetype-2.13.2)
 
 set(_LUA_SOURCE_DIR external/lua-5.4.6/src)
 set(_LUA_LIB_SRC
@@ -77,3 +83,7 @@ set(_LUA_LIB_SRC
 )
 
 add_library(lua OBJECT ${_LUA_LIB_SRC})
+
+include_directories(${ANDROID_NDK}/sources/android/native_app_glue)
+
+add_subdirectory(external/tinygltf)

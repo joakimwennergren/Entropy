@@ -2,25 +2,32 @@
 
 using namespace Entropy::Graphics::Buffers;
 
-VertexBuffer::VertexBuffer(std::vector<Vertex> vertices)
+VertexBuffer::VertexBuffer(std::shared_ptr<ServiceLocator> serviceLocator, std::vector<Vertex> vertices)
 {
-    VulkanContext *vkContext = VulkanContext::GetInstance();
+    // Get required depenencies
+    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
+
+    if (!logicalDevice->isValid())
+    {
+        spdlog::error("Trying to create buffer with invalid logical device");
+        return;
+    }
 
     VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
-    CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+    CreateBuffer(serviceLocator, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
     void *data;
-    vkMapMemory(vkContext->logicalDevice, stagingBufferMemory, 0, bufferSize, 0, &data);
+    vkMapMemory(logicalDevice->Get(), stagingBufferMemory, 0, bufferSize, 0, &data);
     memcpy(data, vertices.data(), (size_t)bufferSize);
-    vkUnmapMemory(vkContext->logicalDevice, stagingBufferMemory);
+    vkUnmapMemory(logicalDevice->Get(), stagingBufferMemory);
 
-    CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _buffer, _bufferMemory);
+    CreateBuffer(serviceLocator, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _buffer, _bufferMemory);
 
-    CopyBuffer(stagingBuffer, _buffer, bufferSize);
+    CopyBuffer(serviceLocator, stagingBuffer, _buffer, bufferSize);
 
-    vkDestroyBuffer(vkContext->logicalDevice, stagingBuffer, nullptr);
-    vkFreeMemory(vkContext->logicalDevice, stagingBufferMemory, nullptr);
+    vkDestroyBuffer(logicalDevice->Get(), stagingBuffer, nullptr);
+    vkFreeMemory(logicalDevice->Get(), stagingBufferMemory, nullptr);
 }
