@@ -30,7 +30,9 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
     _renderPass = std::make_shared<RenderPass>(serviceLocator);
 
     // Create pipeline(s)
-    _pipeline = std::make_unique<Pipeline>(_renderPass, serviceLocator);
+    auto skinnedPipeline = std::make_shared<SkinnedPipeline>(_renderPass, serviceLocator);
+
+    _pipelines["SkinnedPipeline"] = skinnedPipeline;
 
     // Create synchronizer
     _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT, serviceLocator);
@@ -188,7 +190,7 @@ void Renderer::Render(int width, int height)
     _renderPass->Begin(_commandBuffers[_currentFrame], imageIndex);
 
     // Bind current pipeline
-    vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipeline());
+    vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["SkinnedPipeline"]->GetPipeline());
 
     // Set Viewport
     VkViewport viewport{};
@@ -260,7 +262,7 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
     if (renderable->type == 1)
     {
         auto sprite = std::dynamic_pointer_cast<Sprite>(renderable);
-        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 1, 1, &sprite->_descriptorSet, 0, nullptr);
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["SkinnedPipeline"]->GetPipelineLayout(), 1, 1, &sprite->_descriptorSet, 0, nullptr);
     }
 
     // @todo refactors this
@@ -325,7 +327,7 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
 
     uint32_t offset = dynamicAlignment * modelIndex;
 
-    vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &offset);
+    vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["SkinnedPipeline"]->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &offset);
 
     memcpy((char *)dynUbos[_currentFrame]->GetMappedMemory() + offset, &ubodyn, sizeof(UboDataDynamic));
 
@@ -345,7 +347,7 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
         auto model = std::dynamic_pointer_cast<Model>(renderable);
         for (auto node : model->nodes)
         {
-            model->renderNode(node, currentCmdBuffer, _pipeline->GetPipelineLayout(), Material::ALPHAMODE_OPAQUE);
+            model->renderNode(node, currentCmdBuffer, _pipelines["SkinnedPipeline"]->GetPipelineLayout(), Material::ALPHAMODE_OPAQUE);
         }
     }
     else

@@ -2,20 +2,9 @@
 
 using namespace Entropy::Graphics::Pipelines;
 
-Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator)
+void Pipeline::Build(const std::string name, const std::string vertexShader, const std::string fragmentShader, std::vector<VkDescriptorSetLayout> dsLayout)
 {
-    // Get required depenencies
-    auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
-    auto swapChain = serviceLocator->GetService<Swapchain>();
-    auto descriptorSetLayout = serviceLocator->GetService<DescriptorsetLayout>();
-
-    // Assign services
-    _logicalDevice = logicalDevice;
-    _swapchain = swapChain;
-    _descriptorsetLayout = descriptorSetLayout;
-    _serviceLocator = serviceLocator;
-
-    auto shader = std::make_unique<Shader>(_serviceLocator, GetShadersDir() + "vert.spv", GetShadersDir() + "frag.spv");
+    auto shader = std::make_unique<Shader>(_serviceLocator, GetShadersDir() + vertexShader, GetShadersDir() + fragmentShader);
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -120,75 +109,10 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<Servi
     colorBlending.blendConstants[2] = 0.0f; // Optional
     colorBlending.blendConstants[3] = 0.0f; // Optional
 
-    std::vector<VkDescriptorSetLayout> dsLayouts(3);
-
-    VkDescriptorSetLayout tempLayout;
-
-    VkDescriptorSetLayoutBinding samplerLayoutBinding{};
-    samplerLayoutBinding.binding = 1;
-    samplerLayoutBinding.descriptorCount = 1;
-    samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
-    samplerLayoutBinding.pImmutableSamplers = nullptr;
-    samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-    VkDescriptorSetLayoutBinding texturesLayoutBinding{};
-    texturesLayoutBinding.binding = 2;
-    texturesLayoutBinding.descriptorCount = 1;
-    texturesLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-    texturesLayoutBinding.pImmutableSamplers = nullptr;
-    texturesLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-    std::array<VkDescriptorSetLayoutBinding, 2> bindings = {texturesLayoutBinding, samplerLayoutBinding};
-    VkDescriptorSetLayoutCreateInfo layoutInfo{};
-    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-    layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
-    layoutInfo.pBindings = bindings.data();
-
-    if (vkCreateDescriptorSetLayout(_logicalDevice->Get(), &layoutInfo, nullptr, &tempLayout) != VK_SUCCESS)
-    {
-        spdlog::error("Failed to create descriptor set layout!");
-        return;
-    }
-
-    VkDescriptorSetLayout tempLayout2;
-    VkDescriptorSetLayoutBinding ssboBinding{};
-    ssboBinding.binding = 0;
-    ssboBinding.descriptorCount = 1;
-    ssboBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    ssboBinding.pImmutableSamplers = nullptr;
-    ssboBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-
-    std::array<VkDescriptorSetLayoutBinding, 1> bindings2 = {ssboBinding};
-    VkDescriptorSetLayoutCreateInfo layoutInfo2{};
-    layoutInfo2.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-    layoutInfo2.bindingCount = static_cast<uint32_t>(bindings2.size());
-    layoutInfo2.pBindings = bindings2.data();
-
-    if (vkCreateDescriptorSetLayout(_logicalDevice->Get(), &layoutInfo2, nullptr, &tempLayout2) != VK_SUCCESS)
-    {
-        spdlog::error("Failed to create descriptor set layout!");
-        return;
-    }
-
-    dsLayouts[0] = descriptorSetLayout->Get();
-    dsLayouts[1] = tempLayout;
-    dsLayouts[2] = tempLayout2;
-
-    /*
-    // setup push constants
-    VkPushConstantRange push_constant;
-    // this push constant range starts at the beginning
-    push_constant.offset = 0;
-    // this push constant range takes up the size of a MeshPushConstants struct
-    push_constant.size = sizeof(PushConstant);
-    // this push constant range is accessible only in the vertex shader
-    push_constant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-    */
-
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = dsLayouts.size();
-    pipelineLayoutInfo.pSetLayouts = dsLayouts.data();
+    pipelineLayoutInfo.setLayoutCount = dsLayout.size();
+    pipelineLayoutInfo.pSetLayouts = dsLayout.data();
     pipelineLayoutInfo.pPushConstantRanges = nullptr; //&push_constant;
     pipelineLayoutInfo.pushConstantRangeCount = 0;
 
@@ -211,16 +135,31 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<Servi
     pipelineInfo.pColorBlendState = &colorBlending;
     pipelineInfo.pDynamicState = &dynamicState;
     pipelineInfo.layout = _pipelineLayout;
-    pipelineInfo.renderPass = renderPass->GetRenderPass();
+    pipelineInfo.renderPass = _renderPass->GetRenderPass();
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
     pipelineInfo.basePipelineIndex = -1;
 
-    if (vkCreateGraphicsPipelines(logicalDevice->Get(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_pipeline) != VK_SUCCESS)
+    if (vkCreateGraphicsPipelines(_logicalDevice->Get(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_pipeline) != VK_SUCCESS)
     {
         spdlog::error("Failed to create pipeline!");
         return;
     }
+}
+
+Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator)
+{
+    // Get required depenencies
+    auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
+    auto swapChain = serviceLocator->GetService<Swapchain>();
+    auto descriptorSetLayout = serviceLocator->GetService<DescriptorsetLayout>();
+
+    // Assign services
+    _logicalDevice = logicalDevice;
+    _swapchain = swapChain;
+    _descriptorSetLayout = descriptorSetLayout;
+    _serviceLocator = serviceLocator;
+    _renderPass = renderPass;
 }
 
 Pipeline::~Pipeline()

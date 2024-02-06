@@ -5,7 +5,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 #include <graphics/renderpasses/renderpass.hpp>
-#include <graphics/pipelines/pipeline.hpp>
+#include <graphics/pipelines/skinned_pipeline.hpp>
 #include <graphics/data/vertex.hpp>
 #include <graphics/commandbuffers/commandbuffer.hpp>
 #include <graphics/data/ubo.hpp>
@@ -62,6 +62,7 @@ namespace Entropy
                 std::vector<std::shared_ptr<CommandBuffer>> _commandBuffers;
 
                 std::unique_ptr<Pipeline> _pipeline;
+                std::unordered_map<std::string, std::shared_ptr<Pipeline>> _pipelines;
 
                 std::vector<VkBuffer> rawUniformBuffers;
                 std::vector<VkBuffer> uniformBuffersInstances;

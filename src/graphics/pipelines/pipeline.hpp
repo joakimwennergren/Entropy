@@ -35,17 +35,18 @@ namespace Entropy
                 Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator);
                 ~Pipeline();
 
-                inline VkPipeline GetPipeline() { return this->_pipeline; };
-                inline VkPipelineLayout GetPipelineLayout() { return this->_pipelineLayout; };
+                void Build(const std::string name, const std::string vertexShader, const std::string fragmentShader, std::vector<VkDescriptorSetLayout> dsLayout);
 
-            private:
+                inline VkPipeline GetPipeline() { return _pipeline; };
+                inline VkPipelineLayout GetPipelineLayout() { return _pipelineLayout; };
+
+            protected:
                 VkPipelineLayout _pipelineLayout;
                 VkPipeline _pipeline;
-                VkDescriptorSetLayout _descriptorSetLayout;
                 std::shared_ptr<RenderPass> _renderPass;
                 std::shared_ptr<LogicalDevice> _logicalDevice;
                 std::shared_ptr<Swapchain> _swapchain;
-                std::shared_ptr<DescriptorsetLayout> _descriptorsetLayout;
+                std::shared_ptr<DescriptorsetLayout> _descriptorSetLayout;
                 std::shared_ptr<ServiceLocator> _serviceLocator;
             };
         }
