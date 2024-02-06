@@ -7,8 +7,6 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<Servi
     // Get required depenencies
     auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
     auto swapChain = serviceLocator->GetService<Swapchain>();
-    // auto descriptorSetLayout = std::dynamic_pointer_cast<DescriptorsetLayout>(serviceLocator->getService("DescriptorSetLayout"));
-
     auto descriptorSetLayout = serviceLocator->GetService<DescriptorsetLayout>();
 
     // Assign services
