@@ -56,7 +56,7 @@ void main()
 	}
 	locPos.y = -locPos.y;
 	outWorldPos = locPos.xyz / locPos.w;
-	//outUV0 = inUV0;
-	//outUV1 = inUV1;
+	outUV0 = inUV0;
+	outUV1 = inUV1;
 	gl_Position =  uboView.projection * uboView.view * vec4(outWorldPos, 1.0);
 }

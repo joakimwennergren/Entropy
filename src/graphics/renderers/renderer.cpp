@@ -119,9 +119,6 @@ void Renderer::HandleResize()
 
 void Renderer::Render(int width, int height)
 {
-
-    HandleResize();
-
     _camera->setPerspective(60.0f, (float)width / (float)height, 0.1f, 256.0f);
 
     vkWaitForFences(_logicalDevice->Get(), 1, &_synchronizer->GetFences()[_currentFrame], VK_TRUE, UINT64_MAX);
@@ -134,6 +131,7 @@ void Renderer::Render(int width, int height)
         _synchronizer.reset();
         _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT, _serviceLocator);
         _swapChain->RecreateSwapChain();
+        _renderPass->RecreateDepthBuffer();
         _renderPass->RecreateFrameBuffers();
         return;
     }
@@ -308,7 +306,7 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
         auto model = std::dynamic_pointer_cast<Model>(renderable);
         for (auto node : model->nodes)
         {
-            model->renderNode(node, currentCmdBuffer, _pipelines["SkinnedPipeline"]->GetPipelineLayout(), Material::ALPHAMODE_OPAQUE);
+            model->renderNode(node, currentCmdBuffer, _pipelines["SkinnedPipeline"], Material::ALPHAMODE_OPAQUE);
         }
     }
     else

@@ -33,6 +33,7 @@
 #include <graphics/buffers/uniformbuffer.hpp>
 #include <graphics/data/vertex.hpp>
 #include <graphics/descriptorpools/descriptorpool.hpp>
+#include <graphics/pipelines/pipeline.hpp>
 
 #include "tiny_gltf.h"
 
@@ -43,6 +44,7 @@ using namespace Entropy::Graphics::Textures;
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Devices;
 using namespace Entropy::Renderables;
+using namespace Entropy::Graphics::Pipelines;
 using namespace Entropy::Graphics::Buffers;
 using namespace Entropy::Graphics::DescriptorPools;
 
@@ -277,11 +279,13 @@ public:
     Node *findNode(Node *parent, uint32_t index);
     Node *nodeFromIndex(uint32_t index);
     void setupNodeDescriptorSet(Node *node, VkDescriptorSetLayout layout);
-    void renderNode(Node *node, VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, Material::AlphaMode alphaMode);
+    void renderNode(Node *node, VkCommandBuffer commandBuffer, std::shared_ptr<Pipeline> pipeline, Material::AlphaMode alphaMode);
 
     std::unique_ptr<VertexBuffer> _vertexBuffer;
     std::unique_ptr<Buffer> _indexBuffer;
 
 private:
     std::shared_ptr<ServiceLocator> _serviceLocator;
+    VkDescriptorSet _noTextureDs;
+    Texture *noTexture;
 };
