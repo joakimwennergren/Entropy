@@ -152,12 +152,12 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<Servi
     // Get required depenencies
     auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
     auto swapChain = serviceLocator->GetService<Swapchain>();
-    auto descriptorSetLayout = serviceLocator->GetService<DescriptorsetLayout>();
+    auto descriptorPool = serviceLocator->GetService<DescriptorPool>();
 
     // Assign services
     _logicalDevice = logicalDevice;
     _swapchain = swapChain;
-    _descriptorSetLayout = descriptorSetLayout;
+    _descriptorPool = descriptorPool;
     _serviceLocator = serviceLocator;
     _renderPass = renderPass;
 }

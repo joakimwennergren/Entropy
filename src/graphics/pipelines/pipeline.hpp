@@ -10,7 +10,9 @@
 #include <servicelocators/servicelocator.hpp>
 #include <graphics/devices/logical_device.hpp>
 #include <graphics/swapchains/swapchain.hpp>
+#include <graphics/descriptorsets/descriptorset.hpp>
 #include <graphics/descriptorsetlayouts/descriptorsetlayout.hpp>
+#include <graphics/descriptorpools/descriptorpool.hpp>
 
 #include "spdlog/spdlog.h"
 
@@ -20,7 +22,8 @@ using namespace Entropy::Graphics::RenderPasses;
 using namespace Symbios::Filesystem;
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Swapchains;
-using namespace Entropy::Graphics::DescriptorsetLayouts;
+using namespace Entropy::Graphics::Descriptorsets;
+using namespace Entropy::Graphics::DescriptorPools;
 using namespace Entropy::Graphics::Devices;
 
 namespace Entropy
@@ -39,6 +42,7 @@ namespace Entropy
 
                 inline VkPipeline GetPipeline() { return _pipeline; };
                 inline VkPipelineLayout GetPipelineLayout() { return _pipelineLayout; };
+                std::vector<std::shared_ptr<Descriptorset>> descriptorSets;
 
             protected:
                 VkPipelineLayout _pipelineLayout;
@@ -47,6 +51,7 @@ namespace Entropy
                 std::shared_ptr<LogicalDevice> _logicalDevice;
                 std::shared_ptr<Swapchain> _swapchain;
                 std::shared_ptr<DescriptorsetLayout> _descriptorSetLayout;
+                std::shared_ptr<DescriptorPool> _descriptorPool;
                 std::shared_ptr<ServiceLocator> _serviceLocator;
             };
         }

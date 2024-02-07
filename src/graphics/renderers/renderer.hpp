@@ -51,11 +51,10 @@ namespace Entropy
             {
             public:
                 Renderer(std::shared_ptr<ServiceLocator> serviceLocator);
-                Renderer(uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize);
-
                 void Render(int width, int height);
                 void SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex);
                 void DrawRenderable(std::shared_ptr<Renderable> renderable, int width, int height, uint32_t modelIndex);
+                void HandleResize();
 
             private:
                 std::shared_ptr<RenderPass> _renderPass;
@@ -99,6 +98,8 @@ namespace Entropy
                 size_t bufferSize;
 
                 size_t dynamicAlignment{0};
+
+                VkResult imageResult;
 
                 size_t pad_uniform_buffer_size(size_t originalSize);
             };
