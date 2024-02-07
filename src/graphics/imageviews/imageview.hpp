@@ -23,6 +23,7 @@ namespace Entropy
             public:
                 ImageView() = default;
                 ImageView(VkDevice logicalDevice, VkImage image, VkFormat format);
+                ImageView(VkDevice logicalDevice, VkImage depthImage, VkFormat format, uint32_t flags);
 
                 inline VkImageView Get() { return _imageView; };
 

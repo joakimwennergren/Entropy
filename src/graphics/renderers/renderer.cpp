@@ -20,7 +20,6 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
     _serviceLocator = serviceLocator;
 
     // Get required depenencies
-    _descriptorSet = serviceLocator->GetService<Descriptorset>();
     _logicalDevice = serviceLocator->GetService<LogicalDevice>();
     _swapChain = serviceLocator->GetService<Swapchain>();
     _sceneGraph = serviceLocator->GetService<SceneGraph>();
@@ -29,8 +28,8 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
     // Create renderpass
     _renderPass = std::make_shared<RenderPass>(serviceLocator);
 
-    // Create pipeline(s)
-    _pipeline = std::make_unique<Pipeline>(_renderPass, serviceLocator);
+    // Create skinned pipeline
+    _pipelines["SkinnedPipeline"] = std::make_shared<SkinnedPipeline>(_renderPass, serviceLocator);
 
     // Create synchronizer
     _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT, serviceLocator);
@@ -77,7 +76,7 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
         bufferInfo2.range = sizeof(UboDataDynamic);
 
         descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptorWrites[0].dstSet = _descriptorSet->Get()[i];
+        descriptorWrites[0].dstSet = _pipelines["SkinnedPipeline"]->descriptorSets[0]->Get()[i];
         descriptorWrites[0].dstBinding = 0;
         descriptorWrites[0].dstArrayElement = 0;
         descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -85,7 +84,7 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
         descriptorWrites[0].pBufferInfo = &bufferInfo;
 
         descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptorWrites[1].dstSet = _descriptorSet->Get()[i];
+        descriptorWrites[1].dstSet = _pipelines["SkinnedPipeline"]->descriptorSets[0]->Get()[i];
         descriptorWrites[1].dstBinding = 1;
         descriptorWrites[1].dstArrayElement = 0;
         descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
@@ -101,53 +100,19 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
     _camera->setRotation(glm::vec3(0.0f));
 }
 
-Renderer::Renderer(uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize)
+void Renderer::HandleResize()
 {
+    if (imageResult == VK_ERROR_OUT_OF_DATE_KHR || imageResult == VK_SUBOPTIMAL_KHR)
+    {
+        _synchronizer.reset();
+        _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT, _serviceLocator);
+        _swapChain->RecreateSwapChain();
+        _renderPass->RecreateFrameBuffers();
+    }
     /*
-    VulkanContext *vkContext = VulkanContext::GetInstance();
-
-    // Create renderpass
-    _renderPass = std::make_shared<RenderPass>();
-
-    // Create pipeline(s)
-    _pipeline = std::make_unique<Pipeline>(_renderPass, vertContent, vertSize, fragContent, fragSize);
-
-    _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
-
-    for (uint32_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
+    else if (imageResult != VK_SUCCESS)
     {
-        _commandBuffers.push_back(std::make_shared<CommandBuffer>());
-    }
-
-    // Create buffers @todo temp!!!
-    for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
-    {
-        _uniformBuffers.push_back(new Entopy::Graphics::Buffers::UniformBuffer(sizeof(UniformBufferObject)));
-    }
-
-    for (unsigned int i = 0; i < _uniformBuffers.size(); i++)
-    {
-        auto rawBuffer = _uniformBuffers[i]->GetVulkanBuffer();
-        rawUniformBuffers.push_back(rawBuffer);
-    }
-
-    for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
-    {
-        std::array<VkWriteDescriptorSet, 1> descriptorWrites{};
-        VkDescriptorBufferInfo bufferInfo{};
-        bufferInfo.buffer = rawUniformBuffers[i];
-        bufferInfo.offset = 0;
-        bufferInfo.range = sizeof(UniformBufferObject);
-
-        descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptorWrites[0].dstSet = vkContext->descriptorSets[i];
-        descriptorWrites[0].dstBinding = 0;
-        descriptorWrites[0].dstArrayElement = 0;
-        descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        descriptorWrites[0].descriptorCount = 1;
-        descriptorWrites[0].pBufferInfo = &bufferInfo;
-
-        vkUpdateDescriptorSets(vkContext->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+        exit(EXIT_FAILURE);
     }
     */
 }
@@ -159,25 +124,21 @@ void Renderer::Render(int width, int height)
     vkWaitForFences(_logicalDevice->Get(), 1, &_synchronizer->GetFences()[_currentFrame], VK_TRUE, UINT64_MAX);
 
     uint32_t imageIndex;
-    VkResult result = vkAcquireNextImageKHR(_logicalDevice->Get(), _swapChain->Get(), UINT64_MAX, _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE, &imageIndex);
+    imageResult = vkAcquireNextImageKHR(_logicalDevice->Get(), _swapChain->Get(), UINT64_MAX, _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE, &imageIndex);
 
-    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
+    if (imageResult == VK_ERROR_OUT_OF_DATE_KHR || imageResult == VK_SUBOPTIMAL_KHR)
     {
         _synchronizer.reset();
         _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT, _serviceLocator);
         _swapChain->RecreateSwapChain();
+        _renderPass->RecreateDepthBuffer();
         _renderPass->RecreateFrameBuffers();
-
         return;
-    }
-    else if (result != VK_SUCCESS)
-    {
-        exit(EXIT_FAILURE);
     }
 
     // current commandbuffer & descriptorset
     currentCmdBuffer = _commandBuffers[_currentFrame]->GetCommandBuffer();
-    currentDescriptorSet = _descriptorSet->Get()[_currentFrame];
+    currentDescriptorSet = _pipelines["SkinnedPipeline"]->descriptorSets[0]->Get()[_currentFrame];
 
     // Reset fences and current commandbuffer
     vkResetFences(_logicalDevice->Get(), 1, &_synchronizer->GetFences()[_currentFrame]);
@@ -188,7 +149,7 @@ void Renderer::Render(int width, int height)
     _renderPass->Begin(_commandBuffers[_currentFrame], imageIndex);
 
     // Bind current pipeline
-    vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipeline());
+    vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["SkinnedPipeline"]->GetPipeline());
 
     // Set Viewport
     VkViewport viewport{};
@@ -260,7 +221,7 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
     if (renderable->type == 1)
     {
         auto sprite = std::dynamic_pointer_cast<Sprite>(renderable);
-        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 1, 1, &sprite->_descriptorSet, 0, nullptr);
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["SkinnedPipeline"]->GetPipelineLayout(), 1, 1, &sprite->_descriptorSet, 0, nullptr);
     }
 
     // @todo refactors this
@@ -325,7 +286,7 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
 
     uint32_t offset = dynamicAlignment * modelIndex;
 
-    vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &offset);
+    vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["SkinnedPipeline"]->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &offset);
 
     memcpy((char *)dynUbos[_currentFrame]->GetMappedMemory() + offset, &ubodyn, sizeof(UboDataDynamic));
 
@@ -345,7 +306,7 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
         auto model = std::dynamic_pointer_cast<Model>(renderable);
         for (auto node : model->nodes)
         {
-            model->renderNode(node, currentCmdBuffer, _pipeline->GetPipelineLayout(), Material::ALPHAMODE_OPAQUE);
+            model->renderNode(node, currentCmdBuffer, _pipelines["SkinnedPipeline"], Material::ALPHAMODE_OPAQUE);
         }
     }
     else

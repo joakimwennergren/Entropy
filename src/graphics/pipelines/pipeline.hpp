@@ -10,7 +10,9 @@
 #include <servicelocators/servicelocator.hpp>
 #include <graphics/devices/logical_device.hpp>
 #include <graphics/swapchains/swapchain.hpp>
+#include <graphics/descriptorsets/descriptorset.hpp>
 #include <graphics/descriptorsetlayouts/descriptorsetlayout.hpp>
+#include <graphics/descriptorpools/descriptorpool.hpp>
 
 #include "spdlog/spdlog.h"
 
@@ -20,7 +22,8 @@ using namespace Entropy::Graphics::RenderPasses;
 using namespace Symbios::Filesystem;
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Swapchains;
-using namespace Entropy::Graphics::DescriptorsetLayouts;
+using namespace Entropy::Graphics::Descriptorsets;
+using namespace Entropy::Graphics::DescriptorPools;
 using namespace Entropy::Graphics::Devices;
 
 namespace Entropy
@@ -35,17 +38,20 @@ namespace Entropy
                 Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator);
                 ~Pipeline();
 
-                inline VkPipeline GetPipeline() { return this->_pipeline; };
-                inline VkPipelineLayout GetPipelineLayout() { return this->_pipelineLayout; };
+                void Build(const std::string name, const std::string vertexShader, const std::string fragmentShader, std::vector<VkDescriptorSetLayout> dsLayout);
 
-            private:
+                inline VkPipeline GetPipeline() { return _pipeline; };
+                inline VkPipelineLayout GetPipelineLayout() { return _pipelineLayout; };
+                std::vector<std::shared_ptr<Descriptorset>> descriptorSets;
+
+            protected:
                 VkPipelineLayout _pipelineLayout;
                 VkPipeline _pipeline;
-                VkDescriptorSetLayout _descriptorSetLayout;
                 std::shared_ptr<RenderPass> _renderPass;
                 std::shared_ptr<LogicalDevice> _logicalDevice;
                 std::shared_ptr<Swapchain> _swapchain;
-                std::shared_ptr<DescriptorsetLayout> _descriptorsetLayout;
+                std::shared_ptr<DescriptorsetLayout> _descriptorSetLayout;
+                std::shared_ptr<DescriptorPool> _descriptorPool;
                 std::shared_ptr<ServiceLocator> _serviceLocator;
             };
         }
