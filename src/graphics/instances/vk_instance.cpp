@@ -10,7 +10,7 @@ VulkanInstance::VulkanInstance(std::string applicationName)
     appInfo.applicationVersion = VK_MAKE_VERSION(0, 0, 1);
     appInfo.pEngineName = "Entropy";
     appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-    appInfo.apiVersion = VK_API_VERSION_1_0;
+    appInfo.apiVersion = VK_API_VERSION_1_1;
 
     VkInstanceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -39,6 +39,7 @@ VulkanInstance::VulkanInstance(std::string applicationName)
 #ifdef BUILD_FOR_ANDROID
     extensions.push_back("VK_KHR_surface");
     extensions.push_back("VK_KHR_android_surface");
+    // extensions.push_back("VK_KHR_surface_protected_capabilities");
 #endif
 
     createInfo.enabledExtensionCount = (uint32_t)extensions.size();

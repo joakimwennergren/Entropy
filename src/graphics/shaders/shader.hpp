@@ -30,7 +30,7 @@ namespace Symbios
                  */
                 Shader(std::shared_ptr<ServiceLocator> serviceLocator, const std::string vert, const std::string frag);
 
-                Shader(uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize);
+                Shader(std::shared_ptr<ServiceLocator> serviceLocator, const std::vector<char> vert, const std::vector<char> frag);
 
                 /**
                  * @brief Destroy the Shader object

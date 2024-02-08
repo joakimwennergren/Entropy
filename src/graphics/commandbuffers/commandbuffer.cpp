@@ -24,6 +24,8 @@ CommandBuffer::CommandBuffer(std::shared_ptr<ServiceLocator> serviceLocator)
 
 void CommandBuffer::RecordOnce()
 {
+    vkDeviceWaitIdle(_logicalDevice->Get());
+
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
@@ -33,6 +35,8 @@ void CommandBuffer::RecordOnce()
 
 void CommandBuffer::Record()
 {
+    vkDeviceWaitIdle(_logicalDevice->Get());
+
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     beginInfo.flags = 0;                  // Optional

@@ -2,7 +2,7 @@
 
 #include <vulkan/vulkan.hpp>
 #include <servicelocators/servicelocator.hpp>
-#include <box2d/box2d.h>
+// #include <box2d/box2d.h>
 
 #include <iostream>
 
@@ -21,8 +21,9 @@ namespace Entropy
         public:
             Physics2D(std::shared_ptr<ServiceLocator> serviceLocator);
 
-            inline b2Body *CreateBody(float x, float y)
-            {
+            //inline b2Body *CreateBody(float x, float y)
+            //{
+                /*
                 b2BodyDef groundBodyDef;
                 groundBodyDef.position.Set(x, y);
                 b2Body *groundBody = world->CreateBody(&groundBodyDef);
@@ -30,10 +31,12 @@ namespace Entropy
                 groundBox.SetAsBox(50.0f, 10.0f);
                 groundBody->CreateFixture(&groundBox, 0.0f);
                 return groundBody;
-            }
+                */
+            //}
 
-            inline b2Body *CreateDynamicBody()
-            {
+            //inline b2Body *CreateDynamicBody()
+           // {
+                /*
                 b2BodyDef bodyDef;
                 bodyDef.type = b2_dynamicBody;
                 bodyDef.position.Set(0.0f, 4.0f);
@@ -49,9 +52,10 @@ namespace Entropy
                 body->CreateFixture(&fixtureDef);
 
                 return body;
-            }
+                */
+            //}
 
-            b2World *world;
+            // b2World *world;
 
         private:
         };
@@ -59,18 +63,17 @@ namespace Entropy
         class DynamicBody
         {
         public:
-            DynamicBody(std::shared_ptr<Physics2D> physics)
-            {
-                body = physics->CreateDynamicBody();
+            DynamicBody(std::shared_ptr<Physics2D> physics){
+                // body = physics->CreateDynamicBody();
             };
 
             float GetPosition()
             {
-                auto pos = body->GetPosition();
-                return pos.y;
+                // auto pos = body->GetPosition();
+                // return pos.y;
             }
 
-            b2Body *body;
+            // b2Body *body;
         };
     }
 }

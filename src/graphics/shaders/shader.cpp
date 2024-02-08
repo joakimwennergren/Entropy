@@ -2,6 +2,17 @@
 
 using namespace Symbios::Graphics::Shaders;
 
+Shader::Shader(std::shared_ptr<ServiceLocator> serviceLocator, const std::vector<char> vert, const std::vector<char> frag)
+{
+    _logicalDevice = serviceLocator->GetService<LogicalDevice>();
+
+    if (vert.size() > 0 && frag.size() > 0)
+    {
+        this->_shaderModuleVert = this->BuildShader(vert);
+        this->_shaderModuleFrag = this->BuildShader(frag);
+    }
+}
+
 Shader::Shader(std::shared_ptr<ServiceLocator> serviceLocator, const std::string vert, const std::string frag)
 {
     _logicalDevice = serviceLocator->GetService<LogicalDevice>();
@@ -14,12 +25,6 @@ Shader::Shader(std::shared_ptr<ServiceLocator> serviceLocator, const std::string
         this->_shaderModuleVert = this->BuildShader(this->_vertCode);
         this->_shaderModuleFrag = this->BuildShader(this->_fragCode);
     }
-}
-
-Shader::Shader(uint32_t *vertContent, uint32_t vertSize, uint32_t *fragContent, uint32_t fragSize)
-{
-    this->_shaderModuleVert = this->BuildShader(vertContent, vertSize);
-    this->_shaderModuleFrag = this->BuildShader(fragContent, fragSize);
 }
 
 Shader::~Shader()

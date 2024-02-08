@@ -19,8 +19,7 @@ uint32_t Utility::FindMemoryTypeIndex(std::shared_ptr<ServiceLocator> serviceLoc
         }
     }
 
-    // If none find print error and exit
-    exit(EXIT_FAILURE);
+    return 0;
 }
 
 void *Utility::AlignedAlloc(size_t size, size_t alignment)

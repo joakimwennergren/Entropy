@@ -51,12 +51,14 @@ namespace Entropy
             {
             public:
                 Renderer(std::shared_ptr<ServiceLocator> serviceLocator);
+                Renderer(std::shared_ptr<ServiceLocator> serviceLocator, std::vector<char> vert_shader, std::vector<char> frag_shader);
                 void Render(int width, int height);
                 void SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex);
                 void DrawRenderable(std::shared_ptr<Renderable> renderable, int width, int height, uint32_t modelIndex);
                 void HandleResize();
 
             private:
+                void Setup(std::shared_ptr<ServiceLocator> serviceLocator);
                 std::shared_ptr<RenderPass> _renderPass;
                 std::vector<std::shared_ptr<CommandBuffer>> _commandBuffers;
 

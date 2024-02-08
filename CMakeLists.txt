@@ -7,7 +7,7 @@
 # Game Engine version 1.0
 
 # Set minimum cmake version
-cmake_minimum_required(VERSION 3.27.8)
+cmake_minimum_required(VERSION 3.22.1)
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
 # Declare project
@@ -22,11 +22,7 @@ set(PROJECT_BASEPATH ${PROJECT_SOURCE_DIR})
 # Include dependencies
 include(cmake/external_dependencies.cmake)
 
-if(CMAKE_PLATFORM STREQUAL "BUILD_FOR_ANDROID")
-    file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp  external/android_native_app_glue.c)
-else()
-    file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
-endif()
+file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
 # Create the library
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
@@ -60,7 +56,7 @@ target_link_libraries(${PROJECT_NAME}
     freetype
     eventpp
     spdlog
-    box2d
+    #box2d
     eventpp
     tinygltf
 )

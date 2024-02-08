@@ -38,9 +38,9 @@ add_subdirectory(external/glfw)
 add_subdirectory(external/sol2)
 
 # 2D Physics
-set(BOX2D_BUILD_UNIT_TESTS OFF)
-set(BOX2D_BUILD_TESTBED OFF)
-add_subdirectory(external/box2d)
+#set(BOX2D_BUILD_UNIT_TESTS OFF)
+#set(BOX2D_BUILD_TESTBED OFF)
+#add_subdirectory(external/box2d)
 
 # Text rendering
 set(FT_WITH_BZIP2 OFF)
@@ -84,6 +84,6 @@ set(_LUA_LIB_SRC
 
 add_library(lua OBJECT ${_LUA_LIB_SRC})
 
-include_directories(${ANDROID_NDK}/sources/android/native_app_glue)
-
+set(TINYGLTF_INSTALL OFF)
+set(TINYGLTF_BUILD_LOADER_EXAMPLE  OFF)
 add_subdirectory(external/tinygltf)

@@ -114,7 +114,7 @@ void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap)
 
 void Texture::CreateTextureImageFromPixels(unsigned char *pixels, int width, int height)
 {
-    /*
+
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
     auto colorFormat = VK_FORMAT_R8G8B8A8_UNORM;
 #elif defined(BUILD_FOR_WINDOWS)
@@ -131,7 +131,7 @@ void Texture::CreateTextureImageFromPixels(unsigned char *pixels, int width, int
         exit(EXIT_FAILURE);
     }
 
-    StagedBuffer buffer(imageSize, pixels);
+    StagedBuffer buffer(_serviceLocator, imageSize, pixels);
 
     // stbi_image_free(pixels);
 
@@ -144,10 +144,9 @@ void Texture::CreateTextureImageFromPixels(unsigned char *pixels, int width, int
     CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(width), static_cast<uint32_t>(height));
     TransitionImageLayout(_textureImage, colorFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    _imageView = VulkanContext::CreateImageView(_textureImage, colorFormat);
-
+    auto imageView = ImageView(_logicalDevice->Get(), _textureImage, colorFormat);
+    _imageView = imageView.Get();
     hasTexture = true;
-    */
 }
 
 void Texture::CreateTextureImage(std::string path)

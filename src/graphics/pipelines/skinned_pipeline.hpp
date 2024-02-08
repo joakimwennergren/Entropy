@@ -13,6 +13,19 @@ namespace Entropy
             public:
                 SkinnedPipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator) : Pipeline(renderPass, serviceLocator)
                 {
+                    auto dsLayouts = Setup();
+                    Build("SkinnedPipeline", "vert.spv", "frag.spv", dsLayouts);
+                }
+
+                SkinnedPipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator, std::vector<char> vert_shader, std::vector<char> frag_shader) : Pipeline(renderPass, serviceLocator)
+                {
+                    auto dsLayouts = Setup();
+                    Build("SkinnedPipeline", vert_shader, frag_shader, dsLayouts);
+                }
+
+            private:
+                std::vector<VkDescriptorSetLayout> Setup()
+                {
                     std::vector<VkDescriptorSetLayout> dsLayouts(3);
 
                     VkDescriptorSetLayoutBinding uboLayoutBinding{};
@@ -83,7 +96,7 @@ namespace Entropy
                     descriptorSets.push_back(std::make_shared<Descriptorset>(_logicalDevice, _descriptorPool, descriptorSetLayout1));
                     descriptorSets.push_back(std::make_shared<Descriptorset>(_logicalDevice, _descriptorPool, descriptorSetLayout2));
 
-                    Build("SkinnedPipeline", "vert.spv", "frag.spv", dsLayouts);
+                    return dsLayouts;
                 }
             };
         }

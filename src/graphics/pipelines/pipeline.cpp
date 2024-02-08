@@ -2,10 +2,8 @@
 
 using namespace Entropy::Graphics::Pipelines;
 
-void Pipeline::Build(const std::string name, const std::string vertexShader, const std::string fragmentShader, std::vector<VkDescriptorSetLayout> dsLayout)
+void Pipeline::Setup(std::unique_ptr<Shader> shader, std::vector<VkDescriptorSetLayout> dsLayout)
 {
-    auto shader = std::make_unique<Shader>(_serviceLocator, GetShadersDir() + vertexShader, GetShadersDir() + fragmentShader);
-
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
@@ -157,6 +155,18 @@ void Pipeline::Build(const std::string name, const std::string vertexShader, con
         spdlog::error("Failed to create pipeline!");
         return;
     }
+}
+
+void Pipeline::Build(const std::string name, const std::string vertexShader, const std::string fragmentShader, std::vector<VkDescriptorSetLayout> dsLayout)
+{
+    auto shader = std::make_unique<Shader>(_serviceLocator, GetShadersDir() + vertexShader, GetShadersDir() + fragmentShader);
+    Setup(std::move(shader), dsLayout);
+}
+
+void Pipeline::Build(const std::string name, std::vector<char> vert_shader, std::vector<char> frag_shader, std::vector<VkDescriptorSetLayout> dsLayout)
+{
+    auto shader = std::make_unique<Shader>(_serviceLocator, vert_shader, frag_shader);
+    Setup(std::move(shader), dsLayout);
 }
 
 Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator)

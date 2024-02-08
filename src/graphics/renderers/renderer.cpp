@@ -14,7 +14,7 @@ size_t Renderer::pad_uniform_buffer_size(size_t originalSize)
     return alignedSize;
 }
 
-Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
+void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
 {
     // Store service locator
     _serviceLocator = serviceLocator;
@@ -24,12 +24,6 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
     _swapChain = serviceLocator->GetService<Swapchain>();
     _sceneGraph = serviceLocator->GetService<SceneGraph>();
     auto physicalDevice = serviceLocator->GetService<PhysicalDevice>();
-
-    // Create renderpass
-    _renderPass = std::make_shared<RenderPass>(serviceLocator);
-
-    // Create skinned pipeline
-    _pipelines["SkinnedPipeline"] = std::make_shared<SkinnedPipeline>(_renderPass, serviceLocator);
 
     // Create synchronizer
     _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT, serviceLocator);
@@ -98,6 +92,26 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
     _camera->type = Camera::CameraType::firstperson;
     _camera->setPosition(glm::vec3(0.0f, 0.0f, -10.0f));
     _camera->setRotation(glm::vec3(0.0f));
+}
+
+Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator, std::vector<char> vert_shader, std::vector<char> frag_shader)
+{
+    // Create renderpass
+    _renderPass = std::make_shared<RenderPass>(serviceLocator);
+    // Create skinned pipeline
+    _pipelines["SkinnedPipeline"] = std::make_shared<SkinnedPipeline>(_renderPass, serviceLocator, vert_shader, frag_shader);
+
+    Setup(serviceLocator);
+}
+
+Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
+{
+    // Create renderpass
+    _renderPass = std::make_shared<RenderPass>(serviceLocator);
+    // Create skinned pipeline
+    _pipelines["SkinnedPipeline"] = std::make_shared<SkinnedPipeline>(_renderPass, serviceLocator);
+
+    Setup(serviceLocator);
 }
 
 void Renderer::HandleResize()

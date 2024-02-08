@@ -16,6 +16,7 @@
 #include <fstream>
 #include <vector>
 #include <limits>
+#include <config.hpp>
 
 #include "vulkan/vulkan.h"
 
@@ -34,8 +35,9 @@
 #include <graphics/data/vertex.hpp>
 #include <graphics/descriptorpools/descriptorpool.hpp>
 #include <graphics/pipelines/pipeline.hpp>
-
 #include "tiny_gltf.h"
+
+#include <stb_image.h>
 
 // Changing this value here also requires changing it in the vertex shader
 #define MAX_NUM_JOINTS 128u
@@ -47,6 +49,10 @@ using namespace Entropy::Renderables;
 using namespace Entropy::Graphics::Pipelines;
 using namespace Entropy::Graphics::Buffers;
 using namespace Entropy::Graphics::DescriptorPools;
+
+#ifdef BUILD_FOR_ANDROID
+#include <android/asset_manager.h>
+#endif
 
 struct Node;
 
@@ -259,6 +265,9 @@ public:
     };
 
     Model(std::shared_ptr<ServiceLocator> serviceLocator);
+#if defined(BUILD_FOR_ANDROID)
+    Model(std::shared_ptr<ServiceLocator> serviceLocator, AAssetManager *assetmngr);
+#endif
 
     void destroy(VkDevice device);
     void loadNode(Node *parent, const tinygltf::Node &node, uint32_t nodeIndex, const tinygltf::Model &model, LoaderInfo &loaderInfo, float globalscale);
@@ -288,4 +297,8 @@ private:
     std::shared_ptr<ServiceLocator> _serviceLocator;
     VkDescriptorSet _noTextureDs;
     Texture *noTexture;
+
+#ifdef BUILD_FOR_ANDROID
+    AAssetManager *assetManager;
+#endif
 };
