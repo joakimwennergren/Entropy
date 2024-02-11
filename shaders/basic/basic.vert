@@ -14,6 +14,7 @@ layout (binding = 0) uniform UboView
 {
 	mat4 projection;
 	mat4 view;
+	mat4 invView;
 } uboView;
 
 layout (binding = 1) uniform UboInstance 
@@ -33,6 +34,7 @@ layout (location = 1) out vec3 outNormal;
 layout (location = 2) out vec2 outUV0;
 layout (location = 3) out vec2 outUV1;
 layout (location = 4) out vec4 outColor0;
+layout (location = 5) out mat4 outInvView;
 
 void main() 
 {
@@ -58,5 +60,6 @@ void main()
 	outWorldPos = locPos.xyz / locPos.w;
 	outUV0 = inUV0;
 	outUV1 = inUV1;
+	outInvView = uboView.invView;
 	gl_Position =  uboView.projection * uboView.view * vec4(outWorldPos, 1.0);
 }

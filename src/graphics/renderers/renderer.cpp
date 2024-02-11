@@ -90,7 +90,7 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
 
     _camera = std::make_shared<Camera>();
     _camera->type = Camera::CameraType::firstperson;
-    _camera->setPosition(glm::vec3(0.0f, 0.0f, -10.0f));
+    _camera->setPosition(glm::vec3(0.0f, 0.0f, -20.0f));
     _camera->setRotation(glm::vec3(0.0f));
 }
 
@@ -195,6 +195,7 @@ void Renderer::Render(int width, int height)
     // ubo.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
     // ubo.proj[1][1] *= -1;
     ubo.view = _camera->matrices.view;
+    ubo.invView = glm::inverse(_camera->matrices.view);
     ubo.proj = _camera->matrices.perspective;
     _camera->update(0.1);
 
