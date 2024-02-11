@@ -6,6 +6,7 @@
 
 #include <graphics/renderpasses/renderpass.hpp>
 #include <graphics/pipelines/skinned_pipeline.hpp>
+#include <graphics/pipelines/cubemap_pipeline.hpp>
 #include <graphics/data/vertex.hpp>
 #include <graphics/commandbuffers/commandbuffer.hpp>
 #include <graphics/data/ubo.hpp>
@@ -15,7 +16,7 @@
 #include <graphics/synchronization/synchronizer.hpp>
 #include <renderables/renderable.hpp>
 #include <scenegraphs/scenegraph.hpp>
-
+#include <graphics/cubemaps/cubemap.hpp>
 #include <servicelocators/servicelocator.hpp>
 #include <graphics/descriptorsets/descriptorset.hpp>
 #include <graphics/swapchains/swapchain.hpp>
@@ -40,6 +41,7 @@ using namespace Entropy::Graphics::Descriptorsets;
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Swapchains;
 using namespace Entropy::Graphics::Primitives;
+using namespace Entropy::Graphics::CubeMaps;
 
 namespace Entropy
 {
@@ -104,6 +106,8 @@ namespace Entropy
                 VkResult imageResult;
 
                 size_t pad_uniform_buffer_size(size_t originalSize);
+
+                float angle = 0.0f;
             };
         }
     }

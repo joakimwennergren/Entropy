@@ -16,6 +16,7 @@ Descriptorset::Descriptorset(std::shared_ptr<LogicalDevice> logicalDevice, std::
 
     if (vkAllocateDescriptorSets(logicalDevice->Get(), &allocInfo, _descriptorSets.data()) != VK_SUCCESS)
     {
+        std::cout << "DS FAIL" << std::endl;
         exit(EXIT_FAILURE);
     }
 }

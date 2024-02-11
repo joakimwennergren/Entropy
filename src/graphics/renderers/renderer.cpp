@@ -77,6 +77,16 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
         descriptorWrites[0].descriptorCount = 1;
         descriptorWrites[0].pBufferInfo = &bufferInfo;
 
+        /*
+                descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                descriptorWrites[1].dstSet = _pipelines["CubeMapPipeline"]->descriptorSets[0]->Get()[i];
+                descriptorWrites[1].dstBinding = 0;
+                descriptorWrites[1].dstArrayElement = 0;
+                descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                descriptorWrites[1].descriptorCount = 1;
+                descriptorWrites[1].pBufferInfo = &bufferInfo;
+                */
+
         descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[1].dstSet = _pipelines["SkinnedPipeline"]->descriptorSets[0]->Get()[i];
         descriptorWrites[1].dstBinding = 1;
@@ -90,7 +100,7 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
 
     _camera = std::make_shared<Camera>();
     _camera->type = Camera::CameraType::firstperson;
-    _camera->setPosition(glm::vec3(0.0f, 0.0f, -20.0f));
+    _camera->setPosition(glm::vec3(0.0f, 0.0f, -30.0f));
     _camera->setRotation(glm::vec3(0.0f));
 }
 
@@ -100,6 +110,7 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator, std::vector<c
     _renderPass = std::make_shared<RenderPass>(serviceLocator);
     // Create skinned pipeline
     _pipelines["SkinnedPipeline"] = std::make_shared<SkinnedPipeline>(_renderPass, serviceLocator, vert_shader, frag_shader);
+    _pipelines["CubeMapPipeline"] = std::make_shared<CubeMapPipeline>(_renderPass, serviceLocator, vert_shader, frag_shader);
 
     Setup(serviceLocator);
 }
@@ -110,7 +121,7 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
     _renderPass = std::make_shared<RenderPass>(serviceLocator);
     // Create skinned pipeline
     _pipelines["SkinnedPipeline"] = std::make_shared<SkinnedPipeline>(_renderPass, serviceLocator);
-
+    _pipelines["CubeMapPipeline"] = std::make_shared<CubeMapPipeline>(_renderPass, serviceLocator);
     Setup(serviceLocator);
 }
 
@@ -161,9 +172,6 @@ void Renderer::Render(int width, int height)
     // Begin renderpass and commandbuffer recording
     _commandBuffers[_currentFrame]->Record();
     _renderPass->Begin(_commandBuffers[_currentFrame], imageIndex);
-
-    // Bind current pipeline
-    vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["SkinnedPipeline"]->GetPipeline());
 
     // Set Viewport
     VkViewport viewport{};
@@ -301,8 +309,6 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
 
     uint32_t offset = dynamicAlignment * modelIndex;
 
-    vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["SkinnedPipeline"]->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &offset);
-
     memcpy((char *)dynUbos[_currentFrame]->GetMappedMemory() + offset, &ubodyn, sizeof(UboDataDynamic));
 
     /*
@@ -318,11 +324,21 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
 
     if (renderable->type == 4)
     {
+        vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["SkinnedPipeline"]->GetPipeline());
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["SkinnedPipeline"]->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &offset);
         auto model = std::dynamic_pointer_cast<Model>(renderable);
         for (auto node : model->nodes)
         {
             model->renderNode(node, currentCmdBuffer, _pipelines["SkinnedPipeline"], Material::ALPHAMODE_OPAQUE);
         }
+    }
+    else if (renderable->type == 10)
+    {
+        vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["CubeMapPipeline"]->GetPipeline());
+        auto ds = _pipelines["CubeMapPipeline"]->descriptorSets[0]->Get()[_currentFrame];
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["CubeMapPipeline"]->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &offset);
+        auto model = std::dynamic_pointer_cast<CubeMap>(renderable);
+        model->_model->renderNode(model->_model->linearNodes[2], currentCmdBuffer, _pipelines["CubeMapPipeline"], Material::ALPHAMODE_OPAQUE);
     }
     else
     {

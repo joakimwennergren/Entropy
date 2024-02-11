@@ -59,6 +59,7 @@ target_link_libraries(${PROJECT_NAME}
     #box2d
     eventpp
     tinygltf
+    ktx
 )
 
 # Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk)

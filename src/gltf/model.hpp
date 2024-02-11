@@ -284,6 +284,7 @@ public:
     void draw(VkCommandBuffer commandBuffer);
     void calculateBoundingBox(Node *node, Node *parent);
     void getSceneDimensions();
+    void SetupCubeMap(std::shared_ptr<Texture> texture);
     void updateAnimation(uint32_t index, float time);
     Node *findNode(Node *parent, uint32_t index);
     Node *nodeFromIndex(uint32_t index);
@@ -297,6 +298,8 @@ private:
     std::shared_ptr<ServiceLocator> _serviceLocator;
     VkDescriptorSet _noTextureDs;
     Texture *noTexture;
+    bool isCubeMap = false;
+    VkDescriptorSet _cubeMapDS;
 
 #ifdef BUILD_FOR_ANDROID
     AAssetManager *assetManager;

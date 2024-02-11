@@ -15,6 +15,9 @@
 #include <graphics/buffers/stagedbuffer.hpp>
 #include <graphics/imageviews/imageview.hpp>
 
+#include <ktx.h>
+#include <ktxvulkan.h>
+
 using namespace Entropy::Graphics::Buffers;
 using namespace Entropy::Graphics::Utilities;
 using namespace Entropy::Graphics::CommandBuffers;
@@ -56,6 +59,10 @@ namespace Entropy
                  * @param path
                  */
                 void CreateTextureImageFromPixels(unsigned char *pixels, int width, int height);
+
+                void CreateTextureImageFromKtx(unsigned char *pixels, unsigned int width, unsigned int height, int size, int mips, VkFormat format, ktxTexture *ktxTexture);
+
+                void TransitionImageLayoutCubeMap(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, unsigned int mips);
 
                 /**
                  *
@@ -114,6 +121,7 @@ namespace Entropy
                 VkImage _textureImage;
                 VkImageView _imageView;
                 VkDeviceMemory _textureImageMemory;
+                VkSampler _sampler;
                 std::shared_ptr<ServiceLocator> _serviceLocator;
                 std::shared_ptr<LogicalDevice> _logicalDevice;
             };

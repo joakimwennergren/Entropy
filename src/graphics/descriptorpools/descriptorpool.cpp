@@ -4,24 +4,25 @@ using namespace Entropy::Graphics::DescriptorPools;
 
 DescriptorPool::DescriptorPool(std::shared_ptr<LogicalDevice> logicalDevice)
 {
-    std::array<VkDescriptorPoolSize, 5> poolSizes{};
+    std::array<VkDescriptorPoolSize, 6> poolSizes{};
 
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+    poolSizes[0].descriptorCount = 10000;
 
     poolSizes[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
-    poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+    poolSizes[1].descriptorCount = 10000;
 
     poolSizes[2].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     poolSizes[2].descriptorCount = 10000;
-    // poolSizes[2].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-    // poolSizes[2].descriptorCount = static_cast<uint32_t>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
 
-    poolSizes[3].type = VK_DESCRIPTOR_TYPE_SAMPLER;
+    poolSizes[3].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     poolSizes[3].descriptorCount = 10000;
 
-    poolSizes[4].type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+    poolSizes[4].type = VK_DESCRIPTOR_TYPE_SAMPLER;
     poolSizes[4].descriptorCount = 10000;
+
+    poolSizes[5].type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+    poolSizes[5].descriptorCount = 10000;
 
     VkDescriptorPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;

@@ -37,3 +37,6 @@
 [submodule "tinygltf"]
 	path = external/tinygltf
 	url = https://github.com/syoyo/tinygltf.git
+[submodule "KTX-Software"]
+	path = external/KTX-Software
+	url = https://github.com/KhronosGroup/KTX-Software.git
