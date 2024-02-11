@@ -2,7 +2,7 @@
 
 using namespace Entropy::Graphics::Pipelines;
 
-void Pipeline::Setup(std::unique_ptr<Shader> shader, std::vector<VkDescriptorSetLayout> dsLayout)
+void Pipeline::Setup(std::unique_ptr<Shader> shader, std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite)
 {
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -123,7 +123,7 @@ void Pipeline::Setup(std::unique_ptr<Shader> shader, std::vector<VkDescriptorSet
     VkPipelineDepthStencilStateCreateInfo depthStencil{};
     depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
     depthStencil.depthTestEnable = VK_TRUE;
-    depthStencil.depthWriteEnable = VK_TRUE;
+    depthStencil.depthWriteEnable = depthWrite;
     depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
     depthStencil.depthBoundsTestEnable = VK_FALSE;
     depthStencil.minDepthBounds = 0.0f; // Optional
@@ -157,16 +157,16 @@ void Pipeline::Setup(std::unique_ptr<Shader> shader, std::vector<VkDescriptorSet
     }
 }
 
-void Pipeline::Build(const std::string name, const std::string vertexShader, const std::string fragmentShader, std::vector<VkDescriptorSetLayout> dsLayout)
+void Pipeline::Build(const std::string name, const std::string vertexShader, const std::string fragmentShader, std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite)
 {
     auto shader = std::make_unique<Shader>(_serviceLocator, GetShadersDir() + vertexShader, GetShadersDir() + fragmentShader);
-    Setup(std::move(shader), dsLayout);
+    Setup(std::move(shader), dsLayout, depthWrite);
 }
 
-void Pipeline::Build(const std::string name, std::vector<char> vert_shader, std::vector<char> frag_shader, std::vector<VkDescriptorSetLayout> dsLayout)
+void Pipeline::Build(const std::string name, std::vector<char> vert_shader, std::vector<char> frag_shader, std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite)
 {
     auto shader = std::make_unique<Shader>(_serviceLocator, vert_shader, frag_shader);
-    Setup(std::move(shader), dsLayout);
+    Setup(std::move(shader), dsLayout, depthWrite);
 }
 
 Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator)

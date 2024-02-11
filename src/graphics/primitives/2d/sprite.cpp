@@ -74,7 +74,6 @@ Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator, std::string path)
     indexBuffer->CreateIndexBufferUint16(serviceLocator, _indices);
 
     this->position = glm::vec3(0.0f, 0.0f, 0.0f);
-    this->textureId = 1;
     this->color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     this->scale = glm::vec3(1.0, 1.0, 1.0);
     this->texture->CreateTextureImage(path);
@@ -149,14 +148,14 @@ void Sprite::UpdateDescriptorSets()
     }
 
     VkDescriptorSetLayoutBinding samplerLayoutBinding{};
-    samplerLayoutBinding.binding = 2;
+    samplerLayoutBinding.binding = 1;
     samplerLayoutBinding.descriptorCount = 1;
     samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
     samplerLayoutBinding.pImmutableSamplers = nullptr;
     samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
     VkDescriptorSetLayoutBinding texturesLayoutBinding{};
-    texturesLayoutBinding.binding = 3;
+    texturesLayoutBinding.binding = 2;
     texturesLayoutBinding.descriptorCount = 1;
     texturesLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
     texturesLayoutBinding.pImmutableSamplers = nullptr;

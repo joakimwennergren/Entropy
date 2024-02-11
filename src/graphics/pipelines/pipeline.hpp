@@ -38,14 +38,18 @@ namespace Entropy
                 Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator);
                 ~Pipeline();
 
-                void Setup(std::unique_ptr<Shader> shader, std::vector<VkDescriptorSetLayout> dsLayout);
+                void Setup(std::unique_ptr<Shader> shader, std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite);
 
-                void Build(const std::string name, const std::string vertexShader, const std::string fragmentShader, std::vector<VkDescriptorSetLayout> dsLayout);
-                void Build(const std::string name, std::vector<char> vert_shader, std::vector<char> frag_shader, std::vector<VkDescriptorSetLayout> dsLayout);
-                inline VkPipeline GetPipeline() {
-                    return _pipeline; };
-                inline VkPipelineLayout GetPipelineLayout() {
-                    return _pipelineLayout; };
+                void Build(const std::string name, const std::string vertexShader, const std::string fragmentShader, std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite);
+                void Build(const std::string name, std::vector<char> vert_shader, std::vector<char> frag_shader, std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite);
+                inline VkPipeline GetPipeline()
+                {
+                    return _pipeline;
+                };
+                inline VkPipelineLayout GetPipelineLayout()
+                {
+                    return _pipelineLayout;
+                };
                 std::vector<std::shared_ptr<Descriptorset>> descriptorSets;
 
             protected:

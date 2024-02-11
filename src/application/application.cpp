@@ -26,6 +26,8 @@ Application::Application()
     glfwSetWindowUserPointer(_window, this);
     glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
     glfwSetCursorPosCallback(_window, cursorPositionCallback);
+    glfwSetKeyCallback(_window, keyCallback);
+    glfwSetCursorPosCallback(_window, cursor_position_callback);
 
     // Get initial window framebuffer size
     int width, height;
@@ -46,6 +48,11 @@ Application::Application()
 
     // Add services to service locator
     serviceLocator = std::make_shared<ServiceLocator>();
+
+    _keyboard = std::make_shared<Keyboard>(serviceLocator);
+    _camera = std::make_shared<Cam>(glm::vec3(0.0f, 0.0f, 3.0f));
+    serviceLocator->AddService(_camera);
+    serviceLocator->AddService(_keyboard);
     serviceLocator->AddService(physicalDevice);
     serviceLocator->AddService(logicalDevice);
     serviceLocator->AddService(descriptorPool);
@@ -62,6 +69,8 @@ Application::Application()
     serviceLocator->AddService(lua);
 
     _renderer = std::make_shared<Renderer>(serviceLocator);
+
+    // glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void Application::ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::shared_ptr<Lua> lua)
@@ -124,6 +133,18 @@ void Application::Run()
         this->OnRender(_deltaTime);
         this->_renderer->Render(width, height);
 
+        if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+            glfwSetWindowShouldClose(_window, true);
+
+        if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS)
+            _camera->ProcessKeyboard(FORWARD, 0.3);
+        if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS)
+            _camera->ProcessKeyboard(BACKWARD, 0.3);
+        if (glfwGetKey(_window, GLFW_KEY_A) == GLFW_PRESS)
+            _camera->ProcessKeyboard(LEFT, 0.3);
+        if (glfwGetKey(_window, GLFW_KEY_D) == GLFW_PRESS)
+            _camera->ProcessKeyboard(RIGHT, 0.3);
+
         float timeStep = 1.0f / 60.0f;
         // int32 velocityIterations = 6;
         // int32 positionIterations = 2;
@@ -156,4 +177,38 @@ void cursorPositionCallback(GLFWwindow *window, double x, double y)
         // app->GetRenderer()->pane->position = glm::vec3((float)x, (float)y, 0.0);
     }
 }
+
+void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
+{
+}
+
+void cursor_position_callback(GLFWwindow *window, double xposIn, double yposIn)
+{
+
+    auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
+
+    if (app == nullptr)
+    {
+        return;
+    }
+
+    float xpos = static_cast<float>(xposIn);
+    float ypos = static_cast<float>(yposIn);
+
+    if (app->firstMouse)
+    {
+        app->lastX = xpos;
+        app->lastY = ypos;
+        app->firstMouse = false;
+    }
+
+    float xoffset = xpos - app->lastX;
+    float yoffset = app->lastY - ypos; // reversed since y-coordinates go from bottom to top
+
+    app->lastX = xpos;
+    app->lastY = ypos;
+
+    app->_camera->ProcessMouseMovement(xoffset, yoffset);
+}
+
 #endif

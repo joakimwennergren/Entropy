@@ -32,6 +32,8 @@
 #include <scripting/lua.hpp>
 #include <input/mouse/mouse.hpp>
 #include <filesystem/filesystem.hpp>
+#include <input/keyboard/keyboard.hpp>
+#include <graphics/cameras/flying_camera.hpp>
 
 using namespace Entropy::Graphics::Instances;
 using namespace Entropy::Graphics::Surfaces;
@@ -45,7 +47,7 @@ using namespace Entropy::SceneGraphs;
 using namespace Entropy::Scripting;
 using namespace Entropy::Physics;
 using namespace Entropy;
-// using namespace Entropy::Input;
+using namespace Entropy::Input;
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
 
@@ -58,6 +60,8 @@ using namespace Entropy::ServiceLocators;
 
 void framebufferResizeCallback(GLFWwindow *window, int width, int height);
 void cursorPositionCallback(GLFWwindow *window, double x, double y);
+void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
+static void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
 
 class Application
 {
@@ -73,6 +77,11 @@ public:
 
     // @todo this shouldn't be public
     inline std::shared_ptr<Renderer> GetRenderer() { return this->_renderer; };
+    std::shared_ptr<Keyboard> _keyboard;
+    std::shared_ptr<Cam> _camera;
+    bool firstMouse;
+    float lastX = 0.0;
+    float lastY = 0.0;
 
     // @todo look over if this should be protected..
 protected:

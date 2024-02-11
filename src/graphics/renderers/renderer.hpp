@@ -7,6 +7,7 @@
 #include <graphics/renderpasses/renderpass.hpp>
 #include <graphics/pipelines/skinned_pipeline.hpp>
 #include <graphics/pipelines/cubemap_pipeline.hpp>
+#include <graphics/pipelines/2d_pipeline.hpp>
 #include <graphics/data/vertex.hpp>
 #include <graphics/commandbuffers/commandbuffer.hpp>
 #include <graphics/data/ubo.hpp>
@@ -26,7 +27,10 @@
 #include <graphics/primitives/2d/sprite.hpp>
 #include <graphics/buffers/uniformbuffer.hpp>
 
+#include <graphics/cameras/flying_camera.hpp>
+
 #include <graphics/utilities/utilities.hpp>
+#include <input/keyboard/keyboard.hpp>
 
 using namespace Entropy::SceneGraphs;
 using namespace Entropy::Graphics::Utilities;
@@ -42,6 +46,7 @@ using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Swapchains;
 using namespace Entropy::Graphics::Primitives;
 using namespace Entropy::Graphics::CubeMaps;
+using namespace Entropy::Input;
 
 namespace Entropy
 {
@@ -107,7 +112,8 @@ namespace Entropy
 
                 size_t pad_uniform_buffer_size(size_t originalSize);
 
-                float angle = 0.0f;
+                std::shared_ptr<Keyboard> _keyboard;
+                std::shared_ptr<Cam> _cam;
             };
         }
     }

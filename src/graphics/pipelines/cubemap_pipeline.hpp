@@ -14,13 +14,13 @@ namespace Entropy
                 CubeMapPipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator) : Pipeline(renderPass, serviceLocator)
                 {
                     auto dsLayouts = Setup();
-                    Build("SkinnedPipeline", "cubemap_vert.spv", "cubemap_frag.spv", dsLayouts);
+                    Build("SkinnedPipeline", "cubemap_vert.spv", "cubemap_frag.spv", dsLayouts, VK_FALSE);
                 }
 
                 CubeMapPipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator, std::vector<char> vert_shader, std::vector<char> frag_shader) : Pipeline(renderPass, serviceLocator)
                 {
                     auto dsLayouts = Setup();
-                    Build("SkinnedPipeline", vert_shader, frag_shader, dsLayouts);
+                    Build("SkinnedPipeline", vert_shader, frag_shader, dsLayouts, VK_FALSE);
                 }
 
             private:

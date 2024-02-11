@@ -14,13 +14,13 @@ namespace Entropy
                 SkinnedPipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator) : Pipeline(renderPass, serviceLocator)
                 {
                     auto dsLayouts = Setup();
-                    Build("SkinnedPipeline", "vert.spv", "frag.spv", dsLayouts);
+                    Build("SkinnedPipeline", "vert.spv", "frag.spv", dsLayouts, VK_TRUE);
                 }
 
                 SkinnedPipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator, std::vector<char> vert_shader, std::vector<char> frag_shader) : Pipeline(renderPass, serviceLocator)
                 {
                     auto dsLayouts = Setup();
-                    Build("SkinnedPipeline", vert_shader, frag_shader, dsLayouts);
+                    Build("SkinnedPipeline", vert_shader, frag_shader, dsLayouts, VK_TRUE);
                 }
 
             private:

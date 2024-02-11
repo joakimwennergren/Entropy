@@ -23,6 +23,8 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
     _logicalDevice = serviceLocator->GetService<LogicalDevice>();
     _swapChain = serviceLocator->GetService<Swapchain>();
     _sceneGraph = serviceLocator->GetService<SceneGraph>();
+    _keyboard = serviceLocator->GetService<Keyboard>();
+    _cam = serviceLocator->GetService<Cam>();
     auto physicalDevice = serviceLocator->GetService<PhysicalDevice>();
 
     // Create synchronizer
@@ -111,7 +113,7 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator, std::vector<c
     // Create skinned pipeline
     _pipelines["SkinnedPipeline"] = std::make_shared<SkinnedPipeline>(_renderPass, serviceLocator, vert_shader, frag_shader);
     _pipelines["CubeMapPipeline"] = std::make_shared<CubeMapPipeline>(_renderPass, serviceLocator, vert_shader, frag_shader);
-
+    _pipelines["Pipeline2D"] = std::make_shared<Pipeline2D>(_renderPass, serviceLocator, vert_shader, frag_shader);
     Setup(serviceLocator);
 }
 
@@ -122,6 +124,7 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
     // Create skinned pipeline
     _pipelines["SkinnedPipeline"] = std::make_shared<SkinnedPipeline>(_renderPass, serviceLocator);
     _pipelines["CubeMapPipeline"] = std::make_shared<CubeMapPipeline>(_renderPass, serviceLocator);
+    _pipelines["Pipeline2D"] = std::make_shared<Pipeline2D>(_renderPass, serviceLocator);
     Setup(serviceLocator);
 }
 
@@ -197,22 +200,30 @@ void Renderer::Render(int width, int height)
 
     uint32_t modelIndex = 0;
 
-    // Update UBO
-    UniformBufferObject ubo{};
-    // ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    // ubo.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
-    // ubo.proj[1][1] *= -1;
-    ubo.view = _camera->matrices.view;
-    ubo.invView = glm::inverse(_camera->matrices.view);
-    ubo.proj = _camera->matrices.perspective;
-    _camera->update(0.1);
-
-    // ubo.screen = glm::vec2((float)width, (float)height);
-
-    memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));
-
     for (auto &renderable : _sceneGraph->renderables)
     {
+
+        // Update UBO
+        UniformBufferObject ubo{};
+
+        if (renderable->type == 1)
+        {
+            ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            ubo.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
+            ubo.proj[1][1] *= -1;
+        }
+        else
+        {
+            ubo.view = _cam->GetViewMatrix();
+            ubo.invView = glm::inverse(_cam->GetViewMatrix());
+            ubo.proj = _camera->matrices.perspective;
+            _camera->update(0.1);
+        }
+
+        // ubo.screen = glm::vec2((float)width, (float)height);
+
+        memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));
+
         if (renderable->children.size() == 0)
         {
             DrawRenderable(renderable, width, height, modelIndex);
@@ -241,11 +252,6 @@ void Renderer::Render(int width, int height)
 
 void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width, int height, uint32_t modelIndex)
 {
-    if (renderable->type == 1)
-    {
-        auto sprite = std::dynamic_pointer_cast<Sprite>(renderable);
-        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["SkinnedPipeline"]->GetPipelineLayout(), 1, 1, &sprite->_descriptorSet, 0, nullptr);
-    }
 
     // @todo refactors this
 
@@ -321,6 +327,18 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
     */
 
     // vkCmdPushConstants(currentCmdBuffer, _pipeline->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstant), &constant);
+
+    if (renderable->type == 1)
+    {
+        auto sprite = std::dynamic_pointer_cast<Sprite>(renderable);
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["Pipeline2D"]->GetPipelineLayout(), 1, 1, &sprite->_descriptorSet, 0, nullptr);
+    }
+
+    if (renderable->type == 1 || renderable->type == 0)
+    {
+        vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["Pipeline2D"]->GetPipeline());
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["Pipeline2D"]->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &offset);
+    }
 
     if (renderable->type == 4)
     {
