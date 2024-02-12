@@ -20,6 +20,7 @@ void CubeMap::LoadCubemap(std::string filename, VkFormat format)
     ktxTexture *ktxTexture;
 
 #if defined(__ANDROID__)
+    /*
     // Textures are stored inside the apk on Android (compressed)
     // So they need to be loaded via the asset manager
     AAsset *asset = AAssetManager_open(androidApp->activity->assetManager, filename.c_str(), AASSET_MODE_STREAMING);
@@ -35,6 +36,7 @@ void CubeMap::LoadCubemap(std::string filename, VkFormat format)
     AAsset_close(asset);
     result = ktxTexture_CreateFromMemory(textureData, size, KTX_TEXTURE_CREATE_LOAD_IMAGE_DATA_BIT, &ktxTexture);
     delete[] textureData;
+     */
 #else
     result = ktxTexture_CreateFromNamedFile(filename.c_str(), KTX_TEXTURE_CREATE_LOAD_IMAGE_DATA_BIT, &ktxTexture);
 #endif

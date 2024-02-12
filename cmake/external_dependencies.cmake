@@ -34,7 +34,7 @@ find_package(Vulkan REQUIRED)
 add_subdirectory(external/KTX-Software)
 
 # Windowing on desktop
-add_subdirectory(external/glfw)
+#add_subdirectory(external/glfw)
 
 # Lua SOL 2
 add_subdirectory(external/sol2)

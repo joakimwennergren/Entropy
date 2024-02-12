@@ -65,7 +65,7 @@ target_link_libraries(${PROJECT_NAME}
 # Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk)
 target_link_libraries(${PROJECT_NAME}
     ${Vulkan_LIBRARIES}
-    glfw
+   # glfw
 )
 
 # Build config file

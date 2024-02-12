@@ -32,6 +32,10 @@
 #include <graphics/utilities/utilities.hpp>
 #include <input/keyboard/keyboard.hpp>
 
+#ifdef BUILD_FOR_ANDROID
+#include <android/asset_manager.h>
+#endif
+
 using namespace Entropy::SceneGraphs;
 using namespace Entropy::Graphics::Utilities;
 using namespace Entropy::Renderables;
@@ -58,7 +62,10 @@ namespace Entropy
             {
             public:
                 Renderer(std::shared_ptr<ServiceLocator> serviceLocator);
-                Renderer(std::shared_ptr<ServiceLocator> serviceLocator, std::vector<char> vert_shader, std::vector<char> frag_shader);
+#ifdef BUILD_FOR_ANDROID
+                Renderer(std::shared_ptr<ServiceLocator> serviceLocator, AAssetManager *assetManager);
+                std::vector<char> loadShader(std::string filename, AAssetManager *assetManager);
+#endif
                 void Render(int width, int height);
                 void SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex);
                 void DrawRenderable(std::shared_ptr<Renderable> renderable, int width, int height, uint32_t modelIndex);

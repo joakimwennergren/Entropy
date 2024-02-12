@@ -106,17 +106,47 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
     _camera->setRotation(glm::vec3(0.0f));
 }
 
-Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator, std::vector<char> vert_shader, std::vector<char> frag_shader)
+#ifdef BUILD_FOR_ANDROID
+
+std::vector<char> Renderer::loadShader(std::string filename, AAssetManager *assetManager)
 {
+    AAsset *file = AAssetManager_open(assetManager,
+                                      filename.c_str(), AASSET_MODE_BUFFER);
+    size_t fileLength = AAsset_getLength(file);
+    char *fileContent = new char[fileLength];
+    AAsset_read(file, fileContent, fileLength);
+    AAsset_close(file);
+
+    std::vector<char> code;
+
+    for (uint32_t i = 0; i < fileLength; i++)
+    {
+        code.push_back(fileContent[i]);
+    }
+    return code;
+}
+
+Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator, AAssetManager *assetManager)
+{
+
+    auto skinnedVert = loadShader("skinned_vert.spv", assetManager);
+    auto skinnedFrag = loadShader("skinned_frag.spv", assetManager);
+
+    auto cubemapVert = loadShader("cubemap_vert.spv", assetManager);
+    auto cubemapFrag = loadShader("cubemap_frag.spv", assetManager);
+
+    auto twodVert = loadShader("2d_vert.spv", assetManager);
+    auto twodFrag = loadShader("2d_frag.spv", assetManager);
+
     // Create renderpass
     _renderPass = std::make_shared<RenderPass>(serviceLocator);
     // Create skinned pipeline
-    _pipelines["SkinnedPipeline"] = std::make_shared<SkinnedPipeline>(_renderPass, serviceLocator, vert_shader, frag_shader);
-    _pipelines["CubeMapPipeline"] = std::make_shared<CubeMapPipeline>(_renderPass, serviceLocator, vert_shader, frag_shader);
-    _pipelines["Pipeline2D"] = std::make_shared<Pipeline2D>(_renderPass, serviceLocator, vert_shader, frag_shader);
+    _pipelines["SkinnedPipeline"] = std::make_shared<SkinnedPipeline>(_renderPass, serviceLocator, skinnedVert, skinnedFrag);
+    _pipelines["CubeMapPipeline"] = std::make_shared<CubeMapPipeline>(_renderPass, serviceLocator, cubemapVert, cubemapFrag);
+    _pipelines["Pipeline2D"] = std::make_shared<Pipeline2D>(_renderPass, serviceLocator, twodVert, twodFrag);
     Setup(serviceLocator);
 }
-
+#endif
 Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
 {
     // Create renderpass
