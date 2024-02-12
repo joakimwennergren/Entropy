@@ -31,10 +31,13 @@ add_subdirectory(external/spdlog)
 # Vulkan
 find_package(Vulkan REQUIRED)
 
+set(KTX_FEATURE_TESTS OFF)
 add_subdirectory(external/KTX-Software)
 
 # Windowing on desktop
-#add_subdirectory(external/glfw)
+if(WIN32 OR UNIX OR APPLE)
+  add_subdirectory(external/glfw)
+endif()
 
 # Lua SOL 2
 add_subdirectory(external/sol2)
@@ -89,4 +92,6 @@ add_library(lua OBJECT ${_LUA_LIB_SRC})
 set(TINYGLTF_INSTALL OFF)
 set(TINYGLTF_BUILD_LOADER_EXAMPLE  OFF)
 add_subdirectory(external/tinygltf)
-target_compile_definitions(tinygltf PRIVATE TINYGLTF_ANDROID_LOAD_FROM_ASSETS=1)
+if(ANDROID)
+  target_compile_definitions(tinygltf PRIVATE TINYGLTF_ANDROID_LOAD_FROM_ASSETS=1)
+endif()

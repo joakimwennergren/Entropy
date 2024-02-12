@@ -62,11 +62,19 @@ target_link_libraries(${PROJECT_NAME}
     ktx
 )
 
-# Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk)
-target_link_libraries(${PROJECT_NAME}
-    ${Vulkan_LIBRARIES}
-   # glfw
-)
+if(ANDROID)
+    target_link_libraries(${PROJECT_NAME}
+        ${Vulkan_LIBRARIES}
+    )
+endif()
+
+if(WIN32 OR UNIX OR APPLE)
+    # Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk)
+    target_link_libraries(${PROJECT_NAME}
+        ${Vulkan_LIBRARIES}
+        glfw
+    )
+endif()
 
 # Build config file
 configure_file(config.h.in ${PROJECT_SOURCE_DIR}/include/config.hpp @ONLY)

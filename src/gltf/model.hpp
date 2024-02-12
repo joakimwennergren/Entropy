@@ -9,7 +9,9 @@
 #pragma once
 
 #define NOMINMAX
+#ifdef BUILD_FOR_ANDROID
 #define TINYGLTF_ANDROID_LOAD_FROM_ASSETS
+#endif
 
 #include <iostream>
 #include <stdlib.h>
