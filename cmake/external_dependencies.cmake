@@ -15,16 +15,39 @@ add_subdirectory(external/spdlog)
 #add_subdirectory(external/asio.cmake)
 
 # HTTP 
-#set(BUILD_CURL_EXE OFF)
-#set(CURL_STATICLIB ON)
-#set(SSL_ENABLED ON)
+set(BUILD_CURL_EXE OFF)
+set(CURL_STATICLIB ON)
+set(SSL_ENABLED ON)
 
-#if(WIN32)
-#    set(USE_WINDOWS_SSPI ON)
-#   set(USE_SCHANNEL ON)
-#endif(WIN32)
+if(WIN32)
+    set(USE_WINDOWS_SSPI ON)
+    set(USE_SCHANNEL ON)
+else()
+  set(BUILD_OPENSSL ON)
+  set(OPENSSL_BUILD_VERSION 3.1.5)
+  add_subdirectory(external/openssl-cmake ${CMAKE_CURRENT_BINARY_DIR}/external/openssl-cmake)
+  add_library(OpenSSL::SSL OBJECT IMPORTED)
+  add_library(OpenSSL::Crypto OBJECT IMPORTED)
+  set_target_properties(OpenSSL::SSL PROPERTIES IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/external/openssl-cmake/usr/local/lib/libssl.a)
+  set_target_properties(OpenSSL::Crypto PROPERTIES IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/external/openssl-cmake/usr/local/lib/libcrypto.a)
+  set(OPENSSL_ROOT_DIR ${CMAKE_BINARY_DIR}/external/openssl-cmake/usr/local)
+  set(OPENSSL_INCLUDE_DIR ${CMAKE_BINARY_DIR}/external/openssl-cmake/usr/local/include)
 
-#add_subdirectory(external/curl)
+  set(HAVE_OPENSSL_CRYPTO_H TRUE CACHE INTERNAL "" FORCE)
+  set(HAVE_OPENSSL_ERR_H TRUE CACHE INTERNAL "" FORCE)
+  set(HAVE_OPENSSL_PEM_H TRUE CACHE INTERNAL "" FORCE)
+  set(HAVE_OPENSSL_RSA_H TRUE CACHE INTERNAL "" FORCE)
+  set(HAVE_OPENSSL_SSL_H TRUE CACHE INTERNAL "" FORCE)
+  set(HAVE_OPENSSL_X509_H TRUE CACHE INTERNAL "" FORCE)
+  set(HAVE_OPENSSL_RAND_H TRUE CACHE INTERNAL "" FORCE)
+  set(HAVE_RAND_STATUS TRUE CACHE INTERNAL "" FORCE)
+  set(HAVE_RAND_SCREEN FALSE CACHE INTERNAL "" FORCE)
+  set(HAVE_RAND_EGD FALSE CACHE INTERNAL "" FORCE)
+endif(WIN32)
+
+
+set(CURL_USE_OPENSSL OFF)
+add_subdirectory(external/curl)
 
 # Graphics API
 

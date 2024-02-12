@@ -40,3 +40,9 @@
 [submodule "KTX-Software"]
 	path = external/KTX-Software
 	url = https://github.com/KhronosGroup/KTX-Software.git
+[submodule "tracy"]
+	path = external/tracy
+	url = https://github.com/wolfpld/tracy.git
+[submodule "openssl-cmake"]
+	path = external/openssl-cmake
+	url = https://github.com/viaduck/openssl-cmake.git

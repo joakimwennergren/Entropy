@@ -52,7 +52,10 @@ target_link_libraries(${PROJECT_NAME}
     lua
     glm
     #asio::asio
-    #libcurl_shared #libcurl_static 
+    libcurl_static
+    #libcurl_shared  
+    OpenSSL::SSL
+    OpenSSL::Crypto
     freetype
     eventpp
     spdlog
