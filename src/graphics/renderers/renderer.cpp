@@ -102,7 +102,7 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
 
     _camera = std::make_shared<Camera>();
     _camera->type = Camera::CameraType::firstperson;
-    _camera->setPosition(glm::vec3(0.0f, 0.0f, -30.0f));
+    _camera->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
     _camera->setRotation(glm::vec3(0.0f));
 }
 

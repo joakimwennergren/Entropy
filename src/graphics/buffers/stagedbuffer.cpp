@@ -10,6 +10,6 @@ StagedBuffer::StagedBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkDev
 
     void *data;
     vkMapMemory(logicalDevice->Get(), _bufferMemory, 0, size, 0, &data);
-    memcpy(data, dataIn, static_cast<size_t>(size));
+    std::memmove(data, dataIn, static_cast<size_t>(size));
     vkUnmapMemory(logicalDevice->Get(), _bufferMemory);
 }

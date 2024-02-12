@@ -14,7 +14,7 @@ RenderPass::RenderPass(std::shared_ptr<ServiceLocator> serviceLocator)
     _logicalDevice = logicalDevice;
     _physicalDevice = physicalDevice;
 
-    RecreateDepthBuffer();
+    // RecreateDepthBuffer();
 
     VkAttachmentDescription depthAttachment{};
     depthAttachment.format = findDepthFormat();
@@ -52,9 +52,9 @@ RenderPass::RenderPass(std::shared_ptr<ServiceLocator> serviceLocator)
     subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
     subpass.colorAttachmentCount = 1;
     subpass.pColorAttachments = &colorAttachmentRef;
-    subpass.pDepthStencilAttachment = &depthAttachmentRef;
+    // subpass.pDepthStencilAttachment = &depthAttachmentRef;
 
-    std::array<VkAttachmentDescription, 2> attachments = {colorAttachment, depthAttachment};
+    std::array<VkAttachmentDescription, 1> attachments = {colorAttachment, /*depthAttachment*/};
     VkRenderPassCreateInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
     renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
@@ -94,9 +94,9 @@ void RenderPass::Begin(std::shared_ptr<CommandBuffer> commandBuffer, uint32_t im
     renderPassInfo.renderArea.offset = {0, 0};
     renderPassInfo.renderArea.extent = _swapChain->swapChainExtent;
 
-    std::array<VkClearValue, 2> clearValues{};
+    std::array<VkClearValue, 1> clearValues{};
     clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
-    clearValues[1].depthStencil = {1.0f, 0};
+    // clearValues[1].depthStencil = {1.0f, 0};
 
     renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
     renderPassInfo.pClearValues = clearValues.data();
@@ -115,9 +115,10 @@ void RenderPass::CreateFramebuffers()
 
     for (size_t i = 0; i < _swapChain->swapChainImageViews.size(); i++)
     {
-        std::array<VkImageView, 2> attachments = {
-            _swapChain->swapChainImageViews[i],
-            depthImageView};
+        std::array<VkImageView, 1> attachments = {
+            _swapChain->swapChainImageViews[i] /*,
+             depthImageView*/
+        };
 
         VkFramebufferCreateInfo framebufferInfo{};
         framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;

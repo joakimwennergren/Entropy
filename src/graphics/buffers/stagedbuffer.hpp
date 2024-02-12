@@ -14,6 +14,9 @@
 #include <graphics/buffers/buffer.hpp>
 #include <graphics/data/vertex.hpp>
 
+#include <cstring>
+#include <iostream>
+
 using namespace Entropy::Graphics::Buffers;
 
 namespace Entropy

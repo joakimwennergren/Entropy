@@ -51,6 +51,40 @@ Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator, FT_Bitmap bitmap)
     UpdateDescriptorSets();
 }
 
+#ifdef BUILD_FOR_ANDROID
+Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator, std::string path, AAssetManager *assetmanager)
+{
+    _serviceLocator = serviceLocator;
+
+    script = std::make_unique<Script>();
+
+    _indices = {0, 1, 2, 2, 3, 0};
+
+    _vertices = {
+        {{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+        {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
+        {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
+        {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
+
+    texture = new Texture(serviceLocator);
+
+    // Create buffers @todo temp!!!
+    vertexBuffer = std::make_unique<VertexBuffer>(serviceLocator, _vertices);
+
+    indexBuffer = std::make_unique<Buffer>();
+    indexBuffer->CreateIndexBufferUint16(serviceLocator, _indices);
+
+    this->position = glm::vec3(0.0f, 0.0f, 0.0f);
+    this->color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    this->scale = glm::vec3(1.0, 1.0, 1.0);
+    this->texture->CreateTextureImage(path, assetmanager);
+
+    UpdateDescriptorSets();
+
+    type = 1;
+}
+#endif
+
 Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator, std::string path)
 {
     _serviceLocator = serviceLocator;

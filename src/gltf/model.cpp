@@ -307,7 +307,7 @@ Model::Model(std::shared_ptr<ServiceLocator> serviceLocator)
     _serviceLocator = serviceLocator;
 
     noTexture = new Texture(_serviceLocator);
-    noTexture->CreateTextureImage("/Users/joakim/Entropy-Engine/resources/textures/checkered.png");
+    noTexture->CreateTextureImage("C:\\Users\\joaki\\Desktop\\Entropy-Engine\\resources\\textures\\checkered.png");
 
     VkPhysicalDeviceProperties properties{};
     vkGetPhysicalDeviceProperties(serviceLocator->GetService<PhysicalDevice>()->Get(), &properties);

@@ -283,6 +283,57 @@ void Texture::CreateTextureImageFromPixels(unsigned char *pixels, int width, int
     hasTexture = true;
 }
 
+#ifdef BUILD_FOR_ANDROID
+
+void Texture::CreateTextureImage(std::string path, AAssetManager *assetManager)
+{
+    auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
+
+    // Read the file:
+    AAsset *file = AAssetManager_open(assetManager,
+                                      path.c_str(), AASSET_MODE_BUFFER);
+    size_t fileLength = AAsset_getLength(file);
+    stbi_uc *fileContent = new unsigned char[fileLength];
+    AAsset_read(file, fileContent, fileLength);
+    AAsset_close(file);
+
+    uint32_t imgWidth, imgHeight, n;
+    unsigned char *imageData = stbi_load_from_memory(
+        fileContent, fileLength, reinterpret_cast<int *>(&imgWidth),
+        reinterpret_cast<int *>(&imgHeight), reinterpret_cast<int *>(&n), 4);
+    assert(n == 4);
+
+#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
+    auto colorFormat = VK_FORMAT_R8G8B8A8_UNORM;
+#elif defined(BUILD_FOR_WINDOWS)
+    auto colorFormat = VK_FORMAT_R8G8B8A8_UNORM;
+#else
+    // auto colorFormat = VK_FORMAT_B8G8R8A8_SRGB;
+    auto colorFormat = VK_FORMAT_R8G8B8A8_UNORM;
+#endif
+
+    // stbi_set_flip_vertically_on_load(true);
+    VkDeviceSize imageSize = imgWidth * imgHeight * 4;
+
+    StagedBuffer buffer(_serviceLocator, imageSize, imageData);
+
+    // stbi_image_free(pixels);
+
+    auto mem = buffer.GetBufferMemory();
+    auto buf = buffer.GetVulkanBuffer();
+
+    CreateImage(imgWidth, imgHeight, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _textureImage, mem);
+
+    TransitionImageLayout(_textureImage, colorFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(imgWidth), static_cast<uint32_t>(imgHeight));
+    TransitionImageLayout(_textureImage, colorFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+    auto imageView = ImageView(_logicalDevice->Get(), _textureImage, colorFormat);
+    _imageView = imageView.Get();
+    hasTexture = true;
+}
+#endif
+
 void Texture::CreateTextureImage(std::string path)
 {
 

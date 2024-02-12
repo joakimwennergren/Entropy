@@ -53,10 +53,10 @@ target_link_libraries(${PROJECT_NAME}
     lua
     glm
     #asio::asio
-    libcurl_static
+    #libcurl_static
     #libcurl_shared  
-    OpenSSL::SSL
-    OpenSSL::Crypto
+    #OpenSSL::SSL
+    #OpenSSL::Crypto
     freetype
     eventpp
     spdlog
@@ -66,17 +66,15 @@ target_link_libraries(${PROJECT_NAME}
     ktx
 )
 
-if(ANDROID)
-    target_link_libraries(${PROJECT_NAME}
-        #${Vulkan_LIBRARIES}
-    )
-endif()
+target_link_libraries(${PROJECT_NAME}
+    ${Vulkan_LIBRARIES}
+)
 
 if(WIN32 OR UNIX OR APPLE)
     # Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk)
     target_link_libraries(${PROJECT_NAME}
         ${Vulkan_LIBRARIES}
-        #glfw
+       #glfw
     )
 endif()
 

@@ -17,6 +17,10 @@
 #include <ktx.h>
 #include <ktxvulkan.h>
 
+#ifdef BUILD_FOR_ANDROID
+#include <android/asset_manager.h>
+#endif
+
 using namespace Entropy::Graphics::Buffers;
 using namespace Entropy::Graphics::Utilities;
 using namespace Entropy::Graphics::CommandBuffers;
@@ -51,6 +55,15 @@ namespace Entropy
                  * @param path
                  */
                 void CreateTextureImage(std::string path);
+
+#ifdef BUILD_FOR_ANDROID
+                /**
+                 * @brief Create a Texture Image object
+                 *
+                 * @param path
+                 */
+                void CreateTextureImage(std::string path, AAssetManager *assetManager);
+#endif
 
                 /**
                  * @brief Create a Texture Image object

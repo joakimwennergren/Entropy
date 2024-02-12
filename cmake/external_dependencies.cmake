@@ -52,7 +52,7 @@ set(CURL_USE_OPENSSL OFF)
 # Graphics API
 
 # Vulkan
-#find_package(Vulkan REQUIRED)
+find_package(Vulkan REQUIRED)
 
 set(KTX_FEATURE_TESTS OFF)
 add_subdirectory(external/KTX-Software)
@@ -111,11 +111,11 @@ set(_LUA_LIB_SRC
 )
 
 add_library(lua OBJECT ${_LUA_LIB_SRC})
-add_compile_definitions(lua PRIVATE LUA_USE_IOS)
+#add_compile_definitions(lua PRIVATE LUA_USE_IOS)
 
 set(TINYGLTF_INSTALL OFF)
 set(TINYGLTF_BUILD_LOADER_EXAMPLE  OFF)
 add_subdirectory(external/tinygltf)
 if(ANDROID)
-  target_compile_definitions(tinygltf PRIVATE TINYGLTF_ANDROID_LOAD_FROM_ASSETS=1)
+  target_compile_definitions(tinygltf PRIVATE TINYGLTF_ANDROID_LOAD_FROM_ASSETS)
 endif()
