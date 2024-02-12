@@ -44,6 +44,7 @@ target_include_directories(${PROJECT_NAME}
         external 
         external/vulkan-headers
         external/lua-5.4.6/src
+        external/metal-cpp
 )
 
 # Link common dependencies
@@ -67,7 +68,7 @@ target_link_libraries(${PROJECT_NAME}
 
 if(ANDROID)
     target_link_libraries(${PROJECT_NAME}
-        ${Vulkan_LIBRARIES}
+        #${Vulkan_LIBRARIES}
     )
 endif()
 
@@ -75,7 +76,7 @@ if(WIN32 OR UNIX OR APPLE)
     # Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk)
     target_link_libraries(${PROJECT_NAME}
         ${Vulkan_LIBRARIES}
-        glfw
+        #glfw
     )
 endif()
 

@@ -25,7 +25,7 @@ if(WIN32)
 else()
   set(BUILD_OPENSSL ON)
   set(OPENSSL_BUILD_VERSION 3.1.5)
-  add_subdirectory(external/openssl-cmake ${CMAKE_CURRENT_BINARY_DIR}/external/openssl-cmake)
+  #add_subdirectory(external/openssl-cmake ${CMAKE_CURRENT_BINARY_DIR}/external/openssl-cmake)
   add_library(OpenSSL::SSL OBJECT IMPORTED)
   add_library(OpenSSL::Crypto OBJECT IMPORTED)
   set_target_properties(OpenSSL::SSL PROPERTIES IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/external/openssl-cmake/usr/local/lib/libssl.a)
@@ -47,19 +47,19 @@ endif(WIN32)
 
 
 set(CURL_USE_OPENSSL OFF)
-add_subdirectory(external/curl)
+#add_subdirectory(external/curl)
 
 # Graphics API
 
 # Vulkan
-find_package(Vulkan REQUIRED)
+#find_package(Vulkan REQUIRED)
 
 set(KTX_FEATURE_TESTS OFF)
 add_subdirectory(external/KTX-Software)
 
 # Windowing on desktop
 if(WIN32 OR UNIX OR APPLE)
-  add_subdirectory(external/glfw)
+  #add_subdirectory(external/glfw)
 endif()
 
 # Lua SOL 2
@@ -111,6 +111,7 @@ set(_LUA_LIB_SRC
 )
 
 add_library(lua OBJECT ${_LUA_LIB_SRC})
+add_compile_definitions(lua PRIVATE LUA_USE_IOS)
 
 set(TINYGLTF_INSTALL OFF)
 set(TINYGLTF_BUILD_LOADER_EXAMPLE  OFF)
