@@ -6,7 +6,6 @@
 #include FT_FREETYPE_H
 
 #include "config.hpp"
-
 #include "tiny_gltf.h"
 
 #include <graphics/buffers/buffer.hpp>
