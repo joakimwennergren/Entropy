@@ -8,6 +8,29 @@
 import Foundation
 import UIKit
 
+import AVFoundation
+var player: AVAudioPlayer?
+
+@_cdecl("say_hello")
+func playSound() {
+
+    print("")
+
+    guard let path = Bundle.main.path(forResource: "classy2", ofType:"wav") else {
+        return }
+    let url = URL(fileURLWithPath: path)
+
+    do {
+        player = try AVAudioPlayer(contentsOf: url)
+        player?.play()
+        player?.numberOfLoops = -1;
+        
+    } catch let error {
+        print(error.localizedDescription)
+    }
+}
+
+
 var _view = UIView()
 var _screen = UIScreen()
 var _touchPoint = CGPoint()

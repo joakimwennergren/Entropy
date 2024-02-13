@@ -33,5 +33,6 @@ layout (location = 5) out mat4 outInvView;
 void main() 
 {
 	outColor0 = uboInstance.color;
+	outUV0 = inUV0;
 	gl_Position =  uboView.projection * uboView.view * uboInstance.model * vec4(inPos, 1.0);
 }

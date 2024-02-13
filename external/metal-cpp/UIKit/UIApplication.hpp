@@ -33,7 +33,7 @@ namespace UI
 	class Application : public NS::Referencing< Application >
 	{
 		public:
-        Application() : Application() {}
+        Application();
 
         // A reference to the shared application instance.
             // Returns null before UI::ApplicationMain is called

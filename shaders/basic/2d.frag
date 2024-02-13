@@ -16,5 +16,5 @@ layout(location = 0) out vec4 outColor;
 void main() 
 {
     vec4 sampled = texture(sampler2D(_texture, texSampler), inUV0);
-    outColor = inColor0;
+    outColor = inColor0 * sampled;
 }

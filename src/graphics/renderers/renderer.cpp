@@ -59,7 +59,7 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
 
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
-        std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
+        std::array<VkWriteDescriptorSet, 4  > descriptorWrites{};
 
         VkDescriptorBufferInfo bufferInfo{};
         bufferInfo.buffer = rawUniformBuffers[i];
@@ -78,24 +78,31 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
         descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         descriptorWrites[0].descriptorCount = 1;
         descriptorWrites[0].pBufferInfo = &bufferInfo;
-
-        /*
-                descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                descriptorWrites[1].dstSet = _pipelines["CubeMapPipeline"]->descriptorSets[0]->Get()[i];
-                descriptorWrites[1].dstBinding = 0;
-                descriptorWrites[1].dstArrayElement = 0;
-                descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                descriptorWrites[1].descriptorCount = 1;
-                descriptorWrites[1].pBufferInfo = &bufferInfo;
-                */
-
+        
         descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptorWrites[1].dstSet = _pipelines["SkinnedPipeline"]->descriptorSets[0]->Get()[i];
-        descriptorWrites[1].dstBinding = 1;
+        descriptorWrites[1].dstSet = _pipelines["Pipeline2D"]->descriptorSets[0]->Get()[i];
+        descriptorWrites[1].dstBinding = 0;
         descriptorWrites[1].dstArrayElement = 0;
-        descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+        descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         descriptorWrites[1].descriptorCount = 1;
-        descriptorWrites[1].pBufferInfo = &bufferInfo2;
+        descriptorWrites[1].pBufferInfo = &bufferInfo;
+
+
+        descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[2].dstSet = _pipelines["SkinnedPipeline"]->descriptorSets[0]->Get()[i];
+        descriptorWrites[2].dstBinding = 1;
+        descriptorWrites[2].dstArrayElement = 0;
+        descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+        descriptorWrites[2].descriptorCount = 1;
+        descriptorWrites[2].pBufferInfo = &bufferInfo2;
+        
+        descriptorWrites[3].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[3].dstSet = _pipelines["Pipeline2D"]->descriptorSets[0]->Get()[i];
+        descriptorWrites[3].dstBinding = 1;
+        descriptorWrites[3].dstArrayElement = 0;
+        descriptorWrites[3].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+        descriptorWrites[3].descriptorCount = 1;
+        descriptorWrites[3].pBufferInfo = &bufferInfo2;
 
         vkUpdateDescriptorSets(_logicalDevice->Get(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
     }
@@ -196,7 +203,6 @@ void Renderer::Render(int width, int height)
 
     // current commandbuffer & descriptorset
     currentCmdBuffer = _commandBuffers[_currentFrame]->GetCommandBuffer();
-    currentDescriptorSet = _pipelines["SkinnedPipeline"]->descriptorSets[0]->Get()[_currentFrame];
 
     // Reset fences and current commandbuffer
     vkResetFences(_logicalDevice->Get(), 1, &_synchronizer->GetFences()[_currentFrame]);
@@ -366,27 +372,32 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
 
     if (renderable->type == 1 || renderable->type == 0)
     {
+        auto ds0 = _pipelines["Pipeline2D"]->descriptorSets[0]->Get()[_currentFrame];;
         vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["Pipeline2D"]->GetPipeline());
-        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["Pipeline2D"]->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &offset);
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["Pipeline2D"]->GetPipelineLayout(), 0, 1, &ds0, 1, &offset);
     }
 
     if (renderable->type == 4)
     {
+        auto ds0 = _pipelines["SkinnedPipeline"]->descriptorSets[0]->Get()[_currentFrame];
         vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["SkinnedPipeline"]->GetPipeline());
-        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["SkinnedPipeline"]->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &offset);
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["SkinnedPipeline"]->GetPipelineLayout(), 0, 1, &ds0, 1, &offset);
         auto model = std::dynamic_pointer_cast<Model>(renderable);
         for (auto node : model->nodes)
         {
             model->renderNode(node, currentCmdBuffer, _pipelines["SkinnedPipeline"], Material::ALPHAMODE_OPAQUE);
         }
+        
     }
     else if (renderable->type == 10)
     {
+        /*
         vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["CubeMapPipeline"]->GetPipeline());
         auto ds = _pipelines["CubeMapPipeline"]->descriptorSets[0]->Get()[_currentFrame];
         vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["CubeMapPipeline"]->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &offset);
         auto model = std::dynamic_pointer_cast<CubeMap>(renderable);
         model->_model->renderNode(model->_model->linearNodes[2], currentCmdBuffer, _pipelines["CubeMapPipeline"], Material::ALPHAMODE_OPAQUE);
+         */
     }
     else
     {

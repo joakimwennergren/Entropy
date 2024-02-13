@@ -111,7 +111,7 @@ void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap)
 
     hasTexture = true;
 }
-
+/*
 void Texture::CreateTextureImageFromKtx(unsigned char *pixels, unsigned int width, unsigned int height, int size, int mips, VkFormat format, ktxTexture *ktxTexture)
 {
 
@@ -211,13 +211,7 @@ void Texture::CreateTextureImageFromKtx(unsigned char *pixels, unsigned int widt
     sampler.maxLod = static_cast<float>(mips);
     sampler.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
     sampler.maxAnisotropy = 1.0f;
-    /*
-    if (vulkanDevice->features.samplerAnisotropy)
-    {
-        sampler.maxAnisotropy = vulkanDevice->properties.limits.maxSamplerAnisotropy;
-        sampler.anisotropyEnable = VK_TRUE;
-    }
-    */
+ 
     vkCreateSampler(_logicalDevice->Get(), &sampler, nullptr, &_sampler);
 
     VkImageSubresourceRange subresourceRange = {};
@@ -245,6 +239,7 @@ void Texture::CreateTextureImageFromKtx(unsigned char *pixels, unsigned int widt
     // Clean up staging resources
     ktxTexture_Destroy(ktxTexture);
 }
+ */
 
 void Texture::CreateTextureImageFromPixels(unsigned char *pixels, int width, int height)
 {
@@ -336,6 +331,8 @@ void Texture::CreateTextureImage(std::string path, AAssetManager *assetManager)
 
 void Texture::CreateTextureImage(std::string path)
 {
+    
+    std::cout << path << std::endl;
 
     auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
 

@@ -52,10 +52,10 @@ set(CURL_USE_OPENSSL OFF)
 # Graphics API
 
 # Vulkan
-find_package(Vulkan REQUIRED)
+#find_package(Vulkan REQUIRED)
 
-set(KTX_FEATURE_TESTS OFF)
-add_subdirectory(external/KTX-Software)
+#set(KTX_FEATURE_TESTS OFF)
+#add_subdirectory(external/KTX-Software)
 
 # Windowing on desktop
 if(WIN32 OR UNIX OR APPLE)
@@ -72,6 +72,11 @@ add_subdirectory(external/sol2)
 
 # Text rendering
 set(FT_WITH_BZIP2 OFF)
+set(FT_REQUIRE_HARFBUZZ OFF)
+set(FT_DISABLE_HARFBUZZ ON)
+set(FT_DISABLE_BROTLI ON)
+set(FT_DISABLE_PNG ON)
+set(FT_DISABLE_ZLIB ON)
 add_subdirectory(external/freetype-2.13.2)
 
 set(_LUA_SOURCE_DIR external/lua-5.4.6/src)
@@ -111,7 +116,7 @@ set(_LUA_LIB_SRC
 )
 
 add_library(lua OBJECT ${_LUA_LIB_SRC})
-#add_compile_definitions(lua PRIVATE LUA_USE_IOS)
+add_compile_definitions(lua PRIVATE LUA_USE_IOS)
 
 set(TINYGLTF_INSTALL OFF)
 set(TINYGLTF_BUILD_LOADER_EXAMPLE  OFF)

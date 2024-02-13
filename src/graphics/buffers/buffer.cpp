@@ -1,6 +1,5 @@
 #include "buffer.hpp"
 
-#include <android/log.h>
 
 using namespace Entropy::Graphics::Buffers;
 
@@ -41,11 +40,8 @@ void Buffer::CreateBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkDevi
     allocInfo.allocationSize = memRequirements.size;
     allocInfo.memoryTypeIndex = Utility::FindMemoryTypeIndex(serviceLocator, memRequirements.memoryTypeBits, properties);
 
-
-
     if (vkAllocateMemory(logicalDevice->Get(), &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
     {
-        __android_log_print(ANDROID_LOG_ERROR, "JOAKIM", "FAILED TO ALLOCATE MEMORY");
         throw std::runtime_error("failed to allocate buffer memory!");
     }
 

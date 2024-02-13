@@ -17,7 +17,7 @@
 #include <graphics/synchronization/synchronizer.hpp>
 #include <renderables/renderable.hpp>
 #include <scenegraphs/scenegraph.hpp>
-#include <graphics/cubemaps/cubemap.hpp>
+//#include <graphics/cubemaps/cubemap.hpp>
 #include <servicelocators/servicelocator.hpp>
 #include <graphics/descriptorsets/descriptorset.hpp>
 #include <graphics/swapchains/swapchain.hpp>
@@ -49,7 +49,7 @@ using namespace Entropy::Graphics::Descriptorsets;
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Swapchains;
 using namespace Entropy::Graphics::Primitives;
-using namespace Entropy::Graphics::CubeMaps;
+//using namespace Entropy::Graphics::CubeMaps;
 using namespace Entropy::Input;
 
 namespace Entropy

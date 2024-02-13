@@ -9,20 +9,20 @@ Lua::Lua(std::shared_ptr<ServiceLocator> serviceLocator)
     auto physics2d = serviceLocator->GetService<Physics2D>();
     // auto mouse = std::dynamic_pointer_cast<Mouse>(serviceLocator->getService("Mouse"));
 
-    lua.open_libraries(sol::lib::base);
+    _lua.open_libraries(sol::lib::base);
 
-    lua.new_usertype<DynamicBody>("DynamicBody",
+    _lua.new_usertype<DynamicBody>("DynamicBody",
                                   sol::factories([physics2d]()
                                                  { auto dynBody = std::make_shared<DynamicBody>(physics2d);
                                                    return dynBody; }),
                                   "GetPosition", &DynamicBody::GetPosition);
 
-    lua.new_usertype<Sprite>(
+    _lua.new_usertype<Sprite>(
         "Sprite",
         sol::factories([serviceLocator, sceneGraph, this](const std::string path)
                        {
                                         auto sprite = std::make_shared<Sprite>(serviceLocator, path);
-                                        sprite->script->environment = sol::environment(lua, sol::create, lua.globals());
+                                        sprite->script->environment = sol::environment(_lua, sol::create, _lua.globals());
                                         sceneGraph->renderables.push_back(sprite);
                                         return sprite; }),
         "Translate", &Sprite::Translate2D,

@@ -14,7 +14,7 @@ namespace Entropy
                 SkinnedPipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator) : Pipeline(renderPass, serviceLocator)
                 {
                     auto dsLayouts = Setup();
-                    Build("SkinnedPipeline", "vert.spv", "frag.spv", dsLayouts, VK_TRUE);
+                    Build("SkinnedPipeline", "skinned_vert.spv", "skinned_frag.spv", dsLayouts, VK_TRUE);
                 }
 
                 SkinnedPipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator, std::vector<char> vert_shader, std::vector<char> frag_shader) : Pipeline(renderPass, serviceLocator)

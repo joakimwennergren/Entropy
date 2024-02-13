@@ -63,20 +63,42 @@ target_link_libraries(${PROJECT_NAME}
     #box2d
     eventpp
     tinygltf
-    ktx
+    #ktx
 )
 
 target_link_libraries(${PROJECT_NAME}
-    ${Vulkan_LIBRARIES}
+    #${Vulkan_LIBRARIES}
 )
 
 if(WIN32 OR UNIX OR APPLE)
     # Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk)
     target_link_libraries(${PROJECT_NAME}
-        ${Vulkan_LIBRARIES}
+        #${Vulkan_LIBRARIES}
        #glfw
     )
 endif()
+
+
+set_target_properties(Entropy PROPERTIES
+    XCODE_GENERATE_SCHEME ON
+    XCODE_SCHEME_ENABLE_GPU_FRAME_CAPTURE_MODE "Metal")
+
+    target_link_libraries(Entropy
+
+    "-framework foundation"
+    "-framework metal"
+    "-framework metalkit"
+    "-framework uikit"
+    "-framework iosurface"
+    "-framework coregraphics"
+    "-framework quartzcore"
+    "-framework coreaudio"
+    "-framework audiotoolbox"
+    "-framework avfoundation"
+    "-framework coretext"
+    )
+
+    include_directories(external/vulkan-headers)
 
 # Build config file
 configure_file(config.h.in ${PROJECT_SOURCE_DIR}/include/config.hpp @ONLY)

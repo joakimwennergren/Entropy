@@ -38,6 +38,8 @@
 #include <graphics/data/vertex.hpp>
 #include <graphics/descriptorpools/descriptorpool.hpp>
 #include <graphics/pipelines/pipeline.hpp>
+#include <filesystem/filesystem.hpp>
+#include <timing/timer.hpp>
 #include "tiny_gltf.h"
 
 #include <stb_image.h>
@@ -52,6 +54,7 @@ using namespace Entropy::Renderables;
 using namespace Entropy::Graphics::Pipelines;
 using namespace Entropy::Graphics::Buffers;
 using namespace Entropy::Graphics::DescriptorPools;
+using namespace Entropy::Timing;
 
 #ifdef BUILD_FOR_ANDROID
 #include <android/asset_manager.h>
@@ -296,13 +299,14 @@ public:
 
     std::unique_ptr<VertexBuffer> _vertexBuffer;
     std::unique_ptr<Buffer> _indexBuffer;
-
+    Timer * timer;
 private:
     std::shared_ptr<ServiceLocator> _serviceLocator;
     VkDescriptorSet _noTextureDs;
     Texture *noTexture;
     bool isCubeMap = false;
     VkDescriptorSet _cubeMapDS;
+
 
 #ifdef BUILD_FOR_ANDROID
     AAssetManager *assetManager;

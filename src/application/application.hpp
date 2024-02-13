@@ -8,8 +8,6 @@
 
 #include <thread>
 #include <memory>
-#include "stb_image.h"
-
 #include <config.hpp>
 
 #include <graphics/renderers/renderer.hpp>
@@ -46,6 +44,8 @@ using namespace Entropy::Graphics::Descriptorsets;
 using namespace Entropy::SceneGraphs;
 using namespace Entropy::Scripting;
 using namespace Entropy::Physics;
+using namespace Entropy::ServiceLocators;
+using namespace Entropy::Graphics::Renderers;
 using namespace Entropy;
 using namespace Entropy::Input;
 
@@ -106,21 +106,35 @@ private:
 #include <Metal/Metal.hpp>
 #include <UIKit/UIKit.hpp>
 #include <MetalKit/MetalKit.hpp>
+#include <MetalFX/MetalFX.hpp>
 
 using namespace std::chrono;
 
 extern "C" UI::ViewController *get_native_bounds(UI::View *view, UI::Screen *screen);
 extern "C" CGPoint touch();
+extern "C" void say_hello();
 
-class Application : public UI::ApplicationDelegate
+class EntropyApplication : public UI::ApplicationDelegate
 {
 public:
+    std::shared_ptr<Keyboard> _keyboard;
+    std::shared_ptr<Cam> _camera;
+    bool firstMouse;
+    float lastX = 0.0;
+    float lastY = 0.0;
+
+    std::shared_ptr<ServiceLocator> serviceLocator;
+    std::shared_ptr<SceneGraph> sceneGraph;
+    std::shared_ptr<Physics2D> physics2d;
+    sol::protected_function luaOnRender;
+    std::shared_ptr<Renderer> _renderer;
+
     class MTKViewDelegate : public MTK::ViewDelegate
     {
     public:
         std::shared_ptr<SceneGraph> graph;
 
-        MTKViewDelegate(Application *app) : MTK::ViewDelegate()
+        MTKViewDelegate(EntropyApplication *app) : MTK::ViewDelegate()
         {
             this->app = app;
         }
@@ -128,7 +142,8 @@ public:
         virtual ~MTKViewDelegate() override
         {
         }
-        Application *app;
+        EntropyApplication *app;
+        std::shared_ptr<Renderer> _renderer;
         CGRect frame;
 
     private:
@@ -152,9 +167,11 @@ public:
 
             app->screen.width = app->frame.size.width * 3.0;
             app->screen.height = app->frame.size.height * 3.3;
-
-            _renderer->Render();
              */
+
+            _renderer->Render(frame.size.width, frame.size.height);
+            app->OnRender(0.0);
+             
         }
 
         float lastTick = 0.0;
@@ -165,9 +182,9 @@ public:
      * @brief Construct a new Application object
      *
      */
-    Application()
+    EntropyApplication()
     {
-
+        say_hello();
         this->_autoreleasePool = NS::AutoreleasePool::alloc()->init();
     }
 
@@ -175,7 +192,7 @@ public:
      * @brief Destroy the Application object
      *
      */
-    ~Application()
+    ~EntropyApplication()
     {
         _pMtkView->release();
         _pWindow->release();
@@ -183,6 +200,80 @@ public:
         _pDevice->release();
         delete _pViewDelegate;
         this->_autoreleasePool->release();
+    }
+
+    inline bool applicationDidFinishLaunching(UI::Application *pApp, NS::Value *options) override
+    {
+        frame = UI::Screen::mainScreen()->bounds();
+    
+        VkExtent2D extent =
+        {
+            (uint32_t)frame.size.width,
+            (uint32_t)frame.size.height
+        };
+
+        //_pViewController = UI::ViewController::alloc()->init(nil, nil);
+
+        _pWindow = UI::Window::alloc()->init(frame);
+
+        _pDevice = MTL::CreateSystemDefaultDevice();
+
+        _pMtkView = MTK::View::alloc()->init(frame, _pDevice);
+
+        _pViewController = get_native_bounds((UI::View *)_pMtkView, UI::Screen::mainScreen());
+
+        _pMtkView->setColorPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
+        _pMtkView->setClearColor(MTL::ClearColor::Make(1.0, 1.0, 1.0, 1.0));
+
+        _pViewDelegate = new MTKViewDelegate(this);
+        _pMtkView->setDelegate(_pViewDelegate);
+
+        UI::View *mtkView = (UI::View *)_pMtkView;
+        mtkView->setAutoresizingMask(UI::ViewAutoresizingFlexibleWidth | UI::ViewAutoresizingFlexibleHeight);
+
+        _pViewController->view()->addSubview(mtkView);
+        _pWindow->setRootViewController(_pViewController);
+
+        _pWindow->makeKeyAndVisible();
+
+        CA::MetalLayer *layer = _pMtkView->currentDrawable()->layer();
+
+        // Create items for vulkan
+        auto vkInstance = std::make_shared<VulkanInstance>("Entropy tests");
+        auto windowSurface = std::make_shared<WindowSurface>(vkInstance, layer);
+        auto physicalDevice = std::make_shared<PhysicalDevice>(vkInstance, windowSurface);
+        auto logicalDevice = std::make_shared<LogicalDevice>(physicalDevice, windowSurface);
+        auto swapChain = std::make_shared<Swapchain>(physicalDevice->Get(), logicalDevice->Get(), windowSurface, extent);
+        auto commandPool = std::make_shared<CommandPool>(logicalDevice, physicalDevice, windowSurface);
+        auto descriptorPool = std::make_shared<DescriptorPool>(logicalDevice);
+
+        // Add services to service locator
+        serviceLocator = std::make_shared<ServiceLocator>();
+
+        _keyboard = std::make_shared<Keyboard>(serviceLocator);
+        _camera = std::make_shared<Cam>(glm::vec3(0.0f, 0.0f, 3.0f));
+        serviceLocator->AddService(_camera);
+        serviceLocator->AddService(_keyboard);
+        serviceLocator->AddService(physicalDevice);
+        serviceLocator->AddService(logicalDevice);
+        serviceLocator->AddService(descriptorPool);
+        serviceLocator->AddService(swapChain);
+        serviceLocator->AddService(commandPool);
+
+        sceneGraph = std::make_shared<SceneGraph>();
+        serviceLocator->AddService(sceneGraph);
+
+        physics2d = std::make_shared<Physics2D>(serviceLocator);
+        serviceLocator->AddService(physics2d);
+
+        _renderer = std::make_shared<Renderer>(serviceLocator);
+        _pViewDelegate->_renderer = _renderer;
+        _pViewDelegate->frame = frame;
+        _pViewDelegate->app = this;
+
+        OnInit();
+
+        return true;
     }
 
     /**
@@ -193,6 +284,7 @@ public:
      * @return true
      * @return false
      */
+    /*
     inline bool applicationDidFinishLaunching(UI::Application *pApp, NS::Value *options) override
     {
         frame = UI::Screen::mainScreen()->bounds();
@@ -221,26 +313,13 @@ public:
 
         _pWindow->makeKeyAndVisible();
 
-        /*
-
-        CA::MetalLayer *layer = _pMtkView->currentDrawable()->layer();
-
-        Global::VulkanContext::GetInstance()->InitializeContext(layer, frame);
-
-        auto renderer = std::make_shared<Renderer>();
-
-        _pViewDelegate->SetRenderer(renderer);
-        _pViewDelegate->frame = frame;
-
-        this->_context = Global::VulkanContext::GetInstance()->GetVulkanContext();
-
-         */
 
         OnInit();
 
         return true;
     }
 
+*/
     virtual void OnInit() = 0;
 
     virtual void OnRender(float deltaTime) = 0;
@@ -250,9 +329,11 @@ public:
      *
      * @param pApp
      */
+    /*
     inline void applicationWillTerminate(UI::Application *pApp) override
     {
     }
+    */
 
 public:
     /**
@@ -264,9 +345,7 @@ public:
         UI::ApplicationMain(0, 0, this);
     }
 
-    std::shared_ptr<Context> _context;
     CGRect frame;
-    Screen screen;
 
 protected:
 private:

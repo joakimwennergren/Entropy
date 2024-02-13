@@ -2,7 +2,7 @@
 //
 // Foundation/NSURL.hpp
 //
-// Copyright 2020-2021 Apple Inc.
+// Copyright 2020-2023 Apple Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,8 +42,6 @@ public:
     URL*        initFileURLWithPath(const class String* pPath);
 
     const char* fileSystemRepresentation() const;
-
-    NS::String *path() const;
 };
 }
 
@@ -87,13 +85,6 @@ _NS_INLINE NS::URL* NS::URL::initFileURLWithPath(const String* pPath)
 _NS_INLINE const char* NS::URL::fileSystemRepresentation() const
 {
     return Object::sendMessage<const char*>(this, _NS_PRIVATE_SEL(fileSystemRepresentation));
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-_NS_INLINE NS::String *NS::URL::path() const
-{
-    return Object::sendMessage<NS::String *>(this, _NS_PRIVATE_SEL(path));
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------

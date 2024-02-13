@@ -14,8 +14,8 @@
 #include <graphics/buffers/stagedbuffer.hpp>
 #include <graphics/imageviews/imageview.hpp>
 
-#include <ktx.h>
-#include <ktxvulkan.h>
+//#include <ktx.h>
+//#include <ktxvulkan.h>
 
 #ifdef BUILD_FOR_ANDROID
 #include <android/asset_manager.h>
@@ -72,7 +72,7 @@ namespace Entropy
                  */
                 void CreateTextureImageFromPixels(unsigned char *pixels, int width, int height);
 
-                void CreateTextureImageFromKtx(unsigned char *pixels, unsigned int width, unsigned int height, int size, int mips, VkFormat format, ktxTexture *ktxTexture);
+                //void CreateTextureImageFromKtx(unsigned char *pixels, unsigned int width, unsigned int height, int size, int mips, VkFormat format, ktxTexture *ktxTexture);
 
                 void TransitionImageLayoutCubeMap(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, unsigned int mips);
 
