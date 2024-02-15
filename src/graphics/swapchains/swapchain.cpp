@@ -56,11 +56,11 @@ void Swapchain::CreateSwapChain()
         createInfo.pQueueFamilyIndices = nullptr; // Optional
     }
     createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
-    #ifdef BUILD_FOR_WINDOWS
+#ifdef BUILD_FOR_WINDOWS
     createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-    #else
+#else
     createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR; // VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-    #endif
+#endif
     createInfo.presentMode = presentMode;
     createInfo.clipped = VK_TRUE;
     createInfo.oldSwapchain = VK_NULL_HANDLE;

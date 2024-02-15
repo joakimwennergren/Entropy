@@ -308,7 +308,7 @@ Model::Model(std::shared_ptr<ServiceLocator> serviceLocator)
     _serviceLocator = serviceLocator;
 
     noTexture = new Texture(_serviceLocator);
-    noTexture->CreateTextureImage(Entropy::Filesystem::GetProjectBasePath() + "/checkered.png");
+    noTexture->CreateTextureImage(Entropy::Filesystem::GetTexturesDir() + "/checkered.png");
 
     VkPhysicalDeviceProperties properties{};
     vkGetPhysicalDeviceProperties(serviceLocator->GetService<PhysicalDevice>()->Get(), &properties);
@@ -1422,7 +1422,6 @@ void Model::getSceneDimensions()
 
 void Model::updateAnimation(uint32_t index, float time)
 {
-    
 
     if (animations.empty())
     {
@@ -1434,9 +1433,9 @@ void Model::updateAnimation(uint32_t index, float time)
         std::cout << "No animation with index " << index << std::endl;
         return;
     }
-    
+
     Animation &animation = animations[index];
-    
+
     bool updated = false;
     for (auto &channel : animation.channels)
     {
@@ -1445,13 +1444,13 @@ void Model::updateAnimation(uint32_t index, float time)
         {
             continue;
         }
-        
+
         for (size_t i = 0; i < sampler.inputs.size() - 1; i++)
         {
             if ((time >= sampler.inputs[i]) && (time <= sampler.inputs[i + 1]))
             {
                 float u = std::max(0.0f, time - sampler.inputs[i]) / (sampler.inputs[i + 1] - sampler.inputs[i]);
-                
+
                 if (u <= 1.0f)
                 {
                     switch (channel.path)
@@ -1496,7 +1495,6 @@ void Model::updateAnimation(uint32_t index, float time)
             node->update();
         }
     }
-    
 }
 
 Node *Model::findNode(Node *parent, uint32_t index)

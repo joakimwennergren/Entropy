@@ -89,6 +89,11 @@ namespace Entropy
             glm::vec3 rotation = glm::vec3(1.0);
             glm::vec3 scale = glm::vec3(1.0);
             glm::vec4 color = glm::vec4(1.0);
+            glm::vec4 colorBorder;
+            glm::vec4 colorShadow;
+            glm::vec2 position2d;
+            glm::vec2 size;
+            glm::vec4 borderRadius;
 
             int textureId = -1;
             int type = 0;

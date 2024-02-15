@@ -14,7 +14,7 @@ Application::Application()
 
     // Create the window
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    _window = glfwCreateWindow(640, 480, "Entropy application", NULL, NULL);
+    _window = glfwCreateWindow(500, 500, "Entropy application", NULL, NULL);
 
     if (!_window)
     {
@@ -30,7 +30,8 @@ Application::Application()
     glfwSetCursorPosCallback(_window, cursor_position_callback);
 
     // Get initial window framebuffer size
-    int width, height;
+    int width,
+        height;
     glfwGetFramebufferSize(_window, &width, &height);
     VkExtent2D frame = {(uint32_t)width, (uint32_t)height};
 
@@ -93,10 +94,10 @@ void Application::ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::sh
 
         auto onRenderFunc = renderable->script->environment["OnRender"];
 
-        if (onRenderFunc.valid())
-        {
-            onRenderFunc();
-        }
+        // if (onRenderFunc != nullptr)
+        //{
+        //     onRenderFunc();
+        // }
     }
 }
 
@@ -131,19 +132,19 @@ void Application::Run()
 
         // On render
         this->OnRender(_deltaTime);
-        this->_renderer->Render(width, height);
+        this->_renderer->Render(width, height, true);
 
         if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(_window, true);
 
         if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS)
-            _camera->ProcessKeyboard(FORWARD, 0.3);
+            _camera->ProcessKeyboard(FORWARD, 0.1);
         if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS)
-            _camera->ProcessKeyboard(BACKWARD, 0.3);
+            _camera->ProcessKeyboard(BACKWARD, 0.1);
         if (glfwGetKey(_window, GLFW_KEY_A) == GLFW_PRESS)
-            _camera->ProcessKeyboard(LEFT, 0.3);
+            _camera->ProcessKeyboard(LEFT, 0.1);
         if (glfwGetKey(_window, GLFW_KEY_D) == GLFW_PRESS)
-            _camera->ProcessKeyboard(RIGHT, 0.3);
+            _camera->ProcessKeyboard(RIGHT, 0.1);
 
         float timeStep = 1.0f / 60.0f;
         // int32 velocityIterations = 6;
@@ -155,17 +156,6 @@ void Application::Run()
 
         // Poll events
         glfwPollEvents();
-    }
-}
-
-void framebufferResizeCallback(GLFWwindow *window, int width, int height)
-{
-    auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
-    if (app != nullptr)
-    {
-        app->GetRenderer()->Render(width, height);
-        app->GetRenderer()->Render(width, height);
-        app->OnRender(0);
     }
 }
 
@@ -209,6 +199,17 @@ void cursor_position_callback(GLFWwindow *window, double xposIn, double yposIn)
     app->lastY = ypos;
 
     app->_camera->ProcessMouseMovement(xoffset, yoffset);
+}
+
+void framebufferResizeCallback(GLFWwindow *window, int width, int height)
+{
+    auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
+    if (app != nullptr)
+    {
+        app->GetRenderer()->isResizing = true;
+        app->GetRenderer()->Render(width, height, true);
+        app->GetRenderer()->isResizing = false;
+    }
 }
 
 #endif
