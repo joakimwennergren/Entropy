@@ -32,6 +32,8 @@
 #include <graphics/utilities/utilities.hpp>
 #include <input/keyboard/keyboard.hpp>
 
+#include <tracy/Tracy.hpp>
+
 #ifdef BUILD_FOR_ANDROID
 #include <android/asset_manager.h>
 #endif
@@ -70,7 +72,27 @@ namespace Entropy
                 VkResult SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex);
                 void DrawRenderable(std::shared_ptr<Renderable> renderable, int width, int height, uint32_t modelIndex);
                 void HandleResize();
-                bool isResizing = false;
+                bool isResizing = true;
+                struct UboDataDynamic
+                {
+                    glm::vec4 color;
+                    glm::vec4 colorBorder;
+                    glm::vec4 colorShadow;
+                    glm::mat4 proj;
+                    glm::mat4 view;
+                    glm::mat4 invView;
+                    glm::mat4 model;
+                    glm::vec2 position;
+                    glm::vec2 size;
+                    glm::vec4 borderRadius;
+                    int shapeId;
+                    float _pad[3];
+                };
+                size_t dynamicAlignment{0};
+                unsigned int _currentFrame = 0;
+                uint32_t imageIndex;
+                bool skip = false;
+                std::shared_ptr<CommandBuffer> cmdBufferUI;
 
             private:
                 void Setup(std::shared_ptr<ServiceLocator> serviceLocator);
@@ -88,8 +110,6 @@ namespace Entropy
 
                 std::shared_ptr<ServiceLocator> _serviceLocator;
 
-                unsigned int _currentFrame = 0;
-
                 std::shared_ptr<Descriptorset> _descriptorSet;
                 std::shared_ptr<LogicalDevice> _logicalDevice;
                 std::shared_ptr<Swapchain> _swapChain;
@@ -105,26 +125,9 @@ namespace Entropy
 
                 // One big uniform buffer that contains all matrices
                 // Note that we need to manually allocate the data to cope for GPU-specific uniform buffer offset alignments
-                struct UboDataDynamic
-                {
-                    glm::vec4 color;
-                    glm::vec4 colorBorder;
-                    glm::vec4 colorShadow;
-                    glm::mat4 proj;
-                    glm::mat4 view;
-                    glm::mat4 invView;
-                    glm::mat4 model;
-                    glm::vec2 position;
-                    glm::vec2 size;
-                    glm::vec4 borderRadius;
-                    int shapeId;
-                    float _pad[3];
-                };
 
                 std::vector<UniformBuffer *> dynUbos;
                 size_t bufferSize;
-
-                size_t dynamicAlignment{0};
 
                 VkResult imageResult;
 

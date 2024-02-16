@@ -59,6 +59,7 @@ Application::Application()
     serviceLocator->AddService(descriptorPool);
     serviceLocator->AddService(swapChain);
     serviceLocator->AddService(commandPool);
+    serviceLocator->AddService(windowSurface);
 
     sceneGraph = std::make_shared<SceneGraph>();
     serviceLocator->AddService(sceneGraph);
@@ -204,12 +205,7 @@ void cursor_position_callback(GLFWwindow *window, double xposIn, double yposIn)
 void framebufferResizeCallback(GLFWwindow *window, int width, int height)
 {
     auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
-    if (app != nullptr)
-    {
-        app->GetRenderer()->isResizing = true;
-        app->GetRenderer()->Render(width, height, true);
-        app->GetRenderer()->isResizing = false;
-    }
+    app->GetRenderer()->HandleResize();
 }
 
 #endif

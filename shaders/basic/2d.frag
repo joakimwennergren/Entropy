@@ -59,7 +59,7 @@ void main()
         float shadowDistance = roundedBoxSDF(gl_FragCoord.xy - location + shadowOffset - (size/2.0f), size / 2.0f, radius);
         float shadowAlpha 	 = 1.0f-smoothstep(-shadowSoftness, shadowSoftness, shadowDistance);
         vec4 shadowColor 	 = vec4(0.4f, 0.4f, 0.4f, 1.0f);
-        outColor			 = mix(quadColor, inColor0, smoothedAlpha);
+        outColor			 = inColor0;//mix(quadColor, inColor0, smoothedAlpha);
     }
 
     if(outShapeId == 1)

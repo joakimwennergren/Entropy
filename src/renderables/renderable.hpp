@@ -116,7 +116,7 @@ namespace Entropy
                 this->rotationX = r;
             }
 
-            virtual void Test(){};
+            virtual void Test() = 0;
 
             inline void ZIndex(int z) { this->zIndex = z; }
 

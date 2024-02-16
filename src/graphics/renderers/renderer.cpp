@@ -32,7 +32,7 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
 
     for (uint32_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
-        _commandBuffers.push_back(std::make_shared<CommandBuffer>(serviceLocator));
+        _commandBuffers.push_back(std::make_shared<CommandBuffer>(serviceLocator, VK_COMMAND_BUFFER_LEVEL_PRIMARY));
     }
 
     // Create buffers @todo temp!!!
@@ -166,8 +166,11 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
 
 void Renderer::HandleResize()
 {
-    if (imageResult == VK_SUBOPTIMAL_KHR)
+    ZoneScopedN("Resizing");
+
+    if (imageResult == VK_SUBOPTIMAL_KHR || imageResult == VK_ERROR_OUT_OF_DATE_KHR)
     {
+        skip = true;
         _synchronizer.reset();
         _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT, _serviceLocator);
         _swapChain->RecreateSwapChain();
@@ -178,26 +181,12 @@ void Renderer::HandleResize()
 
 void Renderer::Render(int width, int height, bool resize)
 {
-    std::cout << isResizing << std::endl;
 
     _camera->setPerspective(60.0f, (float)width / (float)height, 0.1f, 256.0f);
 
     vkWaitForFences(_logicalDevice->Get(), 1, &_synchronizer->GetFences()[_currentFrame], VK_TRUE, UINT64_MAX);
 
-    if (isResizing)
-    {
-        HandleResize();
-    }
-
-    uint32_t imageIndex;
     imageResult = vkAcquireNextImageKHR(_logicalDevice->Get(), _swapChain->Get(), UINT64_MAX, _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE, &imageIndex);
-
-    if (imageResult == VK_ERROR_OUT_OF_DATE_KHR || imageResult == VK_SUBOPTIMAL_KHR)
-    {
-        HandleResize();
-        // skip this frame
-        return;
-    }
 
     // Reset fences and current commandbuffer
     vkResetFences(_logicalDevice->Get(), 1, &_synchronizer->GetFences()[_currentFrame]);
@@ -205,7 +194,16 @@ void Renderer::Render(int width, int height, bool resize)
     // current commandbuffer & descriptorset
     currentCmdBuffer = _commandBuffers[_currentFrame]->GetCommandBuffer();
 
-    vkResetCommandBuffer(currentCmdBuffer, 0);
+    // vkResetCommandBuffer(currentCmdBuffer, 0);
+
+    if (cmdBufferUI != nullptr)
+    {
+        auto secondaries = cmdBufferUI->GetCommandBuffer();
+        vkCmdExecuteCommands(
+            currentCmdBuffer,
+            1,
+            &secondaries);
+    }
 
     // Begin renderpass and commandbuffer recording
     _commandBuffers[_currentFrame]->Record();
@@ -224,37 +222,32 @@ void Renderer::Render(int width, int height, bool resize)
     // Scissor
     VkRect2D scissor{};
     scissor.offset = {0, 0};
-    scissor.extent = _swapChain->swapChainExtent;
+    scissor.extent = {_swapChain->swapChainExtent};
     vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissor);
 
+    /*
     // Sort renderables based on Zindex
     sort(_sceneGraph->renderables.begin(),
          _sceneGraph->renderables.end(),
          [](const std::shared_ptr<Renderable> &lhs, const std::shared_ptr<Renderable> &rhs)
          { return lhs->zIndex < rhs->zIndex; });
+         */
+
+    UniformBufferObject ubo{};
+
+    ubo.screen = glm::vec2(width, height);
+
+    ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    ubo.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
+    // ubo.proj[1][1] *= -1;
 
     uint32_t modelIndex = 0;
 
     for (auto &renderable : _sceneGraph->renderables)
     {
+
+        renderable->Test();
         // Update UBO
-        UniformBufferObject ubo{};
-
-        ubo.screen = glm::vec2(width, height);
-
-        if (renderable->type == 0 || renderable->type == 1)
-        {
-            ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            ubo.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
-            // ubo.proj[1][1] *= -1;
-        }
-        else
-        {
-            ubo.view = _cam->GetViewMatrix();
-            ubo.invView = glm::inverse(_cam->GetViewMatrix());
-            ubo.proj = _camera->matrices.perspective;
-            _camera->update(0.1);
-        }
 
         // ubo.screen = glm::vec2((float)width, (float)height);
 
@@ -281,6 +274,7 @@ void Renderer::Render(int width, int height, bool resize)
 
     // Submit and present
     VkResult ret = this->SubmitAndPresent(currentCmdBuffer, imageIndex);
+
     // Increment current frame
     _currentFrame = (_currentFrame + 1) % MAX_CONCURRENT_FRAMES_IN_FLIGHT;
 }
@@ -325,15 +319,6 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
 
     modelMatrix = translate * scale * modelRotation;
 
-    /*
-    // Update push constant and upload to GPU
-    PushConstant constant;
-    constant.modelMatrix = modelMatrix;
-    constant.color = renderable->color;
-    constant.position = renderable->position;
-    constant.textureId = renderable->textureId;
-    */
-
     UboDataDynamic ubodyn{};
 
     if (renderable->type == 0 || renderable->type == 1)
@@ -362,17 +347,6 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
     uint32_t offset = dynamicAlignment * modelIndex;
 
     memcpy((char *)dynUbos[_currentFrame]->GetMappedMemory() + offset, &ubodyn, sizeof(UboDataDynamic));
-
-    /*
-    VkMappedMemoryRange memoryRange;
-    memoryRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
-    memoryRange.memory = dynUbo->GetBufferMemory();
-    memoryRange.size = bufferSize;
-    memoryRange.pNext = nullptr;
-    vkFlushMappedMemoryRanges(_logicalDevice->Get(), 1, &memoryRange);
-    */
-
-    // vkCmdPushConstants(currentCmdBuffer, _pipeline->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstant), &constant);
 
     if (renderable->type == 1)
     {
@@ -411,7 +385,7 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
         vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["CubeMapPipeline"]->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &offset);
         auto model = std::dynamic_pointer_cast<CubeMap>(renderable);
         model->_model->renderNode(model->_model->linearNodes[2], currentCmdBuffer, _pipelines["CubeMapPipeline"], Material::ALPHAMODE_OPAQUE);
-         */
+        */
     }
     else
     {
@@ -424,6 +398,8 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
         // Draw current renderable
         vkCmdDrawIndexed(currentCmdBuffer, renderable->GetIndices().size(), 1, 0, 0, 0);
     }
+
+    FrameMark;
 }
 
 VkResult Renderer::SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex)

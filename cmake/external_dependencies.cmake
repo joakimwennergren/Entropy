@@ -130,3 +130,7 @@ endif()
 add_subdirectory(external/efsw)
 
 add_subdirectory(external/yoga)
+
+option(TRACY_ENABLE "" ON)
+option(TRACY_ON_DEMAND "" ON)
+add_subdirectory(external/tracy)

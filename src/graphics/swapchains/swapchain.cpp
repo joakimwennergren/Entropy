@@ -8,7 +8,38 @@ Swapchain::Swapchain(VkPhysicalDevice physicalDevice, VkDevice logicalDevice, st
     _surface = surface;
     _physicalDevice = physicalDevice;
     _frame = frame;
-    CreateSwapChain();
+    CreateSwapChain(nullptr);
+}
+
+void Swapchain::CreateSwapchainImages()
+{
+
+    SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(_physicalDevice, _surface->Get());
+    VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
+    VkPresentModeKHR presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);
+    VkExtent2D extent = ChooseSwapExtent(swapChainSupport.capabilities, _frame);
+
+    uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
+
+    if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount)
+    {
+        imageCount = swapChainSupport.capabilities.maxImageCount;
+    }
+
+    vkGetSwapchainImagesKHR(_logicalDevice, _swapChain, &imageCount, nullptr);
+    swapChainImages.resize(imageCount);
+    vkGetSwapchainImagesKHR(_logicalDevice, _swapChain, &imageCount, swapChainImages.data());
+
+    swapChainImageFormat = surfaceFormat.format;
+    swapChainExtent = extent;
+
+    swapChainImageViews.resize(swapChainImages.size());
+
+    for (uint32_t i = 0; i < swapChainImages.size(); i++)
+    {
+        auto imageView = ImageView(_logicalDevice, swapChainImages[i], swapChainImageFormat);
+        swapChainImageViews[i] = imageView.Get();
+    }
 }
 
 Swapchain::~Swapchain()
@@ -16,7 +47,7 @@ Swapchain::~Swapchain()
     vkDestroySwapchainKHR(_logicalDevice, _swapChain, nullptr);
 }
 
-void Swapchain::CreateSwapChain()
+void Swapchain::CreateSwapChain(VkSwapchainKHR prev)
 {
     SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(_physicalDevice, _surface->Get());
     VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
@@ -70,34 +101,20 @@ void Swapchain::CreateSwapChain()
         exit(EXIT_FAILURE);
     }
 
-    vkGetSwapchainImagesKHR(_logicalDevice, _swapChain, &imageCount, nullptr);
-    swapChainImages.resize(imageCount);
-    vkGetSwapchainImagesKHR(_logicalDevice, _swapChain, &imageCount, swapChainImages.data());
-
-    swapChainImageFormat = surfaceFormat.format;
-    swapChainExtent = extent;
-
-    swapChainImageViews.resize(swapChainImages.size());
-
-    for (uint32_t i = 0; i < swapChainImages.size(); i++)
-    {
-        auto imageView = ImageView(_logicalDevice, swapChainImages[i], swapChainImageFormat);
-        swapChainImageViews[i] = imageView.Get();
-    }
+    CreateSwapchainImages();
 }
 
 void Swapchain::RecreateSwapChain()
 {
-    vkDeviceWaitIdle(_logicalDevice);
+    ZoneScopedN("Recreating swapchain");
+    // vkDeviceWaitIdle(_logicalDevice);
 
     for (size_t i = 0; i < swapChainImageViews.size(); i++)
     {
         vkDestroyImageView(_logicalDevice, swapChainImageViews[i], nullptr);
     }
-
     vkDestroySwapchainKHR(_logicalDevice, _swapChain, nullptr);
-
-    CreateSwapChain();
+    CreateSwapChain(_swapChain);
 }
 
 SwapChainSupportDetails Swapchain::QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface)

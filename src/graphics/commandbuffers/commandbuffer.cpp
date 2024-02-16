@@ -2,7 +2,7 @@
 
 using namespace Entropy::Graphics::CommandBuffers;
 
-CommandBuffer::CommandBuffer(std::shared_ptr<ServiceLocator> serviceLocator)
+CommandBuffer::CommandBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkCommandBufferLevel level)
 {
     // Get required depenencies
     auto commandPool = serviceLocator->GetService<CommandPool>();
@@ -13,7 +13,7 @@ CommandBuffer::CommandBuffer(std::shared_ptr<ServiceLocator> serviceLocator)
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.commandPool = commandPool->Get();
-    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.level = level;
     allocInfo.commandBufferCount = 1;
 
     if (vkAllocateCommandBuffers(logicalDevice->Get(), &allocInfo, &_commandBuffer) != VK_SUCCESS)
@@ -35,7 +35,7 @@ void CommandBuffer::RecordOnce()
 
 void CommandBuffer::Record()
 {
-    vkDeviceWaitIdle(_logicalDevice->Get());
+    // vkDeviceWaitIdle(_logicalDevice->Get());
 
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;

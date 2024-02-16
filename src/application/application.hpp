@@ -32,6 +32,7 @@
 #include <filesystem/filesystem.hpp>
 #include <input/keyboard/keyboard.hpp>
 #include <graphics/cameras/flying_camera.hpp>
+#include <renderables/renderable.hpp>
 
 using namespace Entropy::Graphics::Instances;
 using namespace Entropy::Graphics::Surfaces;
@@ -46,6 +47,7 @@ using namespace Entropy::Scripting;
 using namespace Entropy::Physics;
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Renderers;
+using namespace Entropy::Renderables;
 using namespace Entropy;
 using namespace Entropy::Input;
 
@@ -88,6 +90,7 @@ public:
     // @todo look over if this should be protected..
     std::shared_ptr<Renderer> _renderer;
     bool isResizing = false;
+    Timer *_timer;
 
 protected:
     GLFWwindow *_window;
@@ -99,7 +102,6 @@ protected:
 private:
     void ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::shared_ptr<Lua> lua);
 
-    Timer *_timer;
     float _lastTick = 0.0f;
     std::thread th;
     float _deltaTime = 0.0f;

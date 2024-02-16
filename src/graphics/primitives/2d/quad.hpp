@@ -24,6 +24,10 @@ namespace Entropy
                  */
                 Quad(std::shared_ptr<ServiceLocator> serviceLocator);
 
+                void Test()
+                {
+                };
+
                 /**
                  * @brief Destroy the Quad object
                  *
