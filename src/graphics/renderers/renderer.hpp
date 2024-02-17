@@ -69,6 +69,7 @@ namespace Entropy
                 std::vector<char> loadShader(std::string filename, AAssetManager *assetManager);
 #endif
                 void Render(int width, int height, bool resize);
+                VkResult DoRender(int width, int height);
                 VkResult SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex);
                 void DrawRenderable(std::shared_ptr<Renderable> renderable, int width, int height, uint32_t modelIndex);
                 void HandleResize();
@@ -86,7 +87,6 @@ namespace Entropy
                     glm::vec2 size;
                     glm::vec4 borderRadius;
                     int shapeId;
-                    float _pad[3];
                 };
                 size_t dynamicAlignment{0};
                 unsigned int _currentFrame = 0;

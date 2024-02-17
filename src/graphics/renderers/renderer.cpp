@@ -39,7 +39,7 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
         _uniformBuffers.push_back(new UniformBuffer(serviceLocator, sizeof(UniformBufferObject)));
-        dynUbos.push_back(new UniformBuffer(serviceLocator, sizeof(UboDataDynamic) * 10));
+        dynUbos.push_back(new UniformBuffer(serviceLocator, sizeof(UboDataDynamic) * 100));
     }
 
     for (unsigned int i = 0; i < _uniformBuffers.size(); i++)
@@ -168,25 +168,19 @@ void Renderer::HandleResize()
 {
     ZoneScopedN("Resizing");
 
-    if (imageResult == VK_SUBOPTIMAL_KHR || imageResult == VK_ERROR_OUT_OF_DATE_KHR)
-    {
-        skip = true;
-        _synchronizer.reset();
-        _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT, _serviceLocator);
-        _swapChain->RecreateSwapChain();
-        _renderPass->RecreateDepthBuffer();
-        _renderPass->RecreateFrameBuffers();
-    }
+    _synchronizer.reset();
+    _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT, _serviceLocator);
+    _swapChain->RecreateSwapChain();
+    _renderPass->RecreateDepthBuffer();
+    _renderPass->RecreateFrameBuffers();
 }
 
-void Renderer::Render(int width, int height, bool resize)
+VkResult Renderer::DoRender(int width, int height)
 {
 
+    VkResult submit_result = VK_SUCCESS;
+
     _camera->setPerspective(60.0f, (float)width / (float)height, 0.1f, 256.0f);
-
-    vkWaitForFences(_logicalDevice->Get(), 1, &_synchronizer->GetFences()[_currentFrame], VK_TRUE, UINT64_MAX);
-
-    imageResult = vkAcquireNextImageKHR(_logicalDevice->Get(), _swapChain->Get(), UINT64_MAX, _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE, &imageIndex);
 
     // Reset fences and current commandbuffer
     vkResetFences(_logicalDevice->Get(), 1, &_synchronizer->GetFences()[_currentFrame]);
@@ -235,7 +229,7 @@ void Renderer::Render(int width, int height, bool resize)
 
     UniformBufferObject ubo{};
 
-    ubo.screen = glm::vec2(width, height);
+    ubo.screen = glm::vec2(500.0, 500.0);
 
     ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     ubo.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
@@ -255,13 +249,13 @@ void Renderer::Render(int width, int height, bool resize)
 
         if (renderable->children.size() == 0)
         {
-            DrawRenderable(renderable, width, height, modelIndex);
+            DrawRenderable(renderable, 500.0, 500.0, modelIndex);
         }
         else
         {
             for (auto &child : renderable->children)
             {
-                DrawRenderable(child, width, height, modelIndex);
+                DrawRenderable(child, 500.0, 500.0, modelIndex);
             }
         }
 
@@ -273,10 +267,33 @@ void Renderer::Render(int width, int height, bool resize)
     _commandBuffers[_currentFrame]->EndRecording();
 
     // Submit and present
-    VkResult ret = this->SubmitAndPresent(currentCmdBuffer, imageIndex);
+    submit_result = this->SubmitAndPresent(currentCmdBuffer, imageIndex);
 
     // Increment current frame
     _currentFrame = (_currentFrame + 1) % MAX_CONCURRENT_FRAMES_IN_FLIGHT;
+
+    return submit_result;
+}
+
+void Renderer::Render(int width, int height, bool resize)
+{
+    vkWaitForFences(_logicalDevice->Get(), 1, &_synchronizer->GetFences()[_currentFrame], VK_TRUE, UINT64_MAX);
+
+    auto acquire_result = vkAcquireNextImageKHR(_logicalDevice->Get(), _swapChain->Get(), UINT64_MAX, _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE, &imageIndex);
+
+    VkResult submit_result = VK_SUCCESS;
+
+    if (acquire_result == VK_SUCCESS || acquire_result == VK_SUBOPTIMAL_KHR)
+    {
+        // std::cout << "Rendering" << std::endl;
+        submit_result = DoRender(width, height);
+    }
+
+    if (acquire_result != VK_SUCCESS || submit_result != VK_SUCCESS)
+    {
+        // std::cout << "RESIZING.." << std::endl;
+        HandleResize();
+    }
 }
 
 void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width, int height, uint32_t modelIndex)
@@ -284,7 +301,7 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
 
     // @todo refactors this
 
-    auto translate = glm::translate(glm::mat4(1.0f), glm::vec3(renderable->position.x, renderable->position.y, renderable->position.z));
+    auto translate = glm::translate(glm::mat4(1.0f), glm::vec3(renderable->position.x + renderable->scale.x, renderable->position.y - renderable->scale.y, renderable->position.z));
 
     auto scale = glm::scale(glm::mat4(1.0f), renderable->scale);
 
@@ -324,8 +341,8 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
     if (renderable->type == 0 || renderable->type == 1)
     {
         ubodyn.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        ubodyn.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
-        // ubodyn.proj[1][1] *= -1;
+        ubodyn.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width * 2.0f, (float)_swapChain->swapChainExtent.height * 2.0f, 0.0f, -1.0f, 1.0f);
+        ubodyn.proj[1][1] *= -1;
     }
     else
     {

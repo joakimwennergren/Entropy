@@ -205,6 +205,8 @@ void cursor_position_callback(GLFWwindow *window, double xposIn, double yposIn)
 void framebufferResizeCallback(GLFWwindow *window, int width, int height)
 {
     auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
+    app->GetRenderer()->Render(width, height, true);
+    app->OnRender(0.0);
     app->GetRenderer()->HandleResize();
 }
 

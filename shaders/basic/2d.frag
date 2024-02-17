@@ -20,7 +20,6 @@ layout (location = 14) in vec4 outBorderRadius;
 layout (location = 15) in vec2 outScreen;
 layout (location = 16) flat in int outShapeId;
 
-
 layout(location = 0) out vec4 outColor;
 
 // from https://iquilezles.org/articles/distfunctions
