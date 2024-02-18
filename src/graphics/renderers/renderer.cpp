@@ -203,29 +203,11 @@ VkResult Renderer::DoRender(int width, int height)
     _commandBuffers[_currentFrame]->Record();
     _renderPass->Begin(_commandBuffers[_currentFrame], imageIndex);
 
-    // Set Viewport
-    VkViewport viewport{};
-    viewport.x = 0.0f;
-    viewport.y = 0.0f;
-    viewport.width = (float)_swapChain->swapChainExtent.width;
-    viewport.height = (float)_swapChain->swapChainExtent.height;
-    viewport.minDepth = 0.0f;
-    viewport.maxDepth = 1.0f;
-    vkCmdSetViewport(currentCmdBuffer, 0, 1, &viewport);
-
-    // Scissor
-    VkRect2D scissor{};
-    scissor.offset = {0, 0};
-    scissor.extent = {_swapChain->swapChainExtent};
-    vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissor);
-
-    /*
     // Sort renderables based on Zindex
     sort(_sceneGraph->renderables.begin(),
          _sceneGraph->renderables.end(),
          [](const std::shared_ptr<Renderable> &lhs, const std::shared_ptr<Renderable> &rhs)
          { return lhs->zIndex < rhs->zIndex; });
-         */
 
     UniformBufferObject ubo{};
 
@@ -239,6 +221,29 @@ VkResult Renderer::DoRender(int width, int height)
 
     for (auto &renderable : _sceneGraph->renderables)
     {
+
+        float offsetX = 0.0;
+
+        if (renderable->type == 4)
+        {
+            offsetX = 64.0;
+        }
+
+        // Scissor
+        VkRect2D scissor{};
+        scissor.offset = {0, 0};
+        scissor.extent = {_swapChain->swapChainExtent};
+        vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissor);
+
+        // Set Viewport
+        VkViewport viewport{};
+        viewport.x = offsetX;
+        viewport.y = 0.0f;
+        viewport.width = (float)_swapChain->swapChainExtent.width - offsetX;
+        viewport.height = (float)_swapChain->swapChainExtent.height;
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        vkCmdSetViewport(currentCmdBuffer, 0, 1, &viewport);
 
         renderable->Test();
         // Update UBO
@@ -352,7 +357,7 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
         _camera->update(0.1);
     }
 
-    ubodyn.model = translate * scale * modelRotation;
+    ubodyn.model = translate * scale * modelRotation * rotate;
     ubodyn.color = renderable->color;
     ubodyn.colorBorder = renderable->colorBorder;
     ubodyn.colorShadow = renderable->colorShadow;
