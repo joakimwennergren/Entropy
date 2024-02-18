@@ -310,7 +310,15 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
 
     auto scale = glm::scale(glm::mat4(1.0f), renderable->scale);
 
-    auto rotate = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+    auto rotate = glm::mat4(1.0);
+
+    if (renderable->type == 4)
+    {
+    }
+    else
+    {
+        glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+    }
 
     auto o = glm::vec3(0.0, 0.0, 0.0);
 
