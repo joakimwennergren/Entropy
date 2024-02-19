@@ -215,7 +215,7 @@ VkResult Renderer::DoRender(int width, int height)
 
     ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     ubo.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
-    // ubo.proj[1][1] *= -1;
+    ubo.proj[1][1] *= -1;
 
     uint32_t modelIndex = 0;
 
@@ -226,7 +226,7 @@ VkResult Renderer::DoRender(int width, int height)
 
         if (renderable->type == 4)
         {
-            offsetX = 64.0;
+            offsetX = (48.0 * 2.0) + ((width * 0.20) - (48.0 / 2.0));
         }
 
         // Scissor
@@ -258,9 +258,13 @@ VkResult Renderer::DoRender(int width, int height)
         }
         else
         {
+            uint32_t childIndex = modelIndex + 1;
+
             for (auto &child : renderable->children)
             {
-                DrawRenderable(child, 500.0, 500.0, modelIndex);
+                DrawRenderable(child, 500.0, 500.0, childIndex);
+
+                childIndex++;
             }
         }
 
@@ -317,7 +321,7 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
     }
     else
     {
-        glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+        rotate = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
     }
 
     auto o = glm::vec3(0.0, 0.0, 0.0);
@@ -351,10 +355,10 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
 
     UboDataDynamic ubodyn{};
 
-    if (renderable->type == 0 || renderable->type == 1)
+    if (renderable->type == 0 || renderable->type == 1 || renderable->type == 3)
     {
         ubodyn.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        ubodyn.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width * 2.0f, (float)_swapChain->swapChainExtent.height * 2.0f, 0.0f, -1.0f, 1.0f);
+        ubodyn.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
         ubodyn.proj[1][1] *= -1;
     }
     else
@@ -378,7 +382,7 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
 
     memcpy((char *)dynUbos[_currentFrame]->GetMappedMemory() + offset, &ubodyn, sizeof(UboDataDynamic));
 
-    if (renderable->type == 1)
+    if (renderable->type == 1 || renderable->type == 3)
     {
         auto ds0 = _pipelines["Pipeline2D"]->descriptorSets[0]->Get()[_currentFrame];
 
@@ -394,6 +398,8 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
 
         vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["Pipeline2D"]->GetPipeline());
         vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["Pipeline2D"]->GetPipelineLayout(), 0, 1, &ds0, 1, &offset);
+        auto sprite = std::dynamic_pointer_cast<Quad>(renderable);
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["Pipeline2D"]->GetPipelineLayout(), 1, 1, &sprite->_descriptorSet, 0, nullptr);
     }
 
     if (renderable->type == 4)

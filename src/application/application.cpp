@@ -14,6 +14,7 @@ Application::Application()
 
     // Create the window
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GL_FALSE);
     _window = glfwCreateWindow(500, 500, "Entropy application", NULL, NULL);
 
     if (!_window)
@@ -66,6 +67,9 @@ Application::Application()
 
     physics2d = std::make_shared<Physics2D>(serviceLocator);
     serviceLocator->AddService(physics2d);
+
+    mouse = std::make_shared<Mouse>(_window);
+    serviceLocator->AddService(mouse);
 
     lua = std::make_shared<Lua>(serviceLocator);
     serviceLocator->AddService(lua);
@@ -138,7 +142,6 @@ void Application::Run()
         if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(_window, true);
 
-        /*
         if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS)
             _camera->ProcessKeyboard(FORWARD, 0.1);
         if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS)
@@ -147,7 +150,6 @@ void Application::Run()
             _camera->ProcessKeyboard(LEFT, 0.1);
         if (glfwGetKey(_window, GLFW_KEY_D) == GLFW_PRESS)
             _camera->ProcessKeyboard(RIGHT, 0.1);
-            */
 
         float timeStep = 1.0f / 60.0f;
         // int32 velocityIterations = 6;
@@ -201,7 +203,7 @@ void cursor_position_callback(GLFWwindow *window, double xposIn, double yposIn)
     app->lastX = xpos;
     app->lastY = ypos;
 
-    // app->_camera->ProcessMouseMovement(xoffset, yoffset);
+    app->_camera->ProcessMouseMovement(xoffset, yoffset);
 }
 
 void framebufferResizeCallback(GLFWwindow *window, int width, int height)

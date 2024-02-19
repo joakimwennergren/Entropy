@@ -89,6 +89,7 @@ public:
     std::shared_ptr<SceneGraph> sceneGraph;
     // @todo look over if this should be protected..
     std::shared_ptr<Renderer> _renderer;
+    std::shared_ptr<Mouse> mouse;
     bool isResizing = false;
     Timer *_timer;
 

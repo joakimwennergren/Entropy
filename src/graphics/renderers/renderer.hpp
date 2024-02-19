@@ -25,6 +25,7 @@
 #include <graphics/cameras/perspective_camera.hpp>
 
 #include <graphics/primitives/2d/sprite.hpp>
+#include <graphics/primitives/2d/quad.hpp>
 #include <graphics/buffers/uniformbuffer.hpp>
 
 #include <graphics/cameras/flying_camera.hpp>

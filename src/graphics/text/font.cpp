@@ -11,12 +11,12 @@ Font::Font(std::string path)
     {
         FT_New_Face(ft, path.c_str(), 0, &face);
 
-        FT_Set_Pixel_Sizes(face, 0, 48);
+        FT_Set_Pixel_Sizes(face, 0, 32);
 
         auto glyph_index = FT_Get_Char_Index(face, n);
         auto error = FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER);
 
-        auto glyph = Glyph{ face->glyph };
+        auto glyph = Glyph{face->glyph};
 
         glyphs.insert(std::pair<uint8_t, Glyph>(n, glyph));
     }

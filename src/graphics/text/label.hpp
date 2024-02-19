@@ -38,7 +38,7 @@ namespace Entropy
 
         public:
             Label(std::shared_ptr<ServiceLocator> serviceLocator, std::shared_ptr<Font> font);
-            ~Label();
+            void Test(){};
             std::vector<std::shared_ptr<Sprite>> sprites;
 
             inline void SetPosition(float x, float y)
@@ -89,9 +89,9 @@ namespace Entropy
 
                     auto g = std::make_shared<Sprite>(_serviceLocator, _font->glyphs[text[i]].glyphslot->bitmap);
 
-                    auto yAdvance = _font->glyphs[text[i]].glyphslot->bitmap_top - h;
+                    auto yAdvance = _font->glyphs[text[i]].glyphslot->bitmap_top + h;
 
-                    g->position = glm::vec3(xpos, ypos - yAdvance, 0.0);
+                    g->position = glm::vec3(xpos, ypos - yAdvance, 1.0);
                     g->textureId = 2;
                     g->type = 3;
                     g->scale = glm::vec3(w, h, 0.0);
@@ -99,7 +99,7 @@ namespace Entropy
                     g->zIndex = 999;
 
                     // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-                    x += (_font->glyphs[text[i]].glyphslot->advance.x >> 6) * 2.0f; // bitshift by 6 to get value in pixels (2^6 = 64)
+                    x += (_font->glyphs[text[i]].glyphslot->advance.x >> 6) * 3.0f; // bitshift by 6 to get value in pixels (2^6 = 64)
                     this->children.push_back(g);
                 }
             }

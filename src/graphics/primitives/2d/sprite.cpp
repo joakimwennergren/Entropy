@@ -89,6 +89,8 @@ Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator, std::string path)
 {
     _serviceLocator = serviceLocator;
 
+    type = 1;
+
     script = std::make_unique<Script>();
 
     _indices = {0, 1, 2, 2, 3, 0};
@@ -113,8 +115,6 @@ Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator, std::string path)
     this->texture->CreateTextureImage(path);
 
     UpdateDescriptorSets();
-
-    type = 1;
 }
 
 Sprite::Sprite(unsigned char *pixels, int width, int height)

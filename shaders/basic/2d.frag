@@ -67,4 +67,10 @@ void main()
         outColor = inColor0 * sampled;
     }
 
+    if(outShapeId == 3)
+    {
+        vec4 sampled = vec4(1.0, 1.0, 1.0, texture(sampler2D(_texture, texSampler), inUV0).r);
+        outColor = inColor0 * sampled;
+    }
+
 }
