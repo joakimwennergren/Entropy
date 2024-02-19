@@ -31,7 +31,7 @@ Quad::Quad(std::shared_ptr<ServiceLocator> serviceLocator)
 
     _blank = std::make_unique<Texture>(serviceLocator);
 
-    _blank->CreateTextureImage(Filesystem::GetTexturesDir() + "/blank.png");
+    _blank->CreateTextureImage(Filesystem::GetTexturesDir() + "blank.png");
 
     UpdateDescriptorSets();
 }

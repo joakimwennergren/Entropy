@@ -50,6 +50,7 @@ namespace Entropy
 #endif
 #ifdef BUILD_FOR_WINDOWS
                 WindowSurface(std::shared_ptr<VulkanInstance> instance, GLFWwindow *window);
+                GLFWwindow *window;
 #endif
 #ifdef BUILD_FOR_IOS
                 WindowSurface(std::shared_ptr<VulkanInstance> instance, CA::MetalLayer *layer);

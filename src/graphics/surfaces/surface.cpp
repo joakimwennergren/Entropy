@@ -31,6 +31,7 @@ WindowSurface::WindowSurface(std::shared_ptr<VulkanInstance> instance, GLFWwindo
 #ifdef BUILD_FOR_WINDOWS
 WindowSurface::WindowSurface(std::shared_ptr<VulkanInstance> instance, GLFWwindow *window)
 {
+    this->window = window;
     if (instance == nullptr)
     {
         return;
