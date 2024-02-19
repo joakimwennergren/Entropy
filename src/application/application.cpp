@@ -14,7 +14,6 @@ Application::Application()
 
     // Create the window
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GL_FALSE);
     _window = glfwCreateWindow(500, 500, "Entropy application", NULL, NULL);
 
     if (!_window)
