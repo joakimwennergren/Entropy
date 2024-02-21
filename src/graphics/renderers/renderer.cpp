@@ -32,14 +32,14 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
 
     for (uint32_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
-        _commandBuffers.push_back(std::make_shared<CommandBuffer>(serviceLocator));
+        _commandBuffers.push_back(std::make_shared<CommandBuffer>(serviceLocator, VK_COMMAND_BUFFER_LEVEL_PRIMARY));
     }
 
     // Create buffers @todo temp!!!
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
         _uniformBuffers.push_back(new UniformBuffer(serviceLocator, sizeof(UniformBufferObject)));
-        dynUbos.push_back(new UniformBuffer(serviceLocator, sizeof(UboDataDynamic) * 3));
+        dynUbos.push_back(new UniformBuffer(serviceLocator, sizeof(UboDataDynamic) * 10000));
     }
 
     for (unsigned int i = 0; i < _uniformBuffers.size(); i++)
@@ -59,7 +59,7 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
 
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
-        std::array<VkWriteDescriptorSet, 4  > descriptorWrites{};
+        std::array<VkWriteDescriptorSet, 4> descriptorWrites{};
 
         VkDescriptorBufferInfo bufferInfo{};
         bufferInfo.buffer = rawUniformBuffers[i];
@@ -78,7 +78,7 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
         descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         descriptorWrites[0].descriptorCount = 1;
         descriptorWrites[0].pBufferInfo = &bufferInfo;
-        
+
         descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[1].dstSet = _pipelines["Pipeline2D"]->descriptorSets[0]->Get()[i];
         descriptorWrites[1].dstBinding = 0;
@@ -87,7 +87,6 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
         descriptorWrites[1].descriptorCount = 1;
         descriptorWrites[1].pBufferInfo = &bufferInfo;
 
-
         descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[2].dstSet = _pipelines["SkinnedPipeline"]->descriptorSets[0]->Get()[i];
         descriptorWrites[2].dstBinding = 1;
@@ -95,7 +94,7 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
         descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
         descriptorWrites[2].descriptorCount = 1;
         descriptorWrites[2].pBufferInfo = &bufferInfo2;
-        
+
         descriptorWrites[3].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[3].dstSet = _pipelines["Pipeline2D"]->descriptorSets[0]->Get()[i];
         descriptorWrites[3].dstBinding = 1;
@@ -167,66 +166,42 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
 
 void Renderer::HandleResize()
 {
-    if (imageResult == VK_ERROR_OUT_OF_DATE_KHR || imageResult == VK_SUBOPTIMAL_KHR)
-    {
-        _synchronizer.reset();
-        _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT, _serviceLocator);
-        _swapChain->RecreateSwapChain();
-        _renderPass->RecreateFrameBuffers();
-    }
-    /*
-    else if (imageResult != VK_SUCCESS)
-    {
-        exit(EXIT_FAILURE);
-    }
-    */
+    ZoneScopedN("Resizing");
+
+    _synchronizer.reset();
+    _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT, _serviceLocator);
+    _swapChain->RecreateSwapChain();
+    _renderPass->RecreateDepthBuffer();
+    _renderPass->RecreateFrameBuffers();
 }
 
-void Renderer::Render(int width, int height)
+VkResult Renderer::DoRender(int width, int height)
 {
+
+    VkResult submit_result = VK_SUCCESS;
+
     _camera->setPerspective(60.0f, (float)width / (float)height, 0.1f, 256.0f);
 
-    vkWaitForFences(_logicalDevice->Get(), 1, &_synchronizer->GetFences()[_currentFrame], VK_TRUE, UINT64_MAX);
-
-    uint32_t imageIndex;
-    imageResult = vkAcquireNextImageKHR(_logicalDevice->Get(), _swapChain->Get(), UINT64_MAX, _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE, &imageIndex);
-
-    if (imageResult == VK_ERROR_OUT_OF_DATE_KHR || imageResult == VK_SUBOPTIMAL_KHR)
-    {
-        _synchronizer.reset();
-        _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT, _serviceLocator);
-        _swapChain->RecreateSwapChain();
-        _renderPass->RecreateDepthBuffer();
-        _renderPass->RecreateFrameBuffers();
-        return;
-    }
+    // Reset fences and current commandbuffer
+    vkResetFences(_logicalDevice->Get(), 1, &_synchronizer->GetFences()[_currentFrame]);
 
     // current commandbuffer & descriptorset
     currentCmdBuffer = _commandBuffers[_currentFrame]->GetCommandBuffer();
 
-    // Reset fences and current commandbuffer
-    vkResetFences(_logicalDevice->Get(), 1, &_synchronizer->GetFences()[_currentFrame]);
-    vkResetCommandBuffer(currentCmdBuffer, 0);
+    // vkResetCommandBuffer(currentCmdBuffer, 0);
+
+    if (cmdBufferUI != nullptr)
+    {
+        auto secondaries = cmdBufferUI->GetCommandBuffer();
+        vkCmdExecuteCommands(
+            currentCmdBuffer,
+            1,
+            &secondaries);
+    }
 
     // Begin renderpass and commandbuffer recording
     _commandBuffers[_currentFrame]->Record();
     _renderPass->Begin(_commandBuffers[_currentFrame], imageIndex);
-
-    // Set Viewport
-    VkViewport viewport{};
-    viewport.x = 0.0f;
-    viewport.y = 0.0f;
-    viewport.width = (float)_swapChain->swapChainExtent.width;
-    viewport.height = (float)_swapChain->swapChainExtent.height;
-    viewport.minDepth = 0.0f;
-    viewport.maxDepth = 1.0f;
-    vkCmdSetViewport(currentCmdBuffer, 0, 1, &viewport);
-
-    // Scissor
-    VkRect2D scissor{};
-    scissor.offset = {0, 0};
-    scissor.extent = _swapChain->swapChainExtent;
-    vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissor);
 
     // Sort renderables based on Zindex
     sort(_sceneGraph->renderables.begin(),
@@ -234,27 +209,54 @@ void Renderer::Render(int width, int height)
          [](const std::shared_ptr<Renderable> &lhs, const std::shared_ptr<Renderable> &rhs)
          { return lhs->zIndex < rhs->zIndex; });
 
+    UniformBufferObject ubo{};
+
+    ubo.screen = glm::vec2(500.0, 500.0);
+
+    ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    ubo.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
+    ubo.proj[1][1] *= -1;
+
     uint32_t modelIndex = 0;
 
     for (auto &renderable : _sceneGraph->renderables)
     {
 
-        // Update UBO
-        UniformBufferObject ubo{};
+        float offsetX = 0.0;
 
-        if (renderable->type == 1)
+        if (renderable->type == 4)
         {
-            ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            ubo.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
-            ubo.proj[1][1] *= -1;
+            offsetX = (48.0 * 2.0) + ((width * 0.20) - (48.0 / 2.0));
+        }
+
+        if (renderable->overflowHidden)
+        {
+            // Scissor
+            VkRect2D scissor{};
+            scissor.offset = {(int32_t)renderable->position.x, (int32_t)renderable->position.y};
+            scissor.extent = {(uint32_t)renderable->scale.x, (uint32_t)renderable->scale.y};
+            vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissor);
         }
         else
         {
-            ubo.view = _cam->GetViewMatrix();
-            ubo.invView = glm::inverse(_cam->GetViewMatrix());
-            ubo.proj = _camera->matrices.perspective;
-            _camera->update(0.1);
+            VkRect2D scissor{};
+            scissor.offset = {0, 0};
+            scissor.extent = {_swapChain->swapChainExtent.width, _swapChain->swapChainExtent.height};
+            vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissor);
         }
+
+        // Set Viewport
+        VkViewport viewport{};
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
+        viewport.width = (float)_swapChain->swapChainExtent.width;
+        viewport.height = (float)_swapChain->swapChainExtent.height;
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        vkCmdSetViewport(currentCmdBuffer, 0, 1, &viewport);
+
+        renderable->Test();
+        // Update UBO
 
         // ubo.screen = glm::vec2((float)width, (float)height);
 
@@ -262,13 +264,16 @@ void Renderer::Render(int width, int height)
 
         if (renderable->children.size() == 0)
         {
-            DrawRenderable(renderable, width, height, modelIndex);
+            DrawRenderable(renderable, 500.0, 500.0, modelIndex);
         }
         else
         {
+            uint32_t childIndex = modelIndex;
+
             for (auto &child : renderable->children)
             {
-                DrawRenderable(child, width, height, modelIndex);
+                DrawRenderable(child, 500.0, 500.0, childIndex * modelIndex);
+                childIndex++;
             }
         }
 
@@ -280,10 +285,33 @@ void Renderer::Render(int width, int height)
     _commandBuffers[_currentFrame]->EndRecording();
 
     // Submit and present
-    this->SubmitAndPresent(currentCmdBuffer, imageIndex);
+    submit_result = this->SubmitAndPresent(currentCmdBuffer, imageIndex);
 
     // Increment current frame
     _currentFrame = (_currentFrame + 1) % MAX_CONCURRENT_FRAMES_IN_FLIGHT;
+
+    return submit_result;
+}
+
+void Renderer::Render(int width, int height, bool resize)
+{
+    vkWaitForFences(_logicalDevice->Get(), 1, &_synchronizer->GetFences()[_currentFrame], VK_TRUE, UINT64_MAX);
+
+    auto acquire_result = vkAcquireNextImageKHR(_logicalDevice->Get(), _swapChain->Get(), UINT64_MAX, _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE, &imageIndex);
+
+    VkResult submit_result = VK_SUCCESS;
+
+    if (acquire_result == VK_SUCCESS || acquire_result == VK_SUBOPTIMAL_KHR)
+    {
+        // std::cout << "Rendering" << std::endl;
+        submit_result = DoRender(width, height);
+    }
+
+    if (acquire_result != VK_SUCCESS || submit_result != VK_SUCCESS)
+    {
+        // std::cout << "RESIZING.." << std::endl;
+        HandleResize();
+    }
 }
 
 void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width, int height, uint32_t modelIndex)
@@ -291,20 +319,19 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
 
     // @todo refactors this
 
-    auto translate = glm::mat4(1.0f);
-
-    if (renderable->type == 0)
-    {
-        translate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, 0.0));
-    }
-    else
-    {
-        translate = glm::translate(glm::mat4(1.0f), renderable->position);
-    }
+    auto translate = glm::translate(glm::mat4(1.0f), glm::vec3(renderable->position.x + renderable->scale.x, renderable->position.y - renderable->scale.y, renderable->position.z));
 
     auto scale = glm::scale(glm::mat4(1.0f), renderable->scale);
 
-    auto rotate = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+    auto rotate = glm::mat4(1.0);
+
+    if (renderable->type == 4)
+    {
+    }
+    else
+    {
+        rotate = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+    }
 
     auto o = glm::vec3(0.0, 0.0, 0.0);
 
@@ -335,46 +362,53 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
 
     modelMatrix = translate * scale * modelRotation;
 
-    /*
-    // Update push constant and upload to GPU
-    PushConstant constant;
-    constant.modelMatrix = modelMatrix;
-    constant.color = renderable->color;
-    constant.position = renderable->position;
-    constant.textureId = renderable->textureId;
-    */
-
     UboDataDynamic ubodyn{};
 
-    ubodyn.model = translate * scale * modelRotation;
+    if (renderable->type == 0 || renderable->type == 1 || renderable->type == 3)
+    {
+        ubodyn.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        ubodyn.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
+        ubodyn.proj[1][1] *= -1;
+    }
+    else
+    {
+        ubodyn.view = _cam->GetViewMatrix();
+        ubodyn.invView = glm::inverse(_cam->GetViewMatrix());
+        ubodyn.proj = _camera->matrices.perspective;
+        _camera->update(0.1);
+    }
+
+    ubodyn.model = translate * scale * modelRotation * rotate;
     ubodyn.color = renderable->color;
+    ubodyn.colorBorder = renderable->colorBorder;
+    ubodyn.colorShadow = renderable->colorShadow;
+    ubodyn.position = renderable->position2d;
+    ubodyn.size = renderable->scale;
+    ubodyn.borderRadius = renderable->borderRadius;
+    ubodyn.shapeId = renderable->type;
 
     uint32_t offset = dynamicAlignment * modelIndex;
 
     memcpy((char *)dynUbos[_currentFrame]->GetMappedMemory() + offset, &ubodyn, sizeof(UboDataDynamic));
 
-    /*
-    VkMappedMemoryRange memoryRange;
-    memoryRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
-    memoryRange.memory = dynUbo->GetBufferMemory();
-    memoryRange.size = bufferSize;
-    memoryRange.pNext = nullptr;
-    vkFlushMappedMemoryRanges(_logicalDevice->Get(), 1, &memoryRange);
-    */
-
-    // vkCmdPushConstants(currentCmdBuffer, _pipeline->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstant), &constant);
-
-    if (renderable->type == 1)
+    if (renderable->type == 1 || renderable->type == 3)
     {
+        auto ds0 = _pipelines["Pipeline2D"]->descriptorSets[0]->Get()[_currentFrame];
+
+        vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["Pipeline2D"]->GetPipeline());
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["Pipeline2D"]->GetPipelineLayout(), 0, 1, &ds0, 1, &offset);
         auto sprite = std::dynamic_pointer_cast<Sprite>(renderable);
         vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["Pipeline2D"]->GetPipelineLayout(), 1, 1, &sprite->_descriptorSet, 0, nullptr);
     }
 
-    if (renderable->type == 1 || renderable->type == 0)
+    if (renderable->type == 0)
     {
-        auto ds0 = _pipelines["Pipeline2D"]->descriptorSets[0]->Get()[_currentFrame];;
+        auto ds0 = _pipelines["Pipeline2D"]->descriptorSets[0]->Get()[_currentFrame];
+
         vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["Pipeline2D"]->GetPipeline());
         vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["Pipeline2D"]->GetPipelineLayout(), 0, 1, &ds0, 1, &offset);
+        auto sprite = std::dynamic_pointer_cast<Quad>(renderable);
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["Pipeline2D"]->GetPipelineLayout(), 1, 1, &sprite->_descriptorSet, 0, nullptr);
     }
 
     if (renderable->type == 4)
@@ -387,7 +421,6 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
         {
             model->renderNode(node, currentCmdBuffer, _pipelines["SkinnedPipeline"], Material::ALPHAMODE_OPAQUE);
         }
-        
     }
     else if (renderable->type == 10)
     {
@@ -397,7 +430,7 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
         vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["CubeMapPipeline"]->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &offset);
         auto model = std::dynamic_pointer_cast<CubeMap>(renderable);
         model->_model->renderNode(model->_model->linearNodes[2], currentCmdBuffer, _pipelines["CubeMapPipeline"], Material::ALPHAMODE_OPAQUE);
-         */
+        */
     }
     else
     {
@@ -410,9 +443,11 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
         // Draw current renderable
         vkCmdDrawIndexed(currentCmdBuffer, renderable->GetIndices().size(), 1, 0, 0, 0);
     }
+
+    FrameMark;
 }
 
-void Renderer::SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex)
+VkResult Renderer::SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex)
 {
     // Submit info
     VkSubmitInfo submitInfo{};
@@ -447,8 +482,5 @@ void Renderer::SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex)
     presentInfo.pImageIndices = &imageIndex;
 
     // Present
-    if (vkQueuePresentKHR(_logicalDevice->GetPresentQueue(), &presentInfo) != VK_SUCCESS)
-    {
-        exit(EXIT_FAILURE);
-    }
+    return vkQueuePresentKHR(_logicalDevice->GetPresentQueue(), &presentInfo);
 }

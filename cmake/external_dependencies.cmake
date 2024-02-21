@@ -52,14 +52,14 @@ set(CURL_USE_OPENSSL OFF)
 # Graphics API
 
 # Vulkan
-#find_package(Vulkan REQUIRED)
+find_package(Vulkan REQUIRED)
 
 #set(KTX_FEATURE_TESTS OFF)
 #add_subdirectory(external/KTX-Software)
 
 # Windowing on desktop
 if(WIN32 OR UNIX OR APPLE)
-  #add_subdirectory(external/glfw)
+  add_subdirectory(external/glfw)
 endif()
 
 # Lua SOL 2
@@ -116,7 +116,9 @@ set(_LUA_LIB_SRC
 )
 
 add_library(lua OBJECT ${_LUA_LIB_SRC})
-add_compile_definitions(lua PRIVATE LUA_USE_IOS)
+#add_compile_definitions(lua PRIVATE LUA_USE_IOS)
+
+add_subdirectory(external/myers-diff)
 
 set(TINYGLTF_INSTALL OFF)
 set(TINYGLTF_BUILD_LOADER_EXAMPLE  OFF)
@@ -124,3 +126,11 @@ add_subdirectory(external/tinygltf)
 if(ANDROID)
   target_compile_definitions(tinygltf PRIVATE TINYGLTF_ANDROID_LOAD_FROM_ASSETS)
 endif()
+
+add_subdirectory(external/efsw)
+
+add_subdirectory(external/yoga)
+
+option(TRACY_ENABLE "" ON)
+option(TRACY_ON_DEMAND "" ON)
+add_subdirectory(external/tracy)

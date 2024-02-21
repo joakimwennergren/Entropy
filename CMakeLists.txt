@@ -22,6 +22,8 @@ set(PROJECT_BASEPATH ${PROJECT_SOURCE_DIR})
 # Include dependencies
 include(cmake/external_dependencies.cmake)
 
+
+
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
 # Create the library
@@ -45,6 +47,8 @@ target_include_directories(${PROJECT_NAME}
         external/vulkan-headers
         external/lua-5.4.6/src
         external/metal-cpp
+        external/myers-diff
+        external/yoga
 )
 
 # Link common dependencies
@@ -66,39 +70,16 @@ target_link_libraries(${PROJECT_NAME}
     #ktx
 )
 
-target_link_libraries(${PROJECT_NAME}
-    #${Vulkan_LIBRARIES}
-)
-
-if(WIN32 OR UNIX OR APPLE)
     # Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk)
     target_link_libraries(${PROJECT_NAME}
-        #${Vulkan_LIBRARIES}
-       #glfw
-    )
-endif()
-
-
-set_target_properties(Entropy PROPERTIES
-    XCODE_GENERATE_SCHEME ON
-    XCODE_SCHEME_ENABLE_GPU_FRAME_CAPTURE_MODE "Metal")
-
-    target_link_libraries(Entropy
-
-    "-framework foundation"
-    "-framework metal"
-    "-framework metalkit"
-    "-framework uikit"
-    "-framework iosurface"
-    "-framework coregraphics"
-    "-framework quartzcore"
-    "-framework coreaudio"
-    "-framework audiotoolbox"
-    "-framework avfoundation"
-    "-framework coretext"
+        ${Vulkan_LIBRARIES}
+       glfw
+       efsw
+       yogacore
+       TracyClient
     )
 
-    include_directories(external/vulkan-headers)
+
 
 # Build config file
 configure_file(config.h.in ${PROJECT_SOURCE_DIR}/include/config.hpp @ONLY)

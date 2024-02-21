@@ -299,14 +299,16 @@ public:
 
     std::unique_ptr<VertexBuffer> _vertexBuffer;
     std::unique_ptr<Buffer> _indexBuffer;
-    Timer * timer;
+    Timer *timer;
+
+    void Test(){};
+
 private:
     std::shared_ptr<ServiceLocator> _serviceLocator;
     VkDescriptorSet _noTextureDs;
     Texture *noTexture;
     bool isCubeMap = false;
     VkDescriptorSet _cubeMapDS;
-
 
 #ifdef BUILD_FOR_ANDROID
     AAssetManager *assetManager;

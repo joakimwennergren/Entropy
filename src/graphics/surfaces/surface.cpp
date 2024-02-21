@@ -5,6 +5,9 @@ using namespace Entropy::Graphics::Surfaces;
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
 WindowSurface::WindowSurface(std::shared_ptr<VulkanInstance> instance, GLFWwindow *window)
 {
+
+    this->window = window;
+
     if (instance == nullptr)
     {
         return;
@@ -28,6 +31,7 @@ WindowSurface::WindowSurface(std::shared_ptr<VulkanInstance> instance, GLFWwindo
 #ifdef BUILD_FOR_WINDOWS
 WindowSurface::WindowSurface(std::shared_ptr<VulkanInstance> instance, GLFWwindow *window)
 {
+    this->window = window;
     if (instance == nullptr)
     {
         return;

@@ -36,7 +36,7 @@ namespace Entropy
                  *
                  * @param context
                  */
-                CommandBuffer(std::shared_ptr<ServiceLocator> serviceLocator);
+                CommandBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkCommandBufferLevel level);
 
                 /**
                  * @brief

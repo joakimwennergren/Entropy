@@ -17,7 +17,7 @@
 #include <graphics/synchronization/synchronizer.hpp>
 #include <renderables/renderable.hpp>
 #include <scenegraphs/scenegraph.hpp>
-//#include <graphics/cubemaps/cubemap.hpp>
+// #include <graphics/cubemaps/cubemap.hpp>
 #include <servicelocators/servicelocator.hpp>
 #include <graphics/descriptorsets/descriptorset.hpp>
 #include <graphics/swapchains/swapchain.hpp>
@@ -25,12 +25,15 @@
 #include <graphics/cameras/perspective_camera.hpp>
 
 #include <graphics/primitives/2d/sprite.hpp>
+#include <graphics/primitives/2d/quad.hpp>
 #include <graphics/buffers/uniformbuffer.hpp>
 
 #include <graphics/cameras/flying_camera.hpp>
 
 #include <graphics/utilities/utilities.hpp>
 #include <input/keyboard/keyboard.hpp>
+
+#include <tracy/Tracy.hpp>
 
 #ifdef BUILD_FOR_ANDROID
 #include <android/asset_manager.h>
@@ -49,7 +52,7 @@ using namespace Entropy::Graphics::Descriptorsets;
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Swapchains;
 using namespace Entropy::Graphics::Primitives;
-//using namespace Entropy::Graphics::CubeMaps;
+// using namespace Entropy::Graphics::CubeMaps;
 using namespace Entropy::Input;
 
 namespace Entropy
@@ -66,10 +69,31 @@ namespace Entropy
                 Renderer(std::shared_ptr<ServiceLocator> serviceLocator, AAssetManager *assetManager);
                 std::vector<char> loadShader(std::string filename, AAssetManager *assetManager);
 #endif
-                void Render(int width, int height);
-                void SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex);
+                void Render(int width, int height, bool resize);
+                VkResult DoRender(int width, int height);
+                VkResult SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex);
                 void DrawRenderable(std::shared_ptr<Renderable> renderable, int width, int height, uint32_t modelIndex);
                 void HandleResize();
+                bool isResizing = true;
+                struct UboDataDynamic
+                {
+                    glm::vec4 color;
+                    glm::vec4 colorBorder;
+                    glm::vec4 colorShadow;
+                    glm::mat4 proj;
+                    glm::mat4 view;
+                    glm::mat4 invView;
+                    glm::mat4 model;
+                    glm::vec2 position;
+                    glm::vec2 size;
+                    glm::vec4 borderRadius;
+                    int shapeId;
+                };
+                size_t dynamicAlignment{0};
+                unsigned int _currentFrame = 0;
+                uint32_t imageIndex;
+                bool skip = false;
+                std::shared_ptr<CommandBuffer> cmdBufferUI;
 
             private:
                 void Setup(std::shared_ptr<ServiceLocator> serviceLocator);
@@ -87,8 +111,6 @@ namespace Entropy
 
                 std::shared_ptr<ServiceLocator> _serviceLocator;
 
-                unsigned int _currentFrame = 0;
-
                 std::shared_ptr<Descriptorset> _descriptorSet;
                 std::shared_ptr<LogicalDevice> _logicalDevice;
                 std::shared_ptr<Swapchain> _swapChain;
@@ -104,16 +126,9 @@ namespace Entropy
 
                 // One big uniform buffer that contains all matrices
                 // Note that we need to manually allocate the data to cope for GPU-specific uniform buffer offset alignments
-                struct UboDataDynamic
-                {
-                    glm::vec4 color;
-                    glm::mat4 model;
-                };
 
                 std::vector<UniformBuffer *> dynUbos;
                 size_t bufferSize;
-
-                size_t dynamicAlignment{0};
 
                 VkResult imageResult;
 

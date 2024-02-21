@@ -14,7 +14,7 @@ Application::Application()
 
     // Create the window
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    _window = glfwCreateWindow(640, 480, "Entropy application", NULL, NULL);
+    _window = glfwCreateWindow(500, 500, "Entropy application", NULL, NULL);
 
     if (!_window)
     {
@@ -30,7 +30,8 @@ Application::Application()
     glfwSetCursorPosCallback(_window, cursor_position_callback);
 
     // Get initial window framebuffer size
-    int width, height;
+    int width,
+        height;
     glfwGetFramebufferSize(_window, &width, &height);
     VkExtent2D frame = {(uint32_t)width, (uint32_t)height};
 
@@ -38,13 +39,14 @@ Application::Application()
     _timer = new Timer(1.0f);
 
     // Create items for vulkan
-    auto vkInstance = std::make_shared<VulkanInstance>("Entropy tests");
-    auto windowSurface = std::make_shared<WindowSurface>(vkInstance, _window);
-    auto physicalDevice = std::make_shared<PhysicalDevice>(vkInstance, windowSurface);
-    auto logicalDevice = std::make_shared<LogicalDevice>(physicalDevice, windowSurface);
-    auto swapChain = std::make_shared<Swapchain>(physicalDevice->Get(), logicalDevice->Get(), windowSurface, frame);
-    auto commandPool = std::make_shared<CommandPool>(logicalDevice, physicalDevice, windowSurface);
-    auto descriptorPool = std::make_shared<DescriptorPool>(logicalDevice);
+    _vkInstance = std::make_shared<VulkanInstance>("Entropy tests");
+    _windowSurface = std::make_shared<WindowSurface>(_vkInstance, _window);
+    _windowSurface2 = std::make_shared<WindowSurface>(_vkInstance, _window);
+    _physicalDevice = std::make_shared<PhysicalDevice>(_vkInstance, _windowSurface);
+    _logicalDevice = std::make_shared<LogicalDevice>(_physicalDevice, _windowSurface);
+    _swapChain = std::make_shared<Swapchain>(_physicalDevice->Get(), _logicalDevice->Get(), _windowSurface, frame);
+    auto commandPool = std::make_shared<CommandPool>(_logicalDevice, _physicalDevice, _windowSurface);
+    auto descriptorPool = std::make_shared<DescriptorPool>(_logicalDevice);
 
     // Add services to service locator
     serviceLocator = std::make_shared<ServiceLocator>();
@@ -53,17 +55,21 @@ Application::Application()
     _camera = std::make_shared<Cam>(glm::vec3(0.0f, 0.0f, 3.0f));
     serviceLocator->AddService(_camera);
     serviceLocator->AddService(_keyboard);
-    serviceLocator->AddService(physicalDevice);
-    serviceLocator->AddService(logicalDevice);
+    serviceLocator->AddService(_physicalDevice);
+    serviceLocator->AddService(_logicalDevice);
     serviceLocator->AddService(descriptorPool);
-    serviceLocator->AddService(swapChain);
+    serviceLocator->AddService(_swapChain);
     serviceLocator->AddService(commandPool);
+    serviceLocator->AddService(_windowSurface);
 
     sceneGraph = std::make_shared<SceneGraph>();
     serviceLocator->AddService(sceneGraph);
 
     physics2d = std::make_shared<Physics2D>(serviceLocator);
     serviceLocator->AddService(physics2d);
+
+    mouse = std::make_shared<Mouse>(_window);
+    serviceLocator->AddService(mouse);
 
     lua = std::make_shared<Lua>(serviceLocator);
     serviceLocator->AddService(lua);
@@ -93,10 +99,10 @@ void Application::ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::sh
 
         auto onRenderFunc = renderable->script->environment["OnRender"];
 
-        if (onRenderFunc.valid())
-        {
-            onRenderFunc();
-        }
+        // if (onRenderFunc != nullptr)
+        //{
+        //     onRenderFunc();
+        // }
     }
 }
 
@@ -131,19 +137,19 @@ void Application::Run()
 
         // On render
         this->OnRender(_deltaTime);
-        this->_renderer->Render(width, height);
+        this->_renderer->Render(width, height, true);
 
         if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(_window, true);
 
         if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS)
-            _camera->ProcessKeyboard(FORWARD, 0.3);
+            _camera->ProcessKeyboard(FORWARD, 0.1);
         if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS)
-            _camera->ProcessKeyboard(BACKWARD, 0.3);
+            _camera->ProcessKeyboard(BACKWARD, 0.1);
         if (glfwGetKey(_window, GLFW_KEY_A) == GLFW_PRESS)
-            _camera->ProcessKeyboard(LEFT, 0.3);
+            _camera->ProcessKeyboard(LEFT, 0.1);
         if (glfwGetKey(_window, GLFW_KEY_D) == GLFW_PRESS)
-            _camera->ProcessKeyboard(RIGHT, 0.3);
+            _camera->ProcessKeyboard(RIGHT, 0.1);
 
         float timeStep = 1.0f / 60.0f;
         // int32 velocityIterations = 6;
@@ -155,17 +161,6 @@ void Application::Run()
 
         // Poll events
         glfwPollEvents();
-    }
-}
-
-void framebufferResizeCallback(GLFWwindow *window, int width, int height)
-{
-    auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
-    if (app != nullptr)
-    {
-        app->GetRenderer()->Render(width, height);
-        app->GetRenderer()->Render(width, height);
-        app->OnRender(0);
     }
 }
 
@@ -209,6 +204,14 @@ void cursor_position_callback(GLFWwindow *window, double xposIn, double yposIn)
     app->lastY = ypos;
 
     app->_camera->ProcessMouseMovement(xoffset, yoffset);
+}
+
+void framebufferResizeCallback(GLFWwindow *window, int width, int height)
+{
+    auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
+    app->GetRenderer()->Render(width, height, true);
+    app->OnRender(0.0);
+    app->GetRenderer()->HandleResize();
 }
 
 #endif

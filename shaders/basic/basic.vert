@@ -15,12 +15,22 @@ layout (binding = 0) uniform UboView
 	mat4 projection;
 	mat4 view;
 	mat4 invView;
+	vec2 screen;
 } uboView;
 
 layout (binding = 1) uniform UboInstance 
 {
 	vec4 color;
-	mat4 model; 
+	vec4 colorBorder;
+	vec4 colorShadow;
+	mat4 proj;
+	mat4 view;
+	mat4 invView;
+	mat4 model;
+	vec2 position;
+	vec2 size;
+	vec4 borderRadius;
+	int shapeId;
 } uboInstance;
 
 layout (set = 2, binding = 0) uniform UBONode {
@@ -60,6 +70,6 @@ void main()
 	outWorldPos = locPos.xyz / locPos.w;
 	outUV0 = inUV0;
 	outUV1 = inUV1;
-	outInvView = uboView.invView;
-	gl_Position =  uboView.projection * uboView.view * vec4(outWorldPos, 1.0);
+	outInvView = uboInstance.invView;
+	gl_Position =  uboInstance.proj * uboInstance.view * vec4(outWorldPos, 1.0);
 }

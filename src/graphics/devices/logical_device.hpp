@@ -29,6 +29,8 @@ namespace Entropy
                 VkQueue GetGraphicQueue() { return _graphicsQueue; };
                 VkQueue GetPresentQueue() { return _presentQueue; };
 
+                uint32_t queueFamiliy = 0;
+
             private:
                 VkDevice _logicalDevice;
                 VkQueue _graphicsQueue;

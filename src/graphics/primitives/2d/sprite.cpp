@@ -89,6 +89,8 @@ Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator, std::string path)
 {
     _serviceLocator = serviceLocator;
 
+    type = 1;
+
     script = std::make_unique<Script>();
 
     _indices = {0, 1, 2, 2, 3, 0};
@@ -113,8 +115,6 @@ Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator, std::string path)
     this->texture->CreateTextureImage(path);
 
     UpdateDescriptorSets();
-
-    type = 1;
 }
 
 Sprite::Sprite(unsigned char *pixels, int width, int height)
@@ -243,4 +243,12 @@ void Sprite::UpdateDescriptorSets()
     descriptorWrites[1].pImageInfo = &imageInfo;
 
     vkUpdateDescriptorSets(logicalDevice->Get(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+}
+
+Sprite::~Sprite()
+{
+    auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
+    auto descriptorPool = _serviceLocator->GetService<DescriptorPool>();
+    vkDeviceWaitIdle(logicalDevice->Get());
+    vkFreeDescriptorSets(logicalDevice->Get(), descriptorPool->Get(), 1, &_descriptorSet);
 }

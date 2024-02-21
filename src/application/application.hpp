@@ -32,6 +32,7 @@
 #include <filesystem/filesystem.hpp>
 #include <input/keyboard/keyboard.hpp>
 #include <graphics/cameras/flying_camera.hpp>
+#include <renderables/renderable.hpp>
 
 using namespace Entropy::Graphics::Instances;
 using namespace Entropy::Graphics::Surfaces;
@@ -46,6 +47,7 @@ using namespace Entropy::Scripting;
 using namespace Entropy::Physics;
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Renderers;
+using namespace Entropy::Renderables;
 using namespace Entropy;
 using namespace Entropy::Input;
 
@@ -62,6 +64,7 @@ void framebufferResizeCallback(GLFWwindow *window, int width, int height);
 void cursorPositionCallback(GLFWwindow *window, double x, double y);
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
 static void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
+void window_refresh_callback(GLFWwindow *window);
 
 class Application
 {
@@ -82,21 +85,31 @@ public:
     bool firstMouse;
     float lastX = 0.0;
     float lastY = 0.0;
-
-    // @todo look over if this should be protected..
-protected:
-    GLFWwindow *_window;
     std::shared_ptr<ServiceLocator> serviceLocator;
     std::shared_ptr<SceneGraph> sceneGraph;
+    // @todo look over if this should be protected..
+    std::shared_ptr<Renderer> _renderer;
+    std::shared_ptr<Mouse> mouse;
+    bool isResizing = false;
+    Timer *_timer;
+
+protected:
+    GLFWwindow *_window;
+    std::shared_ptr<VulkanInstance> _vkInstance;
+    std::shared_ptr<WindowSurface> _windowSurface;
+    std::shared_ptr<WindowSurface> _windowSurface2;
+    std::shared_ptr<PhysicalDevice> _physicalDevice;
+    std::shared_ptr<LogicalDevice> _logicalDevice;
+    std::shared_ptr<Swapchain> _swapChain;
     std::shared_ptr<Lua> lua;
     std::shared_ptr<Physics2D> physics2d;
     sol::protected_function luaOnRender;
 
 private:
     void ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::shared_ptr<Lua> lua);
-    std::shared_ptr<Renderer> _renderer;
-    Timer *_timer;
+
     float _lastTick = 0.0f;
+    std::thread th;
     float _deltaTime = 0.0f;
 };
 #endif
@@ -171,7 +184,6 @@ public:
 
             _renderer->Render(frame.size.width, frame.size.height);
             app->OnRender(0.0);
-             
         }
 
         float lastTick = 0.0;
@@ -205,12 +217,11 @@ public:
     inline bool applicationDidFinishLaunching(UI::Application *pApp, NS::Value *options) override
     {
         frame = UI::Screen::mainScreen()->bounds();
-    
+
         VkExtent2D extent =
-        {
-            (uint32_t)frame.size.width,
-            (uint32_t)frame.size.height
-        };
+            {
+                (uint32_t)frame.size.width,
+                (uint32_t)frame.size.height};
 
         //_pViewController = UI::ViewController::alloc()->init(nil, nil);
 
@@ -239,7 +250,7 @@ public:
         CA::MetalLayer *layer = _pMtkView->currentDrawable()->layer();
 
         // Create items for vulkan
-        auto vkInstance = std::make_shared<VulkanInstance>("Entropy tests");
+        _vkInstance = std::make_shared<VulkanInstance>("Entropy tests");
         auto windowSurface = std::make_shared<WindowSurface>(vkInstance, layer);
         auto physicalDevice = std::make_shared<PhysicalDevice>(vkInstance, windowSurface);
         auto logicalDevice = std::make_shared<LogicalDevice>(physicalDevice, windowSurface);

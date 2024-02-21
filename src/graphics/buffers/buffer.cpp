@@ -1,6 +1,5 @@
 #include "buffer.hpp"
 
-
 using namespace Entropy::Graphics::Buffers;
 
 Buffer::~Buffer()
@@ -53,7 +52,7 @@ void Buffer::CopyBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkBuffer
     auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
 
     // Create a commandBuffer
-    auto cmdBuffer = CommandBuffer(serviceLocator);
+    auto cmdBuffer = CommandBuffer(serviceLocator, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
     auto cmdBufferHandle = cmdBuffer.GetCommandBuffer();
 
     // Start recording

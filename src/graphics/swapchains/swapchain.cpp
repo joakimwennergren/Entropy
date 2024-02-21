@@ -8,7 +8,7 @@ Swapchain::Swapchain(VkPhysicalDevice physicalDevice, VkDevice logicalDevice, st
     _surface = surface;
     _physicalDevice = physicalDevice;
     _frame = frame;
-    CreateSwapChain();
+    CreateSwapChain(nullptr);
 }
 
 Swapchain::~Swapchain()
@@ -16,7 +16,7 @@ Swapchain::~Swapchain()
     vkDestroySwapchainKHR(_logicalDevice, _swapChain, nullptr);
 }
 
-void Swapchain::CreateSwapChain()
+void Swapchain::CreateSwapChain(VkSwapchainKHR prev)
 {
     SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(_physicalDevice, _surface->Get());
     VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
@@ -56,19 +56,21 @@ void Swapchain::CreateSwapChain()
         createInfo.pQueueFamilyIndices = nullptr; // Optional
     }
     createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
-    #ifdef BUILD_FOR_WINDOWS
+#ifdef BUILD_FOR_WINDOWS
     createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-    #else
+#else
     createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR; // VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-    #endif
+#endif
     createInfo.presentMode = presentMode;
     createInfo.clipped = VK_TRUE;
-    createInfo.oldSwapchain = VK_NULL_HANDLE;
+    createInfo.oldSwapchain = prev == nullptr ? VK_NULL_HANDLE : prev;
 
     if (vkCreateSwapchainKHR(_logicalDevice, &createInfo, nullptr, &_swapChain) != VK_SUCCESS)
     {
         exit(EXIT_FAILURE);
     }
+
+    vkDestroySwapchainKHR(_logicalDevice, prev, nullptr);
 
     vkGetSwapchainImagesKHR(_logicalDevice, _swapChain, &imageCount, nullptr);
     swapChainImages.resize(imageCount);
@@ -88,16 +90,14 @@ void Swapchain::CreateSwapChain()
 
 void Swapchain::RecreateSwapChain()
 {
-    vkDeviceWaitIdle(_logicalDevice);
+    ZoneScopedN("Recreating swapchain");
 
     for (size_t i = 0; i < swapChainImageViews.size(); i++)
     {
         vkDestroyImageView(_logicalDevice, swapChainImageViews[i], nullptr);
     }
 
-    vkDestroySwapchainKHR(_logicalDevice, _swapChain, nullptr);
-
-    CreateSwapChain();
+    CreateSwapChain(_swapChain); // create new swapchain with swapchainOld = _swapChain
 }
 
 SwapChainSupportDetails Swapchain::QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface)

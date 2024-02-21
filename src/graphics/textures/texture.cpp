@@ -6,7 +6,7 @@ using namespace Entropy::Graphics::Textures;
 
 Texture::Texture(std::shared_ptr<ServiceLocator> serviceLocator)
 {
-    _commandBuffer = std::make_unique<CommandBuffer>(serviceLocator);
+    _commandBuffer = std::make_unique<CommandBuffer>(serviceLocator, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
     _serviceLocator = serviceLocator;
 
     // Get required depenencies
@@ -211,7 +211,7 @@ void Texture::CreateTextureImageFromKtx(unsigned char *pixels, unsigned int widt
     sampler.maxLod = static_cast<float>(mips);
     sampler.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
     sampler.maxAnisotropy = 1.0f;
- 
+
     vkCreateSampler(_logicalDevice->Get(), &sampler, nullptr, &_sampler);
 
     VkImageSubresourceRange subresourceRange = {};
@@ -331,7 +331,7 @@ void Texture::CreateTextureImage(std::string path, AAssetManager *assetManager)
 
 void Texture::CreateTextureImage(std::string path)
 {
-    
+
     std::cout << path << std::endl;
 
     auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();

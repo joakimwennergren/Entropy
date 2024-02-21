@@ -12,10 +12,10 @@ Lua::Lua(std::shared_ptr<ServiceLocator> serviceLocator)
     _lua.open_libraries(sol::lib::base);
 
     _lua.new_usertype<DynamicBody>("DynamicBody",
-                                  sol::factories([physics2d]()
-                                                 { auto dynBody = std::make_shared<DynamicBody>(physics2d);
+                                   sol::factories([physics2d]()
+                                                  { auto dynBody = std::make_shared<DynamicBody>(physics2d);
                                                    return dynBody; }),
-                                  "GetPosition", &DynamicBody::GetPosition);
+                                   "GetPosition", &DynamicBody::GetPosition);
 
     _lua.new_usertype<Sprite>(
         "Sprite",
@@ -32,5 +32,5 @@ Lua::Lua(std::shared_ptr<ServiceLocator> serviceLocator)
         "Parent", sol::property(&Sprite::parent));
 
     // lua.script_file("/Users/joakim/Desktop/Entropy-Engine/resources/scripts/leaf.lua");
-    // lua.script_file("/Users/joakim/Desktop/Entropy-Engine/resources/scripts/main.lua");
+    //_lua.script_file("/Users/joakim/Entropy-Engine/resources/scripts/main.lua");
 }
