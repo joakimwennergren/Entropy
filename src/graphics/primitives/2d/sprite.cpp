@@ -244,3 +244,11 @@ void Sprite::UpdateDescriptorSets()
 
     vkUpdateDescriptorSets(logicalDevice->Get(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 }
+
+Sprite::~Sprite()
+{
+    auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
+    auto descriptorPool = _serviceLocator->GetService<DescriptorPool>();
+    vkDeviceWaitIdle(logicalDevice->Get());
+    vkFreeDescriptorSets(logicalDevice->Get(), descriptorPool->Get(), 1, &_descriptorSet);
+}

@@ -29,7 +29,7 @@ DescriptorPool::DescriptorPool(std::shared_ptr<LogicalDevice> logicalDevice)
     poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
     poolInfo.pPoolSizes = poolSizes.data();
     poolInfo.maxSets = 10000;
-    // poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+    poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 
     if (vkCreateDescriptorPool(logicalDevice->Get(), &poolInfo, nullptr, &_descriptorPool) != VK_SUCCESS)
     {

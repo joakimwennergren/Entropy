@@ -39,13 +39,14 @@ Application::Application()
     _timer = new Timer(1.0f);
 
     // Create items for vulkan
-    auto vkInstance = std::make_shared<VulkanInstance>("Entropy tests");
-    auto windowSurface = std::make_shared<WindowSurface>(vkInstance, _window);
-    auto physicalDevice = std::make_shared<PhysicalDevice>(vkInstance, windowSurface);
-    auto logicalDevice = std::make_shared<LogicalDevice>(physicalDevice, windowSurface);
-    auto swapChain = std::make_shared<Swapchain>(physicalDevice->Get(), logicalDevice->Get(), windowSurface, frame);
-    auto commandPool = std::make_shared<CommandPool>(logicalDevice, physicalDevice, windowSurface);
-    auto descriptorPool = std::make_shared<DescriptorPool>(logicalDevice);
+    _vkInstance = std::make_shared<VulkanInstance>("Entropy tests");
+    _windowSurface = std::make_shared<WindowSurface>(_vkInstance, _window);
+    _windowSurface2 = std::make_shared<WindowSurface>(_vkInstance, _window);
+    _physicalDevice = std::make_shared<PhysicalDevice>(_vkInstance, _windowSurface);
+    _logicalDevice = std::make_shared<LogicalDevice>(_physicalDevice, _windowSurface);
+    _swapChain = std::make_shared<Swapchain>(_physicalDevice->Get(), _logicalDevice->Get(), _windowSurface, frame);
+    auto commandPool = std::make_shared<CommandPool>(_logicalDevice, _physicalDevice, _windowSurface);
+    auto descriptorPool = std::make_shared<DescriptorPool>(_logicalDevice);
 
     // Add services to service locator
     serviceLocator = std::make_shared<ServiceLocator>();
@@ -54,12 +55,12 @@ Application::Application()
     _camera = std::make_shared<Cam>(glm::vec3(0.0f, 0.0f, 3.0f));
     serviceLocator->AddService(_camera);
     serviceLocator->AddService(_keyboard);
-    serviceLocator->AddService(physicalDevice);
-    serviceLocator->AddService(logicalDevice);
+    serviceLocator->AddService(_physicalDevice);
+    serviceLocator->AddService(_logicalDevice);
     serviceLocator->AddService(descriptorPool);
-    serviceLocator->AddService(swapChain);
+    serviceLocator->AddService(_swapChain);
     serviceLocator->AddService(commandPool);
-    serviceLocator->AddService(windowSurface);
+    serviceLocator->AddService(_windowSurface);
 
     sceneGraph = std::make_shared<SceneGraph>();
     serviceLocator->AddService(sceneGraph);

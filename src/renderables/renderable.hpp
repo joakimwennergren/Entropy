@@ -81,6 +81,7 @@ namespace Entropy
             std::string name;
 
             bool visible = true;
+            bool overflowHidden = false;
 
             float rotationX = 0.0;
             int orientation = 1;

@@ -95,7 +95,12 @@ public:
 
 protected:
     GLFWwindow *_window;
-
+    std::shared_ptr<VulkanInstance> _vkInstance;
+    std::shared_ptr<WindowSurface> _windowSurface;
+    std::shared_ptr<WindowSurface> _windowSurface2;
+    std::shared_ptr<PhysicalDevice> _physicalDevice;
+    std::shared_ptr<LogicalDevice> _logicalDevice;
+    std::shared_ptr<Swapchain> _swapChain;
     std::shared_ptr<Lua> lua;
     std::shared_ptr<Physics2D> physics2d;
     sol::protected_function luaOnRender;
@@ -245,7 +250,7 @@ public:
         CA::MetalLayer *layer = _pMtkView->currentDrawable()->layer();
 
         // Create items for vulkan
-        auto vkInstance = std::make_shared<VulkanInstance>("Entropy tests");
+        _vkInstance = std::make_shared<VulkanInstance>("Entropy tests");
         auto windowSurface = std::make_shared<WindowSurface>(vkInstance, layer);
         auto physicalDevice = std::make_shared<PhysicalDevice>(vkInstance, windowSurface);
         auto logicalDevice = std::make_shared<LogicalDevice>(physicalDevice, windowSurface);

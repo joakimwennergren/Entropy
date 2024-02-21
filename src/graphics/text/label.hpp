@@ -37,6 +37,7 @@ namespace Entropy
         {
 
         public:
+            std::string text;
             Label(std::shared_ptr<ServiceLocator> serviceLocator, std::shared_ptr<Font> font);
             void Test(){};
             std::vector<std::shared_ptr<Sprite>> sprites;
@@ -46,22 +47,17 @@ namespace Entropy
                 if (this->text.length() == 0)
                     return;
 
-                std::string::const_iterator c;
-
-                for (c = text.begin(); c != text.end(); c++)
+                for (unsigned int i = 0; i < text.size(); i++)
                 {
-                    // Character &ch = _characters[*c];
+                    float xpos = x;
+                    float ypos = y;
 
-                    // float xpos = x + ch.Size.x;
-                    // float ypos = y - (ch.Bearing.y);
+                    auto yAdvance = (_font->glyphs[text[i]].glyphslot->bitmap.rows - _font->glyphs[text[i]].glyphslot->bitmap_top) + ypos;
 
-                    /*
-                    auto g = this->children[cnt];
-                    g->position = glm::vec3(xpos, ypos, 0.0);
+                    auto g = this->children[i];
+                    g->position = glm::vec3(xpos, yAdvance, 1.0);
 
-                    x += (ch.Advance >> 6) * 2.0f;
-                    cnt++;
-                    */
+                    x += (_font->glyphs[text[i]].glyphslot->advance.x >> 6);
                 }
             }
 
@@ -107,7 +103,7 @@ namespace Entropy
         private:
             FT_Library ft;
             FT_Face face;
-            std::string text;
+
             std::map<unsigned char, Character> _characters;
             std::shared_ptr<Font> _font;
         };

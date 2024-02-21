@@ -39,7 +39,7 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
         _uniformBuffers.push_back(new UniformBuffer(serviceLocator, sizeof(UniformBufferObject)));
-        dynUbos.push_back(new UniformBuffer(serviceLocator, sizeof(UboDataDynamic) * 100));
+        dynUbos.push_back(new UniformBuffer(serviceLocator, sizeof(UboDataDynamic) * 10000));
     }
 
     for (unsigned int i = 0; i < _uniformBuffers.size(); i++)
@@ -229,17 +229,27 @@ VkResult Renderer::DoRender(int width, int height)
             offsetX = (48.0 * 2.0) + ((width * 0.20) - (48.0 / 2.0));
         }
 
-        // Scissor
-        VkRect2D scissor{};
-        scissor.offset = {0, 0};
-        scissor.extent = {_swapChain->swapChainExtent};
-        vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissor);
+        if (renderable->overflowHidden)
+        {
+            // Scissor
+            VkRect2D scissor{};
+            scissor.offset = {(int32_t)renderable->position.x, (int32_t)renderable->position.y};
+            scissor.extent = {(uint32_t)renderable->scale.x, (uint32_t)renderable->scale.y};
+            vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissor);
+        }
+        else
+        {
+            VkRect2D scissor{};
+            scissor.offset = {0, 0};
+            scissor.extent = {_swapChain->swapChainExtent.width, _swapChain->swapChainExtent.height};
+            vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissor);
+        }
 
         // Set Viewport
         VkViewport viewport{};
-        viewport.x = offsetX;
+        viewport.x = 0.0f;
         viewport.y = 0.0f;
-        viewport.width = (float)_swapChain->swapChainExtent.width - offsetX;
+        viewport.width = (float)_swapChain->swapChainExtent.width;
         viewport.height = (float)_swapChain->swapChainExtent.height;
         viewport.minDepth = 0.0f;
         viewport.maxDepth = 1.0f;
@@ -258,12 +268,11 @@ VkResult Renderer::DoRender(int width, int height)
         }
         else
         {
-            uint32_t childIndex = modelIndex + 1;
+            uint32_t childIndex = modelIndex;
 
             for (auto &child : renderable->children)
             {
-                DrawRenderable(child, 500.0, 500.0, childIndex);
-
+                DrawRenderable(child, 500.0, 500.0, childIndex * modelIndex);
                 childIndex++;
             }
         }

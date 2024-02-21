@@ -26,6 +26,8 @@ namespace Entropy
             public:
                 Sprite();
 
+                ~Sprite();
+
                 void Test(){};
 
                 Sprite(std::shared_ptr<ServiceLocator> serviceLocator, FT_Bitmap bitmap);
