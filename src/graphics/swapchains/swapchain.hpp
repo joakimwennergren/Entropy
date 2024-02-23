@@ -37,7 +37,6 @@ namespace Entropy
                 ~Swapchain();
                 void CreateSwapChain(VkSwapchainKHR prev);
                 void RecreateSwapChain();
-                void CreateSwapchainImages();
                 static SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
                 std::vector<VkImageView> swapChainImageViews;
                 std::vector<VkImage> swapChainImages;

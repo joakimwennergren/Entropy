@@ -22,9 +22,9 @@ set(PROJECT_BASEPATH ${PROJECT_SOURCE_DIR})
 # Include dependencies
 include(cmake/external_dependencies.cmake)
 
+set(IMGUI_DIR external/imgui)
 
-
-file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp ${IMGUI_DIR}/imgui.cpp ${IMGUI_DIR}/imgui_draw.cpp ${IMGUI_DIR}/imgui_demo.cpp ${IMGUI_DIR}/imgui_tables.cpp ${IMGUI_DIR}/imgui_widgets.cpp)
 
 # Create the library
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
@@ -49,6 +49,7 @@ target_include_directories(${PROJECT_NAME}
         external/metal-cpp
         external/myers-diff
         external/yoga
+        external/imgui
 )
 
 # Link common dependencies

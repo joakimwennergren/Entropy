@@ -63,8 +63,6 @@ namespace Entropy
                  * @return void*
                  */
                 inline void *GetMappedMemory() { return this->_mappedMemory; };
-
-            protected:
                 /**
                  * @brief Create a Buffer object
                  *
@@ -76,6 +74,7 @@ namespace Entropy
                  */
                 void CreateBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory);
 
+            protected:
                 /**
                  * @brief Copy One Buffer into another
                  *

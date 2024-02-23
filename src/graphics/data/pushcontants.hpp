@@ -3,7 +3,8 @@
 // add the include for glm to get matrices
 #include <glm/glm.hpp>
 
-struct PushConstant
+struct PushConstBlock
 {
-    glm::mat4 model;
+    glm::vec2 scale;
+    glm::vec2 translate;
 };

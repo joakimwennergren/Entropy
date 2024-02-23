@@ -8,11 +8,12 @@
 #include <graphics/pipelines/skinned_pipeline.hpp>
 #include <graphics/pipelines/cubemap_pipeline.hpp>
 #include <graphics/pipelines/2d_pipeline.hpp>
+#include <graphics/pipelines/gui_pipeline.hpp>
 #include <graphics/data/vertex.hpp>
 #include <graphics/commandbuffers/commandbuffer.hpp>
 #include <graphics/data/ubo.hpp>
 #include <graphics/buffers/uniformbuffer.hpp>
-#include <graphics/data/pushcontant.hpp>
+#include <graphics/data/pushcontants.hpp>
 #include <graphics/data/ubo.hpp>
 #include <graphics/synchronization/synchronizer.hpp>
 #include <renderables/renderable.hpp>
@@ -34,6 +35,7 @@
 #include <input/keyboard/keyboard.hpp>
 
 #include <tracy/Tracy.hpp>
+#include <imgui.h>
 
 #ifdef BUILD_FOR_ANDROID
 #include <android/asset_manager.h>
@@ -71,6 +73,7 @@ namespace Entropy
 #endif
                 void Render(int width, int height, bool resize);
                 VkResult DoRender(int width, int height);
+                void DrawGUI();
                 VkResult SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex);
                 void DrawRenderable(std::shared_ptr<Renderable> renderable, int width, int height, uint32_t modelIndex);
                 void HandleResize();
@@ -94,11 +97,12 @@ namespace Entropy
                 uint32_t imageIndex;
                 bool skip = false;
                 std::shared_ptr<CommandBuffer> cmdBufferUI;
+                std::shared_ptr<RenderPass> _renderPass;
+                std::shared_ptr<Synchronizer> _synchronizer;
+                std::vector<std::shared_ptr<CommandBuffer>> _commandBuffers;
 
             private:
                 void Setup(std::shared_ptr<ServiceLocator> serviceLocator);
-                std::shared_ptr<RenderPass> _renderPass;
-                std::vector<std::shared_ptr<CommandBuffer>> _commandBuffers;
 
                 std::unique_ptr<Pipeline> _pipeline;
                 std::unordered_map<std::string, std::shared_ptr<Pipeline>> _pipelines;
@@ -107,7 +111,6 @@ namespace Entropy
                 std::vector<VkBuffer> uniformBuffersInstances;
 
                 std::vector<UniformBuffer *> _uniformBuffers;
-                std::unique_ptr<Synchronizer> _synchronizer;
 
                 std::shared_ptr<ServiceLocator> _serviceLocator;
 
@@ -136,6 +139,8 @@ namespace Entropy
 
                 std::shared_ptr<Keyboard> _keyboard;
                 std::shared_ptr<Cam> _cam;
+                std::unique_ptr<VertexBuffer> _vertexBuffer;
+                std::unique_ptr<Buffer> _indexBuffer;
             };
         }
     }

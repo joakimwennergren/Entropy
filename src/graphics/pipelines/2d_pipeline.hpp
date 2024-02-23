@@ -14,13 +14,25 @@ namespace Entropy
                 Pipeline2D(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator) : Pipeline(renderPass, serviceLocator)
                 {
                     auto dsLayouts = Setup();
-                    Build("Pipeline2D", "2d_vert.spv", "2d_frag.spv", dsLayouts, VK_TRUE);
+                    VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+                    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+                    pipelineLayoutInfo.setLayoutCount = dsLayouts.size();
+                    pipelineLayoutInfo.pSetLayouts = dsLayouts.data();
+                    pipelineLayoutInfo.pPushConstantRanges = nullptr; //&push_constant;
+                    pipelineLayoutInfo.pushConstantRangeCount = 0;
+                    Build("Pipeline2D", "2d_vert.spv", "2d_frag.spv", dsLayouts, VK_TRUE, pipelineLayoutInfo);
                 }
 
                 Pipeline2D(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator, std::vector<char> vert_shader, std::vector<char> frag_shader) : Pipeline(renderPass, serviceLocator)
                 {
                     auto dsLayouts = Setup();
-                    Build("Pipeline2D", vert_shader, frag_shader, dsLayouts, VK_TRUE);
+                    VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+                    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+                    pipelineLayoutInfo.setLayoutCount = dsLayouts.size();
+                    pipelineLayoutInfo.pSetLayouts = dsLayouts.data();
+                    pipelineLayoutInfo.pPushConstantRanges = nullptr; //&push_constant;
+                    pipelineLayoutInfo.pushConstantRangeCount = 0;
+                    Build("Pipeline2D", vert_shader, frag_shader, dsLayouts, VK_TRUE, pipelineLayoutInfo);
                 }
 
             private:

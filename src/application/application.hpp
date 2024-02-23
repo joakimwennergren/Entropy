@@ -25,6 +25,7 @@
 #include <graphics/descriptorsetlayouts/descriptorsetlayout.hpp>
 #include <graphics/descriptorsets/descriptorset.hpp>
 #include <graphics/commandpools/commandpool.hpp>
+#include <graphics/commandbuffers/commandbuffer.hpp>
 #include <scenegraphs/scenegraph.hpp>
 #include <physics/2d/physics2d.hpp>
 #include <scripting/lua.hpp>
@@ -33,12 +34,17 @@
 #include <input/keyboard/keyboard.hpp>
 #include <graphics/cameras/flying_camera.hpp>
 #include <renderables/renderable.hpp>
+#include <graphics/utilities/utilities.hpp>
+#include <graphics/textures/texture.hpp>
+#include <graphics/buffers/buffer.hpp>
+#include <graphics/buffers/vertexbuffer.hpp>
 
 using namespace Entropy::Graphics::Instances;
 using namespace Entropy::Graphics::Surfaces;
 using namespace Entropy::Graphics::Swapchains;
 using namespace Entropy::Graphics::ImageViews;
 using namespace Entropy::Graphics::CommandPools;
+using namespace Entropy::Graphics::CommandBuffers;
 using namespace Entropy::Graphics::DescriptorPools;
 using namespace Entropy::Graphics::DescriptorsetLayouts;
 using namespace Entropy::Graphics::Descriptorsets;
@@ -46,10 +52,13 @@ using namespace Entropy::SceneGraphs;
 using namespace Entropy::Scripting;
 using namespace Entropy::Physics;
 using namespace Entropy::ServiceLocators;
+using namespace Entropy::Graphics::Textures;
 using namespace Entropy::Graphics::Renderers;
 using namespace Entropy::Renderables;
 using namespace Entropy;
 using namespace Entropy::Input;
+using namespace Entropy::Graphics::Buffers;
+using namespace Entropy::Graphics::Utilities;
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
 
@@ -65,6 +74,7 @@ void cursorPositionCallback(GLFWwindow *window, double x, double y);
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
 static void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
 void window_refresh_callback(GLFWwindow *window);
+void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
 
 class Application
 {
@@ -92,9 +102,16 @@ public:
     std::shared_ptr<Mouse> mouse;
     bool isResizing = false;
     Timer *_timer;
+    float mouse_x;
+    float mouse_y;
+    float screen_width;
+    float screen_height;
+    bool mouse0_state = false;
+    ImGuiIO io;
 
 protected:
     GLFWwindow *_window;
+    std::vector<std::shared_ptr<CommandBuffer>> commandBuffers;
     std::shared_ptr<VulkanInstance> _vkInstance;
     std::shared_ptr<WindowSurface> _windowSurface;
     std::shared_ptr<WindowSurface> _windowSurface2;
@@ -102,8 +119,14 @@ protected:
     std::shared_ptr<LogicalDevice> _logicalDevice;
     std::shared_ptr<Swapchain> _swapChain;
     std::shared_ptr<Lua> lua;
+    uint32_t imageIndex;
     std::shared_ptr<Physics2D> physics2d;
     sol::protected_function luaOnRender;
+    std::shared_ptr<RenderPass> renderpass;
+    std::shared_ptr<Synchronizer> synchronizer;
+    int _currentFrame = 0;
+    std::unique_ptr<Entropy::Graphics::Buffers::VertexBuffer> vertexBuffer;
+    std::unique_ptr<Buffer> indexBuffer;
 
 private:
     void ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::shared_ptr<Lua> lua);

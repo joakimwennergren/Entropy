@@ -55,3 +55,6 @@
 [submodule "glfw"]
 	path = external/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "imgui"]
+	path = external/imgui
+	url = https://github.com/ocornut/imgui.git

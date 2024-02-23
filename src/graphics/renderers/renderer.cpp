@@ -14,6 +14,108 @@ size_t Renderer::pad_uniform_buffer_size(size_t originalSize)
     return alignedSize;
 }
 
+void Renderer::DrawGUI()
+{
+    ImDrawData *imDrawData = ImGui::GetDrawData();
+    ImGuiIO &io = ImGui::GetIO();
+
+    // Note: Alignment is done inside buffer creation
+    VkDeviceSize vertexBufferSize = imDrawData->TotalVtxCount * sizeof(ImDrawVert);
+    VkDeviceSize indexBufferSize = imDrawData->TotalIdxCount * sizeof(ImDrawIdx);
+
+    if ((vertexBufferSize == 0) || (indexBufferSize == 0) || imDrawData->CmdListsCount == 0)
+    {
+        return;
+    }
+
+    // Vertex buffer
+
+    _vertexBuffer.reset();
+
+    // VkDeviceMemory stagingBufferMemory;
+    std::vector<Vertex> vertices(imDrawData->TotalVtxCount);
+    for (int n = 0; n < imDrawData->CmdListsCount; n++)
+    {
+        const ImDrawList *cmd_list = imDrawData->CmdLists[n];
+        for (int i = 0; i < cmd_list->VtxBuffer.size(); i++)
+        {
+            vertices[i].position = glm::vec3(cmd_list->VtxBuffer.Data[i].pos.x, cmd_list->VtxBuffer.Data[i].pos.y, 0.0);
+            vertices[i].uv0 = glm::vec2(cmd_list->VtxBuffer.Data[i].uv.x, cmd_list->VtxBuffer.Data[i].uv.y);
+            auto color = glm::vec4(
+                (cmd_list->VtxBuffer.Data[i].col & 0x000000FF) / 255.0,
+                (cmd_list->VtxBuffer.Data[i].col & 0x0000FF00) / 65280.0,
+                (cmd_list->VtxBuffer.Data[i].col & 0x00FF0000) / 16711680.0,
+                (cmd_list->VtxBuffer.Data[i].col & 0xFF000000) / 4278190080.0);
+            vertices[i].color = color;
+        }
+    }
+
+    _vertexBuffer = std::make_unique<VertexBuffer>(_serviceLocator, vertices);
+    //_vertexBuffer->CreateBuffer(_serviceLocator, vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, vertexBuffer, stagingBufferMemory);
+    // vkMapMemory(_logicalDevice->Get(), stagingBufferMemory, 0, vertexBufferSize, 0, &_vertexMapped);
+
+    // Index buffer
+
+    _indexBuffer.reset();
+
+    std::vector<uint16_t> indices(imDrawData->TotalIdxCount);
+    for (int n = 0; n < imDrawData->CmdListsCount; n++)
+    {
+        const ImDrawList *cmd_list = imDrawData->CmdLists[n];
+        for (int i = 0; i < cmd_list->IdxBuffer.size(); i++)
+        {
+            indices[i] = cmd_list->IdxBuffer.Data[i];
+        }
+    }
+    // VkDeviceMemory stagingBufferMemory;
+    _indexBuffer = std::make_unique<Buffer>();
+    _indexBuffer->CreateIndexBufferUint16(_serviceLocator, indices);
+    // vkMapMemory(_logicalDevice->Get(), stagingBufferMemory, 0, indexBufferSize, 0, &_indexMapped);
+
+    PushConstBlock pushConstBlock{};
+    // UI scale and translate via push constants
+    pushConstBlock.scale = glm::vec2(2.0f / io.DisplaySize.x, 2.0f / io.DisplaySize.y);
+    pushConstBlock.translate = glm::vec2(-1.0f);
+    vkCmdPushConstants(currentCmdBuffer, _pipelines["GUIPipeline"]->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstBlock), &pushConstBlock);
+
+    auto ds0 = _pipelines["GUIPipeline"]->descriptorSets[0]->Get()[_currentFrame];
+    vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["GUIPipeline"]->GetPipeline());
+    vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["GUIPipeline"]->GetPipelineLayout(), 0, 1, &ds0, 0, nullptr);
+    VkViewport viewport{};
+    viewport.width = ImGui::GetIO().DisplaySize.x;
+    viewport.height = ImGui::GetIO().DisplaySize.y;
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 1.0f;
+    vkCmdSetViewport(currentCmdBuffer, 0, 1, &viewport);
+
+    if (imDrawData->CmdListsCount > 0)
+    {
+        int32_t vertexOffset = 0;
+        int32_t indexOffset = 0;
+        VkDeviceSize offsets[1] = {0};
+        auto indexBuff = _indexBuffer->GetVulkanBuffer();
+        auto v = _vertexBuffer->GetVulkanBuffer();
+        vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, &v, offsets);
+        vkCmdBindIndexBuffer(currentCmdBuffer, indexBuff, 0, VK_INDEX_TYPE_UINT16);
+
+        for (int32_t i = 0; i < imDrawData->CmdListsCount; i++)
+        {
+            const ImDrawList *cmd_list = imDrawData->CmdLists[i];
+            for (int32_t j = 0; j < cmd_list->CmdBuffer.Size; j++)
+            {
+                const ImDrawCmd *pcmd = &cmd_list->CmdBuffer[j];
+                VkRect2D scissorRect;
+                scissorRect.offset.x = std::max((int32_t)(pcmd->ClipRect.x), 0);
+                scissorRect.offset.y = std::max((int32_t)(pcmd->ClipRect.y), 0);
+                scissorRect.extent.width = (uint32_t)(pcmd->ClipRect.z - pcmd->ClipRect.x);
+                scissorRect.extent.height = (uint32_t)(pcmd->ClipRect.w - pcmd->ClipRect.y);
+                vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissorRect);
+                vkCmdDrawIndexed(currentCmdBuffer, pcmd->ElemCount, 1, pcmd->IdxOffset, pcmd->VtxOffset, 0);
+            }
+        }
+    }
+}
+
 void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
 {
     // Store service locator
@@ -28,7 +130,7 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
     auto physicalDevice = serviceLocator->GetService<PhysicalDevice>();
 
     // Create synchronizer
-    _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT, serviceLocator);
+    _synchronizer = std::make_shared<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT, serviceLocator);
 
     for (uint32_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
@@ -110,6 +212,80 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
     _camera->type = Camera::CameraType::firstperson;
     _camera->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
     _camera->setRotation(glm::vec3(0.0f));
+
+    // ********* START IMGUI STUFF ***********
+
+    // Setup Dear ImGui context
+
+    ImGuiIO &io = ImGui::GetIO();
+    io.Fonts->AddFontFromFileTTF("/Users/joakim/Entropy-Engine/resources/fonts/Roboto-2/Roboto-Regular.ttf", 16);
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+
+    io.DisplaySize = ImVec2(500, 500);
+    io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
+
+    io.FontGlobalScale = 1.0;
+    ImGuiStyle &style = ImGui::GetStyle();
+    style.ScaleAllSizes(1.0);
+
+    unsigned char *fontData;
+    int texWidth, texHeight;
+    io.Fonts->GetTexDataAsRGBA32(&fontData, &texWidth, &texHeight);
+
+    auto texture = new Texture(_serviceLocator);
+    texture->CreateTextureImageFromPixels(fontData, texWidth, texHeight);
+
+    VkSampler _sampler;
+
+    VkPhysicalDeviceProperties properties{};
+    vkGetPhysicalDeviceProperties(physicalDevice->Get(), &properties);
+
+    VkSamplerCreateInfo samplerInfo{};
+    samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+    samplerInfo.magFilter = VK_FILTER_LINEAR;
+    samplerInfo.minFilter = VK_FILTER_LINEAR;
+
+    samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    samplerInfo.anisotropyEnable = VK_TRUE;
+    samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+    samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+    samplerInfo.unnormalizedCoordinates = VK_FALSE;
+    samplerInfo.compareEnable = VK_FALSE;
+    samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+    samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+    samplerInfo.mipLodBias = 0.0f;
+    samplerInfo.minLod = 0.0f;
+    samplerInfo.maxLod = 0.0f;
+
+    if (vkCreateSampler(_logicalDevice->Get(), &samplerInfo, nullptr, &_sampler) != VK_SUCCESS)
+    {
+        throw std::runtime_error("failed to create texture sampler!");
+    }
+
+    for (int i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
+    {
+        VkDescriptorImageInfo descriptorImageInfo{};
+        descriptorImageInfo.sampler = _sampler;
+        descriptorImageInfo.imageView = texture->GetImageView();
+        descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+        std::array<VkWriteDescriptorSet, 1> descriptorWrites{};
+
+        descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[0].dstSet = _pipelines["GUIPipeline"]->descriptorSets[0]->Get()[i];
+        descriptorWrites[0].dstBinding = 0;
+        descriptorWrites[0].dstArrayElement = 0;
+        descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        descriptorWrites[0].descriptorCount = 1;
+        descriptorWrites[0].pImageInfo = &descriptorImageInfo;
+
+        vkUpdateDescriptorSets(_logicalDevice->Get(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+    }
 }
 
 #ifdef BUILD_FOR_ANDROID
@@ -161,6 +337,7 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
     _pipelines["SkinnedPipeline"] = std::make_shared<SkinnedPipeline>(_renderPass, serviceLocator);
     _pipelines["CubeMapPipeline"] = std::make_shared<CubeMapPipeline>(_renderPass, serviceLocator);
     _pipelines["Pipeline2D"] = std::make_shared<Pipeline2D>(_renderPass, serviceLocator);
+    _pipelines["GUIPipeline"] = std::make_shared<GUIPipeline>(_renderPass, serviceLocator);
     Setup(serviceLocator);
 }
 
@@ -190,6 +367,7 @@ VkResult Renderer::DoRender(int width, int height)
 
     // vkResetCommandBuffer(currentCmdBuffer, 0);
 
+    /*
     if (cmdBufferUI != nullptr)
     {
         auto secondaries = cmdBufferUI->GetCommandBuffer();
@@ -198,6 +376,7 @@ VkResult Renderer::DoRender(int width, int height)
             1,
             &secondaries);
     }
+    */
 
     // Begin renderpass and commandbuffer recording
     _commandBuffers[_currentFrame]->Record();
@@ -280,6 +459,8 @@ VkResult Renderer::DoRender(int width, int height)
         modelIndex++;
     }
 
+    DrawGUI();
+
     // End renderpass and commandbuffer recording
     _renderPass->End(_commandBuffers[_currentFrame]);
     _commandBuffers[_currentFrame]->EndRecording();
@@ -287,9 +468,7 @@ VkResult Renderer::DoRender(int width, int height)
     // Submit and present
     submit_result = this->SubmitAndPresent(currentCmdBuffer, imageIndex);
 
-    // Increment current frame
     _currentFrame = (_currentFrame + 1) % MAX_CONCURRENT_FRAMES_IN_FLIGHT;
-
     return submit_result;
 }
 

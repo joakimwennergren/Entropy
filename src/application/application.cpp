@@ -3,6 +3,7 @@
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_WINDOWS)
 Application::Application()
 {
+    ImGui::CreateContext();
     // Seed random
     srand(static_cast<unsigned>(time(0)));
 
@@ -25,7 +26,7 @@ Application::Application()
     // Bind window callbacks
     glfwSetWindowUserPointer(_window, this);
     glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
-    glfwSetCursorPosCallback(_window, cursorPositionCallback);
+    glfwSetMouseButtonCallback(_window, mouse_button_callback);
     glfwSetKeyCallback(_window, keyCallback);
     glfwSetCursorPosCallback(_window, cursor_position_callback);
 
@@ -41,7 +42,6 @@ Application::Application()
     // Create items for vulkan
     _vkInstance = std::make_shared<VulkanInstance>("Entropy tests");
     _windowSurface = std::make_shared<WindowSurface>(_vkInstance, _window);
-    _windowSurface2 = std::make_shared<WindowSurface>(_vkInstance, _window);
     _physicalDevice = std::make_shared<PhysicalDevice>(_vkInstance, _windowSurface);
     _logicalDevice = std::make_shared<LogicalDevice>(_physicalDevice, _windowSurface);
     _swapChain = std::make_shared<Swapchain>(_physicalDevice->Get(), _logicalDevice->Get(), _windowSurface, frame);
@@ -75,6 +75,8 @@ Application::Application()
     serviceLocator->AddService(lua);
 
     _renderer = std::make_shared<Renderer>(serviceLocator);
+
+    io = ImGui::GetIO();
 
     // glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
@@ -129,15 +131,22 @@ void Application::Run()
         _deltaTime = (float)_timer->get_tick() - _lastTick;
         _lastTick = (float)_timer->get_tick();
 
+        auto &io = ImGui::GetIO();
+
         // Update screen dimensions
         int width, height;
         glfwGetFramebufferSize(_window, &width, &height);
-        // screen.width = width;
-        // screen.height = height;
 
-        // On render
+        io.DisplaySize = ImVec2(width, height);
+        io.MousePos.x = mouse_x;
+        io.MousePos.y = mouse_y;
+        io.MouseDown[0] = mouse0_state;
+
         this->OnRender(_deltaTime);
+        // On render
         this->_renderer->Render(width, height, true);
+
+        // Increment current frame
 
         if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(_window, true);
@@ -164,15 +173,6 @@ void Application::Run()
     }
 }
 
-void cursorPositionCallback(GLFWwindow *window, double x, double y)
-{
-    auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
-    if (app != nullptr)
-    {
-        // app->GetRenderer()->pane->position = glm::vec3((float)x, (float)y, 0.0);
-    }
-}
-
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
 }
@@ -186,6 +186,9 @@ void cursor_position_callback(GLFWwindow *window, double xposIn, double yposIn)
     {
         return;
     }
+
+    app->mouse_x = (float)xposIn;
+    app->mouse_y = (float)yposIn;
 
     float xpos = static_cast<float>(xposIn);
     float ypos = static_cast<float>(yposIn);
@@ -209,9 +212,21 @@ void cursor_position_callback(GLFWwindow *window, double xposIn, double yposIn)
 void framebufferResizeCallback(GLFWwindow *window, int width, int height)
 {
     auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
-    app->GetRenderer()->Render(width, height, true);
+    // app->GetRenderer()->Render(width, height, true);
     app->OnRender(0.0);
-    app->GetRenderer()->HandleResize();
+    app->screen_width = width;
+    app->screen_height = height;
+    // app->GetRenderer()->HandleResize();
+}
+
+void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
+{
+    auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+        app->mouse0_state = true;
+
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action != GLFW_PRESS)
+        app->mouse0_state = false;
 }
 
 #endif

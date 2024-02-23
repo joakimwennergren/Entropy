@@ -111,6 +111,44 @@ void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap)
 
     hasTexture = true;
 }
+
+void Texture::CreateTextureFrameBuffer()
+{
+    auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
+    auto swapchain = _serviceLocator->GetService<Swapchain>();
+
+    // Create the linear tiled destination image to copy to and to read the memory from
+    VkImageCreateInfo imageCreateCI{};
+    imageCreateCI.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+    imageCreateCI.imageType = VK_IMAGE_TYPE_2D;
+    // Note that vkCmdBlitImage (if supported) will also do format conversions if the swapchain color format would differ
+    imageCreateCI.format = VK_FORMAT_B8G8R8A8_SRGB;
+    imageCreateCI.extent.width = swapchain->swapChainExtent.width;
+    imageCreateCI.extent.height = swapchain->swapChainExtent.height;
+    imageCreateCI.extent.depth = 1;
+    imageCreateCI.arrayLayers = 1;
+    imageCreateCI.mipLevels = 1;
+    imageCreateCI.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    imageCreateCI.samples = VK_SAMPLE_COUNT_1_BIT;
+    imageCreateCI.tiling = VK_IMAGE_TILING_LINEAR;
+    imageCreateCI.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+    // Create the image
+
+    vkCreateImage(logicalDevice->Get(), &imageCreateCI, nullptr, &_textureImage);
+
+    CreateImage(swapchain->swapChainExtent.width, swapchain->swapChainExtent.height, VK_FORMAT_R8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _textureImage, _textureImageMemory);
+
+    TransitionImageLayout(_textureImage, VK_FORMAT_R8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    // CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(swapchain->swapChainExtent.width), static_cast<uint32_t>(swapchain->swapChainExtent.height));
+    TransitionImageLayout(_textureImage, VK_FORMAT_R8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+    auto imageView = ImageView(logicalDevice->Get(), _textureImage, VK_FORMAT_R8_UNORM);
+
+    _imageView = imageView.Get();
+
+    hasTexture = true;
+}
+
 /*
 void Texture::CreateTextureImageFromKtx(unsigned char *pixels, unsigned int width, unsigned int height, int size, int mips, VkFormat format, ktxTexture *ktxTexture)
 {
@@ -254,7 +292,7 @@ void Texture::CreateTextureImageFromPixels(unsigned char *pixels, int width, int
 #endif
 
     // stbi_set_flip_vertically_on_load(true);
-    VkDeviceSize imageSize = width * height * 4;
+    VkDeviceSize imageSize = width * height * 4 * sizeof(char);
     if (!pixels)
     {
         exit(EXIT_FAILURE);
