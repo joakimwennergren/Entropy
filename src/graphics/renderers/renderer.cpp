@@ -20,8 +20,13 @@ void Renderer::DrawGUI()
     ImGuiIO &io = ImGui::GetIO();
 
     // Note: Alignment is done inside buffer creation
-    VkDeviceSize vertexBufferSize = imDrawData->TotalVtxCount * sizeof(ImDrawVert);
-    VkDeviceSize indexBufferSize = imDrawData->TotalIdxCount * sizeof(ImDrawIdx);
+    VkDeviceSize vertexBufferSize = imDrawData->TotalVtxCount;
+    VkDeviceSize indexBufferSize = imDrawData->TotalIdxCount;
+
+    static VkDeviceSize oldVertexBufferSize;
+    static VkDeviceSize oldIndexBufferSize;
+
+    static bool first;
 
     if ((vertexBufferSize == 0) || (indexBufferSize == 0) || imDrawData->CmdListsCount == 0)
     {
@@ -49,14 +54,8 @@ void Renderer::DrawGUI()
             vertices[i].color = color;
         }
     }
-
     _vertexBuffer = std::make_unique<VertexBuffer>(_serviceLocator, vertices);
-    //_vertexBuffer->CreateBuffer(_serviceLocator, vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, vertexBuffer, stagingBufferMemory);
-    // vkMapMemory(_logicalDevice->Get(), stagingBufferMemory, 0, vertexBufferSize, 0, &_vertexMapped);
-
-    // Index buffer
-
-    _indexBuffer.reset();
+    vertexCount = imDrawData->TotalVtxCount;
 
     std::vector<uint16_t> indices(imDrawData->TotalIdxCount);
     for (int n = 0; n < imDrawData->CmdListsCount; n++)
@@ -67,10 +66,9 @@ void Renderer::DrawGUI()
             indices[i] = cmd_list->IdxBuffer.Data[i];
         }
     }
-    // VkDeviceMemory stagingBufferMemory;
     _indexBuffer = std::make_unique<Buffer>();
     _indexBuffer->CreateIndexBufferUint16(_serviceLocator, indices);
-    // vkMapMemory(_logicalDevice->Get(), stagingBufferMemory, 0, indexBufferSize, 0, &_indexMapped);
+    indexCount = imDrawData->TotalIdxCount;
 
     PushConstBlock pushConstBlock{};
     // UI scale and translate via push constants
@@ -110,10 +108,13 @@ void Renderer::DrawGUI()
                 scissorRect.extent.width = (uint32_t)(pcmd->ClipRect.z - pcmd->ClipRect.x);
                 scissorRect.extent.height = (uint32_t)(pcmd->ClipRect.w - pcmd->ClipRect.y);
                 vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissorRect);
-                vkCmdDrawIndexed(currentCmdBuffer, pcmd->ElemCount, 1, pcmd->IdxOffset, pcmd->VtxOffset, 0);
+                vkCmdDrawIndexed(currentCmdBuffer, pcmd->ElemCount, 1, pcmd->IdxOffset, 0, 0);
             }
         }
     }
+    oldIndexBufferSize = indexBufferSize;
+    oldVertexBufferSize = vertexBufferSize;
+    first = true;
 }
 
 void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
@@ -161,7 +162,7 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
 
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
-        std::array<VkWriteDescriptorSet, 4> descriptorWrites{};
+        std::array<VkWriteDescriptorSet, 6> descriptorWrites{};
 
         VkDescriptorBufferInfo bufferInfo{};
         bufferInfo.buffer = rawUniformBuffers[i];
@@ -190,20 +191,36 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
         descriptorWrites[1].pBufferInfo = &bufferInfo;
 
         descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptorWrites[2].dstSet = _pipelines["SkinnedPipeline"]->descriptorSets[0]->Get()[i];
-        descriptorWrites[2].dstBinding = 1;
+        descriptorWrites[2].dstSet = _pipelines["GizmoPipeline"]->descriptorSets[0]->Get()[i];
+        descriptorWrites[2].dstBinding = 0;
         descriptorWrites[2].dstArrayElement = 0;
-        descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+        descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         descriptorWrites[2].descriptorCount = 1;
-        descriptorWrites[2].pBufferInfo = &bufferInfo2;
+        descriptorWrites[2].pBufferInfo = &bufferInfo;
 
         descriptorWrites[3].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptorWrites[3].dstSet = _pipelines["Pipeline2D"]->descriptorSets[0]->Get()[i];
+        descriptorWrites[3].dstSet = _pipelines["SkinnedPipeline"]->descriptorSets[0]->Get()[i];
         descriptorWrites[3].dstBinding = 1;
         descriptorWrites[3].dstArrayElement = 0;
         descriptorWrites[3].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
         descriptorWrites[3].descriptorCount = 1;
         descriptorWrites[3].pBufferInfo = &bufferInfo2;
+
+        descriptorWrites[4].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[4].dstSet = _pipelines["Pipeline2D"]->descriptorSets[0]->Get()[i];
+        descriptorWrites[4].dstBinding = 1;
+        descriptorWrites[4].dstArrayElement = 0;
+        descriptorWrites[4].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+        descriptorWrites[4].descriptorCount = 1;
+        descriptorWrites[4].pBufferInfo = &bufferInfo2;
+
+        descriptorWrites[5].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[5].dstSet = _pipelines["GizmoPipeline"]->descriptorSets[0]->Get()[i];
+        descriptorWrites[5].dstBinding = 1;
+        descriptorWrites[5].dstArrayElement = 0;
+        descriptorWrites[5].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+        descriptorWrites[5].descriptorCount = 1;
+        descriptorWrites[5].pBufferInfo = &bufferInfo2;
 
         vkUpdateDescriptorSets(_logicalDevice->Get(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
     }
@@ -218,19 +235,11 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
     // Setup Dear ImGui context
 
     ImGuiIO &io = ImGui::GetIO();
-    io.Fonts->AddFontFromFileTTF("/Users/joakim/Entropy-Engine/resources/fonts/Roboto-2/Roboto-Regular.ttf", 16);
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
-    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-    // Setup Dear ImGui style
+    // io.Fonts->AddFontFromFileTTF("/Users/joakim/Entropy-Engine/resources/fonts/Roboto-2/Roboto-Regular.ttf", 16);
+    //  io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    //  Setup Dear ImGui style
     ImGui::StyleColorsDark();
-
-    io.DisplaySize = ImVec2(500, 500);
-    io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
-
-    io.FontGlobalScale = 1.0;
-    ImGuiStyle &style = ImGui::GetStyle();
-    style.ScaleAllSizes(1.0);
-
+    io.Fonts->AddFontFromFileTTF("/Users/joakim/Entropy-Engine/resources/fonts/lato/Lato-Regular.ttf", 16);
     unsigned char *fontData;
     int texWidth, texHeight;
     io.Fonts->GetTexDataAsRGBA32(&fontData, &texWidth, &texHeight);
@@ -338,6 +347,7 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
     _pipelines["CubeMapPipeline"] = std::make_shared<CubeMapPipeline>(_renderPass, serviceLocator);
     _pipelines["Pipeline2D"] = std::make_shared<Pipeline2D>(_renderPass, serviceLocator);
     _pipelines["GUIPipeline"] = std::make_shared<GUIPipeline>(_renderPass, serviceLocator);
+    _pipelines["GizmoPipeline"] = std::make_shared<GizmoPipeline>(_renderPass, serviceLocator);
     Setup(serviceLocator);
 }
 
@@ -578,6 +588,13 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
         vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["Pipeline2D"]->GetPipelineLayout(), 0, 1, &ds0, 1, &offset);
         auto sprite = std::dynamic_pointer_cast<Sprite>(renderable);
         vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["Pipeline2D"]->GetPipelineLayout(), 1, 1, &sprite->_descriptorSet, 0, nullptr);
+    }
+
+    if (renderable->type == 5)
+    {
+        auto ds0 = _pipelines["GizmoPipeline"]->descriptorSets[0]->Get()[_currentFrame];
+        vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["GizmoPipeline"]->GetPipeline());
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["GizmoPipeline"]->GetPipelineLayout(), 0, 1, &ds0, 1, &offset);
     }
 
     if (renderable->type == 0)

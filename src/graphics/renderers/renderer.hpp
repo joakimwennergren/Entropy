@@ -24,6 +24,7 @@
 #include <graphics/swapchains/swapchain.hpp>
 #include <gltf/model.hpp>
 #include <graphics/cameras/perspective_camera.hpp>
+#include <graphics/primitives/3d/plane.hpp>
 
 #include <graphics/primitives/2d/sprite.hpp>
 #include <graphics/primitives/2d/quad.hpp>
@@ -33,6 +34,7 @@
 
 #include <graphics/utilities/utilities.hpp>
 #include <input/keyboard/keyboard.hpp>
+#include <graphics/pipelines/gizmo_pipeline.hpp>
 
 #include <tracy/Tracy.hpp>
 #include <imgui.h>
@@ -136,6 +138,9 @@ namespace Entropy
                 VkResult imageResult;
 
                 size_t pad_uniform_buffer_size(size_t originalSize);
+
+                uint32_t indexCount;
+                uint32_t vertexCount;
 
                 std::shared_ptr<Keyboard> _keyboard;
                 std::shared_ptr<Cam> _cam;

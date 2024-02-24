@@ -138,8 +138,8 @@ void Application::Run()
         glfwGetFramebufferSize(_window, &width, &height);
 
         io.DisplaySize = ImVec2(width, height);
-        io.MousePos.x = mouse_x;
-        io.MousePos.y = mouse_y;
+        io.MousePos.x = mouse_x; //* 2.0;
+        io.MousePos.y = mouse_y; //* 2.0;
         io.MouseDown[0] = mouse0_state;
 
         this->OnRender(_deltaTime);
@@ -212,7 +212,10 @@ void cursor_position_callback(GLFWwindow *window, double xposIn, double yposIn)
 void framebufferResizeCallback(GLFWwindow *window, int width, int height)
 {
     auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
-    // app->GetRenderer()->Render(width, height, true);
+
+    auto &io = ImGui::GetIO();
+    io.DisplaySize = ImVec2(width, height);
+    app->GetRenderer()->Render(width, height, true);
     app->OnRender(0.0);
     app->screen_width = width;
     app->screen_height = height;
