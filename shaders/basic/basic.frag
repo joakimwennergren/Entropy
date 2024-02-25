@@ -46,7 +46,7 @@ void main()
         //diffuse  *= attenuation;
         specular *= attenuation;  
 
-        lighting = ambient * 0.5 + diffuse * 1.0 + specular * 0.8;
+        lighting = ambient * 0.8 + diffuse * 1.0 + specular * 0.8;
 
         vec4 sampled = texture(sampler2D(_texture, texSampler), inUV0) * vec4(lighting, 1.0);
         outColor = inColor0 * sampled;

@@ -239,7 +239,7 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
     //  io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
     //  Setup Dear ImGui style
     ImGui::StyleColorsDark();
-    io.Fonts->AddFontFromFileTTF("/Users/joakim/Entropy-Engine/resources/fonts/lato/Lato-Regular.ttf", 48);
+    io.Fonts->AddFontFromFileTTF("/Users/joakim/Entropy-Engine/resources/fonts/lato/Lato-Regular.ttf", 16);
     unsigned char *fontData;
     int texWidth, texHeight;
     io.Fonts->GetTexDataAsRGBA32(&fontData, &texWidth, &texHeight);
@@ -506,10 +506,12 @@ void Renderer::Render(int width, int height, bool resize)
 
 void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width, int height, uint32_t modelIndex)
 {
+    if(!renderable->visible)
+        return;
 
     // @todo refactors this
 
-    auto translate = glm::translate(glm::mat4(1.0f), glm::vec3(renderable->position.x + renderable->scale.x, renderable->position.y - renderable->scale.y, renderable->position.z));
+    auto translate = glm::translate(glm::mat4(1.0f), glm::vec3(renderable->position.x, renderable->position.y, renderable->position.z));
 
     auto scale = glm::scale(glm::mat4(1.0f), renderable->scale);
 
@@ -523,34 +525,13 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
         rotate = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
     }
 
-    auto o = glm::vec3(0.0, 0.0, 0.0);
-
-    if (renderable->orientation == 1)
-    {
-        o.x = 1;
-    }
-
-    if (renderable->orientation == 2)
-    {
-        o.y = 1;
-    }
-
-    if (renderable->orientation == 3)
-    {
-        o.z = 1;
-    }
-
-    auto modelRotation = glm::rotate(glm::mat4(1.0f), glm::radians(renderable->rotationX), o);
+    auto modelRotation = glm::rotate(glm::mat4(1.0f), glm::radians(renderable->rotation), renderable->orientation);
     // @todo end
 
     // if (renderable->texture->GetImageView() != nullptr)
     // {
 
     // }
-
-    glm::mat4 modelMatrix = glm::mat4(1.0f);
-
-    modelMatrix = translate * scale * modelRotation;
 
     UboDataDynamic ubodyn{};
 
@@ -568,7 +549,7 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
         _camera->update(0.1);
     }
 
-    ubodyn.model = translate * scale * modelRotation * rotate;
+    ubodyn.model = translate * modelRotation * scale;
     ubodyn.color = renderable->color;
     ubodyn.colorBorder = renderable->colorBorder;
     ubodyn.colorShadow = renderable->colorShadow;
@@ -596,6 +577,13 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
         auto ds0 = _pipelines["GizmoPipeline"]->descriptorSets[0]->Get()[_currentFrame];
         vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["GizmoPipeline"]->GetPipeline());
         vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["GizmoPipeline"]->GetPipelineLayout(), 0, 1, &ds0, 1, &offset);
+
+        VkBuffer vertexBuffers[] = {renderable->vertexBuffer->GetVulkanBuffer()};
+        VkDeviceSize offsets[] = {0};
+        vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
+        vkCmdDraw(currentCmdBuffer, 6, 1, 0, 0);
+        return;
+
     }
 
     if (renderable->type == 0)

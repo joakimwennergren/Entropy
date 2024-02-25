@@ -28,7 +28,7 @@ class Cam : public Service
 {
 public:
     // camera Attributes
-    glm::vec3 Position;
+    glm::vec3 Position = glm::vec3(5.0, 5.0, 5.0);
     glm::vec3 Front;
     glm::vec3 Up;
     glm::vec3 Right;
