@@ -23,11 +23,6 @@ void Renderer::DrawGUI()
     VkDeviceSize vertexBufferSize = imDrawData->TotalVtxCount;
     VkDeviceSize indexBufferSize = imDrawData->TotalIdxCount;
 
-    static VkDeviceSize oldVertexBufferSize;
-    static VkDeviceSize oldIndexBufferSize;
-
-    static bool first;
-
     if ((vertexBufferSize == 0) || (indexBufferSize == 0) || imDrawData->CmdListsCount == 0)
     {
         return;
@@ -38,37 +33,40 @@ void Renderer::DrawGUI()
     _vertexBuffer.reset();
 
     // VkDeviceMemory stagingBufferMemory;
+    global_vtx_offset = 0;
     std::vector<Vertex> vertices(imDrawData->TotalVtxCount);
     for (int n = 0; n < imDrawData->CmdListsCount; n++)
     {
         const ImDrawList *cmd_list = imDrawData->CmdLists[n];
         for (int i = 0; i < cmd_list->VtxBuffer.size(); i++)
         {
-            vertices[i].position = glm::vec3(cmd_list->VtxBuffer.Data[i].pos.x, cmd_list->VtxBuffer.Data[i].pos.y, 0.0);
-            vertices[i].uv0 = glm::vec2(cmd_list->VtxBuffer.Data[i].uv.x, cmd_list->VtxBuffer.Data[i].uv.y);
+            vertices[global_vtx_offset + i].position = glm::vec3(cmd_list->VtxBuffer.Data[i].pos.x, cmd_list->VtxBuffer.Data[i].pos.y, 0.0);
+            vertices[global_vtx_offset + i].uv0 = glm::vec2(cmd_list->VtxBuffer.Data[i].uv.x, cmd_list->VtxBuffer.Data[i].uv.y);
             auto color = glm::vec4(
                 (cmd_list->VtxBuffer.Data[i].col & 0x000000FF) / 255.0,
                 (cmd_list->VtxBuffer.Data[i].col & 0x0000FF00) / 65280.0,
                 (cmd_list->VtxBuffer.Data[i].col & 0x00FF0000) / 16711680.0,
                 (cmd_list->VtxBuffer.Data[i].col & 0xFF000000) / 4278190080.0);
-            vertices[i].color = color;
+            vertices[global_vtx_offset + i].color = color;
         }
+        global_vtx_offset += cmd_list->VtxBuffer.size();
     }
     _vertexBuffer = std::make_unique<VertexBuffer>(_serviceLocator, vertices);
-    vertexCount = imDrawData->TotalVtxCount;
 
+    global_idx_offset = 0;
     std::vector<uint16_t> indices(imDrawData->TotalIdxCount);
     for (int n = 0; n < imDrawData->CmdListsCount; n++)
     {
         const ImDrawList *cmd_list = imDrawData->CmdLists[n];
         for (int i = 0; i < cmd_list->IdxBuffer.size(); i++)
         {
-            indices[i] = cmd_list->IdxBuffer.Data[i];
+            indices[global_idx_offset + i] = cmd_list->IdxBuffer.Data[i];
         }
+        global_idx_offset += cmd_list->IdxBuffer.size();
     }
     _indexBuffer = std::make_unique<Buffer>();
     _indexBuffer->CreateIndexBufferUint16(_serviceLocator, indices);
-    indexCount = imDrawData->TotalIdxCount;
+
 
     PushConstBlock pushConstBlock{};
     // UI scale and translate via push constants
@@ -88,17 +86,20 @@ void Renderer::DrawGUI()
 
     if (imDrawData->CmdListsCount > 0)
     {
-        int32_t vertexOffset = 0;
-        int32_t indexOffset = 0;
+
         VkDeviceSize offsets[1] = {0};
         auto indexBuff = _indexBuffer->GetVulkanBuffer();
         auto v = _vertexBuffer->GetVulkanBuffer();
+
+        global_idx_offset = 0;
+        global_vtx_offset = 0;
         vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, &v, offsets);
         vkCmdBindIndexBuffer(currentCmdBuffer, indexBuff, 0, VK_INDEX_TYPE_UINT16);
 
         for (int32_t i = 0; i < imDrawData->CmdListsCount; i++)
         {
             const ImDrawList *cmd_list = imDrawData->CmdLists[i];
+
             for (int32_t j = 0; j < cmd_list->CmdBuffer.Size; j++)
             {
                 const ImDrawCmd *pcmd = &cmd_list->CmdBuffer[j];
@@ -108,13 +109,12 @@ void Renderer::DrawGUI()
                 scissorRect.extent.width = (uint32_t)(pcmd->ClipRect.z - pcmd->ClipRect.x);
                 scissorRect.extent.height = (uint32_t)(pcmd->ClipRect.w - pcmd->ClipRect.y);
                 vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissorRect);
-                vkCmdDrawIndexed(currentCmdBuffer, pcmd->ElemCount, 1, pcmd->IdxOffset, 0, 0);
+                vkCmdDrawIndexed(currentCmdBuffer, pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, global_vtx_offset, 0);
             }
+            global_idx_offset += cmd_list->IdxBuffer.Size;
+            global_vtx_offset += cmd_list->VtxBuffer.Size;
         }
     }
-    oldIndexBufferSize = indexBufferSize;
-    oldVertexBufferSize = vertexBufferSize;
-    first = true;
 }
 
 void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
@@ -239,7 +239,7 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
     //  io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
     //  Setup Dear ImGui style
     ImGui::StyleColorsDark();
-    io.Fonts->AddFontFromFileTTF("/Users/joakim/Entropy-Engine/resources/fonts/lato/Lato-Regular.ttf", 16);
+    io.Fonts->AddFontFromFileTTF("/Users/joakim/Entropy-Engine/resources/fonts/lato/Lato-Regular.ttf", 48);
     unsigned char *fontData;
     int texWidth, texHeight;
     io.Fonts->GetTexDataAsRGBA32(&fontData, &texWidth, &texHeight);
@@ -375,7 +375,7 @@ VkResult Renderer::DoRender(int width, int height)
     // current commandbuffer & descriptorset
     currentCmdBuffer = _commandBuffers[_currentFrame]->GetCommandBuffer();
 
-    // vkResetCommandBuffer(currentCmdBuffer, 0);
+    vkResetCommandBuffer(currentCmdBuffer, 0);
 
     /*
     if (cmdBufferUI != nullptr)
@@ -468,6 +468,7 @@ VkResult Renderer::DoRender(int width, int height)
 
         modelIndex++;
     }
+
 
     DrawGUI();
 

@@ -187,8 +187,8 @@ void cursor_position_callback(GLFWwindow *window, double xposIn, double yposIn)
         return;
     }
 
-    app->mouse_x = (float)xposIn;
-    app->mouse_y = (float)yposIn;
+    app->mouse_x = (float)xposIn * 2.0f;
+    app->mouse_y = (float)yposIn * 2.0f;
 
     float xpos = static_cast<float>(xposIn);
     float ypos = static_cast<float>(yposIn);
@@ -214,7 +214,7 @@ void framebufferResizeCallback(GLFWwindow *window, int width, int height)
     auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
 
     auto &io = ImGui::GetIO();
-    io.DisplaySize = ImVec2(width, height);
+    io.DisplaySize = ImVec2(width * 2.0f, height * 2.0f);
     app->GetRenderer()->Render(width, height, true);
     app->OnRender(0.0);
     app->screen_width = width;

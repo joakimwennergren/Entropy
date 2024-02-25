@@ -142,6 +142,10 @@ namespace Entropy
                 uint32_t indexCount;
                 uint32_t vertexCount;
 
+                    
+                int32_t global_vtx_offset = 0;
+                int32_t global_idx_offset = 0;
+
                 std::shared_ptr<Keyboard> _keyboard;
                 std::shared_ptr<Cam> _cam;
                 std::unique_ptr<VertexBuffer> _vertexBuffer;
