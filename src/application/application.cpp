@@ -74,7 +74,11 @@ Application::Application()
     lua = std::make_shared<Lua>(serviceLocator);
     serviceLocator->AddService(lua);
 
-    _renderer = std::make_shared<Renderer>(serviceLocator);
+    GLFWmonitor* primary = glfwGetPrimaryMonitor();
+    float xscale, yscale;
+    glfwGetMonitorContentScale(primary, &xscale, &yscale);
+
+    _renderer = std::make_shared<Renderer>(serviceLocator, xscale, yscale);
 
     io = ImGui::GetIO();
 
@@ -189,8 +193,12 @@ void cursor_position_callback(GLFWwindow *window, double xposIn, double yposIn)
         return;
     }
 
-    app->mouse_x = (float)xposIn;
-    app->mouse_y = (float)yposIn;
+    GLFWmonitor* primary = glfwGetPrimaryMonitor();
+    float xscale, yscale;
+    glfwGetMonitorContentScale(primary, &xscale, &yscale);
+
+    app->mouse_x = (float)xposIn * xscale;
+    app->mouse_y = (float)yposIn * yscale;
 
     float xpos = static_cast<float>(xposIn);
     float ypos = static_cast<float>(yposIn);
@@ -214,13 +222,15 @@ void cursor_position_callback(GLFWwindow *window, double xposIn, double yposIn)
 void framebufferResizeCallback(GLFWwindow *window, int width, int height)
 {
     auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
+    
+    GLFWmonitor* primary = glfwGetPrimaryMonitor();
+    float xscale, yscale;
+    glfwGetMonitorContentScale(primary, &xscale, &yscale);
 
     auto &io = ImGui::GetIO();
-    io.DisplaySize = ImVec2(width, height);
+    io.DisplaySize = ImVec2(width * xscale, height * yscale);
     app->GetRenderer()->Render(width, height, true);
     app->OnRender(0.0);
-    app->screen_width = width;
-    app->screen_height = height;
     // app->GetRenderer()->HandleResize();
 }
 

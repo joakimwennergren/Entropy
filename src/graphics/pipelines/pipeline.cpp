@@ -2,7 +2,7 @@
 
 using namespace Entropy::Graphics::Pipelines;
 
-void Pipeline::Setup(std::unique_ptr<Shader> shader, std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite, VkPipelineLayoutCreateInfo pipelinelayout)
+void Pipeline::Setup(std::unique_ptr<Shader> shader, std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite, VkPipelineLayoutCreateInfo pipelinelayout,VkPolygonMode polygonMode )
 {
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -29,7 +29,7 @@ void Pipeline::Setup(std::unique_ptr<Shader> shader, std::vector<VkDescriptorSet
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    inputAssembly.topology = polygonMode == VK_POLYGON_MODE_LINE ? VK_PRIMITIVE_TOPOLOGY_LINE_LIST : VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     inputAssembly.primitiveRestartEnable = VK_FALSE;
 
     auto bindingDescriptionVertex = Vertex::getBindingDescription();
@@ -68,7 +68,7 @@ void Pipeline::Setup(std::unique_ptr<Shader> shader, std::vector<VkDescriptorSet
     rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
     rasterizer.depthClampEnable = VK_FALSE;
     rasterizer.rasterizerDiscardEnable = VK_FALSE;
-    rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
+    rasterizer.polygonMode = VK_POLYGON_MODE_LINE; //VK_POLYGON_MODE_FILL;
     rasterizer.lineWidth = 1.0f;
     rasterizer.cullMode = VK_CULL_MODE_NONE;
     rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
@@ -150,20 +150,20 @@ void Pipeline::Setup(std::unique_ptr<Shader> shader, std::vector<VkDescriptorSet
     }
 }
 
-void Pipeline::Build(const std::string name, const std::string vertexShader, const std::string fragmentShader, std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite, VkPipelineLayoutCreateInfo pipelinelayout)
+void Pipeline::Build(const std::string name, const std::string vertexShader, const std::string fragmentShader, std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite, VkPipelineLayoutCreateInfo pipelinelayout, VkPolygonMode polygonMode)
 {
     std::cout << GetShadersDir() + vertexShader << std::endl;
     auto shader = std::make_unique<Shader>(_serviceLocator, GetShadersDir() + vertexShader, GetShadersDir() + fragmentShader);
-    Setup(std::move(shader), dsLayout, depthWrite, pipelinelayout);
+    Setup(std::move(shader), dsLayout, depthWrite, pipelinelayout, polygonMode);
 }
 
-void Pipeline::Build(const std::string name, std::vector<char> vert_shader, std::vector<char> frag_shader, std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite, VkPipelineLayoutCreateInfo pipelinelayout)
+void Pipeline::Build(const std::string name, std::vector<char> vert_shader, std::vector<char> frag_shader, std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite, VkPipelineLayoutCreateInfo pipelinelayout, VkPolygonMode polygonMode)
 {
     auto shader = std::make_unique<Shader>(_serviceLocator, vert_shader, frag_shader);
-    Setup(std::move(shader), dsLayout, depthWrite, pipelinelayout);
+    Setup(std::move(shader), dsLayout, depthWrite, pipelinelayout, polygonMode);
 }
 
-Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator)
+Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator, VkPolygonMode polygonMode)
 {
     // Get required depenencies
     auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
@@ -180,6 +180,7 @@ Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<Servi
 
 Pipeline::~Pipeline()
 {
+    vkDeviceWaitIdle(_logicalDevice->Get());
     vkDestroyPipeline(_logicalDevice->Get(), _pipeline, nullptr);
     vkDestroyPipelineLayout(_logicalDevice->Get(), _pipelineLayout, nullptr);
 }

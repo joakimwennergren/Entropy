@@ -12,7 +12,7 @@ namespace Entropy
             class GUIPipeline : public Pipeline
             {
             public:
-                GUIPipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator) : Pipeline(renderPass, serviceLocator)
+                GUIPipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator, VkPolygonMode polygonMode) : Pipeline(renderPass, serviceLocator, polygonMode)
                 {
                     auto dsLayouts = Setup();
                     VkPushConstantRange pushConstantRange{};
@@ -26,7 +26,7 @@ namespace Entropy
                     pipelineLayoutInfo.pSetLayouts = dsLayouts.data();
                     pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange; //&push_constant;
                     pipelineLayoutInfo.pushConstantRangeCount = 1;
-                    Build("GUIPipeline", "ui_vert.spv", "ui_frag.spv", dsLayouts, VK_FALSE, pipelineLayoutInfo);
+                    Build("GUIPipeline", "ui_vert.spv", "ui_frag.spv", dsLayouts, VK_FALSE, pipelineLayoutInfo, polygonMode);
                 }
 
             private:

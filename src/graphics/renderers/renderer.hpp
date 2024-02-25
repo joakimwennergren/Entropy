@@ -68,7 +68,7 @@ namespace Entropy
             class Renderer
             {
             public:
-                Renderer(std::shared_ptr<ServiceLocator> serviceLocator);
+                Renderer(std::shared_ptr<ServiceLocator> serviceLocator, float xscale, float yscale);
 #ifdef BUILD_FOR_ANDROID
                 Renderer(std::shared_ptr<ServiceLocator> serviceLocator, AAssetManager *assetManager);
                 std::vector<char> loadShader(std::string filename, AAssetManager *assetManager);
@@ -102,9 +102,9 @@ namespace Entropy
                 std::shared_ptr<RenderPass> _renderPass;
                 std::shared_ptr<Synchronizer> _synchronizer;
                 std::vector<std::shared_ptr<CommandBuffer>> _commandBuffers;
-
+                void Wireframe(bool on);
             private:
-                void Setup(std::shared_ptr<ServiceLocator> serviceLocator);
+                void Setup(std::shared_ptr<ServiceLocator> serviceLocator, float xscale, float yscale);
 
                 std::unique_ptr<Pipeline> _pipeline;
                 std::unordered_map<std::string, std::shared_ptr<Pipeline>> _pipelines;

@@ -117,7 +117,7 @@ void Renderer::DrawGUI()
     }
 }
 
-void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
+void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator, float xscale, float yscale)
 {
     // Store service locator
     _serviceLocator = serviceLocator;
@@ -239,7 +239,7 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator)
     //  io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
     //  Setup Dear ImGui style
     ImGui::StyleColorsDark();
-    io.Fonts->AddFontFromFileTTF("/Users/joakim/Entropy-Engine/resources/fonts/lato/Lato-Regular.ttf", 16);
+    io.Fonts->AddFontFromFileTTF("/Users/joakim/Entropy-Engine/resources/fonts/lato/Lato-Regular.ttf", 16 * xscale);
     unsigned char *fontData;
     int texWidth, texHeight;
     io.Fonts->GetTexDataAsRGBA32(&fontData, &texWidth, &texHeight);
@@ -319,7 +319,7 @@ std::vector<char> Renderer::loadShader(std::string filename, AAssetManager *asse
 
 Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator, AAssetManager *assetManager)
 {
-
+/*
     auto skinnedVert = loadShader("skinned_vert.spv", assetManager);
     auto skinnedFrag = loadShader("skinned_frag.spv", assetManager);
 
@@ -336,19 +336,20 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator, AAssetManager
     _pipelines["CubeMapPipeline"] = std::make_shared<CubeMapPipeline>(_renderPass, serviceLocator, cubemapVert, cubemapFrag);
     _pipelines["Pipeline2D"] = std::make_shared<Pipeline2D>(_renderPass, serviceLocator, twodVert, twodFrag);
     Setup(serviceLocator);
+    */
 }
 #endif
-Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator)
+Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator, float xscale, float yscale)
 {
     // Create renderpass
     _renderPass = std::make_shared<RenderPass>(serviceLocator);
     // Create skinned pipeline
-    _pipelines["SkinnedPipeline"] = std::make_shared<SkinnedPipeline>(_renderPass, serviceLocator);
-    _pipelines["CubeMapPipeline"] = std::make_shared<CubeMapPipeline>(_renderPass, serviceLocator);
-    _pipelines["Pipeline2D"] = std::make_shared<Pipeline2D>(_renderPass, serviceLocator);
-    _pipelines["GUIPipeline"] = std::make_shared<GUIPipeline>(_renderPass, serviceLocator);
-    _pipelines["GizmoPipeline"] = std::make_shared<GizmoPipeline>(_renderPass, serviceLocator);
-    Setup(serviceLocator);
+    _pipelines["SkinnedPipeline"] = std::make_shared<SkinnedPipeline>(_renderPass, serviceLocator, VK_POLYGON_MODE_FILL);
+    _pipelines["CubeMapPipeline"] = std::make_shared<CubeMapPipeline>(_renderPass, serviceLocator, VK_POLYGON_MODE_FILL);
+    _pipelines["Pipeline2D"] = std::make_shared<Pipeline2D>(_renderPass, serviceLocator, VK_POLYGON_MODE_FILL);
+    _pipelines["GUIPipeline"] = std::make_shared<GUIPipeline>(_renderPass, serviceLocator, VK_POLYGON_MODE_FILL);
+    _pipelines["GizmoPipeline"] = std::make_shared<GizmoPipeline>(_renderPass, serviceLocator, VK_POLYGON_MODE_FILL);
+    Setup(serviceLocator, xscale, yscale);
 }
 
 void Renderer::HandleResize()
@@ -360,6 +361,46 @@ void Renderer::HandleResize()
     _swapChain->RecreateSwapChain();
     _renderPass->RecreateDepthBuffer();
     _renderPass->RecreateFrameBuffers();
+}
+
+void Renderer::Wireframe(bool on)
+{
+        _pipelines["SkinnedPipeline"] = std::make_shared<SkinnedPipeline>(_renderPass, _serviceLocator, on == true ? VK_POLYGON_MODE_LINE : VK_POLYGON_MODE_FILL);
+
+            for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
+    {
+        std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
+
+        VkDescriptorBufferInfo bufferInfo{};
+        bufferInfo.buffer = rawUniformBuffers[i];
+        bufferInfo.offset = 0;
+        bufferInfo.range = sizeof(UniformBufferObject);
+
+        VkDescriptorBufferInfo bufferInfo2{};
+        bufferInfo2.buffer = dynUbos[i]->GetVulkanBuffer();
+        bufferInfo2.offset = 0;
+        bufferInfo2.range = sizeof(UboDataDynamic);
+
+        descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[0].dstSet = _pipelines["SkinnedPipeline"]->descriptorSets[0]->Get()[i];
+        descriptorWrites[0].dstBinding = 0;
+        descriptorWrites[0].dstArrayElement = 0;
+        descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        descriptorWrites[0].descriptorCount = 1;
+        descriptorWrites[0].pBufferInfo = &bufferInfo;
+
+
+        descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[1].dstSet = _pipelines["SkinnedPipeline"]->descriptorSets[0]->Get()[i];
+        descriptorWrites[1].dstBinding = 1;
+        descriptorWrites[1].dstArrayElement = 0;
+        descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+        descriptorWrites[1].descriptorCount = 1;
+        descriptorWrites[1].pBufferInfo = &bufferInfo2;
+
+
+        vkUpdateDescriptorSets(_logicalDevice->Get(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+    }
 }
 
 VkResult Renderer::DoRender(int width, int height)

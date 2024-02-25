@@ -11,7 +11,7 @@ namespace Entropy
             class CubeMapPipeline : public Pipeline
             {
             public:
-                CubeMapPipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator) : Pipeline(renderPass, serviceLocator)
+                CubeMapPipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator, VkPolygonMode polygonMode) : Pipeline(renderPass, serviceLocator, polygonMode)
                 {
                     auto dsLayouts = Setup();
                     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
@@ -20,10 +20,10 @@ namespace Entropy
                     pipelineLayoutInfo.pSetLayouts = dsLayouts.data();
                     pipelineLayoutInfo.pPushConstantRanges = nullptr; //&push_constant;
                     pipelineLayoutInfo.pushConstantRangeCount = 0;
-                    Build("SkinnedPipeline", "cubemap_vert.spv", "cubemap_frag.spv", dsLayouts, VK_FALSE, pipelineLayoutInfo);
+                    Build("SkinnedPipeline", "cubemap_vert.spv", "cubemap_frag.spv", dsLayouts, VK_FALSE, pipelineLayoutInfo, polygonMode);
                 }
 
-                CubeMapPipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator, std::vector<char> vert_shader, std::vector<char> frag_shader) : Pipeline(renderPass, serviceLocator)
+                CubeMapPipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator, std::vector<char> vert_shader, std::vector<char> frag_shader, VkPolygonMode polygonMode) : Pipeline(renderPass, serviceLocator, polygonMode)
                 {
                     auto dsLayouts = Setup();
                     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
@@ -32,7 +32,7 @@ namespace Entropy
                     pipelineLayoutInfo.pSetLayouts = dsLayouts.data();
                     pipelineLayoutInfo.pPushConstantRanges = nullptr; //&push_constant;
                     pipelineLayoutInfo.pushConstantRangeCount = 0;
-                    Build("SkinnedPipeline", vert_shader, frag_shader, dsLayouts, VK_FALSE, pipelineLayoutInfo);
+                    Build("SkinnedPipeline", vert_shader, frag_shader, dsLayouts, VK_FALSE, pipelineLayoutInfo, polygonMode);
                 }
 
             private:
