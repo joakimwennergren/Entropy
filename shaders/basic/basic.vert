@@ -1,45 +1,75 @@
 #version 450
 
+#define MAX_NUM_JOINTS 128
+
 layout (location = 0) in vec3 inPos;
-layout (location = 4) in vec4 joint0;
-layout (location = 5) in vec4 weight0;
-layout (location = 6) in vec3 inColor;
-
-layout(std430, set = 2, binding = 0) readonly buffer JointMatrices {
-	mat4 jointMatrices[];
-};
-
-layout(push_constant) uniform PushConsts {
-	mat4 model;
-} primitive;
+layout (location = 1) in vec3 inNormal;
+layout (location = 2) in vec2 inUV0;
+layout (location = 3) in vec2 inUV1;
+layout (location = 4) in vec4 inJoint0;
+layout (location = 5) in vec4 inWeight0;
+layout (location = 6) in vec4 inColor0;
 
 layout (binding = 0) uniform UboView 
 {
 	mat4 projection;
 	mat4 view;
+	mat4 invView;
+	vec2 screen;
 } uboView;
 
 layout (binding = 1) uniform UboInstance 
 {
 	vec4 color;
-	mat4 model; 
+	vec4 colorBorder;
+	vec4 colorShadow;
+	mat4 proj;
+	mat4 view;
+	mat4 invView;
+	mat4 model;
+	vec2 position;
+	vec2 size;
+	vec4 borderRadius;
+	int shapeId;
 } uboInstance;
 
-layout (location = 0) out vec3 outColor;
-layout (location = 1) out vec4 modelColor;
+layout (set = 2, binding = 0) uniform UBONode {
+	mat4 matrix;
+	mat4 jointMatrix[MAX_NUM_JOINTS];
+	float jointCount;
+} node;
+
+layout (location = 0) out vec3 outWorldPos;
+layout (location = 1) out vec3 outNormal;
+layout (location = 2) out vec2 outUV0;
+layout (location = 3) out vec2 outUV1;
+layout (location = 4) out vec4 outColor0;
+layout (location = 5) out mat4 outInvView;
 
 void main() 
 {
-	outColor = inColor;
-    modelColor = uboInstance.color;
-	mat4 modelView = uboView.view * uboInstance.model;
-	vec3 worldPos = vec3(modelView * vec4(inPos, 1.0));
+	outColor0 = inColor0;
+	
+	vec4 locPos;
 
-	mat4 skinMat = 
-		weight0.x * jointMatrices[int(joint0.x)] +
-		weight0.y * jointMatrices[int(joint0.y)] +
-		weight0.z * jointMatrices[int(joint0.z)] +
-		weight0.w * jointMatrices[int(joint0.w)];
+	if (node.jointCount > 0.0) {
+		// Mesh is skinned
+		mat4 skinMat = 
+			inWeight0.x * node.jointMatrix[int(inJoint0.x)] +
+			inWeight0.y * node.jointMatrix[int(inJoint0.y)] +
+			inWeight0.z * node.jointMatrix[int(inJoint0.z)] +
+			inWeight0.w * node.jointMatrix[int(inJoint0.w)];
 
-	gl_Position = uboView.projection * uboView.view * primitive.model * skinMat * vec4(inPos.xyz, 1.0);
+		locPos = uboInstance.model * node.matrix * skinMat * vec4(inPos, 1.0);
+		outNormal = normalize(transpose(inverse(mat3(uboInstance.model * node.matrix * skinMat))) * inNormal);
+	} else {
+		locPos = uboInstance.model * node.matrix * vec4(inPos, 1.0);
+		outNormal = normalize(transpose(inverse(mat3(uboInstance.model * node.matrix))) * inNormal);
+	}
+	locPos.y = -locPos.y;
+	outWorldPos = locPos.xyz / locPos.w;
+	outUV0 = inUV0;
+	outUV1 = inUV1;
+	outInvView = uboInstance.invView;
+	gl_Position =  uboInstance.proj * uboInstance.view * vec4(outWorldPos, 1.0);
 }

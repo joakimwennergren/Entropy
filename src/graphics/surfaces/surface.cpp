@@ -5,6 +5,9 @@ using namespace Entropy::Graphics::Surfaces;
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
 WindowSurface::WindowSurface(std::shared_ptr<VulkanInstance> instance, GLFWwindow *window)
 {
+
+    this->window = window;
+
     if (instance == nullptr)
     {
         return;
@@ -28,6 +31,7 @@ WindowSurface::WindowSurface(std::shared_ptr<VulkanInstance> instance, GLFWwindo
 #ifdef BUILD_FOR_WINDOWS
 WindowSurface::WindowSurface(std::shared_ptr<VulkanInstance> instance, GLFWwindow *window)
 {
+    this->window = window;
     if (instance == nullptr)
     {
         return;
@@ -81,32 +85,10 @@ WindowSurface::WindowSurface(std::shared_ptr<VulkanInstance> instance, CA::Metal
 }
 #endif
 
-#ifdef BUILD_FOR_ANDROID
-WindowSurface::WindowSurface(std::shared_ptr<VulkanInstance> instance, struct android_app *app)
-{
-    if (instance == nullptr)
-    {
-        return;
-    }
-
-    _instance = instance;
-
-    VkAndroidSurfaceCreateInfoKHR createInfo{
-        .sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR,
-        .pNext = nullptr,
-        .flags = 0,
-        .window = app->window};
-
-    vkCreateAndroidSurfaceKHR(instance->Get(), &createInfo, nullptr,
-                              &_surface);
-}
-#endif
-
 WindowSurface::~WindowSurface()
 {
     if (_instance != nullptr)
     {
-        std::cout << "destroying window surface!" << std::endl;
         vkDestroySurfaceKHR(_instance->Get(), _surface, nullptr);
     }
 }

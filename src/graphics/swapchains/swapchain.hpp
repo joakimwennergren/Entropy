@@ -10,6 +10,8 @@
 #include <services/service.hpp>
 #include <graphics/imageviews/imageview.hpp>
 
+#include <tracy/Tracy.hpp>
+
 using namespace Entropy::Graphics::Surfaces;
 using namespace Entropy::Graphics::QueueFamilies;
 using namespace Entropy::Graphics::ImageViews;
@@ -33,7 +35,7 @@ namespace Entropy
             public:
                 Swapchain(VkPhysicalDevice physicalDevice, VkDevice logicalDevice, std::shared_ptr<WindowSurface> surface, VkExtent2D frame);
                 ~Swapchain();
-                void CreateSwapChain();
+                void CreateSwapChain(VkSwapchainKHR prev);
                 void RecreateSwapChain();
                 static SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
                 std::vector<VkImageView> swapChainImageViews;
@@ -41,7 +43,6 @@ namespace Entropy
                 VkExtent2D swapChainExtent;
                 VkFormat swapChainImageFormat;
                 inline VkSwapchainKHR Get() { return _swapChain; };
-                bool isValid() override { return true; };
                 std::shared_ptr<WindowSurface> _surface;
 
             private:

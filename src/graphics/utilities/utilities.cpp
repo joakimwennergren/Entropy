@@ -4,17 +4,11 @@ using namespace Entropy::Graphics::Utilities;
 
 uint32_t Utility::FindMemoryTypeIndex(std::shared_ptr<ServiceLocator> serviceLocator, uint32_t typeFilter, VkMemoryPropertyFlags properties)
 {
-    auto phyisicalDevice = std::dynamic_pointer_cast<PhysicalDevice>(serviceLocator->getService("PhysicalDevice"));
-
-    if (!phyisicalDevice->isValid())
-    {
-        spdlog::error("Trying to find memory type index with invalid physical device");
-        return 0;
-    }
+    auto physical = serviceLocator->GetService<PhysicalDevice>();
 
     // Get the physical device's memory properties
     VkPhysicalDeviceMemoryProperties memProperties;
-    vkGetPhysicalDeviceMemoryProperties(phyisicalDevice->Get(), &memProperties);
+    vkGetPhysicalDeviceMemoryProperties(physical->Get(), &memProperties);
 
     // Iterate over memoryproperties and return index of matched property
     for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
@@ -25,8 +19,7 @@ uint32_t Utility::FindMemoryTypeIndex(std::shared_ptr<ServiceLocator> serviceLoc
         }
     }
 
-    // If none find print error and exit
-    exit(EXIT_FAILURE);
+    return 0;
 }
 
 void *Utility::AlignedAlloc(size_t size, size_t alignment)

@@ -10,10 +10,14 @@
 #include <graphics/descriptorsets/descriptorset.hpp>
 #include <graphics/commandpools/commandpool.hpp>
 #include <servicelocators/servicelocator.hpp>
+#include <scenegraphs/scenegraph.hpp>
+#include <scripting/lua.hpp>
 
 using namespace Entropy::Graphics::Instances;
 using namespace Entropy::Graphics::Surfaces;
 using namespace Entropy::Graphics::Swapchains;
+using namespace Entropy::SceneGraphs;
+using namespace Entropy::Scripting;
 using namespace Entropy::Graphics::ImageViews;
 using namespace Entropy::Graphics::CommandPools;
 using namespace Entropy::Graphics::DescriptorPools;

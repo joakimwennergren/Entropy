@@ -20,6 +20,8 @@ LogicalDevice::LogicalDevice(std::shared_ptr<PhysicalDevice> physicalDevice, std
         queueCreateInfos.push_back(queueCreateInfo);
     }
 
+    queueFamiliy = indices.graphicsFamily.value();
+
     VkDeviceQueueCreateInfo queueCreateInfo{};
     queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
     queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
@@ -28,6 +30,7 @@ LogicalDevice::LogicalDevice(std::shared_ptr<PhysicalDevice> physicalDevice, std
 
     VkPhysicalDeviceFeatures deviceFeatures{};
     deviceFeatures.samplerAnisotropy = VK_TRUE;
+    deviceFeatures.fillModeNonSolid = true;
 
     VkDeviceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;

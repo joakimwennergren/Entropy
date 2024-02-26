@@ -29,7 +29,6 @@ namespace Entropy
                 Descriptorset(std::shared_ptr<LogicalDevice> logicalDevice, std::shared_ptr<DescriptorPool> pool, std::shared_ptr<DescriptorsetLayout> layout);
 
                 inline std::vector<VkDescriptorSet> Get() { return _descriptorSets; };
-                inline bool isValid() override { return _descriptorSets.size() != 0; };
 
             private:
                 std::vector<VkDescriptorSet> _descriptorSets;

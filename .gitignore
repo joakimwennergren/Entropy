@@ -3,4 +3,4 @@
 build
 include/config.hpp
 docs
-**/.DS_Store
+**/.DS_Store.DS_Store

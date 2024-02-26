@@ -19,7 +19,7 @@ using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Primitives;
 using namespace Entropy::SceneGraphs;
 using namespace Entropy::Physics;
-//using namespace Entropy::Input;
+// using namespace Entropy::Input;
 using namespace Entropy::Vectors;
 using namespace Entropy::Services;
 
@@ -35,17 +35,16 @@ namespace Entropy
             {
                 if (script.length() > 0)
                 {
-                    lua.script(script, env);
+                    _lua.script(script, env);
                 }
                 if (scriptFile.length() > 0)
                 {
-                    lua.script_file(scriptFile, env);
+                    _lua.script_file(scriptFile, env);
                 }
 
                 return true;
             };
-            inline bool isValid() override { return true; };
-            sol::state lua;
+            sol::state _lua;
 
         private:
         };

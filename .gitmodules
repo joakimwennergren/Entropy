@@ -1,6 +1,3 @@
-[submodule "glfw"]
-	path = external/glfw
-	url = https://github.com/glfw/glfw.git
 [submodule "ios-cmake"]
 	path = external/ios-cmake
 	url = https://github.com/leetal/ios-cmake.git
@@ -22,9 +19,6 @@
 [submodule "curl"]
 	path = external/curl
 	url = https://github.com/curl/curl.git
-[submodule "openssl"]
-	path = external/openssl
-	url = https://github.com/openssl/openssl.git
 [submodule "sol2"]
 	path = external/sol2
 	url = https://github.com/ThePhD/sol2.git
@@ -40,3 +34,27 @@
 [submodule "tinygltf"]
 	path = external/tinygltf
 	url = https://github.com/syoyo/tinygltf.git
+[submodule "KTX-Software"]
+	path = external/KTX-Software
+	url = https://github.com/KhronosGroup/KTX-Software.git
+[submodule "tracy"]
+	path = external/tracy
+	url = https://github.com/wolfpld/tracy.git
+[submodule "openssl-cmake"]
+	path = external/openssl-cmake
+	url = https://github.com/viaduck/openssl-cmake.git
+[submodule "efsw"]
+	path = external/efsw
+	url = https://github.com/SpartanJ/efsw.git
+[submodule "myers-diff"]
+	path = external/myers-diff
+	url = https://github.com/gritzko/myers-diff.git
+[submodule "yoga"]
+	path = external/yoga
+	url = https://github.com/facebook/yoga.git
+[submodule "glfw"]
+	path = external/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "imgui"]
+	path = external/imgui
+	url = https://github.com/ocornut/imgui.git

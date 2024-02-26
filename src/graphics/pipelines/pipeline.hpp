@@ -1,26 +1,29 @@
 #pragma once
 
 #include <array>
+#include <utility>
 
 #include <graphics/shaders/shader.hpp>
 #include <graphics/renderpasses/renderpass.hpp>
 #include <filesystem/filesystem.hpp>
 #include <graphics/data/vertex.hpp>
-#include <graphics/data/pushcontant.hpp>
+#include <graphics/data/pushcontants.hpp>
 #include <servicelocators/servicelocator.hpp>
 #include <graphics/devices/logical_device.hpp>
 #include <graphics/swapchains/swapchain.hpp>
+#include <graphics/descriptorsets/descriptorset.hpp>
 #include <graphics/descriptorsetlayouts/descriptorsetlayout.hpp>
+#include <graphics/descriptorpools/descriptorpool.hpp>
 
 #include "spdlog/spdlog.h"
 
-using namespace Symbios::Filesystem;
+using namespace Entropy::Filesystem;
 using namespace Symbios::Graphics::Shaders;
 using namespace Entropy::Graphics::RenderPasses;
-using namespace Symbios::Filesystem;
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Swapchains;
-using namespace Entropy::Graphics::DescriptorsetLayouts;
+using namespace Entropy::Graphics::Descriptorsets;
+using namespace Entropy::Graphics::DescriptorPools;
 using namespace Entropy::Graphics::Devices;
 
 namespace Entropy
@@ -32,20 +35,31 @@ namespace Entropy
             class Pipeline
             {
             public:
-                Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator);
+                Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator, VkPolygonMode polygonMode);
                 ~Pipeline();
 
-                inline VkPipeline GetPipeline() { return this->_pipeline; };
-                inline VkPipelineLayout GetPipelineLayout() { return this->_pipelineLayout; };
+                void Setup(std::unique_ptr<Shader> shader, std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite, VkPipelineLayoutCreateInfo pipelinelayout, VkPolygonMode polygonMode);
 
-            private:
+                void Build(const std::string name, const std::string vertexShader, const std::string fragmentShader, std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite, VkPipelineLayoutCreateInfo pipelinelayout, VkPolygonMode polygonMode);
+                void Build(const std::string name, std::vector<char> vert_shader, std::vector<char> frag_shader, std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite, VkPipelineLayoutCreateInfo pipelinelayout, VkPolygonMode polygonMode);
+                inline VkPipeline GetPipeline()
+                {
+                    return _pipeline;
+                };
+                inline VkPipelineLayout GetPipelineLayout()
+                {
+                    return _pipelineLayout;
+                };
+                std::vector<std::shared_ptr<Descriptorset>> descriptorSets;
+
+            protected:
                 VkPipelineLayout _pipelineLayout;
                 VkPipeline _pipeline;
-                VkDescriptorSetLayout _descriptorSetLayout;
                 std::shared_ptr<RenderPass> _renderPass;
                 std::shared_ptr<LogicalDevice> _logicalDevice;
                 std::shared_ptr<Swapchain> _swapchain;
-                std::shared_ptr<DescriptorsetLayout> _descriptorsetLayout;
+                std::shared_ptr<DescriptorsetLayout> _descriptorSetLayout;
+                std::shared_ptr<DescriptorPool> _descriptorPool;
                 std::shared_ptr<ServiceLocator> _serviceLocator;
             };
         }

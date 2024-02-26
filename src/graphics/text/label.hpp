@@ -37,8 +37,9 @@ namespace Entropy
         {
 
         public:
+            std::string text;
             Label(std::shared_ptr<ServiceLocator> serviceLocator, std::shared_ptr<Font> font);
-            ~Label();
+            void Test(){};
             std::vector<std::shared_ptr<Sprite>> sprites;
 
             inline void SetPosition(float x, float y)
@@ -46,22 +47,17 @@ namespace Entropy
                 if (this->text.length() == 0)
                     return;
 
-                std::string::const_iterator c;
-
-                for (c = text.begin(); c != text.end(); c++)
+                for (unsigned int i = 0; i < text.size(); i++)
                 {
-                    // Character &ch = _characters[*c];
+                    float xpos = x;
+                    float ypos = y;
 
-                    // float xpos = x + ch.Size.x;
-                    // float ypos = y - (ch.Bearing.y);
+                    auto yAdvance = (_font->glyphs[text[i]].glyphslot->bitmap.rows - _font->glyphs[text[i]].glyphslot->bitmap_top) + ypos;
 
-                    /*
-                    auto g = this->children[cnt];
-                    g->position = glm::vec3(xpos, ypos, 0.0);
+                    auto g = this->children[i];
+                    g->position = glm::vec3(xpos, yAdvance, 1.0);
 
-                    x += (ch.Advance >> 6) * 2.0f;
-                    cnt++;
-                    */
+                    x += (_font->glyphs[text[i]].glyphslot->advance.x >> 6);
                 }
             }
 
@@ -81,17 +77,17 @@ namespace Entropy
                         continue;
                     }
 
-                    float xpos = x + _font->glyphs[text[i]].glyphslot->bitmap.width;
-                    float ypos = y - (_font->glyphs[text[i]].glyphslot->bitmap_top);
+                    float xpos = x; //_font->glyphs[text[i]].glyphslot->bitmap.width;
+                    float ypos = y;
 
-                    float w = _font->glyphs[text[i]].glyphslot->bitmap.width;
-                    float h = _font->glyphs[text[i]].glyphslot->bitmap.rows;
+                    float w = _font->glyphs[text[i]].glyphslot->bitmap.width / 2.0;
+                    float h = _font->glyphs[text[i]].glyphslot->bitmap.rows / 2.0;
 
                     auto g = std::make_shared<Sprite>(_serviceLocator, _font->glyphs[text[i]].glyphslot->bitmap);
 
-                    auto yAdvance = _font->glyphs[text[i]].glyphslot->bitmap_top - h;
+                    auto yAdvance = (_font->glyphs[text[i]].glyphslot->bitmap.rows - _font->glyphs[text[i]].glyphslot->bitmap_top) + ypos;
 
-                    g->position = glm::vec3(xpos, ypos - yAdvance, 0.0);
+                    g->position = glm::vec3(xpos, yAdvance, 1.0);
                     g->textureId = 2;
                     g->type = 3;
                     g->scale = glm::vec3(w, h, 0.0);
@@ -99,7 +95,7 @@ namespace Entropy
                     g->zIndex = 999;
 
                     // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-                    x += (_font->glyphs[text[i]].glyphslot->advance.x >> 6) * 2.0f; // bitshift by 6 to get value in pixels (2^6 = 64)
+                    x += (_font->glyphs[text[i]].glyphslot->advance.x >> 6); // bitshift by 6 to get value in pixels (2^6 = 64)
                     this->children.push_back(g);
                 }
             }
@@ -107,7 +103,7 @@ namespace Entropy
         private:
             FT_Library ft;
             FT_Face face;
-            std::string text;
+
             std::map<unsigned char, Character> _characters;
             std::shared_ptr<Font> _font;
         };

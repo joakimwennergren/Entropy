@@ -6,7 +6,6 @@
 #include FT_FREETYPE_H
 
 #include "config.hpp"
-
 #include "tiny_gltf.h"
 
 #include <graphics/buffers/buffer.hpp>
@@ -14,7 +13,13 @@
 #include <graphics/utilities/utilities.hpp>
 #include <graphics/buffers/stagedbuffer.hpp>
 #include <graphics/imageviews/imageview.hpp>
-#include <gltf/texturesampler.hpp>
+
+// #include <ktx.h>
+// #include <ktxvulkan.h>
+
+#ifdef BUILD_FOR_ANDROID
+#include <android/asset_manager.h>
+#endif
 
 using namespace Entropy::Graphics::Buffers;
 using namespace Entropy::Graphics::Utilities;
@@ -51,6 +56,17 @@ namespace Entropy
                  */
                 void CreateTextureImage(std::string path);
 
+#ifdef BUILD_FOR_ANDROID
+                /**
+                 * @brief Create a Texture Image object
+                 *
+                 * @param path
+                 */
+                void CreateTextureImage(std::string path, AAssetManager *assetManager);
+#endif
+
+                void CreateTextureFrameBuffer();
+
                 /**
                  * @brief Create a Texture Image object
                  *
@@ -58,12 +74,16 @@ namespace Entropy
                  */
                 void CreateTextureImageFromPixels(unsigned char *pixels, int width, int height);
 
+                // void CreateTextureImageFromKtx(unsigned char *pixels, unsigned int width, unsigned int height, int size, int mips, VkFormat format, ktxTexture *ktxTexture);
+
+                void TransitionImageLayoutCubeMap(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, unsigned int mips);
+
                 /**
                  *
                  */
                 void CreateTextureImageFromBuffer(FT_Bitmap bitmap);
 
-                void CreateTextureFromGLTFImage(tinygltf::Image &gltfimage, GLTF::TextureSampler textureSampler);
+                void CreateTextureFromGLTFImage(tinygltf::Image &gltfimage);
 
                 /**
                  * @brief Get the Image View object
@@ -115,6 +135,7 @@ namespace Entropy
                 VkImage _textureImage;
                 VkImageView _imageView;
                 VkDeviceMemory _textureImageMemory;
+                VkSampler _sampler;
                 std::shared_ptr<ServiceLocator> _serviceLocator;
                 std::shared_ptr<LogicalDevice> _logicalDevice;
             };

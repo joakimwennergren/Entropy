@@ -4,14 +4,7 @@ using namespace Entropy::Graphics::Buffers;
 
 VertexBuffer::VertexBuffer(std::shared_ptr<ServiceLocator> serviceLocator, std::vector<Vertex> vertices)
 {
-    // Get required depenencies
-    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
-
-    if (!logicalDevice->isValid())
-    {
-        spdlog::error("Trying to create buffer with invalid logical device");
-        return;
-    }
+    auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
 
     VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 

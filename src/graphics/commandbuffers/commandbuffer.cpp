@@ -2,24 +2,18 @@
 
 using namespace Entropy::Graphics::CommandBuffers;
 
-CommandBuffer::CommandBuffer(std::shared_ptr<ServiceLocator> serviceLocator)
+CommandBuffer::CommandBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkCommandBufferLevel level)
 {
     // Get required depenencies
-    auto commandPool = std::dynamic_pointer_cast<CommandPool>(serviceLocator->getService("CommandPool"));
-    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(serviceLocator->getService("LogicalDevice"));
-
-    if (!commandPool->isValid() || !logicalDevice->isValid())
-    {
-        spdlog::error("Trying to create commandbuffer with invalid swapchain or invalid logical device");
-        return;
-    }
+    auto commandPool = serviceLocator->GetService<CommandPool>();
+    auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
 
     _logicalDevice = logicalDevice;
 
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.commandPool = commandPool->Get();
-    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.level = level;
     allocInfo.commandBufferCount = 1;
 
     if (vkAllocateCommandBuffers(logicalDevice->Get(), &allocInfo, &_commandBuffer) != VK_SUCCESS)
@@ -30,6 +24,8 @@ CommandBuffer::CommandBuffer(std::shared_ptr<ServiceLocator> serviceLocator)
 
 void CommandBuffer::RecordOnce()
 {
+    vkDeviceWaitIdle(_logicalDevice->Get());
+
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
@@ -39,6 +35,8 @@ void CommandBuffer::RecordOnce()
 
 void CommandBuffer::Record()
 {
+    // vkDeviceWaitIdle(_logicalDevice->Get());
+
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     beginInfo.flags = 0;                  // Optional

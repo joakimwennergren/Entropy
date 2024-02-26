@@ -81,14 +81,19 @@ namespace Entropy
             std::string name;
 
             bool visible = true;
+            bool overflowHidden = false;
 
-            float rotationX = 0.0;
-            int orientation = 1;
+            float rotation = 0.0;
+            glm::vec3 orientation = glm::vec3(1.0f);
 
             glm::vec3 position = glm::vec3(0.0);
-            glm::vec3 rotation = glm::vec3(1.0);
             glm::vec3 scale = glm::vec3(1.0);
             glm::vec4 color = glm::vec4(1.0);
+            glm::vec4 colorBorder;
+            glm::vec4 colorShadow;
+            glm::vec2 position2d;
+            glm::vec2 size;
+            glm::vec4 borderRadius;
 
             int textureId = -1;
             int type = 0;
@@ -105,13 +110,7 @@ namespace Entropy
             inline void Scale3D(float w, float h, float z) { scale = glm::vec3(w, h, z); };
             inline void Color(float r, float g, float b, float a) { this->color = glm::vec4(r, g, b, a); };
 
-            inline void Rotate(float r, int orientation)
-            {
-                this->orientation = orientation;
-                this->rotationX = r;
-            }
-
-            virtual void Test(){};
+            virtual void Test() = 0;
 
             inline void ZIndex(int z) { this->zIndex = z; }
 

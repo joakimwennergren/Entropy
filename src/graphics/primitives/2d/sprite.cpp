@@ -51,7 +51,8 @@ Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator, FT_Bitmap bitmap)
     UpdateDescriptorSets();
 }
 
-Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator, std::string path)
+#ifdef BUILD_FOR_ANDROID
+Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator, std::string path, AAssetManager *assetmanager)
 {
     _serviceLocator = serviceLocator;
 
@@ -74,14 +75,46 @@ Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator, std::string path)
     indexBuffer->CreateIndexBufferUint16(serviceLocator, _indices);
 
     this->position = glm::vec3(0.0f, 0.0f, 0.0f);
-    this->textureId = 1;
+    this->color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    this->scale = glm::vec3(1.0, 1.0, 1.0);
+    this->texture->CreateTextureImage(path, assetmanager);
+
+    UpdateDescriptorSets();
+
+    type = 1;
+}
+#endif
+
+Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator, std::string path)
+{
+    _serviceLocator = serviceLocator;
+
+    type = 1;
+
+    script = std::make_unique<Script>();
+
+    _indices = {0, 1, 2, 2, 3, 0};
+
+    _vertices = {
+        {{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+        {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
+        {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
+        {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
+
+    texture = new Texture(serviceLocator);
+
+    // Create buffers @todo temp!!!
+    vertexBuffer = std::make_unique<VertexBuffer>(serviceLocator, _vertices);
+
+    indexBuffer = std::make_unique<Buffer>();
+    indexBuffer->CreateIndexBufferUint16(serviceLocator, _indices);
+
+    this->position = glm::vec3(0.0f, 0.0f, 0.0f);
     this->color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     this->scale = glm::vec3(1.0, 1.0, 1.0);
     this->texture->CreateTextureImage(path);
 
     UpdateDescriptorSets();
-
-    type = 1;
 }
 
 Sprite::Sprite(unsigned char *pixels, int width, int height)
@@ -117,15 +150,9 @@ Sprite::Sprite(unsigned char *pixels, int width, int height)
 void Sprite::UpdateDescriptorSets()
 {
     // Get required depenencies
-    auto logicalDevice = std::dynamic_pointer_cast<LogicalDevice>(_serviceLocator->getService("LogicalDevice"));
-    auto physicalDevice = std::dynamic_pointer_cast<PhysicalDevice>(_serviceLocator->getService("PhysicalDevice"));
-    auto descriptorPool = std::dynamic_pointer_cast<DescriptorPool>(_serviceLocator->getService("DescriptorPool"));
-
-    if (!logicalDevice->isValid())
-    {
-        spdlog::error("Trying to create buffer with invalid logical device");
-        return;
-    }
+    auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
+    auto physicalDevice = _serviceLocator->GetService<PhysicalDevice>();
+    auto descriptorPool = _serviceLocator->GetService<DescriptorPool>();
 
     VkPhysicalDeviceProperties properties{};
     vkGetPhysicalDeviceProperties(physicalDevice->Get(), &properties);
@@ -155,14 +182,14 @@ void Sprite::UpdateDescriptorSets()
     }
 
     VkDescriptorSetLayoutBinding samplerLayoutBinding{};
-    samplerLayoutBinding.binding = 2;
+    samplerLayoutBinding.binding = 1;
     samplerLayoutBinding.descriptorCount = 1;
     samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
     samplerLayoutBinding.pImmutableSamplers = nullptr;
     samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
     VkDescriptorSetLayoutBinding texturesLayoutBinding{};
-    texturesLayoutBinding.binding = 3;
+    texturesLayoutBinding.binding = 2;
     texturesLayoutBinding.descriptorCount = 1;
     texturesLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
     texturesLayoutBinding.pImmutableSamplers = nullptr;
@@ -216,4 +243,12 @@ void Sprite::UpdateDescriptorSets()
     descriptorWrites[1].pImageInfo = &imageInfo;
 
     vkUpdateDescriptorSets(logicalDevice->Get(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+}
+
+Sprite::~Sprite()
+{
+    auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
+    auto descriptorPool = _serviceLocator->GetService<DescriptorPool>();
+    vkDeviceWaitIdle(logicalDevice->Get());
+    vkFreeDescriptorSets(logicalDevice->Get(), descriptorPool->Get(), 1, &_descriptorSet);
 }

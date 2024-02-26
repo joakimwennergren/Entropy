@@ -7,15 +7,13 @@
 #pragma once
 
 #include <thread>
-#include "stb_image.h"
-
+#include <memory>
 #include <config.hpp>
 
 #include <graphics/renderers/renderer.hpp>
 #include <servicelocators/servicelocator.hpp>
 #include <timing/timer.hpp>
 #include <graphics/devices/logical_device.hpp>
-#include "screen.hpp"
 
 // new includes
 #include <graphics/instances/vk_instance.hpp>
@@ -27,23 +25,40 @@
 #include <graphics/descriptorsetlayouts/descriptorsetlayout.hpp>
 #include <graphics/descriptorsets/descriptorset.hpp>
 #include <graphics/commandpools/commandpool.hpp>
+#include <graphics/commandbuffers/commandbuffer.hpp>
 #include <scenegraphs/scenegraph.hpp>
 #include <physics/2d/physics2d.hpp>
 #include <scripting/lua.hpp>
 #include <input/mouse/mouse.hpp>
+#include <filesystem/filesystem.hpp>
+#include <input/keyboard/keyboard.hpp>
+#include <graphics/cameras/flying_camera.hpp>
+#include <renderables/renderable.hpp>
+#include <graphics/utilities/utilities.hpp>
+#include <graphics/textures/texture.hpp>
+#include <graphics/buffers/buffer.hpp>
+#include <graphics/buffers/vertexbuffer.hpp>
 
 using namespace Entropy::Graphics::Instances;
 using namespace Entropy::Graphics::Surfaces;
 using namespace Entropy::Graphics::Swapchains;
 using namespace Entropy::Graphics::ImageViews;
 using namespace Entropy::Graphics::CommandPools;
+using namespace Entropy::Graphics::CommandBuffers;
 using namespace Entropy::Graphics::DescriptorPools;
 using namespace Entropy::Graphics::DescriptorsetLayouts;
 using namespace Entropy::Graphics::Descriptorsets;
 using namespace Entropy::SceneGraphs;
 using namespace Entropy::Scripting;
 using namespace Entropy::Physics;
-// using namespace Entropy::Input;
+using namespace Entropy::ServiceLocators;
+using namespace Entropy::Graphics::Textures;
+using namespace Entropy::Graphics::Renderers;
+using namespace Entropy::Renderables;
+using namespace Entropy;
+using namespace Entropy::Input;
+using namespace Entropy::Graphics::Buffers;
+using namespace Entropy::Graphics::Utilities;
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
 
@@ -56,6 +71,10 @@ using namespace Entropy::ServiceLocators;
 
 void framebufferResizeCallback(GLFWwindow *window, int width, int height);
 void cursorPositionCallback(GLFWwindow *window, double x, double y);
+void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
+static void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
+void window_refresh_callback(GLFWwindow *window);
+void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
 
 class Application
 {
@@ -69,149 +88,101 @@ public:
 
     void Run();
 
-    // @todo make this more generic
-    inline int GetScreenWidth() { return this->screen.width; };
-
     // @todo this shouldn't be public
     inline std::shared_ptr<Renderer> GetRenderer() { return this->_renderer; };
-
-    // @todo look over if this should be protected..
-protected:
-    Screen screen;
-    GLFWwindow *_window;
+    std::shared_ptr<Keyboard> _keyboard;
+    std::shared_ptr<Cam> _camera;
+    bool firstMouse;
+    float lastX = 0.0;
+    float lastY = 0.0;
     std::shared_ptr<ServiceLocator> serviceLocator;
     std::shared_ptr<SceneGraph> sceneGraph;
+    // @todo look over if this should be protected..
+    std::shared_ptr<Renderer> _renderer;
+    std::shared_ptr<Mouse> mouse;
+    bool isResizing = false;
+    Timer *_timer;
+    float mouse_x;
+    float mouse_y;
+    float screen_width;
+    float screen_height;
+    bool mouse0_state = false;
+    ImGuiIO io;
+
+protected:
+    GLFWwindow *_window;
+    std::vector<std::shared_ptr<CommandBuffer>> commandBuffers;
+    std::shared_ptr<VulkanInstance> _vkInstance;
+    std::shared_ptr<WindowSurface> _windowSurface;
+    std::shared_ptr<WindowSurface> _windowSurface2;
+    std::shared_ptr<PhysicalDevice> _physicalDevice;
+    std::shared_ptr<LogicalDevice> _logicalDevice;
+    std::shared_ptr<Swapchain> _swapChain;
     std::shared_ptr<Lua> lua;
+    uint32_t imageIndex;
     std::shared_ptr<Physics2D> physics2d;
     sol::protected_function luaOnRender;
+    std::shared_ptr<RenderPass> renderpass;
+    std::shared_ptr<Synchronizer> synchronizer;
+    int _currentFrame = 0;
+    std::unique_ptr<Entropy::Graphics::Buffers::VertexBuffer> vertexBuffer;
+    std::unique_ptr<Buffer> indexBuffer;
 
 private:
     void ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::shared_ptr<Lua> lua);
-    std::shared_ptr<Renderer> _renderer;
-    Timer *_timer;
+
     float _lastTick = 0.0f;
+    std::thread th;
     float _deltaTime = 0.0f;
 };
-#endif
-
-#if defined(BUILD_FOR_ANDROID)
-
-#include <vulkan/vulkan_android.h>
-#include "android_native_app_glue.h"
-
-using namespace Entropy::Graphics::Renderers;
-using namespace Entropy::Timing;
-
-class Application
-{
-public:
-    Application(struct android_app *app);
-    ~Application();
-
-    virtual void OnInit() = 0;
-
-    virtual void OnRender(float deltaTime) = 0;
-
-    void Run();
-
-    // @todo make this more generic
-    inline int GetScreenWidth() { return this->screen.width; };
-
-    // @todo this shouldn't be public
-    inline std::shared_ptr<Renderer> GetRenderer() { return this->_renderer; };
-
-    // @todo look over if this should be protected..
-protected:
-    Screen screen;
-    std::shared_ptr<ServiceLocator> serviceLocator;
-    std::shared_ptr<SceneGraph> sceneGraph;
-    std::shared_ptr<Lua> lua;
-    std::shared_ptr<Physics2D> physics2d;
-    sol::protected_function luaOnRender;
-
-private:
-    Timer *_timer;
-    float _lastTick = 0.0f;
-    float _deltaTime = 0.0f;
-    std::shared_ptr<Renderer> _renderer;
-};
-
 #endif
 
 #ifdef BUILD_FOR_IOS
 
-#include <chrono>
-
 #include <Metal/Metal.hpp>
 #include <UIKit/UIKit.hpp>
 #include <MetalKit/MetalKit.hpp>
-
-#include "filesystem.hpp"
-#include "quad.hpp"
-#include "sprite.hpp"
-#include "label.hpp"
-#include "easing.hpp"
-
-using namespace Symbios;
-using namespace Symbios::Text;
-using namespace Symbios::Animation;
+#include <MetalFX/MetalFX.hpp>
 
 using namespace std::chrono;
 
 extern "C" UI::ViewController *get_native_bounds(UI::View *view, UI::Screen *screen);
 extern "C" CGPoint touch();
+extern "C" void say_hello();
 
-#include "renderer.hpp"
-
-using namespace Symbios::Graphics::Renderers;
-
-class Application : public UI::ApplicationDelegate
+class EntropyApplication : public UI::ApplicationDelegate
 {
 public:
+    std::shared_ptr<Keyboard> _keyboard;
+    std::shared_ptr<Cam> _camera;
+    bool firstMouse;
+    float lastX = 0.0;
+    float lastY = 0.0;
+
+    std::shared_ptr<ServiceLocator> serviceLocator;
+    std::shared_ptr<SceneGraph> sceneGraph;
+    std::shared_ptr<Physics2D> physics2d;
+    sol::protected_function luaOnRender;
+    std::shared_ptr<Renderer> _renderer;
+
     class MTKViewDelegate : public MTK::ViewDelegate
     {
     public:
         std::shared_ptr<SceneGraph> graph;
-        /**
-         * @brief Construct a new MTKViewDelegate object
-         *
-         */
-        MTKViewDelegate(Application *app) : MTK::ViewDelegate()
+
+        MTKViewDelegate(EntropyApplication *app) : MTK::ViewDelegate()
         {
             this->app = app;
         }
 
-        inline void SetRenderer(std::shared_ptr<Renderer> renderer)
-        {
-            _renderer = renderer;
-        }
-
-        /**
-         * @brief Destroy the MTKViewDelegate object
-         *
-         */
         virtual ~MTKViewDelegate() override
         {
         }
-        Application *app;
+        EntropyApplication *app;
+        std::shared_ptr<Renderer> _renderer;
         CGRect frame;
 
     private:
-        float RandomFloat(float a, float b)
-        {
-            float random = ((float)rand()) / (float)RAND_MAX;
-            float diff = b - a;
-            float r = random * diff;
-            return a + r;
-        }
-
-        double GetTimeAsDouble()
-        {
-            using namespace std::chrono;
-            using SecondsFP = std::chrono::duration<double>;
-            return duration_cast<SecondsFP>(high_resolution_clock::now().time_since_epoch()).count();
-        }
-
         /**
          * @brief
          *
@@ -219,6 +190,7 @@ public:
          */
         inline virtual void drawInMTKView(MTK::View *pView) override
         {
+            /*
             auto tick_time = (float)GetTimeAsDouble();
 
             deltaTime = tick_time - lastTick;
@@ -231,11 +203,11 @@ public:
 
             app->screen.width = app->frame.size.width * 3.0;
             app->screen.height = app->frame.size.height * 3.3;
+             */
 
-            _renderer->Render();
+            _renderer->Render(frame.size.width, frame.size.height);
+            app->OnRender(0.0);
         }
-
-        std::shared_ptr<Renderer> _renderer;
 
         float lastTick = 0.0;
         float deltaTime = 0.0;
@@ -245,9 +217,9 @@ public:
      * @brief Construct a new Application object
      *
      */
-    Application()
+    EntropyApplication()
     {
-
+        say_hello();
         this->_autoreleasePool = NS::AutoreleasePool::alloc()->init();
     }
 
@@ -255,7 +227,7 @@ public:
      * @brief Destroy the Application object
      *
      */
-    ~Application()
+    ~EntropyApplication()
     {
         _pMtkView->release();
         _pWindow->release();
@@ -263,6 +235,79 @@ public:
         _pDevice->release();
         delete _pViewDelegate;
         this->_autoreleasePool->release();
+    }
+
+    inline bool applicationDidFinishLaunching(UI::Application *pApp, NS::Value *options) override
+    {
+        frame = UI::Screen::mainScreen()->bounds();
+
+        VkExtent2D extent =
+            {
+                (uint32_t)frame.size.width,
+                (uint32_t)frame.size.height};
+
+        //_pViewController = UI::ViewController::alloc()->init(nil, nil);
+
+        _pWindow = UI::Window::alloc()->init(frame);
+
+        _pDevice = MTL::CreateSystemDefaultDevice();
+
+        _pMtkView = MTK::View::alloc()->init(frame, _pDevice);
+
+        _pViewController = get_native_bounds((UI::View *)_pMtkView, UI::Screen::mainScreen());
+
+        _pMtkView->setColorPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
+        _pMtkView->setClearColor(MTL::ClearColor::Make(1.0, 1.0, 1.0, 1.0));
+
+        _pViewDelegate = new MTKViewDelegate(this);
+        _pMtkView->setDelegate(_pViewDelegate);
+
+        UI::View *mtkView = (UI::View *)_pMtkView;
+        mtkView->setAutoresizingMask(UI::ViewAutoresizingFlexibleWidth | UI::ViewAutoresizingFlexibleHeight);
+
+        _pViewController->view()->addSubview(mtkView);
+        _pWindow->setRootViewController(_pViewController);
+
+        _pWindow->makeKeyAndVisible();
+
+        CA::MetalLayer *layer = _pMtkView->currentDrawable()->layer();
+
+        // Create items for vulkan
+        _vkInstance = std::make_shared<VulkanInstance>("Entropy tests");
+        auto windowSurface = std::make_shared<WindowSurface>(vkInstance, layer);
+        auto physicalDevice = std::make_shared<PhysicalDevice>(vkInstance, windowSurface);
+        auto logicalDevice = std::make_shared<LogicalDevice>(physicalDevice, windowSurface);
+        auto swapChain = std::make_shared<Swapchain>(physicalDevice->Get(), logicalDevice->Get(), windowSurface, extent);
+        auto commandPool = std::make_shared<CommandPool>(logicalDevice, physicalDevice, windowSurface);
+        auto descriptorPool = std::make_shared<DescriptorPool>(logicalDevice);
+
+        // Add services to service locator
+        serviceLocator = std::make_shared<ServiceLocator>();
+
+        _keyboard = std::make_shared<Keyboard>(serviceLocator);
+        _camera = std::make_shared<Cam>(glm::vec3(0.0f, 0.0f, 3.0f));
+        serviceLocator->AddService(_camera);
+        serviceLocator->AddService(_keyboard);
+        serviceLocator->AddService(physicalDevice);
+        serviceLocator->AddService(logicalDevice);
+        serviceLocator->AddService(descriptorPool);
+        serviceLocator->AddService(swapChain);
+        serviceLocator->AddService(commandPool);
+
+        sceneGraph = std::make_shared<SceneGraph>();
+        serviceLocator->AddService(sceneGraph);
+
+        physics2d = std::make_shared<Physics2D>(serviceLocator);
+        serviceLocator->AddService(physics2d);
+
+        _renderer = std::make_shared<Renderer>(serviceLocator);
+        _pViewDelegate->_renderer = _renderer;
+        _pViewDelegate->frame = frame;
+        _pViewDelegate->app = this;
+
+        OnInit();
+
+        return true;
     }
 
     /**
@@ -273,6 +318,7 @@ public:
      * @return true
      * @return false
      */
+    /*
     inline bool applicationDidFinishLaunching(UI::Application *pApp, NS::Value *options) override
     {
         frame = UI::Screen::mainScreen()->bounds();
@@ -301,22 +347,13 @@ public:
 
         _pWindow->makeKeyAndVisible();
 
-        CA::MetalLayer *layer = _pMtkView->currentDrawable()->layer();
-
-        Global::VulkanContext::GetInstance()->InitializeContext(layer, frame);
-
-        auto renderer = std::make_shared<Renderer>();
-
-        _pViewDelegate->SetRenderer(renderer);
-        _pViewDelegate->frame = frame;
-
-        this->_context = Global::VulkanContext::GetInstance()->GetVulkanContext();
 
         OnInit();
 
         return true;
     }
 
+*/
     virtual void OnInit() = 0;
 
     virtual void OnRender(float deltaTime) = 0;
@@ -326,9 +363,11 @@ public:
      *
      * @param pApp
      */
+    /*
     inline void applicationWillTerminate(UI::Application *pApp) override
     {
     }
+    */
 
 public:
     /**
@@ -340,9 +379,7 @@ public:
         UI::ApplicationMain(0, 0, this);
     }
 
-    std::shared_ptr<Context> _context;
     CGRect frame;
-    Screen screen;
 
 protected:
 private:

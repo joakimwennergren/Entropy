@@ -1,15 +1,15 @@
 #pragma once
 
 #include "config.hpp"
-
 #include <filesystem>
 #include <string>
+#include <vector>
 
 #ifdef BUILD_FOR_IOS
 #include <CoreFoundation/CoreFoundation.h>
 #endif
 
-namespace Symbios
+namespace Entropy
 {
         namespace Filesystem
         {
@@ -20,7 +20,7 @@ namespace Symbios
                         return ENGINE_BASEPATH;
 #endif
 
-#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_ANDROID)
+#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
                         return ENGINE_BASEPATH;
 #endif
 
