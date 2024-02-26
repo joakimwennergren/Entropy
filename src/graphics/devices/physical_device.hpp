@@ -50,7 +50,7 @@ namespace Entropy
 
 #ifdef BUILD_FOR_ANDROID
                 const std::vector<const char *> deviceExtensions = {
-                    "VK_KHR_swapchain"};
+                    VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 #endif
 
             private:
