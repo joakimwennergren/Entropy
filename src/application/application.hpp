@@ -64,15 +64,13 @@ using namespace Entropy::Graphics::Utilities;
 
 #include <GLFW/glfw3.h>
 
-// @todo remove symbios namespace
 using namespace Entropy::Graphics::Renderers;
 using namespace Entropy::Timing;
 using namespace Entropy::ServiceLocators;
 
 void framebufferResizeCallback(GLFWwindow *window, int width, int height);
-void cursorPositionCallback(GLFWwindow *window, double x, double y);
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
-static void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
+void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
 void window_refresh_callback(GLFWwindow *window);
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
 
@@ -107,7 +105,6 @@ public:
     float screen_width;
     float screen_height;
     bool mouse0_state = false;
-    ImGuiIO io;
 
 protected:
     GLFWwindow *_window;
@@ -119,20 +116,15 @@ protected:
     std::shared_ptr<LogicalDevice> _logicalDevice;
     std::shared_ptr<Swapchain> _swapChain;
     std::shared_ptr<Lua> lua;
-    uint32_t imageIndex;
     std::shared_ptr<Physics2D> physics2d;
-    sol::protected_function luaOnRender;
     std::shared_ptr<RenderPass> renderpass;
     std::shared_ptr<Synchronizer> synchronizer;
-    int _currentFrame = 0;
-    std::unique_ptr<Entropy::Graphics::Buffers::VertexBuffer> vertexBuffer;
-    std::unique_ptr<Buffer> indexBuffer;
+    sol::protected_function luaOnRender;
 
 private:
     void ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::shared_ptr<Lua> lua);
 
     float _lastTick = 0.0f;
-    std::thread th;
     float _deltaTime = 0.0f;
 };
 #endif

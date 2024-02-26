@@ -79,12 +79,6 @@ Application::Application()
     glfwGetMonitorContentScale(primary, &xscale, &yscale);
 
     _renderer = std::make_shared<Renderer>(serviceLocator, xscale, yscale);
-
-    io = ImGui::GetIO();
-
-    //glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-    // glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void Application::ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::shared_ptr<Lua> lua)
