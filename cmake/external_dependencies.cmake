@@ -127,9 +127,8 @@ if(ANDROID)
   target_compile_definitions(tinygltf PRIVATE TINYGLTF_ANDROID_LOAD_FROM_ASSETS)
 endif()
 
+set(BUILD_STATIC_LIBS ON)
 add_subdirectory(external/efsw)
-
-add_subdirectory(external/yoga)
 
 option(TRACY_ENABLE "" ON)
 option(TRACY_ON_DEMAND "" ON)

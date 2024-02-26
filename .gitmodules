@@ -49,9 +49,6 @@
 [submodule "myers-diff"]
 	path = external/myers-diff
 	url = https://github.com/gritzko/myers-diff.git
-[submodule "yoga"]
-	path = external/yoga
-	url = https://github.com/facebook/yoga.git
 [submodule "glfw"]
 	path = external/glfw
 	url = https://github.com/glfw/glfw.git

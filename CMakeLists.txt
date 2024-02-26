@@ -48,7 +48,6 @@ target_include_directories(${PROJECT_NAME}
         external/lua-5.4.6/src
         external/metal-cpp
         external/myers-diff
-        external/yoga
         external/imgui
 )
 
@@ -76,7 +75,6 @@ target_link_libraries(${PROJECT_NAME}
         ${Vulkan_LIBRARIES}
        glfw
        efsw
-       yogacore
        TracyClient
     )
 
