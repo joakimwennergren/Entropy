@@ -244,8 +244,8 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator, float xscal
     int texWidth, texHeight;
     io.Fonts->GetTexDataAsRGBA32(&fontData, &texWidth, &texHeight);
 
-    auto texture = new Texture(_serviceLocator);
-    texture->CreateTextureImageFromPixels(fontData, texWidth, texHeight);
+    fontTexture = new Texture(serviceLocator);
+    fontTexture->CreateTextureImageFromPixels(fontData, texWidth, texHeight);
 
     VkSampler _sampler;
 
@@ -280,7 +280,7 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator, float xscal
     {
         VkDescriptorImageInfo descriptorImageInfo{};
         descriptorImageInfo.sampler = _sampler;
-        descriptorImageInfo.imageView = texture->GetImageView();
+        descriptorImageInfo.imageView = fontTexture->GetImageView();
         descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
         std::array<VkWriteDescriptorSet, 1> descriptorWrites{};
@@ -340,6 +340,7 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator, AAssetManager
 }
 #endif
 Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator, float xscale, float yscale)
+
 {
     // Create renderpass
     _renderPass = std::make_shared<RenderPass>(serviceLocator);

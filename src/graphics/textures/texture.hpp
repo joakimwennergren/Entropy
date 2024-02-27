@@ -13,6 +13,7 @@
 #include <graphics/utilities/utilities.hpp>
 #include <graphics/buffers/stagedbuffer.hpp>
 #include <graphics/imageviews/imageview.hpp>
+#include <graphics/memory/allocator.hpp>
 
 // #include <ktx.h>
 // #include <ktxvulkan.h>
@@ -25,6 +26,7 @@ using namespace Entropy::Graphics::Buffers;
 using namespace Entropy::Graphics::Utilities;
 using namespace Entropy::Graphics::CommandBuffers;
 using namespace Entropy::Graphics::ImageViews;
+using namespace Entropy::Graphics::Memory;
 
 namespace Entropy
 {
@@ -138,6 +140,8 @@ namespace Entropy
                 VkSampler _sampler;
                 std::shared_ptr<ServiceLocator> _serviceLocator;
                 std::shared_ptr<LogicalDevice> _logicalDevice;
+                VmaAllocation _allocation;
+                std::shared_ptr<Allocator> _allocator;
             };
         }
     }

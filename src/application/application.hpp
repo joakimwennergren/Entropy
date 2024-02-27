@@ -38,6 +38,7 @@
 #include <graphics/textures/texture.hpp>
 #include <graphics/buffers/buffer.hpp>
 #include <graphics/buffers/vertexbuffer.hpp>
+#include <graphics/memory/allocator.hpp>
 
 using namespace Entropy::Graphics::Instances;
 using namespace Entropy::Graphics::Surfaces;
@@ -59,6 +60,7 @@ using namespace Entropy;
 using namespace Entropy::Input;
 using namespace Entropy::Graphics::Buffers;
 using namespace Entropy::Graphics::Utilities;
+using namespace Entropy::Graphics::Memory;
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
 
@@ -114,6 +116,7 @@ protected:
     std::shared_ptr<WindowSurface> _windowSurface2;
     std::shared_ptr<PhysicalDevice> _physicalDevice;
     std::shared_ptr<LogicalDevice> _logicalDevice;
+    std::shared_ptr<Allocator> _allocator;
     std::shared_ptr<Swapchain> _swapChain;
     std::shared_ptr<Lua> lua;
     std::shared_ptr<Physics2D> physics2d;

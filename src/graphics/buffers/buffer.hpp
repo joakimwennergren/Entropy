@@ -15,9 +15,11 @@
 #include <graphics/data/vertex.hpp>
 #include <graphics/utilities/utilities.hpp>
 #include <graphics/commandbuffers/commandbuffer.hpp>
+#include <graphics/memory/allocator.hpp>
 
 using namespace Entropy::Graphics::Utilities;
 using namespace Entropy::Graphics::CommandBuffers;
+using namespace Entropy::Graphics::Memory;
 
 namespace Entropy
 {
@@ -94,6 +96,10 @@ namespace Entropy
                 void *_mappedMemory;
 
                 std::shared_ptr<LogicalDevice> _logicalDevice;
+
+                VmaAllocation _allocation;
+
+                std::shared_ptr<Allocator> _allocator;
             };
         }
     }
