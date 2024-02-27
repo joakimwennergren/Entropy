@@ -55,3 +55,6 @@
 [submodule "imgui"]
 	path = external/imgui
 	url = https://github.com/ocornut/imgui.git
+[submodule "VulkanMemoryAllocator"]
+	path = external/VulkanMemoryAllocator
+	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git

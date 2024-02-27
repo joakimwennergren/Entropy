@@ -150,6 +150,7 @@ namespace Entropy
                 std::shared_ptr<Cam> _cam;
                 std::unique_ptr<VertexBuffer> _vertexBuffer;
                 std::unique_ptr<Buffer> _indexBuffer;
+                Texture * fontTexture;
             };
         }
     }

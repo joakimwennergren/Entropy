@@ -8,6 +8,7 @@ Texture::Texture(std::shared_ptr<ServiceLocator> serviceLocator)
 {
     _commandBuffer = std::make_unique<CommandBuffer>(serviceLocator, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
     _serviceLocator = serviceLocator;
+    _allocator = serviceLocator->GetService<Allocator>();
 
     // Get required depenencies
     auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
@@ -358,7 +359,7 @@ void Texture::CreateTextureImage(std::string path, AAssetManager *assetManager)
     CreateImage(imgWidth, imgHeight, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _textureImage, mem);
 
     TransitionImageLayout(_textureImage, colorFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(imgWidth), static_cast<uint32_t>(imgHeight));
+    //CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(imgWidth), static_cast<uint32_t>(imgHeight));
     TransitionImageLayout(_textureImage, colorFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     auto imageView = ImageView(_logicalDevice->Get(), _textureImage, colorFormat);
@@ -416,6 +417,14 @@ void Texture::CreateTextureImage(std::string path)
 
 void Texture::CreateImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory)
 {
+
+    vkDeviceWaitIdle(_logicalDevice->Get());
+
+    VmaAllocationCreateInfo allocCreateInfo = {};
+    allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO;
+    //allocCreateInfo.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
+    //allocCreateInfo.priority = 1.0f;
+
     VkImageCreateInfo imageInfo{};
     imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
     imageInfo.imageType = VK_IMAGE_TYPE_2D;
@@ -431,6 +440,10 @@ void Texture::CreateImage(uint32_t width, uint32_t height, VkFormat format, VkIm
     imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
     imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
+    vmaCreateImage(_allocator->Get(), &imageInfo, &allocCreateInfo, &image, &_allocation, nullptr);
+
+
+    /*
     if (vkCreateImage(_logicalDevice->Get(), &imageInfo, nullptr, &image) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create image!");
@@ -450,6 +463,8 @@ void Texture::CreateImage(uint32_t width, uint32_t height, VkFormat format, VkIm
     }
 
     vkBindImageMemory(_logicalDevice->Get(), image, imageMemory, 0);
+
+    */
 }
 
 void Texture::TransitionImageLayoutCubeMap(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, unsigned int mips)

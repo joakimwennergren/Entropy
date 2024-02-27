@@ -70,13 +70,14 @@ target_link_libraries(${PROJECT_NAME}
     #ktx
 )
 
-    # Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk)
-    target_link_libraries(${PROJECT_NAME}
-        ${Vulkan_LIBRARIES}
-       glfw
-       efsw
-       TracyClient
-    )
+# Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk)
+target_link_libraries(${PROJECT_NAME}
+    ${Vulkan_LIBRARIES}
+    glfw
+    efsw
+    TracyClient
+    GPUOpen::VulkanMemoryAllocator
+)
 
 
 

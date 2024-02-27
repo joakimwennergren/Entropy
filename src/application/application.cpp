@@ -44,6 +44,7 @@ Application::Application()
     _windowSurface = std::make_shared<WindowSurface>(_vkInstance, _window);
     _physicalDevice = std::make_shared<PhysicalDevice>(_vkInstance, _windowSurface);
     _logicalDevice = std::make_shared<LogicalDevice>(_physicalDevice, _windowSurface);
+    _allocator = std::make_shared<Allocator>(_vkInstance, _logicalDevice, _physicalDevice);
     _swapChain = std::make_shared<Swapchain>(_physicalDevice->Get(), _logicalDevice->Get(), _windowSurface, frame);
     auto commandPool = std::make_shared<CommandPool>(_logicalDevice, _physicalDevice, _windowSurface);
     auto descriptorPool = std::make_shared<DescriptorPool>(_logicalDevice);
@@ -57,6 +58,7 @@ Application::Application()
     serviceLocator->AddService(_keyboard);
     serviceLocator->AddService(_physicalDevice);
     serviceLocator->AddService(_logicalDevice);
+    serviceLocator->AddService(_allocator);
     serviceLocator->AddService(descriptorPool);
     serviceLocator->AddService(_swapChain);
     serviceLocator->AddService(commandPool);
