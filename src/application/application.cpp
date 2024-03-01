@@ -29,6 +29,8 @@ Application::Application()
     glfwSetMouseButtonCallback(_window, mouse_button_callback);
     glfwSetKeyCallback(_window, keyCallback);
     glfwSetCursorPosCallback(_window, cursor_position_callback);
+    glfwSetCharCallback(_window, character_callback);
+    glfwSetScrollCallback(_window, scroll_callback);
 
     // Get initial window framebuffer size
     int width,
@@ -47,7 +49,7 @@ Application::Application()
     _allocator = std::make_shared<Allocator>(_vkInstance, _logicalDevice, _physicalDevice);
     _swapChain = std::make_shared<Swapchain>(_physicalDevice->Get(), _logicalDevice->Get(), _windowSurface, frame);
     auto commandPool = std::make_shared<CommandPool>(_logicalDevice, _physicalDevice, _windowSurface);
-    auto descriptorPool = std::make_shared<DescriptorPool>(_logicalDevice);
+    _descriptorPool = std::make_shared<DescriptorPool>(_logicalDevice);
 
     // Add services to service locator
     serviceLocator = std::make_shared<ServiceLocator>();
@@ -59,7 +61,7 @@ Application::Application()
     serviceLocator->AddService(_physicalDevice);
     serviceLocator->AddService(_logicalDevice);
     serviceLocator->AddService(_allocator);
-    serviceLocator->AddService(descriptorPool);
+    serviceLocator->AddService(_descriptorPool);
     serviceLocator->AddService(_swapChain);
     serviceLocator->AddService(commandPool);
     serviceLocator->AddService(_windowSurface);
@@ -76,11 +78,21 @@ Application::Application()
     lua = std::make_shared<Lua>(serviceLocator);
     serviceLocator->AddService(lua);
 
-    GLFWmonitor* primary = glfwGetPrimaryMonitor();
+    GLFWmonitor *primary = glfwGetPrimaryMonitor();
     float xscale, yscale;
     glfwGetMonitorContentScale(primary, &xscale, &yscale);
 
     _renderer = std::make_shared<Renderer>(serviceLocator, xscale, yscale);
+    auto &io = ImGui::GetIO();
+    io.DisplaySize = ImVec2(width, height);
+
+    // Keyboard mapping. ImGui will use those indices to peek into the io.KeysDown[] array.
+    io.KeyMap[ImGuiKey_Backspace] = GLFW_KEY_BACKSPACE;
+    io.KeyMap[ImGuiKey_Tab] = GLFW_KEY_TAB;
+    io.KeyMap[ImGuiKey_LeftArrow] = GLFW_KEY_LEFT;
+    io.KeyMap[ImGuiKey_RightArrow] = GLFW_KEY_RIGHT;
+    io.KeyMap[ImGuiKey_UpArrow] = GLFW_KEY_UP;
+    io.KeyMap[ImGuiKey_DownArrow] = GLFW_KEY_DOWN;
 }
 
 void Application::ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::shared_ptr<Lua> lua)
@@ -121,6 +133,7 @@ void Application::Run()
 {
     auto sceneGraph = serviceLocator->GetService<SceneGraph>();
     auto lua = serviceLocator->GetService<Lua>();
+    auto &io = ImGui::GetIO();
 
     this->OnInit();
 
@@ -133,36 +146,32 @@ void Application::Run()
         _deltaTime = (float)_timer->get_tick() - _lastTick;
         _lastTick = (float)_timer->get_tick();
 
-        auto &io = ImGui::GetIO();
-
         // Update screen dimensions
         int width, height;
         glfwGetFramebufferSize(_window, &width, &height);
 
-        io.DisplaySize = ImVec2(width, height);
-        io.MousePos.x = mouse_x; //* 2.0;
-        io.MousePos.y = mouse_y; //* 2.0;
-        io.MouseDown[0] = mouse0_state;
-
         this->OnRender(_deltaTime);
-        // On render
         this->_renderer->Render(width, height, true);
+        // On render
 
         // Increment current frame
 
         if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(_window, true);
 
-        if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS)
-            _camera->ProcessKeyboard(FORWARD, 0.1);
-        if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS)
-            _camera->ProcessKeyboard(BACKWARD, 0.1);
-        if (glfwGetKey(_window, GLFW_KEY_A) == GLFW_PRESS)
-            _camera->ProcessKeyboard(LEFT, 0.1);
-        if (glfwGetKey(_window, GLFW_KEY_D) == GLFW_PRESS)
-            _camera->ProcessKeyboard(RIGHT, 0.1);
+        if (io.MouseDown[2])
+        {
+            if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS)
+                _camera->ProcessKeyboard(FORWARD, 0.1);
+            if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS)
+                _camera->ProcessKeyboard(BACKWARD, 0.1);
+            if (glfwGetKey(_window, GLFW_KEY_A) == GLFW_PRESS)
+                _camera->ProcessKeyboard(LEFT, 0.1);
+            if (glfwGetKey(_window, GLFW_KEY_D) == GLFW_PRESS)
+                _camera->ProcessKeyboard(RIGHT, 0.1);
+        }
 
-        float timeStep = 1.0f / 60.0f;
+        //     float timeStep = 1.0f / 60.0f;
         // int32 velocityIterations = 6;
         // int32 positionIterations = 2;
 
@@ -177,11 +186,28 @@ void Application::Run()
 
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
+    ImGuiIO &io = ImGui::GetIO();
+    if (action == GLFW_PRESS)
+        io.KeysDown[key] = true;
+    if (action == GLFW_RELEASE)
+        io.KeysDown[key] = false;
+    // Modifiers are not reliable across systems
+    io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
+    io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
+    io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
+    io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
+}
+
+void character_callback(GLFWwindow *window, unsigned int codepoint)
+{
+    ImGuiIO &io = ImGui::GetIO();
+
+    io.AddInputCharacter(codepoint);
 }
 
 void cursor_position_callback(GLFWwindow *window, double xposIn, double yposIn)
 {
-
+    auto &io = ImGui::GetIO();
     auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
 
     if (app == nullptr)
@@ -189,7 +215,7 @@ void cursor_position_callback(GLFWwindow *window, double xposIn, double yposIn)
         return;
     }
 
-    GLFWmonitor* primary = glfwGetPrimaryMonitor();
+    GLFWmonitor *primary = glfwGetPrimaryMonitor();
     float xscale, yscale;
     glfwGetMonitorContentScale(primary, &xscale, &yscale);
 
@@ -212,14 +238,18 @@ void cursor_position_callback(GLFWwindow *window, double xposIn, double yposIn)
     app->lastX = xpos;
     app->lastY = ypos;
 
-    app->_camera->ProcessMouseMovement(xoffset, yoffset);
+    io.MousePos.x = (float)xposIn * xscale;
+    io.MousePos.y = (float)yposIn * yscale;
+
+    if (io.MouseDown[2])
+        app->_camera->ProcessMouseMovement(xoffset, yoffset);
 }
 
 void framebufferResizeCallback(GLFWwindow *window, int width, int height)
 {
     auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
-    
-    GLFWmonitor* primary = glfwGetPrimaryMonitor();
+
+    GLFWmonitor *primary = glfwGetPrimaryMonitor();
     float xscale, yscale;
     glfwGetMonitorContentScale(primary, &xscale, &yscale);
 
@@ -227,17 +257,29 @@ void framebufferResizeCallback(GLFWwindow *window, int width, int height)
     io.DisplaySize = ImVec2(width * xscale, height * yscale);
     app->GetRenderer()->Render(width, height, true);
     app->OnRender(0.0);
-    // app->GetRenderer()->HandleResize();
 }
 
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 {
+    auto &io = ImGui::GetIO();
     auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-        app->mouse0_state = true;
 
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+        io.MouseDown[0] = true;
     if (button == GLFW_MOUSE_BUTTON_LEFT && action != GLFW_PRESS)
-        app->mouse0_state = false;
+        io.MouseDown[0] = false;
+
+    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+        io.MouseDown[2] = true;
+    if (button == GLFW_MOUSE_BUTTON_RIGHT && action != GLFW_PRESS)
+        io.MouseDown[2] = false;
+}
+
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
+{
+    ImGuiIO &io = ImGui::GetIO();
+    io.MouseWheelH += (float)xoffset;
+    io.MouseWheel += (float)yoffset;
 }
 
 #endif

@@ -75,6 +75,8 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
 void window_refresh_callback(GLFWwindow *window);
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
+void character_callback(GLFWwindow *window, unsigned int codepoint);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 class Application
 {
@@ -117,6 +119,7 @@ protected:
     std::shared_ptr<PhysicalDevice> _physicalDevice;
     std::shared_ptr<LogicalDevice> _logicalDevice;
     std::shared_ptr<Allocator> _allocator;
+    std::shared_ptr<DescriptorPool> _descriptorPool;
     std::shared_ptr<Swapchain> _swapChain;
     std::shared_ptr<Lua> lua;
     std::shared_ptr<Physics2D> physics2d;

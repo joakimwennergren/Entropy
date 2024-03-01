@@ -21,7 +21,7 @@ Texture::~Texture()
     vkDeviceWaitIdle(_logicalDevice->Get());
     vkDestroyImageView(_logicalDevice->Get(), _imageView, nullptr);
     vkDestroyImage(_logicalDevice->Get(), _textureImage, nullptr);
-    vkFreeMemory(_logicalDevice->Get(), _textureImageMemory, nullptr);
+    // vkFreeMemory(_logicalDevice->Get(), _textureImageMemory, nullptr);
 }
 
 void Texture::CreateTextureFromGLTFImage(tinygltf::Image &gltfimage)
@@ -359,7 +359,7 @@ void Texture::CreateTextureImage(std::string path, AAssetManager *assetManager)
     CreateImage(imgWidth, imgHeight, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _textureImage, mem);
 
     TransitionImageLayout(_textureImage, colorFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    //CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(imgWidth), static_cast<uint32_t>(imgHeight));
+    // CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(imgWidth), static_cast<uint32_t>(imgHeight));
     TransitionImageLayout(_textureImage, colorFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     auto imageView = ImageView(_logicalDevice->Get(), _textureImage, colorFormat);
@@ -422,8 +422,8 @@ void Texture::CreateImage(uint32_t width, uint32_t height, VkFormat format, VkIm
 
     VmaAllocationCreateInfo allocCreateInfo = {};
     allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO;
-    //allocCreateInfo.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
-    //allocCreateInfo.priority = 1.0f;
+    // allocCreateInfo.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
+    // allocCreateInfo.priority = 1.0f;
 
     VkImageCreateInfo imageInfo{};
     imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -441,7 +441,6 @@ void Texture::CreateImage(uint32_t width, uint32_t height, VkFormat format, VkIm
     imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
     vmaCreateImage(_allocator->Get(), &imageInfo, &allocCreateInfo, &image, &_allocation, nullptr);
-
 
     /*
     if (vkCreateImage(_logicalDevice->Get(), &imageInfo, nullptr, &image) != VK_SUCCESS)

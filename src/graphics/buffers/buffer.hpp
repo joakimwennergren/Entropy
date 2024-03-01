@@ -12,10 +12,14 @@
 #pragma once
 
 #include <vulkan/vulkan.hpp>
+#include <cassert>
+
 #include <graphics/data/vertex.hpp>
 #include <graphics/utilities/utilities.hpp>
 #include <graphics/commandbuffers/commandbuffer.hpp>
 #include <graphics/memory/allocator.hpp>
+
+#include <spdlog/spdlog.h>
 
 using namespace Entropy::Graphics::Utilities;
 using namespace Entropy::Graphics::CommandBuffers;

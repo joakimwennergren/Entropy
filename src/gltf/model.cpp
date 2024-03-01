@@ -146,6 +146,7 @@ Node::~Node()
 
 void Model::destroy(VkDevice device)
 {
+    /*
     if (vertices.buffer != VK_NULL_HANDLE)
     {
         vkDestroyBuffer(device, vertices.buffer, nullptr);
@@ -158,6 +159,7 @@ void Model::destroy(VkDevice device)
         vkFreeMemory(device, indices.memory, nullptr);
         indices.buffer = VK_NULL_HANDLE;
     }
+    */
     /*
     for (auto &texture : textures)
     {

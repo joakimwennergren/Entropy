@@ -4,7 +4,7 @@ using namespace Entropy::Graphics::Buffers;
 
 Buffer::~Buffer()
 {
-    //vkDeviceWaitIdle(_logicalDevice->Get());
+    // vkDeviceWaitIdle(_logicalDevice->Get());
 
     /*
     // Destroy the buffer
@@ -15,14 +15,20 @@ Buffer::~Buffer()
 
     */
 
-   //vmaDestroyBuffer(_allocator->Get(), _buffer, _allocation);
+    // vmaDestroyBuffer(_allocator->Get(), _buffer, _allocation);
 }
 
 void Buffer::CreateBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory)
 {
+    assert(serviceLocator != nullptr);
+    assert(size > 0);
+
     _allocator = serviceLocator->GetService<Allocator>();
 
-    VkBufferCreateInfo bufferInfo = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
+    assert(_allocator != nullptr);
+
+    VkBufferCreateInfo bufferInfo = {};
+    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     bufferInfo.size = size;
     bufferInfo.usage = usage;
 
@@ -30,40 +36,10 @@ void Buffer::CreateBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkDevi
     allocInfo.usage = VMA_MEMORY_USAGE_AUTO;
     allocInfo.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT;
 
-    vmaCreateBuffer(_allocator->Get(), &bufferInfo, &allocInfo, &_buffer, &_allocation, nullptr);
-
-    /*
-    // Get required depenencies
-    auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
-
-    _logicalDevice = logicalDevice;
-
-    VkBufferCreateInfo bufferInfo{};
-    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    bufferInfo.size = size;
-    bufferInfo.usage = usage;
-    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-    if (vkCreateBuffer(logicalDevice->Get(), &bufferInfo, nullptr, &buffer) != VK_SUCCESS)
+    if (vmaCreateBuffer(_allocator->Get(), &bufferInfo, &allocInfo, &_buffer, &_allocation, nullptr) != VK_SUCCESS)
     {
-        throw std::runtime_error("failed to create buffer!");
+        spdlog::error("Error while creating buffer with size: {}", size);
     }
-
-    VkMemoryRequirements memRequirements;
-    vkGetBufferMemoryRequirements(logicalDevice->Get(), buffer, &memRequirements);
-
-    VkMemoryAllocateInfo allocInfo{};
-    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex = Utility::FindMemoryTypeIndex(serviceLocator, memRequirements.memoryTypeBits, properties);
-
-    if (vkAllocateMemory(logicalDevice->Get(), &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to allocate buffer memory!");
-    }
-
-    vkBindBufferMemory(logicalDevice->Get(), buffer, bufferMemory, 0);
-    */
 }
 
 void Buffer::CopyBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
@@ -106,8 +82,6 @@ void Buffer::CreateIndexBufferUint16(std::shared_ptr<ServiceLocator> serviceLoca
     // VkDeviceMemory stagingBufferMemory;
     // CreateBuffer(serviceLocator, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, stagingBuffer, stagingBufferMemory);
 
-
-
     // void *data;
     // vkMapMemory(logicalDevice->Get(), stagingBufferMemory, 0, bufferSize, 0, &data);
     // memcpy(data, indices.data(), (size_t)bufferSize);
@@ -115,7 +89,7 @@ void Buffer::CreateIndexBufferUint16(std::shared_ptr<ServiceLocator> serviceLoca
 
     CreateBuffer(serviceLocator, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _buffer, _bufferMemory);
 
-    void* mappedData;
+    void *mappedData;
     vmaMapMemory(_allocator->Get(), _allocation, &mappedData);
     memcpy(mappedData, indices.data(), bufferSize);
     vmaUnmapMemory(_allocator->Get(), _allocation);
@@ -136,7 +110,7 @@ void Buffer::CreateIndexBufferUint32(std::shared_ptr<ServiceLocator> serviceLoca
     VkDeviceMemory stagingBufferMemory;
     CreateBuffer(serviceLocator, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
-    void* mappedData;
+    void *mappedData;
     vmaMapMemory(_allocator->Get(), _allocation, &mappedData);
     memcpy(mappedData, indices.data(), bufferSize);
     vmaUnmapMemory(_allocator->Get(), _allocation);

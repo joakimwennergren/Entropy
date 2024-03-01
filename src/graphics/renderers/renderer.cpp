@@ -67,7 +67,6 @@ void Renderer::DrawGUI()
     _indexBuffer = std::make_unique<Buffer>();
     _indexBuffer->CreateIndexBufferUint16(_serviceLocator, indices);
 
-
     PushConstBlock pushConstBlock{};
     // UI scale and translate via push constants
     pushConstBlock.scale = glm::vec2(2.0f / io.DisplaySize.x, 2.0f / io.DisplaySize.y);
@@ -76,12 +75,12 @@ void Renderer::DrawGUI()
 
     auto ds0 = _pipelines["GUIPipeline"]->descriptorSets[0]->Get()[_currentFrame];
     vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["GUIPipeline"]->GetPipeline());
-    vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["GUIPipeline"]->GetPipelineLayout(), 0, 1, &ds0, 0, nullptr);
+
     VkViewport viewport{};
     viewport.width = ImGui::GetIO().DisplaySize.x;
     viewport.height = ImGui::GetIO().DisplaySize.y;
-    viewport.minDepth = 0.0f;
-    viewport.maxDepth = 1.0f;
+    viewport.minDepth = 0.1f;
+    viewport.maxDepth = 0.5f;
     vkCmdSetViewport(currentCmdBuffer, 0, 1, &viewport);
 
     if (imDrawData->CmdListsCount > 0)
@@ -103,6 +102,16 @@ void Renderer::DrawGUI()
             for (int32_t j = 0; j < cmd_list->CmdBuffer.Size; j++)
             {
                 const ImDrawCmd *pcmd = &cmd_list->CmdBuffer[j];
+                if (pcmd->TextureId != nullptr)
+                {
+                    auto texture = (VkDescriptorSet)pcmd->TextureId;
+                    vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["GUIPipeline"]->GetPipelineLayout(), 0, 1, &texture, 0, nullptr);
+                }
+                else
+                {
+                    vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["GUIPipeline"]->GetPipelineLayout(), 0, 1, &ds0, 0, nullptr);
+                }
+
                 VkRect2D scissorRect;
                 scissorRect.offset.x = std::max((int32_t)(pcmd->ClipRect.x), 0);
                 scissorRect.offset.y = std::max((int32_t)(pcmd->ClipRect.y), 0);
@@ -319,24 +328,24 @@ std::vector<char> Renderer::loadShader(std::string filename, AAssetManager *asse
 
 Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator, AAssetManager *assetManager)
 {
-/*
-    auto skinnedVert = loadShader("skinned_vert.spv", assetManager);
-    auto skinnedFrag = loadShader("skinned_frag.spv", assetManager);
+    /*
+        auto skinnedVert = loadShader("skinned_vert.spv", assetManager);
+        auto skinnedFrag = loadShader("skinned_frag.spv", assetManager);
 
-    auto cubemapVert = loadShader("cubemap_vert.spv", assetManager);
-    auto cubemapFrag = loadShader("cubemap_frag.spv", assetManager);
+        auto cubemapVert = loadShader("cubemap_vert.spv", assetManager);
+        auto cubemapFrag = loadShader("cubemap_frag.spv", assetManager);
 
-    auto twodVert = loadShader("2d_vert.spv", assetManager);
-    auto twodFrag = loadShader("2d_frag.spv", assetManager);
+        auto twodVert = loadShader("2d_vert.spv", assetManager);
+        auto twodFrag = loadShader("2d_frag.spv", assetManager);
 
-    // Create renderpass
-    _renderPass = std::make_shared<RenderPass>(serviceLocator);
-    // Create skinned pipeline
-    _pipelines["SkinnedPipeline"] = std::make_shared<SkinnedPipeline>(_renderPass, serviceLocator, skinnedVert, skinnedFrag);
-    _pipelines["CubeMapPipeline"] = std::make_shared<CubeMapPipeline>(_renderPass, serviceLocator, cubemapVert, cubemapFrag);
-    _pipelines["Pipeline2D"] = std::make_shared<Pipeline2D>(_renderPass, serviceLocator, twodVert, twodFrag);
-    Setup(serviceLocator);
-    */
+        // Create renderpass
+        _renderPass = std::make_shared<RenderPass>(serviceLocator);
+        // Create skinned pipeline
+        _pipelines["SkinnedPipeline"] = std::make_shared<SkinnedPipeline>(_renderPass, serviceLocator, skinnedVert, skinnedFrag);
+        _pipelines["CubeMapPipeline"] = std::make_shared<CubeMapPipeline>(_renderPass, serviceLocator, cubemapVert, cubemapFrag);
+        _pipelines["Pipeline2D"] = std::make_shared<Pipeline2D>(_renderPass, serviceLocator, twodVert, twodFrag);
+        Setup(serviceLocator);
+        */
 }
 #endif
 Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator, float xscale, float yscale)
@@ -366,9 +375,9 @@ void Renderer::HandleResize()
 
 void Renderer::Wireframe(bool on)
 {
-        _pipelines["SkinnedPipeline"] = std::make_shared<SkinnedPipeline>(_renderPass, _serviceLocator, on == true ? VK_POLYGON_MODE_LINE : VK_POLYGON_MODE_FILL);
+    _pipelines["SkinnedPipeline"] = std::make_shared<SkinnedPipeline>(_renderPass, _serviceLocator, on == true ? VK_POLYGON_MODE_LINE : VK_POLYGON_MODE_FILL);
 
-            for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
+    for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
         std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 
@@ -390,7 +399,6 @@ void Renderer::Wireframe(bool on)
         descriptorWrites[0].descriptorCount = 1;
         descriptorWrites[0].pBufferInfo = &bufferInfo;
 
-
         descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[1].dstSet = _pipelines["SkinnedPipeline"]->descriptorSets[0]->Get()[i];
         descriptorWrites[1].dstBinding = 1;
@@ -399,14 +407,12 @@ void Renderer::Wireframe(bool on)
         descriptorWrites[1].descriptorCount = 1;
         descriptorWrites[1].pBufferInfo = &bufferInfo2;
 
-
         vkUpdateDescriptorSets(_logicalDevice->Get(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
     }
 }
 
 VkResult Renderer::DoRender(int width, int height)
 {
-
     VkResult submit_result = VK_SUCCESS;
 
     _camera->setPerspective(60.0f, (float)width / (float)height, 0.1f, 256.0f);
@@ -417,18 +423,7 @@ VkResult Renderer::DoRender(int width, int height)
     // current commandbuffer & descriptorset
     currentCmdBuffer = _commandBuffers[_currentFrame]->GetCommandBuffer();
 
-    vkResetCommandBuffer(currentCmdBuffer, 0);
-
-    /*
-    if (cmdBufferUI != nullptr)
-    {
-        auto secondaries = cmdBufferUI->GetCommandBuffer();
-        vkCmdExecuteCommands(
-            currentCmdBuffer,
-            1,
-            &secondaries);
-    }
-    */
+    // vkResetCommandBuffer(currentCmdBuffer, 0);
 
     // Begin renderpass and commandbuffer recording
     _commandBuffers[_currentFrame]->Record();
@@ -447,12 +442,10 @@ VkResult Renderer::DoRender(int width, int height)
     ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     ubo.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
     ubo.proj[1][1] *= -1;
-
     uint32_t modelIndex = 0;
 
     for (auto &renderable : _sceneGraph->renderables)
     {
-
         float offsetX = 0.0;
 
         if (renderable->type == 4)
@@ -483,14 +476,10 @@ VkResult Renderer::DoRender(int width, int height)
         viewport.width = (float)_swapChain->swapChainExtent.width;
         viewport.height = (float)_swapChain->swapChainExtent.height;
         viewport.minDepth = 0.0f;
-        viewport.maxDepth = 1.0f;
+        viewport.maxDepth = 0.99f;
         vkCmdSetViewport(currentCmdBuffer, 0, 1, &viewport);
 
-        renderable->Test();
         // Update UBO
-
-        // ubo.screen = glm::vec2((float)width, (float)height);
-
         memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));
 
         if (renderable->children.size() == 0)
@@ -510,7 +499,6 @@ VkResult Renderer::DoRender(int width, int height)
 
         modelIndex++;
     }
-
 
     DrawGUI();
 
@@ -548,7 +536,7 @@ void Renderer::Render(int width, int height, bool resize)
 
 void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width, int height, uint32_t modelIndex)
 {
-    if(!renderable->visible)
+    if (!renderable->visible)
         return;
 
     // @todo refactors this
@@ -625,7 +613,6 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
         vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
         vkCmdDraw(currentCmdBuffer, 6, 1, 0, 0);
         return;
-
     }
 
     if (renderable->type == 0)
@@ -651,13 +638,11 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
     }
     else if (renderable->type == 10)
     {
-        /*
-        vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["CubeMapPipeline"]->GetPipeline());
-        auto ds = _pipelines["CubeMapPipeline"]->descriptorSets[0]->Get()[_currentFrame];
-        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["CubeMapPipeline"]->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &offset);
-        auto model = std::dynamic_pointer_cast<CubeMap>(renderable);
-        model->_model->renderNode(model->_model->linearNodes[2], currentCmdBuffer, _pipelines["CubeMapPipeline"], Material::ALPHAMODE_OPAQUE);
-        */
+        // vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["CubeMapPipeline"]->GetPipeline());
+        // auto ds = _pipelines["CubeMapPipeline"]->descriptorSets[0]->Get()[_currentFrame];
+        // vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["CubeMapPipeline"]->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &offset);
+        // auto model = std::dynamic_pointer_cast<CubeMap>(renderable);
+        // model->_model->renderNode(model->_model->linearNodes[2], currentCmdBuffer, _pipelines["CubeMapPipeline"], Material::ALPHAMODE_OPAQUE);
     }
     else
     {
