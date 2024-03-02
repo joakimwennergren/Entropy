@@ -364,7 +364,7 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator, flecs::world 
 
     _world->system<Entropy::Components::Renderable>()
         .iter([this](flecs::iter it)
-              { 
+              {
                 for(auto i : it)
                 {
                     DrawEntity(it.entity(i), i);
@@ -476,7 +476,6 @@ VkResult Renderer::DoRender(int width, int height)
     auto translate = glm::translate(glm::mat4(1.0f), position.pos);
     auto rotation = glm::mat4(1.0);
     auto scaling = glm::scale(glm::mat4(1.0f), scale.scale);
-
     */
 
     /*
@@ -677,13 +676,13 @@ void Renderer::DrawEntity(flecs::entity entity, uint32_t index)
 
     auto translate = glm::mat4(1.0f);
     auto rotation = glm::mat4(1.0f);
-    auto scale = glm::mat4(1.0f);
+    auto scaling = glm::mat4(1.0f);
 
     if (position_component.get() != nullptr && scale_component.get() != nullptr)
     {
-        translate = glm::translate(glm::mat4(1.0f), position_component.get()->pos);
+        translate = glm::translate(glm::mat4(1.0f), position_component->pos);
         rotation = glm::mat4(1.0);
-        scale = glm::scale(glm::mat4(1.0f), scale_component.get()->scale);
+        scaling = glm::scale(glm::mat4(1.0f), scale_component->scale);
     }
 
     // if (renderable->type == 4)
@@ -715,7 +714,7 @@ void Renderer::DrawEntity(flecs::entity entity, uint32_t index)
     ubodyn.view = _cam->GetViewMatrix();
     ubodyn.invView = glm::inverse(_cam->GetViewMatrix());
     ubodyn.proj = _camera->matrices.perspective;
-    ubodyn.model = translate * rotation * scale;
+    ubodyn.model = translate * rotation * scaling;
 
     uint32_t offset = dynamicAlignment * index;
     memcpy((char *)dynUbos[_currentFrame]->GetMappedMemory() + offset, &ubodyn, sizeof(UboDataDynamic));
@@ -749,10 +748,10 @@ void Renderer::DrawEntity(flecs::entity entity, uint32_t index)
 
         // Bind vertex & index buffers
         // Bind descriptor sets
-        VkBuffer vertexBuffers[] = {model->model->vertexBuffer->GetVulkanBuffer()};
+        VkBuffer vertexBuffers[] = {model->model->_vertexBuffer->GetVulkanBuffer()};
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
-        vkCmdBindIndexBuffer(currentCmdBuffer, model->model->indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT16);
+        vkCmdBindIndexBuffer(currentCmdBuffer, model->model->_indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT16);
         // Draw current renderable
         vkCmdDrawIndexed(currentCmdBuffer, model->model->GetIndices().size(), 1, 0, 0, 0);
     }
