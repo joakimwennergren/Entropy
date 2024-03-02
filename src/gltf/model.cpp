@@ -10,6 +10,8 @@
 
 #include "model.hpp"
 
+using namespace Entropy::GLTF;
+
 // Bounding box
 
 BoundingBox::BoundingBox(){};

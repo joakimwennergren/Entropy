@@ -4,6 +4,8 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+#include <flecs/flecs.h>
+
 #include <graphics/renderpasses/renderpass.hpp>
 #include <graphics/pipelines/skinned_pipeline.hpp>
 #include <graphics/pipelines/cubemap_pipeline.hpp>
@@ -39,6 +41,12 @@
 #include <tracy/Tracy.hpp>
 #include <imgui.h>
 
+#include <ecs/components/position.hpp>
+#include <ecs/components/scale.hpp>
+#include <ecs/components/model.hpp>
+#include <ecs/components/renderable.hpp>
+#include <ecs/components/gizmo.hpp>
+
 #ifdef BUILD_FOR_ANDROID
 #include <android/asset_manager.h>
 #endif
@@ -56,6 +64,7 @@ using namespace Entropy::Graphics::Descriptorsets;
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Swapchains;
 using namespace Entropy::Graphics::Primitives;
+using namespace Entropy::GLTF;
 // using namespace Entropy::Graphics::CubeMaps;
 using namespace Entropy::Input;
 
@@ -68,16 +77,17 @@ namespace Entropy
             class Renderer
             {
             public:
-                Renderer(std::shared_ptr<ServiceLocator> serviceLocator, float xscale, float yscale);
+                Renderer(std::shared_ptr<ServiceLocator> serviceLocator, flecs::world *world, float xscale, float yscale);
 #ifdef BUILD_FOR_ANDROID
                 Renderer(std::shared_ptr<ServiceLocator> serviceLocator, AAssetManager *assetManager);
                 std::vector<char> loadShader(std::string filename, AAssetManager *assetManager);
 #endif
                 void Render(int width, int height, bool resize);
                 VkResult DoRender(int width, int height);
+                void DrawGizmo(Entropy::Components::Gizmo gizmo);
                 void DrawGUI();
                 VkResult SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex);
-                void DrawRenderable(std::shared_ptr<Renderable> renderable, int width, int height, uint32_t modelIndex);
+                void DrawEntity(flecs::entity entity, uint32_t index);
                 void HandleResize();
                 bool isResizing = true;
                 struct UboDataDynamic
@@ -103,6 +113,7 @@ namespace Entropy
                 std::shared_ptr<Synchronizer> _synchronizer;
                 std::vector<std::shared_ptr<CommandBuffer>> _commandBuffers;
                 void Wireframe(bool on);
+
             private:
                 void Setup(std::shared_ptr<ServiceLocator> serviceLocator, float xscale, float yscale);
 
@@ -142,7 +153,6 @@ namespace Entropy
                 uint32_t indexCount;
                 uint32_t vertexCount;
 
-                    
                 int32_t global_vtx_offset = 0;
                 int32_t global_idx_offset = 0;
 
@@ -150,7 +160,8 @@ namespace Entropy
                 std::shared_ptr<Cam> _cam;
                 std::unique_ptr<VertexBuffer> _vertexBuffer;
                 std::unique_ptr<Buffer> _indexBuffer;
-                Texture * fontTexture;
+                Texture *fontTexture;
+                flecs::world *_world;
             };
         }
     }

@@ -136,3 +136,6 @@ add_subdirectory(external/tracy)
 
 
 add_subdirectory(external/VulkanMemoryAllocator)
+
+set(FLECS_SHARED OFF)
+add_subdirectory(external/flecs)

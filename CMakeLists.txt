@@ -77,6 +77,7 @@ target_link_libraries(${PROJECT_NAME}
     efsw
     TracyClient
     GPUOpen::VulkanMemoryAllocator
+    flecs::flecs_static
 )
 
 

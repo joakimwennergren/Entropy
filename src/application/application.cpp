@@ -82,7 +82,7 @@ Application::Application()
     float xscale, yscale;
     glfwGetMonitorContentScale(primary, &xscale, &yscale);
 
-    _renderer = std::make_shared<Renderer>(serviceLocator, xscale, yscale);
+    _renderer = std::make_shared<Renderer>(serviceLocator, &world, xscale, yscale);
     auto &io = ImGui::GetIO();
     io.DisplaySize = ImVec2(width, height);
 

@@ -10,6 +10,8 @@
 #include <memory>
 #include <config.hpp>
 
+#include <flecs/flecs.h>
+
 #include <graphics/renderers/renderer.hpp>
 #include <servicelocators/servicelocator.hpp>
 #include <timing/timer.hpp>
@@ -40,6 +42,8 @@
 #include <graphics/buffers/vertexbuffer.hpp>
 #include <graphics/memory/allocator.hpp>
 
+#include <ecs/components/position.hpp>
+
 using namespace Entropy::Graphics::Instances;
 using namespace Entropy::Graphics::Surfaces;
 using namespace Entropy::Graphics::Swapchains;
@@ -61,6 +65,7 @@ using namespace Entropy::Input;
 using namespace Entropy::Graphics::Buffers;
 using namespace Entropy::Graphics::Utilities;
 using namespace Entropy::Graphics::Memory;
+using namespace Entropy::Components;
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
 
@@ -76,7 +81,7 @@ void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
 void window_refresh_callback(GLFWwindow *window);
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
 void character_callback(GLFWwindow *window, unsigned int codepoint);
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 
 class Application
 {
@@ -126,6 +131,7 @@ protected:
     std::shared_ptr<RenderPass> renderpass;
     std::shared_ptr<Synchronizer> synchronizer;
     sol::protected_function luaOnRender;
+    flecs::world world;
 
 private:
     void ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::shared_ptr<Lua> lua);

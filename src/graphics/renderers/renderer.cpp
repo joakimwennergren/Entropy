@@ -79,8 +79,8 @@ void Renderer::DrawGUI()
     VkViewport viewport{};
     viewport.width = ImGui::GetIO().DisplaySize.x;
     viewport.height = ImGui::GetIO().DisplaySize.y;
-    viewport.minDepth = 0.1f;
-    viewport.maxDepth = 0.5f;
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 1.0f;
     vkCmdSetViewport(currentCmdBuffer, 0, 1, &viewport);
 
     if (imDrawData->CmdListsCount > 0)
@@ -348,9 +348,10 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator, AAssetManager
         */
 }
 #endif
-Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator, float xscale, float yscale)
+Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator, flecs::world *world, float xscale, float yscale)
 
 {
+    _world = world;
     // Create renderpass
     _renderPass = std::make_shared<RenderPass>(serviceLocator);
     // Create skinned pipeline
@@ -360,6 +361,14 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator, float xscale,
     _pipelines["GUIPipeline"] = std::make_shared<GUIPipeline>(_renderPass, serviceLocator, VK_POLYGON_MODE_FILL);
     _pipelines["GizmoPipeline"] = std::make_shared<GizmoPipeline>(_renderPass, serviceLocator, VK_POLYGON_MODE_FILL);
     Setup(serviceLocator, xscale, yscale);
+
+    _world->system<Entropy::Components::Renderable>()
+        .iter([this](flecs::iter it)
+              { 
+                for(auto i : it)
+                {
+                    DrawEntity(it.entity(i), i);
+                } });
 }
 
 void Renderer::HandleResize()
@@ -413,6 +422,7 @@ void Renderer::Wireframe(bool on)
 
 VkResult Renderer::DoRender(int width, int height)
 {
+    /*
     VkResult submit_result = VK_SUCCESS;
 
     _camera->setPerspective(60.0f, (float)width / (float)height, 0.1f, 256.0f);
@@ -430,10 +440,10 @@ VkResult Renderer::DoRender(int width, int height)
     _renderPass->Begin(_commandBuffers[_currentFrame], imageIndex);
 
     // Sort renderables based on Zindex
-    sort(_sceneGraph->renderables.begin(),
-         _sceneGraph->renderables.end(),
-         [](const std::shared_ptr<Renderable> &lhs, const std::shared_ptr<Renderable> &rhs)
-         { return lhs->zIndex < rhs->zIndex; });
+    // sort(_sceneGraph->renderables.begin(),
+    //      _sceneGraph->renderables.end(),
+    //      [](const std::shared_ptr<Renderable> &lhs, const std::shared_ptr<Renderable> &rhs)
+    //      { return lhs->zIndex < rhs->zIndex; });
 
     UniformBufferObject ubo{};
 
@@ -442,111 +452,34 @@ VkResult Renderer::DoRender(int width, int height)
     ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     ubo.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
     ubo.proj[1][1] *= -1;
+
+    // Update UBO
+    memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));
+
+    VkRect2D scissor{};
+    scissor.offset = {0, 0};
+    scissor.extent = {_swapChain->swapChainExtent.width, _swapChain->swapChainExtent.height};
+    vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissor);
+
+    // Set Viewport
+    VkViewport viewport{};
+    viewport.x = 0.0f;
+    viewport.y = 0.0f;
+    viewport.width = (float)_swapChain->swapChainExtent.width;
+    viewport.height = (float)_swapChain->swapChainExtent.height;
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 0.99f;
+    vkCmdSetViewport(currentCmdBuffer, 0, 1, &viewport);
+
     uint32_t modelIndex = 0;
 
-    for (auto &renderable : _sceneGraph->renderables)
-    {
-        float offsetX = 0.0;
+    auto translate = glm::translate(glm::mat4(1.0f), position.pos);
+    auto rotation = glm::mat4(1.0);
+    auto scaling = glm::scale(glm::mat4(1.0f), scale.scale);
 
-        if (renderable->type == 4)
-        {
-            offsetX = (48.0 * 2.0) + ((width * 0.20) - (48.0 / 2.0));
-        }
+    */
 
-        if (renderable->overflowHidden)
-        {
-            // Scissor
-            VkRect2D scissor{};
-            scissor.offset = {(int32_t)renderable->position.x, (int32_t)renderable->position.y};
-            scissor.extent = {(uint32_t)renderable->scale.x, (uint32_t)renderable->scale.y};
-            vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissor);
-        }
-        else
-        {
-            VkRect2D scissor{};
-            scissor.offset = {0, 0};
-            scissor.extent = {_swapChain->swapChainExtent.width, _swapChain->swapChainExtent.height};
-            vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissor);
-        }
-
-        // Set Viewport
-        VkViewport viewport{};
-        viewport.x = 0.0f;
-        viewport.y = 0.0f;
-        viewport.width = (float)_swapChain->swapChainExtent.width;
-        viewport.height = (float)_swapChain->swapChainExtent.height;
-        viewport.minDepth = 0.0f;
-        viewport.maxDepth = 0.99f;
-        vkCmdSetViewport(currentCmdBuffer, 0, 1, &viewport);
-
-        // Update UBO
-        memcpy(_uniformBuffers[_currentFrame]->GetMappedMemory(), &ubo, sizeof(ubo));
-
-        if (renderable->children.size() == 0)
-        {
-            DrawRenderable(renderable, 500.0, 500.0, modelIndex);
-        }
-        else
-        {
-            uint32_t childIndex = modelIndex;
-
-            for (auto &child : renderable->children)
-            {
-                DrawRenderable(child, 500.0, 500.0, childIndex * modelIndex);
-                childIndex++;
-            }
-        }
-
-        modelIndex++;
-    }
-
-    DrawGUI();
-
-    // End renderpass and commandbuffer recording
-    _renderPass->End(_commandBuffers[_currentFrame]);
-    _commandBuffers[_currentFrame]->EndRecording();
-
-    // Submit and present
-    submit_result = this->SubmitAndPresent(currentCmdBuffer, imageIndex);
-
-    _currentFrame = (_currentFrame + 1) % MAX_CONCURRENT_FRAMES_IN_FLIGHT;
-    return submit_result;
-}
-
-void Renderer::Render(int width, int height, bool resize)
-{
-    vkWaitForFences(_logicalDevice->Get(), 1, &_synchronizer->GetFences()[_currentFrame], VK_TRUE, UINT64_MAX);
-
-    auto acquire_result = vkAcquireNextImageKHR(_logicalDevice->Get(), _swapChain->Get(), UINT64_MAX, _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE, &imageIndex);
-
-    VkResult submit_result = VK_SUCCESS;
-
-    if (acquire_result == VK_SUCCESS || acquire_result == VK_SUBOPTIMAL_KHR)
-    {
-        // std::cout << "Rendering" << std::endl;
-        submit_result = DoRender(width, height);
-    }
-
-    if (acquire_result != VK_SUCCESS || submit_result != VK_SUCCESS)
-    {
-        // std::cout << "RESIZING.." << std::endl;
-        HandleResize();
-    }
-}
-
-void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width, int height, uint32_t modelIndex)
-{
-    if (!renderable->visible)
-        return;
-
-    // @todo refactors this
-
-    auto translate = glm::translate(glm::mat4(1.0f), glm::vec3(renderable->position.x, renderable->position.y, renderable->position.z));
-
-    auto scale = glm::scale(glm::mat4(1.0f), renderable->scale);
-
-    auto rotate = glm::mat4(1.0);
-
+    /*
     if (renderable->type == 4)
     {
     }
@@ -557,7 +490,7 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
 
     auto modelRotation = glm::rotate(glm::mat4(1.0f), glm::radians(renderable->rotation), renderable->orientation);
     // @todo end
-
+    */
     // if (renderable->texture->GetImageView() != nullptr)
     // {
 
@@ -565,33 +498,25 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
 
     UboDataDynamic ubodyn{};
 
-    if (renderable->type == 0 || renderable->type == 1 || renderable->type == 3)
-    {
-        ubodyn.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        ubodyn.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
-        ubodyn.proj[1][1] *= -1;
-    }
-    else
-    {
-        ubodyn.view = _cam->GetViewMatrix();
-        ubodyn.invView = glm::inverse(_cam->GetViewMatrix());
-        ubodyn.proj = _camera->matrices.perspective;
-        _camera->update(0.1);
-    }
+    // 2D components
+    // if (renderable->type == 0 || renderable->type == 1 || renderable->type == 3)
+    // {
+    //     ubodyn.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    //     ubodyn.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
+    //     ubodyn.proj[1][1] *= -1;
+    // }
+    // else
+    // {
+    // ubodyn.view = _cam->GetViewMatrix();
+    // ubodyn.invView = glm::inverse(_cam->GetViewMatrix());
+    // ubodyn.proj = _camera->matrices.perspective;
 
-    ubodyn.model = translate * modelRotation * scale;
-    ubodyn.color = renderable->color;
-    ubodyn.colorBorder = renderable->colorBorder;
-    ubodyn.colorShadow = renderable->colorShadow;
-    ubodyn.position = renderable->position2d;
-    ubodyn.size = renderable->scale;
-    ubodyn.borderRadius = renderable->borderRadius;
-    ubodyn.shapeId = renderable->type;
+    // // }
 
-    uint32_t offset = dynamicAlignment * modelIndex;
+    // ubodyn.model = translate * rotation * scaling;
+    // ubodyn.color = glm::vec4(1.0, 1.0, 1.0, 1.0);
 
-    memcpy((char *)dynUbos[_currentFrame]->GetMappedMemory() + offset, &ubodyn, sizeof(UboDataDynamic));
-
+    /*
     if (renderable->type == 1 || renderable->type == 3)
     {
         auto ds0 = _pipelines["Pipeline2D"]->descriptorSets[0]->Get()[_currentFrame];
@@ -656,7 +581,260 @@ void Renderer::DrawRenderable(std::shared_ptr<Renderable> renderable, int width,
         vkCmdDrawIndexed(currentCmdBuffer, renderable->GetIndices().size(), 1, 0, 0, 0);
     }
 
-    FrameMark;
+    std::cout << entity.type().str() << std::endl;
+
+        //DrawRenderable(renderable, 500.0, 500.0, modelIndex);
+
+    // else
+    // {
+    //     uint32_t childIndex = modelIndex;
+
+    //     for (auto &child : renderable->children)
+    //     {
+    //         DrawRenderable(child, 500.0, 500.0, childIndex * modelIndex);
+    //         childIndex++;
+    //     }
+    // }
+
+    modelIndex++; });
+
+
+
+    // End renderpass and commandbuffer recording
+    _renderPass->End(_commandBuffers[_currentFrame]);
+    _commandBuffers[_currentFrame]->EndRecording();
+
+    // Submit and present
+    submit_result = this->SubmitAndPresent(currentCmdBuffer, imageIndex);
+
+    _currentFrame = (_currentFrame + 1) % MAX_CONCURRENT_FRAMES_IN_FLIGHT;
+    return submit_result;
+    */
+
+    /*
+     _world->system<Entropy::Components::Model>("Render").kind(flecs::OnUpdate).each([this](Entropy::Components::Model model)
+                                                                                     {
+     uint32_t offset = 0;
+     auto ds0 = _pipelines["SkinnedPipeline"]->descriptorSets[0]->Get()[_currentFrame];
+     vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["SkinnedPipeline"]->GetPipeline());
+     vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["SkinnedPipeline"]->GetPipelineLayout(), 0, 1, &ds0, 1, &offset);
+     for (auto node : model.model->nodes)
+     {
+         model.model->renderNode(node, currentCmdBuffer, _pipelines["SkinnedPipeline"], Material::ALPHAMODE_OPAQUE);
+     } });
+     }
+     */
+}
+
+void Renderer::Render(int width, int height, bool resize)
+{
+    vkWaitForFences(_logicalDevice->Get(), 1, &_synchronizer->GetFences()[_currentFrame], VK_TRUE, UINT64_MAX);
+
+    _camera->setPerspective(60.0f, (float)width / (float)height, 1.0f, 256.0f);
+    _camera->update(0.1);
+
+    auto acquire_result = vkAcquireNextImageKHR(_logicalDevice->Get(), _swapChain->Get(), UINT64_MAX, _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE, &imageIndex);
+
+    VkResult submit_result = VK_SUCCESS;
+
+    if (acquire_result == VK_SUCCESS || acquire_result == VK_SUBOPTIMAL_KHR)
+    {
+        // Reset fences and current commandbuffer
+        vkResetFences(_logicalDevice->Get(), 1, &_synchronizer->GetFences()[_currentFrame]);
+
+        // current commandbuffer & descriptorset
+        currentCmdBuffer = _commandBuffers[_currentFrame]->GetCommandBuffer();
+
+        // vkResetCommandBuffer(currentCmdBuffer, 0);
+
+        // Begin renderpass and commandbuffer recording
+        _commandBuffers[_currentFrame]->Record();
+        _renderPass->Begin(_commandBuffers[_currentFrame], imageIndex);
+
+        _world->progress();
+
+        DrawGUI();
+
+        // End renderpass and commandbuffer recording
+        _renderPass->End(_commandBuffers[_currentFrame]);
+        _commandBuffers[_currentFrame]->EndRecording();
+
+        submit_result = this->SubmitAndPresent(currentCmdBuffer, imageIndex);
+
+        _currentFrame = (_currentFrame + 1) % MAX_CONCURRENT_FRAMES_IN_FLIGHT;
+    }
+
+    if (acquire_result != VK_SUCCESS || submit_result != VK_SUCCESS)
+    {
+        HandleResize();
+    }
+}
+
+void Renderer::DrawEntity(flecs::entity entity, uint32_t index)
+{
+    auto position_component = entity.get_ref<Entropy::Components::Position>();
+    auto scale_component = entity.get_ref<Entropy::Components::Scale>();
+
+    auto translate = glm::mat4(1.0f);
+    auto rotation = glm::mat4(1.0f);
+    auto scale = glm::mat4(1.0f);
+
+    if (position_component.get() != nullptr && scale_component.get() != nullptr)
+    {
+        translate = glm::translate(glm::mat4(1.0f), position_component.get()->pos);
+        rotation = glm::mat4(1.0);
+        scale = glm::scale(glm::mat4(1.0f), scale_component.get()->scale);
+    }
+
+    // if (renderable->type == 4)
+    // {
+    // }
+    // else
+    // {
+    //     rotate = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+    // }
+
+    // auto modelRotation = glm::rotate(glm::mat4(1.0f), glm::radians(renderable->rotation), renderable->orientation);
+
+    UboDataDynamic ubodyn{};
+
+    // if (renderable->type == 0 || renderable->type == 1 || renderable->type == 3)
+    // {
+    //     ubodyn.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    //     ubodyn.proj = glm::ortho(0.0f, (float)_swapChain->swapChainExtent.width, (float)_swapChain->swapChainExtent.height, 0.0f, -1.0f, 1.0f);
+    //     ubodyn.proj[1][1] *= -1;
+    // }
+    // else
+    // {
+    //     ubodyn.view = _cam->GetViewMatrix();
+    //     ubodyn.invView = glm::inverse(_cam->GetViewMatrix());
+    //     ubodyn.proj = _camera->matrices.perspective;
+    //     _camera->update(0.1);
+    // }
+
+    ubodyn.view = _cam->GetViewMatrix();
+    ubodyn.invView = glm::inverse(_cam->GetViewMatrix());
+    ubodyn.proj = _camera->matrices.perspective;
+    ubodyn.model = translate * rotation * scale;
+
+    uint32_t offset = dynamicAlignment * index;
+    memcpy((char *)dynUbos[_currentFrame]->GetMappedMemory() + offset, &ubodyn, sizeof(UboDataDynamic));
+
+    VkRect2D scissor{};
+    scissor.offset = {0, 0};
+    scissor.extent = {_swapChain->swapChainExtent.width, _swapChain->swapChainExtent.height};
+    vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissor);
+
+    // Set Viewport
+    VkViewport viewport{};
+    viewport.x = 0.0f;
+    viewport.y = 0.0f;
+    viewport.width = (float)_swapChain->swapChainExtent.width;
+    viewport.height = (float)_swapChain->swapChainExtent.height;
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 0.99f;
+    vkCmdSetViewport(currentCmdBuffer, 0, 1, &viewport);
+
+    if (entity.has<Entropy::Components::Model>())
+    {
+        auto ds0 = _pipelines["SkinnedPipeline"]->descriptorSets[0]->Get()[_currentFrame];
+        vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["SkinnedPipeline"]->GetPipeline());
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["SkinnedPipeline"]->GetPipelineLayout(), 0, 1, &ds0, 1, &offset);
+        auto model = entity.get<Entropy::Components::Model>();
+
+        for (auto node : model->model->nodes)
+        {
+            model->model->renderNode(node, currentCmdBuffer, _pipelines["SkinnedPipeline"], Material::ALPHAMODE_OPAQUE);
+        }
+
+        // Bind vertex & index buffers
+        // Bind descriptor sets
+        VkBuffer vertexBuffers[] = {model->model->vertexBuffer->GetVulkanBuffer()};
+        VkDeviceSize offsets[] = {0};
+        vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
+        vkCmdBindIndexBuffer(currentCmdBuffer, model->model->indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT16);
+        // Draw current renderable
+        vkCmdDrawIndexed(currentCmdBuffer, model->model->GetIndices().size(), 1, 0, 0, 0);
+    }
+
+    if (entity.has<Entropy::Components::Gizmo>())
+    {
+        auto gizmo = entity.get<Entropy::Components::Gizmo>();
+        auto ds0 = _pipelines["GizmoPipeline"]->descriptorSets[0]->Get()[_currentFrame];
+        vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["GizmoPipeline"]->GetPipeline());
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["GizmoPipeline"]->GetPipelineLayout(), 0, 1, &ds0, 1, &offset);
+
+        VkBuffer vertexBuffers[] = {gizmo->plane->vertexBuffer->GetVulkanBuffer()};
+        VkDeviceSize offsets[] = {0};
+        vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
+        vkCmdDraw(currentCmdBuffer, 6, 1, 0, 0);
+    }
+
+    /*
+    if (renderable->type == 1 || renderable->type == 3)
+    {
+        auto ds0 = _pipelines["Pipeline2D"]->descriptorSets[0]->Get()[_currentFrame];
+
+        vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["Pipeline2D"]->GetPipeline());
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["Pipeline2D"]->GetPipelineLayout(), 0, 1, &ds0, 1, &offset);
+        auto sprite = std::dynamic_pointer_cast<Sprite>(renderable);
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["Pipeline2D"]->GetPipelineLayout(), 1, 1, &sprite->_descriptorSet, 0, nullptr);
+    }
+
+    if (renderable->type == 5)
+    {
+        auto ds0 = _pipelines["GizmoPipeline"]->descriptorSets[0]->Get()[_currentFrame];
+        vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["GizmoPipeline"]->GetPipeline());
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["GizmoPipeline"]->GetPipelineLayout(), 0, 1, &ds0, 1, &offset);
+
+        VkBuffer vertexBuffers[] = {renderable->vertexBuffer->GetVulkanBuffer()};
+        VkDeviceSize offsets[] = {0};
+        vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
+        vkCmdDraw(currentCmdBuffer, 6, 1, 0, 0);
+        return;
+    }
+
+    if (renderable->type == 0)
+    {
+        auto ds0 = _pipelines["Pipeline2D"]->descriptorSets[0]->Get()[_currentFrame];
+
+        vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["Pipeline2D"]->GetPipeline());
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["Pipeline2D"]->GetPipelineLayout(), 0, 1, &ds0, 1, &offset);
+        auto sprite = std::dynamic_pointer_cast<Quad>(renderable);
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["Pipeline2D"]->GetPipelineLayout(), 1, 1, &sprite->_descriptorSet, 0, nullptr);
+    }
+
+    if (renderable->type == 4)
+    {
+        auto ds0 = _pipelines["SkinnedPipeline"]->descriptorSets[0]->Get()[_currentFrame];
+        vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["SkinnedPipeline"]->GetPipeline());
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["SkinnedPipeline"]->GetPipelineLayout(), 0, 1, &ds0, 1, &offset);
+        auto model = std::dynamic_pointer_cast<Model>(renderable);
+        for (auto node : model->nodes)
+        {
+            model->renderNode(node, currentCmdBuffer, _pipelines["SkinnedPipeline"], Material::ALPHAMODE_OPAQUE);
+        }
+    }
+    else if (renderable->type == 10)
+    {
+        // vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["CubeMapPipeline"]->GetPipeline());
+        // auto ds = _pipelines["CubeMapPipeline"]->descriptorSets[0]->Get()[_currentFrame];
+        // vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["CubeMapPipeline"]->GetPipelineLayout(), 0, 1, &currentDescriptorSet, 1, &offset);
+        // auto model = std::dynamic_pointer_cast<CubeMap>(renderable);
+        // model->_model->renderNode(model->_model->linearNodes[2], currentCmdBuffer, _pipelines["CubeMapPipeline"], Material::ALPHAMODE_OPAQUE);
+    }
+    else
+    {
+        // Bind vertex & index buffers
+        // Bind descriptor sets
+        VkBuffer vertexBuffers[] = {renderable->vertexBuffer->GetVulkanBuffer()};
+        VkDeviceSize offsets[] = {0};
+        vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
+        vkCmdBindIndexBuffer(currentCmdBuffer, renderable->indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT16);
+        // Draw current renderable
+        vkCmdDrawIndexed(currentCmdBuffer, renderable->GetIndices().size(), 1, 0, 0, 0);
+    }
+    */
 }
 
 VkResult Renderer::SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex)

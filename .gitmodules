@@ -58,3 +58,6 @@
 [submodule "VulkanMemoryAllocator"]
 	path = external/VulkanMemoryAllocator
 	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
+[submodule "flecs"]
+	path = external/flecs
+	url = https://github.com/SanderMertens/flecs.git
