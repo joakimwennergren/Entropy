@@ -113,6 +113,7 @@ namespace Entropy
                 std::shared_ptr<Synchronizer> _synchronizer;
                 std::vector<std::shared_ptr<CommandBuffer>> _commandBuffers;
                 void Wireframe(bool on);
+                std::shared_ptr<Camera> _camera;
 
             private:
                 void Setup(std::shared_ptr<ServiceLocator> serviceLocator, float xscale, float yscale);
@@ -132,7 +133,6 @@ namespace Entropy
                 std::shared_ptr<Swapchain> _swapChain;
 
                 std::shared_ptr<SceneGraph> _sceneGraph;
-                std::shared_ptr<Camera> _camera;
 
                 VkCommandBuffer currentCmdBuffer;
                 VkDescriptorSet currentDescriptorSet;

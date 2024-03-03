@@ -49,6 +49,7 @@ target_include_directories(${PROJECT_NAME}
         external/metal-cpp
         external/myers-diff
         external/imgui
+        external/bullet3/src
 )
 
 # Link common dependencies
@@ -78,6 +79,15 @@ target_link_libraries(${PROJECT_NAME}
     TracyClient
     GPUOpen::VulkanMemoryAllocator
     flecs::flecs_static
+	Bullet3Collision
+	Bullet3Common
+	Bullet3Dynamics
+	Bullet3Geometry
+	BulletDynamics
+	BulletCollision
+	BulletInverseDynamics
+	BulletSoftBody
+	LinearMath
 )
 
 

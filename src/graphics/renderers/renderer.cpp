@@ -673,6 +673,7 @@ void Renderer::DrawEntity(flecs::entity entity, uint32_t index)
 {
     auto position_component = entity.get_ref<Entropy::Components::Position>();
     auto scale_component = entity.get_ref<Entropy::Components::Scale>();
+    auto renderable_component = entity.get_ref<Entropy::Components::Renderable>();
 
     auto translate = glm::mat4(1.0f);
     auto rotation = glm::mat4(1.0f);
@@ -715,6 +716,7 @@ void Renderer::DrawEntity(flecs::entity entity, uint32_t index)
     ubodyn.invView = glm::inverse(_cam->GetViewMatrix());
     ubodyn.proj = _camera->matrices.perspective;
     ubodyn.model = translate * rotation * scaling;
+    ubodyn.shapeId = 0;
 
     uint32_t offset = dynamicAlignment * index;
     memcpy((char *)dynUbos[_currentFrame]->GetMappedMemory() + offset, &ubodyn, sizeof(UboDataDynamic));

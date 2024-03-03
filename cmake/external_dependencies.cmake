@@ -139,3 +139,5 @@ add_subdirectory(external/VulkanMemoryAllocator)
 
 set(FLECS_SHARED OFF)
 add_subdirectory(external/flecs)
+
+add_subdirectory(external/bullet3)

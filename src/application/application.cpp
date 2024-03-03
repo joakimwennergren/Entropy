@@ -93,6 +93,36 @@ Application::Application()
     io.KeyMap[ImGuiKey_RightArrow] = GLFW_KEY_RIGHT;
     io.KeyMap[ImGuiKey_UpArrow] = GLFW_KEY_UP;
     io.KeyMap[ImGuiKey_DownArrow] = GLFW_KEY_DOWN;
+
+    // Build the broadphase
+    broadphase = new btDbvtBroadphase();
+
+    // Set up the collision configuration and dispatcher
+    collisionConfiguration = new btDefaultCollisionConfiguration();
+    dispatcher = new btCollisionDispatcher(collisionConfiguration);
+
+    // The actual physics solver
+    solver = new btSequentialImpulseConstraintSolver;
+
+    // The world.
+    dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
+    dynamicsWorld->setGravity(btVector3(0, -9.81f, 0));
+
+    boxCollisionShape = new btBoxShape(btVector3(10.0f, 10.0f, 10.0f));
+
+    btDefaultMotionState *motionstate = new btDefaultMotionState(btTransform(
+        btQuaternion(0.0, 0.0, 0.0, 0.0),
+        btVector3(0.0, 0.0, 0.0)));
+
+    btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(
+        0, // mass, in kg. 0 -> Static object, will never move.
+        motionstate,
+        boxCollisionShape, // collision shape of body
+        btVector3(0, 0, 0) // local inertia
+    );
+    btRigidBody *rigidBody = new btRigidBody(rigidBodyCI);
+
+    dynamicsWorld->addRigidBody(rigidBody);
 }
 
 void Application::ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::shared_ptr<Lua> lua)
@@ -169,6 +199,48 @@ void Application::Run()
                 _camera->ProcessKeyboard(LEFT, 0.1);
             if (glfwGetKey(_window, GLFW_KEY_D) == GLFW_PRESS)
                 _camera->ProcessKeyboard(RIGHT, 0.1);
+        }
+
+        double mx, my;
+        glfwGetCursorPos(_window, &mx, &my);
+
+        // The ray Start and End positions, in Normalized Device Coordinates (Have you read Tutorial 4 ?)
+        glm::vec4 lRayStart_NDC(
+            ((float)mx / (float)width - 0.5f) * 2.0f,  // [0,1024] -> [-1,1]
+            ((float)my / (float)height - 0.5f) * 2.0f, // [0, 768] -> [-1,1]
+            -1.0,                                      // The near plane maps to Z=-1 in Normalized Device Coordinates
+            1.0f);
+        glm::vec4 lRayEnd_NDC(
+            ((float)mx / (float)width - 0.5f) * 2.0f,
+            ((float)my / (float)height - 0.5f) * 2.0f,
+            0.0,
+            1.0f);
+
+        // Faster way (just one inverse)
+        glm::mat4 M = glm::inverse(_renderer->_camera->matrices.perspective * _camera->GetViewMatrix());
+        glm::vec4 lRayStart_world = M * lRayStart_NDC;
+        lRayStart_world /= lRayStart_world.w;
+        glm::vec4 lRayEnd_world = M * lRayEnd_NDC;
+        lRayEnd_world /= lRayEnd_world.w;
+
+        glm::vec3 lRayDir_world(lRayEnd_world - lRayStart_world);
+        lRayDir_world = glm::normalize(lRayDir_world);
+
+        glm::vec3 out_end = _camera->Position + _camera->Up * 1000.0f;
+
+        btCollisionWorld::ClosestRayResultCallback RayCallback(
+            btVector3(_camera->Position.x, _camera->Position.y, _camera->Position.z),
+            btVector3(out_end.x, out_end.y, out_end.z));
+        btVector3 from(0.0, 0.0, 0.0);
+        btVector3 to(0.0, 0.0, 1.0);
+        dynamicsWorld->rayTest(
+            from,
+            to,
+            RayCallback);
+
+        if (RayCallback.hasHit())
+        {
+            std::cout << "HIT = " << std::endl;
         }
 
         //     float timeStep = 1.0f / 60.0f;

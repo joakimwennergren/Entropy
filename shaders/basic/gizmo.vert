@@ -35,6 +35,7 @@ layout (location = 7) out vec3 nearPoint;
 layout (location = 8) out vec3 farPoint;
 layout (location = 9) out mat4 fragView;
 layout (location = 14) out mat4 fragProj;
+layout (location = 13) out int outShapeId;
 
 vec3 gridPlane[6] = vec3[] (
     vec3(1, 1, 0), vec3(-1, -1, 0), vec3(-1, 1, 0),
@@ -50,10 +51,20 @@ vec3 UnprojectPoint(float x, float y, float z, mat4 view, mat4 projection) {
 
 void main() 
 {
+	outShapeId = uboInstance.shapeId;
 	fragView = uboInstance.view;
 	fragProj = uboInstance.proj;
     vec3 p = gridPlane[gl_VertexIndex].xyz;
     nearPoint = UnprojectPoint(p.x, p.y, 0.0, uboInstance.view, uboInstance.proj).xyz; // unprojecting on the near plane
     farPoint = UnprojectPoint(p.x, p.y, 1.0, uboInstance.view, uboInstance.proj).xyz; // unprojecting on the far plane
-    gl_Position = vec4(p, 1.0); // using directly the clipped coordinates
+	if(uboInstance.shapeId == 0)
+	{
+    	gl_Position = vec4(p, 1.0); // using directly the clipped coordinates
+	} 
+
+	if(uboInstance.shapeId == 1)
+	{
+		gl_Position =  uboInstance.proj * uboInstance.view * uboInstance.model * vec4(p, 1.0);
+	}
+
 }

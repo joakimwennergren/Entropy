@@ -43,6 +43,10 @@
 #include <graphics/memory/allocator.hpp>
 
 #include <ecs/components/position.hpp>
+#include <BulletCollision/BroadphaseCollision/btBroadphaseInterface.h>
+#include <BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h>
+#include <BulletCollision/CollisionDispatch/btCollisionDispatcher.h>
+#include <btBulletDynamicsCommon.h>
 
 using namespace Entropy::Graphics::Instances;
 using namespace Entropy::Graphics::Surfaces;
@@ -132,6 +136,20 @@ protected:
     std::shared_ptr<Synchronizer> synchronizer;
     sol::protected_function luaOnRender;
     flecs::world world;
+    // Build the broadphase
+    btBroadphaseInterface *broadphase;
+
+    // Set up the collision configuration and dispatcher
+    btDefaultCollisionConfiguration *collisionConfiguration;
+    btCollisionDispatcher *dispatcher;
+
+    // The actual physics solver
+    btSequentialImpulseConstraintSolver *solver;
+
+    // The world.
+    btDiscreteDynamicsWorld *dynamicsWorld;
+
+    btCollisionShape *boxCollisionShape;
 
 private:
     void ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::shared_ptr<Lua> lua);

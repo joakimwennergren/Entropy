@@ -8,6 +8,7 @@ layout(location = 7) in vec3 nearPoint; // nearPoint calculated in vertex shader
 layout(location = 8) in vec3 farPoint; // farPoint calculated in vertex shader
 layout(location = 9) in mat4 fragView;
 layout(location = 14) in mat4 fragProj;
+layout(location = 13) flat in int shapeId;
 
 layout(location = 0) out vec4 outColor;
 
@@ -44,14 +45,23 @@ float computeLinearDepth(vec3 pos) {
 
 void main() 
 { 
-    float t = -nearPoint.y / (farPoint.y - nearPoint.y);
-    vec3 fragPos3D = nearPoint + t * (farPoint - nearPoint);
+    if(shapeId == 0)
+    {
+        float t = -nearPoint.y / (farPoint.y - nearPoint.y);
+        vec3 fragPos3D = nearPoint + t * (farPoint - nearPoint);
 
-    gl_FragDepth = computeDepth(fragPos3D);
+        gl_FragDepth = computeDepth(fragPos3D);
 
-    float linearDepth = computeLinearDepth(fragPos3D);
-    float fading = max(0, (0.5 - linearDepth));
+        float linearDepth = computeLinearDepth(fragPos3D);
+        float fading = max(0, (0.5 - linearDepth));
 
-    outColor = (grid(fragPos3D, 10, true) + grid(fragPos3D, 1, true))* float(t > 0); // adding multiple resolution for the grid
-    outColor.a *= fading;
+        outColor = (grid(fragPos3D, 10, true) + grid(fragPos3D, 1, true))* float(t > 0); // adding multiple resolution for the grid
+        outColor.a *= fading;
+    }
+
+    if(shapeId == 1)
+    {
+        outColor = vec4(1.0, 0.0, 0.0, 1.0);
+    }
+
 }
