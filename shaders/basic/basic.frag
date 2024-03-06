@@ -17,7 +17,7 @@ void main()
 {
 
         vec3 ambient = vec3(0.5, 0.5, 0.5);
-        vec3 lighting = vec3(0.0, 0.0, 0.0);
+        vec3 lighting = vec3(0.0, 80.0, 0.0);
 
         mat4 camera = inInvView;
         vec3 cameraSource = vec3(camera[3].x, camera[3].y, camera[3].z);
@@ -43,10 +43,10 @@ void main()
                     0.008 * (distance * distance));  
 
         ambient  *= attenuation; 
-        //diffuse  *= attenuation;
+        diffuse  *= attenuation;
         specular *= attenuation;  
 
-        lighting = ambient * 0.8 + diffuse * 1.0 + specular * 0.8;
+        lighting = ambient * 4.0 + diffuse * 1.0 + specular * 0.8;
 
         vec4 sampled = texture(sampler2D(_texture, texSampler), inUV0) * vec4(lighting, 1.0);
         outColor = inColor0 * sampled;

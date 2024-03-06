@@ -48,6 +48,16 @@
 #include <BulletCollision/CollisionDispatch/btCollisionDispatcher.h>
 #include <btBulletDynamicsCommon.h>
 
+#include <ecs/components/position.hpp>
+#include <ecs/components/scale.hpp>
+#include <ecs/components/model.hpp>
+#include <ecs/components/gizmo.hpp>
+#include <ecs/components/renderable.hpp>
+#include <ecs/components/line.hpp>
+#include <ecs/components/color.hpp>
+
+#include <graphics/primitives/2d/line.hpp>
+
 using namespace Entropy::Graphics::Instances;
 using namespace Entropy::Graphics::Surfaces;
 using namespace Entropy::Graphics::Swapchains;
@@ -87,11 +97,79 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 void character_callback(GLFWwindow *window, unsigned int codepoint);
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 
+class BulletDebugDrawer : public btIDebugDraw
+{
+public:
+    BulletDebugDrawer(flecs::world *world, std::shared_ptr<ServiceLocator> serviceLocator)
+    {
+        _world = world;
+        _serviceLocator = serviceLocator;
+    }
+
+    void drawLine(const btVector3 &from, const btVector3 &to, const btVector3 &color) override
+    {
+        /*
+        auto gizmo = _world->entity();
+
+        glm::vec3 f = glm::vec3((float)from.x(), (float)from.y(), (float)from.z());
+        glm::vec3 t = glm::vec3((float)to.x(), (float)to.y(), (float)to.z());
+        glm::vec4 c = glm::vec4(color.x(), color.y(), color.z(), color.w());
+
+        if(c.a == 0.0)
+        {
+            c = glm::vec4(1.0, 1.0, 1.0, 1.0);
+        }
+        gizmo.set<Entropy::Components::LineGizmo>({std::make_shared<Line>(_serviceLocator, f, t, c)});
+        gizmo.set<Entropy::Components::Renderable>({id++, 1, true});
+        gizmo.set<Entropy::Components::Color>({c});
+        */
+    }
+
+    void drawContactPoint(const btVector3 &PointOnB, const btVector3 &normalOnB, btScalar distance, int lifeTime, const btVector3 &color) override
+    {
+    }
+
+    void drawSphere(const btVector3 &p, btScalar radius, const btVector3 &color) override
+    {
+    }
+
+    void drawTriangle(const btVector3 &v0, const btVector3 &v1, const btVector3 &v2, const btVector3 &color, btScalar /*alpha*/) override
+    {
+    }
+
+    void reportErrorWarning(const char *warningString) override
+    {
+    }
+
+    void draw3dText(const btVector3 &location, const char *textString) override
+    {
+    }
+
+    void setDebugMode(int debugMode) override
+    {
+    }
+
+    int getDebugMode() const override
+    {
+        return 1;
+    }
+
+private:
+    flecs::world *_world;
+    std::shared_ptr<ServiceLocator> _serviceLocator;
+    uint32_t id = 2;
+};
+
 class Application
 {
 public:
     Application();
     ~Application();
+
+    // Function to convert screen coordinates to a 3D ray
+    glm::vec3 getRayTo(int mouseX, int mouseY, const glm::mat4 &projectionMatrix, const glm::mat4 &viewMatrix);
+    // Function to perform mouse picking
+    void pickObject(int mouseX, int mouseY, const glm::mat4 &projectionMatrix, const glm::mat4 &viewMatrix);
 
     virtual void OnInit() = 0;
 

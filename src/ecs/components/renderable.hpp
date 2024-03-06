@@ -6,7 +6,8 @@ namespace Entropy
     {
         struct Renderable
         {
-            int type = -1;
+            uint32_t id = 0;
+            int type = 0;
             bool visible = true;
         };
     }

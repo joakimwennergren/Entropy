@@ -13,6 +13,7 @@ RenderPass::RenderPass(std::shared_ptr<ServiceLocator> serviceLocator)
     _swapChain = swapChain;
     _logicalDevice = logicalDevice;
     _physicalDevice = physicalDevice;
+    _serviceLocator = serviceLocator;
 
     RecreateDepthBuffer();
 
@@ -183,6 +184,32 @@ bool RenderPass::hasStencilComponent(VkFormat format)
 
 void RenderPass::createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory)
 {
+    auto allocator = _serviceLocator->GetService<Allocator>();
+    
+    VmaAllocationCreateInfo allocCreateInfo = {};
+    allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO;
+    // allocCreateInfo.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
+    // allocCreateInfo.priority = 1.0f;
+
+    VkImageCreateInfo imageInfo{};
+    imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+    imageInfo.imageType = VK_IMAGE_TYPE_2D;
+    imageInfo.extent.width = width;
+    imageInfo.extent.height = height;
+    imageInfo.extent.depth = 1;
+    imageInfo.mipLevels = 1;
+    imageInfo.arrayLayers = 1;
+    imageInfo.format = format;
+    imageInfo.tiling = tiling;
+    imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    imageInfo.usage = usage;
+    imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+    imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+    vmaCreateImage(allocator->Get(), &imageInfo, &allocCreateInfo, &image, &_allocation, nullptr);
+    
+    
+    /*
     VkImageCreateInfo imageInfo{};
     imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
     imageInfo.imageType = VK_IMAGE_TYPE_2D;
@@ -217,6 +244,7 @@ void RenderPass::createImage(uint32_t width, uint32_t height, VkFormat format, V
     }
 
     vkBindImageMemory(_logicalDevice->Get(), image, imageMemory, 0);
+     */
 }
 
 uint32_t RenderPass::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
@@ -237,7 +265,13 @@ uint32_t RenderPass::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags p
 
 void RenderPass::RecreateDepthBuffer()
 {
+    auto allocator = _serviceLocator->GetService<Allocator>();
+    
+    if(depthImage != VK_NULL_HANDLE)
+        vmaDestroyImage(allocator->Get(), depthImage, _allocation);
+    
     VkFormat depthFormat = findDepthFormat();
     createImage(_swapChain->swapChainExtent.width, _swapChain->swapChainExtent.height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
+    
     depthImageView = ImageView(_logicalDevice->Get(), depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT).Get();
 }

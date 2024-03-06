@@ -9,11 +9,12 @@ layout(location = 8) in vec3 farPoint; // farPoint calculated in vertex shader
 layout(location = 9) in mat4 fragView;
 layout(location = 14) in mat4 fragProj;
 layout(location = 13) flat in int shapeId;
+layout(location = 19) in vec4 inColor0;
 
 layout(location = 0) out vec4 outColor;
 
-float near = 0.01;
-float far = 100;
+float near = 1.0;
+float far = 1000;
 
 vec4 grid(vec3 fragPos3D, float scale, bool drawAxis) {
     vec2 coord = fragPos3D.xz * scale;
@@ -61,7 +62,7 @@ void main()
 
     if(shapeId == 1)
     {
-        outColor = vec4(1.0, 0.0, 0.0, 1.0);
+        outColor = inColor0;
     }
 
 }

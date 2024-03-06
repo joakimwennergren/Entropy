@@ -7,7 +7,7 @@ LogicalDevice::LogicalDevice(std::shared_ptr<PhysicalDevice> physicalDevice, std
     QueueFamilyIndices indices = QueueFamily::FindQueueFamilies(physicalDevice->Get(), surface->Get());
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-    std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(), indices.presentFamily.value()};
+    std::vector<uint32_t> uniqueQueueFamilies = {/*indices.graphicsFamily.value(),*/ indices.presentFamily.value()};
 
     float queuePriority = 1.0f;
     for (uint32_t queueFamily : uniqueQueueFamilies)
@@ -20,17 +20,9 @@ LogicalDevice::LogicalDevice(std::shared_ptr<PhysicalDevice> physicalDevice, std
         queueCreateInfos.push_back(queueCreateInfo);
     }
 
-    queueFamiliy = indices.graphicsFamily.value();
-
-    VkDeviceQueueCreateInfo queueCreateInfo{};
-    queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-    queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
-    queueCreateInfo.queueCount = 1;
-    queueCreateInfo.pQueuePriorities = &queuePriority;
-
     VkPhysicalDeviceFeatures deviceFeatures{};
     deviceFeatures.samplerAnisotropy = VK_TRUE;
-    deviceFeatures.fillModeNonSolid = true;
+    deviceFeatures.fillModeNonSolid = VK_TRUE;
 
     VkDeviceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -44,7 +36,7 @@ LogicalDevice::LogicalDevice(std::shared_ptr<PhysicalDevice> physicalDevice, std
     {
         exit(EXIT_FAILURE);
     }
-
-    vkGetDeviceQueue(_logicalDevice, indices.graphicsFamily.value(), 0, &_graphicsQueue);
+    
+    //vkGetDeviceQueue(_logicalDevice, indices.graphicsFamily.value(), 0, &_graphicsQueue);
     vkGetDeviceQueue(_logicalDevice, indices.presentFamily.value(), 0, &_presentQueue);
 }

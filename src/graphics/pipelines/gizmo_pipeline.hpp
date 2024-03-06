@@ -32,7 +32,7 @@ namespace Entropy
                     pipelineLayoutInfo.pSetLayouts = dsLayouts.data();
                     pipelineLayoutInfo.pPushConstantRanges = nullptr; //&push_constant;
                     pipelineLayoutInfo.pushConstantRangeCount = 0;
-                    Build("GizmoPipeline", vert_shader, frag_shader, dsLayouts, VK_TRUE, pipelineLayoutInfo,  VK_POLYGON_MODE_FILL);
+                    Build("GizmoPipeline", vert_shader, frag_shader, dsLayouts, VK_TRUE, pipelineLayoutInfo, VK_POLYGON_MODE_LINE);
                 }
 
             private:

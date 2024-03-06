@@ -9,7 +9,7 @@ CommandPool::CommandPool(std::shared_ptr<LogicalDevice> logicalDevice, std::shar
     VkCommandPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
     poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-    poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
+    poolInfo.queueFamilyIndex = queueFamilyIndices.presentFamily.value();
 
     if (vkCreateCommandPool(logicalDevice->Get(), &poolInfo, nullptr, &_commandPool) != VK_SUCCESS)
     {

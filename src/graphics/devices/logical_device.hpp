@@ -33,8 +33,8 @@ namespace Entropy
 
             private:
                 VkDevice _logicalDevice;
-                VkQueue _graphicsQueue;
-                VkQueue _presentQueue;
+                VkQueue _graphicsQueue = VK_NULL_HANDLE;
+                VkQueue _presentQueue = VK_NULL_HANDLE;
             };
         }
     }

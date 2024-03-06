@@ -6,6 +6,7 @@
 #include <graphics/swapchains/swapchain.hpp>
 #include <graphics/devices/logical_device.hpp>
 #include <graphics/imageviews/imageview.hpp>
+#include <graphics/memory/allocator.hpp>
 
 #include "spdlog/spdlog.h"
 
@@ -14,6 +15,7 @@ using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Swapchains;
 using namespace Entropy::Graphics::Devices;
 using namespace Entropy::Graphics::ImageViews;
+using namespace Entropy::Graphics::Memory;
 
 namespace Entropy
 {
@@ -81,10 +83,12 @@ namespace Entropy
                 std::shared_ptr<Swapchain> _swapChain;
                 std::shared_ptr<LogicalDevice> _logicalDevice;
                 std::shared_ptr<PhysicalDevice> _physicalDevice;
+                std::shared_ptr<ServiceLocator> _serviceLocator;
 
-                VkImage depthImage;
+                VkImage depthImage = VK_NULL_HANDLE;
                 VkDeviceMemory depthImageMemory;
                 VkImageView depthImageView;
+                VmaAllocation _allocation;
             };
         }
     }

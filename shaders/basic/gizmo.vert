@@ -36,6 +36,7 @@ layout (location = 8) out vec3 farPoint;
 layout (location = 9) out mat4 fragView;
 layout (location = 14) out mat4 fragProj;
 layout (location = 13) out int outShapeId;
+layout (location = 19) out vec4 outColor0;
 
 vec3 gridPlane[6] = vec3[] (
     vec3(1, 1, 0), vec3(-1, -1, 0), vec3(-1, 1, 0),
@@ -54,6 +55,7 @@ void main()
 	outShapeId = uboInstance.shapeId;
 	fragView = uboInstance.view;
 	fragProj = uboInstance.proj;
+	outColor0 = uboInstance.color;
     vec3 p = gridPlane[gl_VertexIndex].xyz;
     nearPoint = UnprojectPoint(p.x, p.y, 0.0, uboInstance.view, uboInstance.proj).xyz; // unprojecting on the near plane
     farPoint = UnprojectPoint(p.x, p.y, 1.0, uboInstance.view, uboInstance.proj).xyz; // unprojecting on the far plane
@@ -64,7 +66,7 @@ void main()
 
 	if(uboInstance.shapeId == 1)
 	{
-		gl_Position =  uboInstance.proj * uboInstance.view * uboInstance.model * vec4(p, 1.0);
+		gl_Position =  uboInstance.proj * uboInstance.view * uboInstance.model * vec4(inPos, 1.0);
 	}
 
 }

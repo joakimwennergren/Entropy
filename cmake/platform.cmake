@@ -5,15 +5,13 @@ endif(WIN32)
 
 # MacOS platform
 if(APPLE)
-    if(NOT XCODE)
-        set(CMAKE_PLATFORM "BUILD_FOR_MACOS")
-    endif()
+    set(CMAKE_PLATFORM "BUILD_FOR_MACOS")
 endif()
 
 # iOS
-if(XCODE)
-    set(CMAKE_PLATFORM "BUILD_FOR_IOS")
-endif()
+#if(XCODE)
+#    set(CMAKE_PLATFORM "BUILD_FOR_IOS")
+#endif()
 
 # Linux platform
 if(UNIX AND NOT APPLE)

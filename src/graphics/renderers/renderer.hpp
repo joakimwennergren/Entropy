@@ -11,6 +11,7 @@
 #include <graphics/pipelines/cubemap_pipeline.hpp>
 #include <graphics/pipelines/2d_pipeline.hpp>
 #include <graphics/pipelines/gui_pipeline.hpp>
+#include <graphics/pipelines/line_pipeline.hpp>
 #include <graphics/data/vertex.hpp>
 #include <graphics/commandbuffers/commandbuffer.hpp>
 #include <graphics/data/ubo.hpp>
@@ -46,6 +47,8 @@
 #include <ecs/components/model.hpp>
 #include <ecs/components/renderable.hpp>
 #include <ecs/components/gizmo.hpp>
+#include <ecs/components/line.hpp>
+#include <ecs/components/color.hpp>
 
 #ifdef BUILD_FOR_ANDROID
 #include <android/asset_manager.h>

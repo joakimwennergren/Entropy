@@ -171,7 +171,7 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator, float xscal
 
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
     {
-        std::array<VkWriteDescriptorSet, 6> descriptorWrites{};
+        std::array<VkWriteDescriptorSet, 8> descriptorWrites{};
 
         VkDescriptorBufferInfo bufferInfo{};
         bufferInfo.buffer = rawUniformBuffers[i];
@@ -208,15 +208,15 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator, float xscal
         descriptorWrites[2].pBufferInfo = &bufferInfo;
 
         descriptorWrites[3].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptorWrites[3].dstSet = _pipelines["SkinnedPipeline"]->descriptorSets[0]->Get()[i];
-        descriptorWrites[3].dstBinding = 1;
+        descriptorWrites[3].dstSet = _pipelines["LinePipeline"]->descriptorSets[0]->Get()[i];
+        descriptorWrites[3].dstBinding = 0;
         descriptorWrites[3].dstArrayElement = 0;
-        descriptorWrites[3].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+        descriptorWrites[3].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         descriptorWrites[3].descriptorCount = 1;
-        descriptorWrites[3].pBufferInfo = &bufferInfo2;
+        descriptorWrites[3].pBufferInfo = &bufferInfo;
 
         descriptorWrites[4].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptorWrites[4].dstSet = _pipelines["Pipeline2D"]->descriptorSets[0]->Get()[i];
+        descriptorWrites[4].dstSet = _pipelines["SkinnedPipeline"]->descriptorSets[0]->Get()[i];
         descriptorWrites[4].dstBinding = 1;
         descriptorWrites[4].dstArrayElement = 0;
         descriptorWrites[4].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
@@ -224,12 +224,28 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator, float xscal
         descriptorWrites[4].pBufferInfo = &bufferInfo2;
 
         descriptorWrites[5].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptorWrites[5].dstSet = _pipelines["GizmoPipeline"]->descriptorSets[0]->Get()[i];
+        descriptorWrites[5].dstSet = _pipelines["Pipeline2D"]->descriptorSets[0]->Get()[i];
         descriptorWrites[5].dstBinding = 1;
         descriptorWrites[5].dstArrayElement = 0;
         descriptorWrites[5].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
         descriptorWrites[5].descriptorCount = 1;
         descriptorWrites[5].pBufferInfo = &bufferInfo2;
+
+        descriptorWrites[6].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[6].dstSet = _pipelines["GizmoPipeline"]->descriptorSets[0]->Get()[i];
+        descriptorWrites[6].dstBinding = 1;
+        descriptorWrites[6].dstArrayElement = 0;
+        descriptorWrites[6].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+        descriptorWrites[6].descriptorCount = 1;
+        descriptorWrites[6].pBufferInfo = &bufferInfo2;
+
+        descriptorWrites[7].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[7].dstSet = _pipelines["LinePipeline"]->descriptorSets[0]->Get()[i];
+        descriptorWrites[7].dstBinding = 1;
+        descriptorWrites[7].dstArrayElement = 0;
+        descriptorWrites[7].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+        descriptorWrites[7].descriptorCount = 1;
+        descriptorWrites[7].pBufferInfo = &bufferInfo2;
 
         vkUpdateDescriptorSets(_logicalDevice->Get(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
     }
@@ -360,22 +376,17 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator, flecs::world 
     _pipelines["Pipeline2D"] = std::make_shared<Pipeline2D>(_renderPass, serviceLocator, VK_POLYGON_MODE_FILL);
     _pipelines["GUIPipeline"] = std::make_shared<GUIPipeline>(_renderPass, serviceLocator, VK_POLYGON_MODE_FILL);
     _pipelines["GizmoPipeline"] = std::make_shared<GizmoPipeline>(_renderPass, serviceLocator, VK_POLYGON_MODE_FILL);
+    _pipelines["LinePipeline"] = std::make_shared<LinePipeline>(_renderPass, serviceLocator, VK_POLYGON_MODE_LINE);
     Setup(serviceLocator, xscale, yscale);
 
     _world->system<Entropy::Components::Renderable>()
-        .iter([this](flecs::iter it)
-              {
-                for(auto i : it)
-                {
-                    DrawEntity(it.entity(i), i);
-                } });
+        .each([this](flecs::entity e, Entropy::Components::Renderable r)
+              { DrawEntity(e, r.id); });
 }
 
 void Renderer::HandleResize()
 {
-    ZoneScopedN("Resizing");
-
-    _synchronizer.reset();
+    // ZoneScopedN("Resizing");
     _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT, _serviceLocator);
     _swapChain->RecreateSwapChain();
     _renderPass->RecreateDepthBuffer();
@@ -627,9 +638,10 @@ VkResult Renderer::DoRender(int width, int height)
 
 void Renderer::Render(int width, int height, bool resize)
 {
-    vkWaitForFences(_logicalDevice->Get(), 1, &_synchronizer->GetFences()[_currentFrame], VK_TRUE, UINT64_MAX);
+    auto currentFence = _synchronizer->GetFences()[_currentFrame];
+    vkWaitForFences(_logicalDevice->Get(), 1, &currentFence, VK_TRUE, UINT64_MAX);
 
-    _camera->setPerspective(60.0f, (float)width / (float)height, 1.0f, 256.0f);
+    _camera->setPerspective(60.0f, (float)width / (float)height, 1.0f, 1000.0f);
     _camera->update(0.1);
 
     auto acquire_result = vkAcquireNextImageKHR(_logicalDevice->Get(), _swapChain->Get(), UINT64_MAX, _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE, &imageIndex);
@@ -638,9 +650,6 @@ void Renderer::Render(int width, int height, bool resize)
 
     if (acquire_result == VK_SUCCESS || acquire_result == VK_SUBOPTIMAL_KHR)
     {
-        // Reset fences and current commandbuffer
-        vkResetFences(_logicalDevice->Get(), 1, &_synchronizer->GetFences()[_currentFrame]);
-
         // current commandbuffer & descriptorset
         currentCmdBuffer = _commandBuffers[_currentFrame]->GetCommandBuffer();
 
@@ -658,6 +667,9 @@ void Renderer::Render(int width, int height, bool resize)
         _renderPass->End(_commandBuffers[_currentFrame]);
         _commandBuffers[_currentFrame]->EndRecording();
 
+        // Reset fences and current commandbuffer
+        vkResetFences(_logicalDevice->Get(), 1, &currentFence);
+
         submit_result = this->SubmitAndPresent(currentCmdBuffer, imageIndex);
 
         _currentFrame = (_currentFrame + 1) % MAX_CONCURRENT_FRAMES_IN_FLIGHT;
@@ -674,6 +686,7 @@ void Renderer::DrawEntity(flecs::entity entity, uint32_t index)
     auto position_component = entity.get_ref<Entropy::Components::Position>();
     auto scale_component = entity.get_ref<Entropy::Components::Scale>();
     auto renderable_component = entity.get_ref<Entropy::Components::Renderable>();
+    auto color_component = entity.get_ref<Entropy::Components::Color>();
 
     auto translate = glm::mat4(1.0f);
     auto rotation = glm::mat4(1.0f);
@@ -716,7 +729,8 @@ void Renderer::DrawEntity(flecs::entity entity, uint32_t index)
     ubodyn.invView = glm::inverse(_cam->GetViewMatrix());
     ubodyn.proj = _camera->matrices.perspective;
     ubodyn.model = translate * rotation * scaling;
-    ubodyn.shapeId = 0;
+    ubodyn.shapeId = renderable_component->type;
+    ubodyn.color = color_component.get() == nullptr ? glm::vec4(1.0, 1.0, 1.0, 1.0) : color_component->color;
 
     uint32_t offset = dynamicAlignment * index;
     memcpy((char *)dynUbos[_currentFrame]->GetMappedMemory() + offset, &ubodyn, sizeof(UboDataDynamic));
@@ -769,6 +783,19 @@ void Renderer::DrawEntity(flecs::entity entity, uint32_t index)
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
         vkCmdDraw(currentCmdBuffer, 6, 1, 0, 0);
+    }
+
+    if (entity.has<Entropy::Components::LineGizmo>())
+    {
+        auto gizmo = entity.get<Entropy::Components::LineGizmo>();
+        auto ds0 = _pipelines["LinePipeline"]->descriptorSets[0]->Get()[_currentFrame];
+        vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["LinePipeline"]->GetPipeline());
+        vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["LinePipeline"]->GetPipelineLayout(), 0, 1, &ds0, 1, &offset);
+
+        VkBuffer vertexBuffers[] = {gizmo->line->vertexBuffer->GetVulkanBuffer()};
+        VkDeviceSize offsets[] = {0};
+        vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
+        vkCmdDraw(currentCmdBuffer, 2, 1, 0, 0);
     }
 
     /*
@@ -855,7 +882,7 @@ VkResult Renderer::SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageInd
     submitInfo.pSignalSemaphores = signalSemaphores;
 
     // Submit queue
-    if (vkQueueSubmit(_logicalDevice->GetGraphicQueue(), 1, &submitInfo, _synchronizer->GetFences()[_currentFrame]) != VK_SUCCESS)
+    if (vkQueueSubmit(_logicalDevice->GetPresentQueue(), 1, &submitInfo, _synchronizer->GetFences()[_currentFrame]) != VK_SUCCESS)
     {
         exit(EXIT_FAILURE);
     }

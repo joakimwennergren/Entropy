@@ -29,8 +29,8 @@ Shader::Shader(std::shared_ptr<ServiceLocator> serviceLocator, const std::string
 
 Shader::~Shader()
 {
-    vkDestroyShaderModule(_logicalDevice->Get(), this->_shaderModuleVert, nullptr);
-    vkDestroyShaderModule(_logicalDevice->Get(), this->_shaderModuleFrag, nullptr);
+    //vkDestroyShaderModule(_logicalDevice->Get(), this->_shaderModuleVert, nullptr);
+    //vkDestroyShaderModule(_logicalDevice->Get(), this->_shaderModuleFrag, nullptr);
 }
 
 std::vector<char> Shader::ReadFile(std::string filename)

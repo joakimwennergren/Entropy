@@ -69,5 +69,5 @@ void CommandBuffer::EndRecordingOnce()
     submitInfo.pCommandBuffers = &_commandBuffer;
 
     vkQueueSubmit(_logicalDevice->GetPresentQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-    vkQueueWaitIdle(_logicalDevice->GetGraphicQueue());
+    vkQueueWaitIdle(_logicalDevice->GetPresentQueue());
 }
