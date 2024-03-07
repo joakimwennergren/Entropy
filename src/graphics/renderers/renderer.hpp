@@ -50,6 +50,8 @@
 #include <ecs/components/line.hpp>
 #include <ecs/components/color.hpp>
 
+#include <timing/timer.hpp>
+
 #ifdef BUILD_FOR_ANDROID
 #include <android/asset_manager.h>
 #endif
@@ -106,6 +108,7 @@ namespace Entropy
                     glm::vec2 size;
                     glm::vec4 borderRadius;
                     int shapeId;
+                    int time;
                 };
                 size_t dynamicAlignment{0};
                 unsigned int _currentFrame = 0;
@@ -165,6 +168,7 @@ namespace Entropy
                 std::unique_ptr<Buffer> _indexBuffer;
                 Texture *fontTexture;
                 flecs::world *_world;
+                Timer *_timer;
             };
         }
     }

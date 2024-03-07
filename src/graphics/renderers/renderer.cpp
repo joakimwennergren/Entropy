@@ -379,6 +379,8 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator, flecs::world 
     _pipelines["LinePipeline"] = std::make_shared<LinePipeline>(_renderPass, serviceLocator, VK_POLYGON_MODE_LINE);
     Setup(serviceLocator, xscale, yscale);
 
+    _timer = new Timer(1.0);
+
     _world->system<Entropy::Components::Renderable>()
         .each([this](flecs::entity e, Entropy::Components::Renderable r)
               { DrawEntity(e, r.id); });
@@ -731,6 +733,7 @@ void Renderer::DrawEntity(flecs::entity entity, uint32_t index)
     ubodyn.model = translate * rotation * scaling;
     ubodyn.shapeId = renderable_component->type;
     ubodyn.color = color_component.get() == nullptr ? glm::vec4(1.0, 1.0, 1.0, 1.0) : color_component->color;
+    ubodyn.time = _timer->get_tick();
 
     uint32_t offset = dynamicAlignment * index;
     memcpy((char *)dynUbos[_currentFrame]->GetMappedMemory() + offset, &ubodyn, sizeof(UboDataDynamic));

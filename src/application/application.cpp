@@ -78,11 +78,15 @@ Application::Application()
     lua = std::make_shared<Lua>(serviceLocator);
     serviceLocator->AddService(lua);
 
+    physics3d = std::make_shared<Physics3D>(&world, serviceLocator);
+    serviceLocator->AddService(physics3d);
+
     GLFWmonitor *primary = glfwGetPrimaryMonitor();
     float xscale, yscale;
     glfwGetMonitorContentScale(primary, &xscale, &yscale);
 
     _renderer = std::make_shared<Renderer>(serviceLocator, &world, xscale, yscale);
+
     auto &io = ImGui::GetIO();
     io.DisplaySize = ImVec2(width, height);
 
@@ -93,33 +97,6 @@ Application::Application()
     io.KeyMap[ImGuiKey_RightArrow] = GLFW_KEY_RIGHT;
     io.KeyMap[ImGuiKey_UpArrow] = GLFW_KEY_UP;
     io.KeyMap[ImGuiKey_DownArrow] = GLFW_KEY_DOWN;
-
-    // Build the broadphase
-    broadphase = new btDbvtBroadphase();
-
-    // Set up the collision configuration and dispatcher
-    collisionConfiguration = new btDefaultCollisionConfiguration();
-    dispatcher = new btCollisionDispatcher(collisionConfiguration);
-
-    // The actual physics solver
-    solver = new btSequentialImpulseConstraintSolver;
-
-    // The world.
-    dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
-    dynamicsWorld->setGravity(btVector3(0, -9.81f, 0));
-
-    // Create ground
-    // btCollisionShape *groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
-    // btDefaultMotionState *groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -1, 0)));
-    // btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, groundShape, btVector3(0, 0, 0));
-    // btRigidBody *groundRigidBody = new btRigidBody(groundRigidBodyCI);
-    // dynamicsWorld->addRigidBody(groundRigidBody);
-
-    BulletDebugDrawer *dbgDrawer = new BulletDebugDrawer(&world, serviceLocator);
-
-    dynamicsWorld->setDebugDrawer(dbgDrawer);
-
-    dynamicsWorld->getDebugDrawer()->setDebugMode(1);
 }
 
 void Application::ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::shared_ptr<Lua> lua)
@@ -156,75 +133,11 @@ Application::~Application()
     glfwTerminate();
 }
 
-glm::vec3 Application::getRayTo(int mouseX, int mouseY, const glm::mat4 &projectionMatrix, const glm::mat4 &viewMatrix)
-{
-    int width, height;
-    glfwGetFramebufferSize(_window, &width, &height);
-
-    // Adjust y-coordinate to match Vulkan's coordinate system
-
-    // Convert mouse coordinates to clip space
-    glm::vec4 clipCoords(
-        (mouseX / (float)width) * 2.0f - 1.0f,
-        (mouseY / (float)height) * 2.0f - 1.0f,
-        -1.0f, // Clip space z-coordinate should be in range [-1, 1]
-        1.0f);
-
-    // Convert clip space to eye space
-    glm::vec4 eyeCoords = glm::inverse(projectionMatrix) * clipCoords;
-    eyeCoords.z = -1.0f;
-    eyeCoords.w = 0.0f;
-
-    // Convert eye space to world space
-    glm::vec4 worldCoords = glm::inverse(viewMatrix) * eyeCoords;
-
-    // Normalize the direction vector
-    glm::vec3 worldRay = glm::normalize(glm::vec3(worldCoords));
-
-    return worldRay;
-}
-
-// Function to perform mouse picking
-void Application::pickObject(int mouseX, int mouseY, const glm::mat4 &projectionMatrix, const glm::mat4 &viewMatrix)
-{
-    // Convert screen coordinates to a 3D ray
-    glm::vec3 rayTo = getRayTo(mouseX, mouseY, projectionMatrix, viewMatrix);
-
-    glm::vec3 rayFrom = _camera->Position;
-
-    // Define the endpoint of the ray using a scaling factor
-    float rayLength = 1000.0f; // Adjust this value as needed
-    glm::vec3 rayEndpoint = rayFrom + rayTo * rayLength;
-
-    // Perform ray casting against the physics world
-    btCollisionWorld::ClosestRayResultCallback rayCallback(btVector3(rayFrom.x, rayFrom.y, rayFrom.z), btVector3(rayEndpoint.x, rayEndpoint.y, rayEndpoint.z));
-    dynamicsWorld->rayTest(btVector3(rayFrom.x, rayFrom.y, rayFrom.z), btVector3(rayEndpoint.x, rayEndpoint.y, rayEndpoint.z), rayCallback);
-
-    dynamicsWorld->debugDrawWorld();
-
-    // dynamicsWorld->getDebugDrawer()->drawLine(btVector3{rayFrom.x, rayFrom.y, rayFrom.z}, btVector3{rayEndpoint.x, rayEndpoint.y, rayEndpoint.z}, btVector4(0, 1, 0, 1));
-
-    // Check if the ray hit anything
-    if (rayCallback.hasHit())
-    {
-        // Get the hit object
-        btRigidBody *hitObject = (btRigidBody *)btRigidBody::upcast(rayCallback.m_collisionObject);
-        if (hitObject)
-        {
-            auto point = rayCallback.m_hitPointWorld;
-            auto entity = (flecs::entity *)hitObject->getUserPointer();
-            glm::vec3 newPos = glm::vec3(point.x(), point.y(), point.z());
-            auto poscomp = entity->get_mut<Entropy::Components::Position>();
-            if (poscomp != nullptr)
-                poscomp->pos = newPos;
-        }
-    }
-}
-
 void Application::Run()
 {
     auto sceneGraph = serviceLocator->GetService<SceneGraph>();
     auto lua = serviceLocator->GetService<Lua>();
+    auto physics3d = serviceLocator->GetService<Physics3D>();
     auto &io = ImGui::GetIO();
 
     this->OnInit();
@@ -263,23 +176,12 @@ void Application::Run()
                 _camera->ProcessKeyboard(RIGHT, 0.1);
         }
 
-        double mx, my;
-        glfwGetCursorPos(_window, &mx, &my);
-
-        auto projection = _renderer->_camera->matrices.perspective;
-        auto view = _camera->GetViewMatrix();
-
-        if (io.MouseDown[0])
-        {
-            pickObject(mx, my, projection, view);
-        }
-
         //     float timeStep = 1.0f / 60.0f;
         // int32 velocityIterations = 6;
         // int32 positionIterations = 2;
 
         // physics2d->world->Step(timeStep, velocityIterations, positionIterations);
-        dynamicsWorld->stepSimulation(1.0f / 60.0f); // Example: step the simulation with a time step of 1/60 seconds
+        physics3d->GetWorld()->stepSimulation(1.0f / 60.0f); // Example: step the simulation with a time step of 1/60 seconds
         // ExecuteScripts(sceneGraph, lua);
 
         _camera->updateCameraVectors();

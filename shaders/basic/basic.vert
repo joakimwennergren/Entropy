@@ -31,6 +31,7 @@ layout (binding = 1) uniform UboInstance
 	vec2 size;
 	vec4 borderRadius;
 	int shapeId;
+	int time;
 } uboInstance;
 
 layout (set = 2, binding = 0) uniform UBONode {
@@ -45,10 +46,14 @@ layout (location = 2) out vec2 outUV0;
 layout (location = 3) out vec2 outUV1;
 layout (location = 4) out vec4 outColor0;
 layout (location = 5) out mat4 outInvView;
+layout (location = 12) out int outTime;
+layout (location = 13) out vec4 outTint;
 
 void main() 
 {
 	outColor0 = inColor0;
+	outTint = uboInstance.color;
+	outTime = uboInstance.time;
 	
 	vec4 locPos;
 

@@ -140,4 +140,8 @@ add_subdirectory(external/VulkanMemoryAllocator)
 set(FLECS_SHARED OFF)
 add_subdirectory(external/flecs)
 
+set(USE_GRAPHICAL_BENCHMARK OFF)
+set(ENABLE_VHACD OFF)
+set(BUILD_UNIT_TESTS OFF)
+set(BUILD_CPU_DEMOS OFF)
 add_subdirectory(external/bullet3)

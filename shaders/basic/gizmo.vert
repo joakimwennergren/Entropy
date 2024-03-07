@@ -29,6 +29,7 @@ layout (binding = 1) uniform UboInstance
 	vec2 size;
 	vec4 borderRadius;
 	int shapeId;
+	int time;
 } uboInstance;
 
 layout (location = 7) out vec3 nearPoint;

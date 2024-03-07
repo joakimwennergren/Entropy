@@ -1,6 +1,5 @@
 #version 450
 
-
 layout(set = 1, binding = 1) uniform sampler texSampler;
 layout(set = 1, binding = 2) uniform texture2D _texture;
 
@@ -10,12 +9,13 @@ layout (location = 2) in vec2 inUV0;
 layout (location = 3) in vec2 inUV1;
 layout (location = 4) in vec4 inColor0;
 layout (location = 5) in mat4 inInvView;
+layout (location = 12) flat in int time;
+layout (location = 13) in vec4 tint;
 
 layout(location = 0) out vec4 outColor;
 
 void main() 
 {
-
         vec3 ambient = vec3(0.5, 0.5, 0.5);
         vec3 lighting = vec3(0.0, 80.0, 0.0);
 
@@ -42,12 +42,19 @@ void main()
         float attenuation = 1.0 / (1.0 + 0.001 * distance + 
                     0.008 * (distance * distance));  
 
-        ambient  *= attenuation; 
-        diffuse  *= attenuation;
-        specular *= attenuation;  
+        //ambient  *= attenuation; 
+        //diffuse  *= attenuation;
+        //specular *= attenuation;  
 
-        lighting = ambient * 4.0 + diffuse * 1.0 + specular * 0.8;
+        lighting = ambient * 2.0 + diffuse * 1.0 + specular * 0.8;
 
         vec4 sampled = texture(sampler2D(_texture, texSampler), inUV0) * vec4(lighting, 1.0);
-        outColor = inColor0 * sampled;
+
+        float value = sin(time * 0.008);
+        vec4 color = inColor0;
+        vec4 tinting_pulsed = vec4(tint.r, tint.g, tint.b, value);
+        color = inColor0 * tint;
+
+        outColor = color * sampled;
+
 }
