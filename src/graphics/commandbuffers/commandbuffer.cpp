@@ -9,6 +9,7 @@ CommandBuffer::CommandBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkC
     auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
 
     _logicalDevice = logicalDevice;
+    _queueSync = serviceLocator->GetService<QueueSync>();
 
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -24,7 +25,7 @@ CommandBuffer::CommandBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkC
 
 void CommandBuffer::RecordOnce()
 {
-    vkDeviceWaitIdle(_logicalDevice->Get());
+    // vkDeviceWaitIdle(_logicalDevice->Get());
 
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -62,12 +63,11 @@ void CommandBuffer::EndRecordingOnce()
     {
         exit(EXIT_FAILURE);
     }
+    // VkSubmitInfo submitInfo{};
+    // submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    // submitInfo.commandBufferCount = 1;
+    // submitInfo.pCommandBuffers = &_commandBuffer;
 
-    VkSubmitInfo submitInfo{};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &_commandBuffer;
-
-    vkQueueSubmit(_logicalDevice->GetPresentQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-    vkQueueWaitIdle(_logicalDevice->GetPresentQueue());
+    // vkQueueSubmit(_logicalDevice->GetPresentQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+    // vkQueueWaitIdle(_logicalDevice->GetPresentQueue());
 }

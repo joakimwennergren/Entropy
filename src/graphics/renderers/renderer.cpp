@@ -367,6 +367,7 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator, AAssetManager
 Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator, flecs::world *world, float xscale, float yscale)
 
 {
+    _queueSync = serviceLocator->GetService<QueueSync>();
     _world = world;
     // Create renderpass
     _renderPass = std::make_shared<RenderPass>(serviceLocator);
@@ -383,7 +384,9 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator, flecs::world 
 
     _world->system<Entropy::Components::Renderable>()
         .each([this](flecs::entity e, Entropy::Components::Renderable r)
-              { DrawEntity(e, r.id); });
+              {
+                  if (_world->is_alive(e))
+                      DrawEntity(e, r.id); });
 }
 
 void Renderer::HandleResize()
@@ -640,10 +643,20 @@ VkResult Renderer::DoRender(int width, int height)
 
 void Renderer::Render(int width, int height, bool resize)
 {
+    if (_queueSync->_commandBuffers.size() > 0)
+    {
+        std::cout << "submitting commandbuffers!" << std::endl;
+        VkSubmitInfo submitInfo{};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.commandBufferCount = _queueSync->_commandBuffers.size();
+        submitInfo.pCommandBuffers = _queueSync->_commandBuffers.data();
+        vkQueueSubmit(_logicalDevice->GetPresentQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+        _queueSync->_commandBuffers.clear();
+        std::cout << "Finsihed submitting commandbuffers!" << std::endl;
+    }
+
     auto currentFence = _synchronizer->GetFences()[_currentFrame];
     vkWaitForFences(_logicalDevice->Get(), 1, &currentFence, VK_TRUE, UINT64_MAX);
-
-    _camera->setPerspective(60.0f, (float)width / (float)height, 1.0f, 1000.0f);
     _camera->update(0.1);
 
     auto acquire_result = vkAcquireNextImageKHR(_logicalDevice->Get(), _swapChain->Get(), UINT64_MAX, _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE, &imageIndex);
@@ -654,8 +667,6 @@ void Renderer::Render(int width, int height, bool resize)
     {
         // current commandbuffer & descriptorset
         currentCmdBuffer = _commandBuffers[_currentFrame]->GetCommandBuffer();
-
-        // vkResetCommandBuffer(currentCmdBuffer, 0);
 
         // Begin renderpass and commandbuffer recording
         _commandBuffers[_currentFrame]->Record();

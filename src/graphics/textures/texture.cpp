@@ -417,9 +417,6 @@ void Texture::CreateTextureImage(std::string path)
 
 void Texture::CreateImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory)
 {
-
-    vkDeviceWaitIdle(_logicalDevice->Get());
-
     VmaAllocationCreateInfo allocCreateInfo = {};
     allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO;
     // allocCreateInfo.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
@@ -468,6 +465,7 @@ void Texture::CreateImage(uint32_t width, uint32_t height, VkFormat format, VkIm
 
 void Texture::TransitionImageLayoutCubeMap(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, unsigned int mips)
 {
+    /*
     _commandBuffer->RecordOnce();
 
     VkImageSubresourceRange subresourceRange = {};
@@ -518,11 +516,13 @@ void Texture::TransitionImageLayoutCubeMap(VkImage image, VkFormat format, VkIma
         1, &barrier);
 
     _commandBuffer->EndRecordingOnce();
+    */
 }
 
 void Texture::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
 {
-    _commandBuffer->RecordOnce();
+    auto commandBuffer = new CommandBuffer(_serviceLocator, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+    commandBuffer->RecordOnce();
 
     VkImageMemoryBarrier barrier{};
     barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -562,19 +562,23 @@ void Texture::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayou
     }
 
     vkCmdPipelineBarrier(
-        _commandBuffer->GetCommandBuffer(),
+        commandBuffer->GetCommandBuffer(),
         sourceStage, destinationStage,
         0,
         0, nullptr,
         0, nullptr,
         1, &barrier);
 
-    _commandBuffer->EndRecordingOnce();
+    commandBuffer->EndRecordingOnce();
+
+    auto queueSync = _serviceLocator->GetService<QueueSync>();
+    queueSync->_commandBuffers.push_back(commandBuffer->GetCommandBuffer());
 }
 
 void Texture::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
 {
-    _commandBuffer->RecordOnce();
+    auto commandBuffer = new CommandBuffer(_serviceLocator, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+    commandBuffer->RecordOnce();
 
     VkBufferImageCopy region{};
     region.bufferOffset = 0;
@@ -590,7 +594,10 @@ void Texture::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, 
         height,
         1};
 
-    vkCmdCopyBufferToImage(_commandBuffer->GetCommandBuffer(), buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+    vkCmdCopyBufferToImage(commandBuffer->GetCommandBuffer(), buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
-    _commandBuffer->EndRecordingOnce();
+    commandBuffer->EndRecordingOnce();
+
+    auto queueSync = _serviceLocator->GetService<QueueSync>();
+    queueSync->_commandBuffers.push_back(commandBuffer->GetCommandBuffer());
 }

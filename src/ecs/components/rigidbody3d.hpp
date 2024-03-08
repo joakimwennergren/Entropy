@@ -4,6 +4,8 @@
 
 #include "ecs/components/boxcollisionshape3d.hpp"
 
+#include <physics/3d/physics3d.hpp>
+
 namespace Entropy
 {
     namespace Components
@@ -14,7 +16,7 @@ namespace Entropy
             void Initialize(std::shared_ptr<ServiceLocator> serviceLocator, flecs::entity *entity)
             {
                 _serviceLocator = serviceLocator;
-                auto physics3d = _serviceLocator->GetService<Physics3D>();
+                auto physics3d = _serviceLocator->GetService<Physics::Physics3D>();
 
                 auto boxcollider = entity->get_ref<Entropy::Components::BoxCollisionShape3D>();
 
@@ -22,6 +24,7 @@ namespace Entropy
                 {
                     body = new btRigidBody(btRigidBody::btRigidBodyConstructionInfo(btScalar(0.0f), boxcollider->box_motion_state, boxcollider->boxShape, btVector3(0, 0, 0)));
                     body->setUserPointer(entity);
+                    body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_STATIC_OBJECT);
                     physics3d->GetWorld()->addRigidBody(body);
                 }
             }

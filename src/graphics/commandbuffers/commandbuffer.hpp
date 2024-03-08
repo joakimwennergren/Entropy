@@ -13,10 +13,12 @@
 #include <servicelocators/servicelocator.hpp>
 #include <graphics/commandpools/commandpool.hpp>
 #include <services/service.hpp>
+#include <graphics/synchronization/queuesync.hpp>
 
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::CommandPools;
 using namespace Entropy::Services;
+using namespace Entropy::Graphics::Synchronization;
 
 namespace Entropy
 {
@@ -73,6 +75,7 @@ namespace Entropy
             private:
                 VkCommandBuffer _commandBuffer;
                 std::shared_ptr<LogicalDevice> _logicalDevice;
+                std::shared_ptr<QueueSync> _queueSync;
             };
         }
     }

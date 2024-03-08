@@ -14,6 +14,7 @@
 #include <graphics/buffers/stagedbuffer.hpp>
 #include <graphics/imageviews/imageview.hpp>
 #include <graphics/memory/allocator.hpp>
+#include <graphics/synchronization/queuesync.hpp>
 
 // #include <ktx.h>
 // #include <ktxvulkan.h>
@@ -27,6 +28,7 @@ using namespace Entropy::Graphics::Utilities;
 using namespace Entropy::Graphics::CommandBuffers;
 using namespace Entropy::Graphics::ImageViews;
 using namespace Entropy::Graphics::Memory;
+using namespace Entropy::Graphics::Synchronization;
 
 namespace Entropy
 {

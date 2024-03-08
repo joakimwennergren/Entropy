@@ -78,25 +78,25 @@ Application::Application()
     lua = std::make_shared<Lua>(serviceLocator);
     serviceLocator->AddService(lua);
 
-    physics3d = std::make_shared<Physics3D>(&world, serviceLocator);
+    world = std::make_shared<World>();
+    serviceLocator->AddService(world);
+
+    auto queueSync = std::make_shared<QueueSync>(serviceLocator);
+    serviceLocator->AddService(queueSync);
+
+    physics3d = std::make_shared<Physics3D>(&world->gameWorld, serviceLocator);
     serviceLocator->AddService(physics3d);
 
     GLFWmonitor *primary = glfwGetPrimaryMonitor();
     float xscale, yscale;
     glfwGetMonitorContentScale(primary, &xscale, &yscale);
 
-    _renderer = std::make_shared<Renderer>(serviceLocator, &world, xscale, yscale);
+    _renderer = std::make_shared<Renderer>(serviceLocator, &world->gameWorld, xscale, yscale);
 
     auto &io = ImGui::GetIO();
     io.DisplaySize = ImVec2(width, height);
 
-    // Keyboard mapping. ImGui will use those indices to peek into the io.KeysDown[] array.
-    io.KeyMap[ImGuiKey_Backspace] = GLFW_KEY_BACKSPACE;
-    io.KeyMap[ImGuiKey_Tab] = GLFW_KEY_TAB;
-    io.KeyMap[ImGuiKey_LeftArrow] = GLFW_KEY_LEFT;
-    io.KeyMap[ImGuiKey_RightArrow] = GLFW_KEY_RIGHT;
-    io.KeyMap[ImGuiKey_UpArrow] = GLFW_KEY_UP;
-    io.KeyMap[ImGuiKey_DownArrow] = GLFW_KEY_DOWN;
+    _renderer->_camera->setPerspective(60.0f, (float)width / (float)height, 1.0f, 1000.0f);
 }
 
 void Application::ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::shared_ptr<Lua> lua)
@@ -155,6 +155,10 @@ void Application::Run()
         int width, height;
         glfwGetFramebufferSize(_window, &width, &height);
 
+        GLFWmonitor *primary = glfwGetPrimaryMonitor();
+        float xscale, yscale;
+        glfwGetMonitorContentScale(primary, &xscale, &yscale);
+
         this->OnRender(_deltaTime);
         this->_renderer->Render(width, height, true);
         // On render
@@ -166,14 +170,20 @@ void Application::Run()
 
         if (io.MouseDown[2])
         {
+
+            float speed = 0.1;
+            if (ImGui::IsKeyDown(ImGuiKey_LeftShift))
+            {
+                speed = 0.8;
+            }
             if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS)
-                _camera->ProcessKeyboard(FORWARD, 0.1);
+                _camera->ProcessKeyboard(FORWARD, speed);
             if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS)
-                _camera->ProcessKeyboard(BACKWARD, 0.1);
+                _camera->ProcessKeyboard(BACKWARD, speed);
             if (glfwGetKey(_window, GLFW_KEY_A) == GLFW_PRESS)
-                _camera->ProcessKeyboard(LEFT, 0.1);
+                _camera->ProcessKeyboard(LEFT, speed);
             if (glfwGetKey(_window, GLFW_KEY_D) == GLFW_PRESS)
-                _camera->ProcessKeyboard(RIGHT, 0.1);
+                _camera->ProcessKeyboard(RIGHT, speed);
         }
 
         //     float timeStep = 1.0f / 60.0f;
@@ -185,6 +195,7 @@ void Application::Run()
         // ExecuteScripts(sceneGraph, lua);
 
         _camera->updateCameraVectors();
+        _renderer->_camera->setPerspective(_camera->Zoom, (float)width / (float)height, 1.0f, 1000.0f);
 
         // Poll events
         glfwPollEvents();
@@ -262,7 +273,8 @@ void framebufferResizeCallback(GLFWwindow *window, int width, int height)
 
     auto &io = ImGui::GetIO();
     io.DisplaySize = ImVec2(width * xscale, height * yscale);
-    app->GetRenderer()->Render(width, height, true);
+    app->GetRenderer()->Render(width * xscale, height * yscale, true);
+    app->_renderer->_camera->setPerspective(app->_camera->Zoom, (float)width / (float)height, 1.0f, 1000.0f);
     app->OnRender(0.0);
 }
 
@@ -284,9 +296,12 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
 {
+    auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
     ImGuiIO &io = ImGui::GetIO();
     io.MouseWheelH += (float)xoffset;
     io.MouseWheel += (float)yoffset;
+
+    app->_camera->ProcessMouseScroll((float)yoffset);
 }
 
 #endif

@@ -11,6 +11,8 @@
 #include "spdlog/spdlog.h"
 #include <glm/glm.hpp>
 
+#include <graphics/cameras/flying_camera.hpp>
+
 #include <servicelocators/servicelocator.hpp>
 
 using namespace Entropy::ServiceLocators;
@@ -131,28 +133,29 @@ namespace Entropy
                 _dynamicsWorld->rayTest(btVector3(rayFrom.x, rayFrom.y, rayFrom.z), btVector3(rayEndpoint.x, rayEndpoint.y, rayEndpoint.z), rayCallback);
 
                 //_dynamicsWorld->debugDrawWorld();
-
                 //_dynamicsWorld->getDebugDrawer()->drawLine(btVector3{rayFrom.x, rayFrom.y, rayFrom.z}, btVector3{rayEndpoint.x, rayEndpoint.y, rayEndpoint.z}, btVector4(0, 1, 0, 1));
 
                 // Check if the ray hit anything
                 if (rayCallback.hasHit())
                 {
+
+                    auto point = btVector3(0.0f, 0.0f, 0.0f);
+
                     // Get the hit object
                     btRigidBody *hitObject = (btRigidBody *)btRigidBody::upcast(rayCallback.m_collisionObject);
                     if (hitObject)
                     {
-                        auto point = rayCallback.m_hitPointWorld;
                         glm::vec3 newPos = glm::vec3(point.x(), point.y(), point.z());
                         _lastPlanePoint = newPos;
 
                         auto entity = (flecs::entity *)hitObject->getUserPointer();
-                        std::cout << entity << std::endl;
                         if (entity != nullptr)
                         {
                             _lastSelectedEntity = entity;
                         }
                         else
                         {
+                            point = rayCallback.m_hitPointWorld;
                             _lastSelectedEntity = nullptr;
                         }
                     }

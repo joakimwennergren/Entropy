@@ -17,7 +17,7 @@ enum Camera_Movement
 };
 
 // Default camera values
-const float YAW = -90.0f;
+const float YAW = 0.0f;
 const float PITCH = 0.0f;
 const float SPEED = 2.5f;
 const float SENSITIVITY = 0.1f;
@@ -28,7 +28,7 @@ class Cam : public Service
 {
 public:
     // camera Attributes
-    glm::vec3 Position = glm::vec3(5.0, 5.0, 10.0);
+    glm::vec3 Position = glm::vec3(5.0, 10.0, 10.0);
     glm::vec3 Front;
     glm::vec3 Up;
     glm::vec3 Right;

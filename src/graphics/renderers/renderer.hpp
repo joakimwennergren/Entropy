@@ -39,6 +39,8 @@
 #include <input/keyboard/keyboard.hpp>
 #include <graphics/pipelines/gizmo_pipeline.hpp>
 
+#include <graphics/synchronization/queuesync.hpp>
+
 #include <tracy/Tracy.hpp>
 #include <imgui.h>
 
@@ -70,6 +72,7 @@ using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Swapchains;
 using namespace Entropy::Graphics::Primitives;
 using namespace Entropy::GLTF;
+using namespace Entropy::Graphics::Synchronization;
 // using namespace Entropy::Graphics::CubeMaps;
 using namespace Entropy::Input;
 
@@ -153,6 +156,8 @@ namespace Entropy
                 size_t bufferSize;
 
                 VkResult imageResult;
+
+                std::shared_ptr<QueueSync> _queueSync;
 
                 size_t pad_uniform_buffer_size(size_t originalSize);
 

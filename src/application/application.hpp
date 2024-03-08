@@ -42,16 +42,8 @@
 #include <graphics/buffers/vertexbuffer.hpp>
 #include <graphics/memory/allocator.hpp>
 #include <physics/3d/physics3d.hpp>
-
-#include <ecs/components/position.hpp>
-#include <ecs/components/scale.hpp>
-#include <ecs/components/model.hpp>
-#include <ecs/components/gizmo.hpp>
-#include <ecs/components/renderable.hpp>
-#include <ecs/components/line.hpp>
-#include <ecs/components/color.hpp>
-#include <ecs/components/boxcollisionshape3d.hpp>
-#include <ecs/components/rigidbody3d.hpp>
+#include <ecs/world.hpp>
+#include <graphics/synchronization/queuesync.hpp>
 
 #include <graphics/primitives/2d/line.hpp>
 
@@ -72,11 +64,12 @@ using namespace Entropy::Graphics::Textures;
 using namespace Entropy::Graphics::Renderers;
 using namespace Entropy::Renderables;
 using namespace Entropy;
+using namespace Entropy::Graphics::Synchronization;
 using namespace Entropy::Input;
 using namespace Entropy::Graphics::Buffers;
 using namespace Entropy::Graphics::Utilities;
 using namespace Entropy::Graphics::Memory;
-using namespace Entropy::Components;
+using namespace Entropy::ECS;
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
 
@@ -119,7 +112,7 @@ public:
     std::shared_ptr<Renderer> _renderer;
     std::shared_ptr<Mouse> mouse;
     bool isResizing = false;
-    Timer *_timer;
+    Entropy::Timing::Timer *_timer;
     float mouse_x;
     float mouse_y;
     float screen_width;
@@ -142,8 +135,8 @@ protected:
     std::shared_ptr<RenderPass> renderpass;
     std::shared_ptr<Synchronizer> synchronizer;
     std::shared_ptr<Physics3D> physics3d;
+    std::shared_ptr<World> world;
     sol::protected_function luaOnRender;
-    flecs::world world;
 
 private:
     void ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::shared_ptr<Lua> lua);
