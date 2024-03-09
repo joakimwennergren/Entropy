@@ -51,6 +51,7 @@
 #include <ecs/components/gizmo.hpp>
 #include <ecs/components/line.hpp>
 #include <ecs/components/color.hpp>
+#include <ecs/components/tags/scripted.hpp>
 
 #include <timing/timer.hpp>
 

@@ -11,6 +11,7 @@ namespace Entropy
         public:
             flecs::world gameWorld;
             flecs::world gizmoWorld;
+            std::vector<flecs::entity> _entities;
         };
     }
 }

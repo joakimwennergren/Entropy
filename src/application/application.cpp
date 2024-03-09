@@ -168,9 +168,8 @@ void Application::Run()
         if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(_window, true);
 
-        if (io.MouseDown[2])
+        if (io.MouseDown[2] || io.MouseDown[1])
         {
-
             float speed = 0.1;
             if (ImGui::IsKeyDown(ImGuiKey_LeftShift))
             {
@@ -259,7 +258,7 @@ void cursor_position_callback(GLFWwindow *window, double xposIn, double yposIn)
     io.MousePos.x = (float)xposIn * xscale;
     io.MousePos.y = (float)yposIn * yscale;
 
-    if (io.MouseDown[2])
+    if (io.MouseDown[2] || io.MouseDown[1])
         app->_camera->ProcessMouseMovement(xoffset, yoffset);
 }
 

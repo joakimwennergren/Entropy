@@ -385,6 +385,15 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator, flecs::world 
     _world->system<Entropy::Components::Renderable>()
         .each([this](flecs::entity e, Entropy::Components::Renderable r)
               {
+                  if(e.has<Entropy::Components::Scripted>())
+                  {
+                    if(e.get_ref<Entropy::Components::Scripted>()->shouldBeRemoved)
+                    {
+                        std::cout << "Destroying scripted entity" << std::endl;
+                        e.destruct();
+                    }
+                  }
+
                   if (_world->is_alive(e))
                       DrawEntity(e, r.id); });
 }

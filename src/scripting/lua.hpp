@@ -1,5 +1,5 @@
 #pragma once
-
+#define SOL_ALL_SAFETIES_ON 1
 #include <future>
 
 #include <sol/sol.hpp>
@@ -28,6 +28,8 @@
 #include <ecs/components/rigidbody3d.hpp>
 #include <assetmanagers/assetmanager.hpp>
 #include <ecs/components/tags/scripted.hpp>
+
+#include <assetmanagers/assetid.hpp>
 
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Primitives;
@@ -61,6 +63,17 @@ namespace Entropy
 
                 return true;
             };
+            inline void my_panic(sol::optional<std::string> maybe_msg)
+            {
+                std::cerr << "Lua is in a panic state and will now abort() the application" << std::endl;
+                if (maybe_msg)
+                {
+                    const std::string &msg = maybe_msg.value();
+                    std::cerr << "\terror message: " << msg << std::endl;
+                }
+                // When this function exits, Lua will exhibit default behavior and abort()
+            }
+
             sol::state _lua;
 
         private:
