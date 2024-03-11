@@ -20,7 +20,8 @@ namespace Entropy
                     pipelineLayoutInfo.pSetLayouts = dsLayouts.data();
                     pipelineLayoutInfo.pPushConstantRanges = nullptr; //&push_constant;
                     pipelineLayoutInfo.pushConstantRangeCount = 0;
-                    Build("LinePipeline", "gizmo_vert.spv", "gizmo_frag.spv", dsLayouts, VK_TRUE, pipelineLayoutInfo, polygonMode);
+                    glm::vec2 depthBounds = {0.0, 1.0};
+                    Build("LinePipeline", "gizmo_vert.spv", "gizmo_frag.spv", dsLayouts, VK_TRUE, depthBounds, pipelineLayoutInfo, polygonMode);
                 }
 
                 LinePipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator, std::vector<char> vert_shader, std::vector<char> frag_shader, VkPolygonMode polygonMode) : Pipeline(renderPass, serviceLocator, polygonMode)
@@ -32,7 +33,8 @@ namespace Entropy
                     pipelineLayoutInfo.pSetLayouts = dsLayouts.data();
                     pipelineLayoutInfo.pPushConstantRanges = nullptr; //&push_constant;
                     pipelineLayoutInfo.pushConstantRangeCount = 0;
-                    Build("LinePipeline", vert_shader, frag_shader, dsLayouts, VK_TRUE, pipelineLayoutInfo, VK_POLYGON_MODE_LINE);
+                    glm::vec2 depthBounds = {0.0, 1.0};
+                    Build("LinePipeline", vert_shader, frag_shader, dsLayouts, VK_TRUE, depthBounds, pipelineLayoutInfo, VK_POLYGON_MODE_LINE);
                 }
 
             private:

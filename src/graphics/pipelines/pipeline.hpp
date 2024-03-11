@@ -38,10 +38,10 @@ namespace Entropy
                 Pipeline(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator, VkPolygonMode polygonMode);
                 ~Pipeline();
 
-                void Setup(std::unique_ptr<Shader> shader, std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite, VkPipelineLayoutCreateInfo pipelinelayout, VkPolygonMode polygonMode);
+                void Setup(std::unique_ptr<Shader> shader, std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite, glm::vec2 depthBounds, VkPipelineLayoutCreateInfo pipelinelayout, VkPolygonMode polygonMode);
 
-                void Build(const std::string name, const std::string vertexShader, const std::string fragmentShader, std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite, VkPipelineLayoutCreateInfo pipelinelayout, VkPolygonMode polygonMode);
-                void Build(const std::string name, std::vector<char> vert_shader, std::vector<char> frag_shader, std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite, VkPipelineLayoutCreateInfo pipelinelayout, VkPolygonMode polygonMode);
+                void Build(const std::string name, const std::string vertexShader, const std::string fragmentShader, std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite, glm::vec2 depthBounds, VkPipelineLayoutCreateInfo pipelinelayout, VkPolygonMode polygonMode);
+                void Build(const std::string name, std::vector<char> vert_shader, std::vector<char> frag_shader, std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite, glm::vec2 depthBounds, VkPipelineLayoutCreateInfo pipelinelayout, VkPolygonMode polygonMode);
                 inline VkPipeline GetPipeline()
                 {
                     return _pipeline;

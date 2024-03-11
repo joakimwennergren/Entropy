@@ -141,9 +141,12 @@ void Application::Run()
     _timer->Start();
     _lastTick = (float)_timer->GetTick();
 
+    _camera->Position = glm::vec3(-43.0f, -24.0f, -40.0f);
+    _camera->Pitch = 22.69f;
+    _camera->Yaw = 44.20f;
+
     while (!glfwWindowShouldClose(_window))
     {
-
         // spdlog::info("ms/frame = {}", _deltaTime);
 
         // Calculate delta time

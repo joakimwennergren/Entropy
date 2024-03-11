@@ -11,7 +11,7 @@ namespace Entropy
             class Pipeline2D : public Pipeline
             {
             public:
-                Pipeline2D(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator,VkPolygonMode polygonMode) : Pipeline(renderPass, serviceLocator, polygonMode)
+                Pipeline2D(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator, VkPolygonMode polygonMode) : Pipeline(renderPass, serviceLocator, polygonMode)
                 {
                     auto dsLayouts = Setup();
                     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
@@ -20,7 +20,8 @@ namespace Entropy
                     pipelineLayoutInfo.pSetLayouts = dsLayouts.data();
                     pipelineLayoutInfo.pPushConstantRanges = nullptr; //&push_constant;
                     pipelineLayoutInfo.pushConstantRangeCount = 0;
-                    Build("Pipeline2D", "2d_vert.spv", "2d_frag.spv", dsLayouts, VK_TRUE, pipelineLayoutInfo, polygonMode);
+                    glm::vec2 depthBounds = {0.0, 1.0};
+                    Build("Pipeline2D", "2d_vert.spv", "2d_frag.spv", dsLayouts, VK_TRUE, depthBounds, pipelineLayoutInfo, polygonMode);
                 }
 
                 Pipeline2D(std::shared_ptr<RenderPass> renderPass, std::shared_ptr<ServiceLocator> serviceLocator, std::vector<char> vert_shader, std::vector<char> frag_shader, VkPolygonMode polygonMode) : Pipeline(renderPass, serviceLocator, polygonMode)
@@ -32,7 +33,8 @@ namespace Entropy
                     pipelineLayoutInfo.pSetLayouts = dsLayouts.data();
                     pipelineLayoutInfo.pPushConstantRanges = nullptr; //&push_constant;
                     pipelineLayoutInfo.pushConstantRangeCount = 0;
-                    Build("Pipeline2D", vert_shader, frag_shader, dsLayouts, VK_TRUE, pipelineLayoutInfo, polygonMode);
+                    glm::vec2 depthBounds = {0.0, 1.0};
+                    Build("Pipeline2D", vert_shader, frag_shader, dsLayouts, VK_TRUE, depthBounds, pipelineLayoutInfo, polygonMode);
                 }
 
             private:

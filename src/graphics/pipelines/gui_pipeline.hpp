@@ -26,7 +26,8 @@ namespace Entropy
                     pipelineLayoutInfo.pSetLayouts = dsLayouts.data();
                     pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange; //&push_constant;
                     pipelineLayoutInfo.pushConstantRangeCount = 1;
-                    Build("GUIPipeline", "ui_vert.spv", "ui_frag.spv", dsLayouts, VK_FALSE, pipelineLayoutInfo, polygonMode);
+                    glm::vec2 depthBounds = {0.0, 1.0};
+                    Build("GUIPipeline", "ui_vert.spv", "ui_frag.spv", dsLayouts, VK_FALSE, depthBounds, pipelineLayoutInfo, polygonMode);
                 }
 
             private:
