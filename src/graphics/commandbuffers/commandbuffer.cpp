@@ -5,15 +5,18 @@ using namespace Entropy::Graphics::CommandBuffers;
 CommandBuffer::CommandBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkCommandBufferLevel level)
 {
     // Get required depenencies
-    auto commandPool = serviceLocator->GetService<CommandPool>();
     auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
+    auto physicalDevice = serviceLocator->GetService<PhysicalDevice>();
+    auto surface = serviceLocator->GetService<WindowSurface>();
 
     _logicalDevice = logicalDevice;
     _queueSync = serviceLocator->GetService<QueueSync>();
 
+    _pool = std::make_unique<CommandPool>(logicalDevice, physicalDevice, surface);
+
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.commandPool = commandPool->Get();
+    allocInfo.commandPool = _pool->Get();
     allocInfo.level = level;
     allocInfo.commandBufferCount = 1;
 
@@ -51,23 +54,20 @@ void CommandBuffer::Record()
 
 void CommandBuffer::EndRecording()
 {
+    assert(_commandBuffer != VK_NULL_HANDLE);
+
     if (vkEndCommandBuffer(_commandBuffer) != VK_SUCCESS)
     {
-        exit(EXIT_FAILURE);
+        spdlog::warn("[CommandBuffer] Error while end recording.");
     }
 }
 
 void CommandBuffer::EndRecordingOnce()
 {
+    assert(_commandBuffer != VK_NULL_HANDLE);
+
     if (vkEndCommandBuffer(_commandBuffer) != VK_SUCCESS)
     {
-        exit(EXIT_FAILURE);
+        spdlog::warn("[CommandBuffer] Error while end recording once.");
     }
-    // VkSubmitInfo submitInfo{};
-    // submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    // submitInfo.commandBufferCount = 1;
-    // submitInfo.pCommandBuffers = &_commandBuffer;
-
-    // vkQueueSubmit(_logicalDevice->GetPresentQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-    // vkQueueWaitIdle(_logicalDevice->GetPresentQueue());
 }

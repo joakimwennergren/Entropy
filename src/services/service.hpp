@@ -1,7 +1,5 @@
 #pragma once
 
-#include <config.hpp>
-
 namespace Entropy
 {
     namespace Services
@@ -10,7 +8,6 @@ namespace Entropy
         {
         public:
             virtual ~Service() = default;
-            virtual void Dummy(){};
         };
     }
 }

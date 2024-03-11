@@ -2,13 +2,21 @@
 
 using namespace Entropy::Graphics::Utilities;
 
+/**
+ * @brief
+ * @param serviceLocator
+ * @param typeFilter
+ * @param properties
+ * @return
+ */
 uint32_t Utility::FindMemoryTypeIndex(std::shared_ptr<ServiceLocator> serviceLocator, uint32_t typeFilter, VkMemoryPropertyFlags properties)
 {
-    auto physical = serviceLocator->GetService<PhysicalDevice>();
+    // Get the physical device
+    auto physicalDevice = serviceLocator->GetService<PhysicalDevice>();
 
     // Get the physical device's memory properties
     VkPhysicalDeviceMemoryProperties memProperties;
-    vkGetPhysicalDeviceMemoryProperties(physical->Get(), &memProperties);
+    vkGetPhysicalDeviceMemoryProperties(physicalDevice->Get(), &memProperties);
 
     // Iterate over memoryproperties and return index of matched property
     for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)

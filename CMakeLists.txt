@@ -79,10 +79,8 @@ target_link_libraries(${PROJECT_NAME}
     TracyClient
     GPUOpen::VulkanMemoryAllocator
     flecs::flecs_static
-	Bullet3Collision
-	Bullet3Common
-	Bullet3Dynamics
-	Bullet3Geometry
+	BulletCollision
+	BulletDynamics
 	BulletDynamics
 	BulletCollision
 	BulletInverseDynamics

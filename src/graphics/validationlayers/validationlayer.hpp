@@ -13,10 +13,7 @@ namespace Entropy
             class ValidationLayer
             {
             public:
-                ValidationLayer();
                 static bool CheckValidationLayerSupport(const std::vector<const char *> validationLayers);
-
-            private:
             };
         }
     }

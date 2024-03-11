@@ -1,9 +1,7 @@
 #pragma once
 
 #include <string>
-
 #include <servicelocators/servicelocator.hpp>
-
 #include <sol/sol.hpp>
 
 using namespace Entropy::ServiceLocators;

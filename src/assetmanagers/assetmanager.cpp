@@ -57,6 +57,7 @@ void AssetManager::LoaderThread()
 
             if (assetJob.has_value())
             {
+                std::cout << "loading model twice??" << std::endl;
                 auto model = new Model(_serviceLocator);
                 model->loadFromFile(assetJob->texturePath);
                 assetJob->loadedData.model = model;
@@ -77,11 +78,11 @@ void AssetManager::LoaderThread()
 
 std::future<Entropy::GLTF::Model *> AssetManager::LoadTextureAsync(const std::string &path)
 {
-    std::cout << "[AssetManager] Creating Simple Texture Asset Job.\n";
-    TextureLoadJob job;
-    job.texturePath = path;
-    job.materialId = AssetId().GetId();
-    m_loadingTexturesQueue.push(job);
+    // std::cout << "[AssetManager] Creating Simple Texture Asset Job.\n";
+    // TextureLoadJob job;
+    // job.texturePath = path;
+    // job.materialId = AssetId().GetId();
+    // m_loadingTexturesQueue.push(job);
 
     // return std::async(std::launch::async, [this]
     //                   {
@@ -93,9 +94,4 @@ std::future<Entropy::GLTF::Model *> AssetManager::LoadTextureAsync(const std::st
     //                             return textureJob.value().loadedData.model;
     //                         }
     //                     } });
-
-    return std::async(std::launch::async, [this, path]
-                      { auto model = new Model(_serviceLocator);
-                        model->loadFromFile(path);
-                        return model; });
 }

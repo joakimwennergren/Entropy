@@ -2,10 +2,11 @@
 
 using namespace Entropy::Graphics::ValidationLayers;
 
-ValidationLayer::ValidationLayer()
-{
-}
-
+/**
+ * @brief Check if provided layers are supported
+ * @param validationLayers std::vector of layers
+ * @return bool
+ */
 bool ValidationLayer::CheckValidationLayerSupport(const std::vector<const char *> validationLayers)
 {
     uint32_t layerCount;

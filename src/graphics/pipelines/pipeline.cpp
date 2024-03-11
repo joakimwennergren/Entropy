@@ -152,7 +152,6 @@ void Pipeline::Setup(std::unique_ptr<Shader> shader, std::vector<VkDescriptorSet
 
 void Pipeline::Build(const std::string name, const std::string vertexShader, const std::string fragmentShader, std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite, VkPipelineLayoutCreateInfo pipelinelayout, VkPolygonMode polygonMode)
 {
-    std::cout << GetShadersDir() + vertexShader << std::endl;
     auto shader = std::make_unique<Shader>(_serviceLocator, GetShadersDir() + vertexShader, GetShadersDir() + fragmentShader);
     Setup(std::move(shader), dsLayout, depthWrite, pipelinelayout, polygonMode);
 }

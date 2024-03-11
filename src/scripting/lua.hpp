@@ -1,11 +1,15 @@
 #pragma once
 #define SOL_ALL_SAFETIES_ON 1
+#include <chrono>
 #include <future>
+#include <iostream>
+#include <thread>
+
+#include <spdlog/spdlog.h>
 
 #include <sol/sol.hpp>
 
 #include <servicelocators/servicelocator.hpp>
-#include <scenegraphs/scenegraph.hpp>
 #include <ecs/world.hpp>
 #include <input/mouse/mouse.hpp>
 #include <data/vectors.hpp>
@@ -33,7 +37,6 @@
 
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Primitives;
-using namespace Entropy::SceneGraphs;
 // using namespace Entropy::Input;
 using namespace Entropy::Vectors;
 using namespace Entropy::Services;
@@ -41,6 +44,8 @@ using namespace Entropy::Components;
 using namespace Entropy::GLTF;
 using namespace Entropy::ECS;
 using namespace EntropyEditor;
+
+using namespace std::chrono_literals;
 
 namespace Entropy
 {
@@ -63,18 +68,19 @@ namespace Entropy
 
                 return true;
             };
+
             inline void my_panic(sol::optional<std::string> maybe_msg)
             {
-                std::cerr << "Lua is in a panic state and will now abort() the application" << std::endl;
                 if (maybe_msg)
                 {
                     const std::string &msg = maybe_msg.value();
-                    std::cerr << "\terror message: " << msg << std::endl;
+                    spdlog::error(msg);
                 }
-                // When this function exits, Lua will exhibit default behavior and abort()
             }
 
             sol::state _lua;
+            std::vector<std::shared_future<Entropy::GLTF::Model *>> futures;
+            std::map<int, flecs::entity> loadedModels;
 
         private:
         };

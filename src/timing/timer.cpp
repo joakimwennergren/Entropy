@@ -2,33 +2,38 @@
 
 using namespace Entropy::Timing;
 
-Timer::Timer()
-{
-}
-
+/**
+ * @brief Constructor
+ * @param tick_duration duration of each tick
+ * @param max_tick max ticks
+ */
 Timer::Timer(float tick_duration, float const &max_tick)
 {
-    set_tick_duration(tick_duration);
-    set_max_tick(max_tick);
-    reset();
+    assert(tick_duration != 0.0f);
+
+    SetTickDuration(tick_duration);
+    SetMaxTick(max_tick);
+    Reset();
 }
 
-/* Protected */
-
-void Timer::calculate()
+/**
+ * @brief Calculate
+ * @return (void)
+ */
+void Timer::Calculate()
 {
     _end = std::chrono::system_clock::now();
     _elapsed = _end - _start;
-    float e = (_elapsed.count() * 1000.0f);
+    float elapsedMilliseconds = _elapsed.count() * 1000.0f;
 
-    if (e >= _tick_duration && e > 0.0f)
+    if (elapsedMilliseconds >= _tick_duration && elapsedMilliseconds > 0.0f)
     {
         _update = true;
-        float t = (e - (fmod(e, _tick_duration))) / _tick_duration;
-        _current_tick += t;
+        float tickCount = elapsedMilliseconds / _tick_duration;
+        _current_tick += tickCount;
         if (_current_tick >= _max_tick)
         {
-            _current_tick = 0.0f;
+            _current_tick = fmod(_current_tick, _max_tick);
         }
         _start = _end;
     }
@@ -38,41 +43,63 @@ void Timer::calculate()
     }
 }
 
-/* Getters */
-
-float Timer::get_tick() // Returns current tick
+/**
+ * @brief return current tick
+ * @return float tick
+ */
+float Timer::GetTick()
 {
-    calculate();
+    Calculate();
     return _current_tick;
 }
 
-/* Setters */
-
-void Timer::set_tick_duration(float const &d)
+/**
+ * @brief
+ * @param d const float duration
+ * @return (void)
+ */
+void Timer::SetTickDuration(float const &d)
 {
+    assert(d != 0.0f);
     _tick_duration = d;
 }
 
-void Timer::set_max_tick(float const &max)
+/**
+ * @brief Set max tick
+ * @param max const float max tick
+ * @return (void)
+ */
+void Timer::SetMaxTick(float const &max)
 {
+    assert(max != 0.0f);
     _max_tick = max;
 }
 
-/* Methods */
-
-void Timer::start()
+/**
+ * @brief Start the timer
+ * @return (void)
+ */
+void Timer::Start()
 {
-    reset();
+    Reset();
 }
 
-void Timer::reset()
+/**
+ * @brief Reset the timer
+ * @return (void)
+ */
+void Timer::Reset()
 {
     _update = true;
     _current_tick = 0.0f;
     _start = std::chrono::system_clock::now();
 }
 
-bool Timer::updated()
+/**
+ * @brief Check if timer is updated
+ * @return bool
+ */
+bool Timer::Updated()
 {
     return _update;
 }

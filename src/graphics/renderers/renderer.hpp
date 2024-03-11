@@ -20,7 +20,6 @@
 #include <graphics/data/ubo.hpp>
 #include <graphics/synchronization/synchronizer.hpp>
 #include <renderables/renderable.hpp>
-#include <scenegraphs/scenegraph.hpp>
 // #include <graphics/cubemaps/cubemap.hpp>
 #include <servicelocators/servicelocator.hpp>
 #include <graphics/descriptorsets/descriptorset.hpp>
@@ -59,7 +58,6 @@
 #include <android/asset_manager.h>
 #endif
 
-using namespace Entropy::SceneGraphs;
 using namespace Entropy::Graphics::Utilities;
 using namespace Entropy::Renderables;
 using namespace Entropy::Graphics::Buffers;
@@ -97,7 +95,7 @@ namespace Entropy
                 void DrawGUI();
                 VkResult SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex);
                 void DrawEntity(flecs::entity entity, uint32_t index);
-                void HandleResize();
+                void HandleResize(int width, int height);
                 bool isResizing = true;
                 struct UboDataDynamic
                 {
@@ -141,8 +139,6 @@ namespace Entropy
                 std::shared_ptr<Descriptorset> _descriptorSet;
                 std::shared_ptr<LogicalDevice> _logicalDevice;
                 std::shared_ptr<Swapchain> _swapChain;
-
-                std::shared_ptr<SceneGraph> _sceneGraph;
 
                 VkCommandBuffer currentCmdBuffer;
                 VkDescriptorSet currentDescriptorSet;

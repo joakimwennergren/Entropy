@@ -31,6 +31,7 @@ Application::Application()
     glfwSetCursorPosCallback(_window, cursor_position_callback);
     glfwSetCharCallback(_window, character_callback);
     glfwSetScrollCallback(_window, scroll_callback);
+    glfwSetWindowIconifyCallback(_window, window_iconify_callback);
 
     // Get initial window framebuffer size
     int width,
@@ -39,7 +40,7 @@ Application::Application()
     VkExtent2D frame = {(uint32_t)width, (uint32_t)height};
 
     // Create 1ms Timer
-    _timer = new Timer(1.0f);
+    _timer = std::make_unique<Timer>(1.0);
 
     // Create items for vulkan
     _vkInstance = std::make_shared<VulkanInstance>("Entropy tests");
@@ -65,9 +66,6 @@ Application::Application()
     serviceLocator->AddService(_swapChain);
     serviceLocator->AddService(commandPool);
     serviceLocator->AddService(_windowSurface);
-
-    sceneGraph = std::make_shared<SceneGraph>();
-    serviceLocator->AddService(sceneGraph);
 
     physics2d = std::make_shared<Physics2D>(serviceLocator);
     serviceLocator->AddService(physics2d);
@@ -96,64 +94,72 @@ Application::Application()
     auto &io = ImGui::GetIO();
     io.DisplaySize = ImVec2(width, height);
 
-    _renderer->_camera->setPerspective(60.0f, (float)width / (float)height, 1.0f, 1000.0f);
+    _renderer->_camera->setPerspective(60.0f, (float)width / (float)height, 1.0f, 100000.0f);
 }
 
-void Application::ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::shared_ptr<Lua> lua)
-{
-    for (auto renderable : sceneGraph->renderables)
-    {
-        if (!renderable->script->hasExecuted)
-        {
-            if (renderable->script->scriptFile.length() > 0)
-            {
-                lua->ExecuteScript("", renderable->script->scriptFile, renderable->script->environment);
-            }
-            else
-            {
-                lua->ExecuteScript(renderable->script->script, "", renderable->script->environment);
-            }
+// void Application::ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::shared_ptr<Lua> lua)
+// {
+//     for (auto renderable : sceneGraph->renderables)
+//     {
+//         if (!renderable->script->hasExecuted)
+//         {
+//             if (renderable->script->scriptFile.length() > 0)
+//             {
+//                 lua->ExecuteScript("", renderable->script->scriptFile, renderable->script->environment);
+//             }
+//             else
+//             {
+//                 lua->ExecuteScript(renderable->script->script, "", renderable->script->environment);
+//             }
 
-            renderable->script->hasExecuted = true;
-        }
+//             renderable->script->hasExecuted = true;
+//         }
 
-        auto onRenderFunc = renderable->script->environment["OnRender"];
+//         auto onRenderFunc = renderable->script->environment["OnRender"];
 
-        // if (onRenderFunc != nullptr)
-        //{
-        //     onRenderFunc();
-        // }
-    }
-}
+//         // if (onRenderFunc != nullptr)
+//         //{
+//         //     onRenderFunc();
+//         // }
+//     }
+// }
 
 Application::~Application()
 {
-    delete _timer;
     glfwDestroyWindow(_window);
     glfwTerminate();
 }
 
 void Application::Run()
 {
-    auto sceneGraph = serviceLocator->GetService<SceneGraph>();
     auto lua = serviceLocator->GetService<Lua>();
     auto physics3d = serviceLocator->GetService<Physics3D>();
     auto &io = ImGui::GetIO();
 
     this->OnInit();
 
-    _timer->start();
-    _lastTick = (float)_timer->get_tick();
+    _timer->Start();
+    _lastTick = (float)_timer->GetTick();
 
     while (!glfwWindowShouldClose(_window))
     {
+
+        // spdlog::info("ms/frame = {}", _deltaTime);
+
         // Calculate delta time
-        _deltaTime = (float)_timer->get_tick() - _lastTick;
-        _lastTick = (float)_timer->get_tick();
+        _deltaTime = _timer->GetTick() - _lastTick;
+        _lastTick = _timer->GetTick();
 
         // Update screen dimensions
         int width, height;
         glfwGetFramebufferSize(_window, &width, &height);
+
+#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_WINDOWS)
+        while (isMinimized)
+        {
+            glfwWaitEvents();
+        }
+#endif
 
         GLFWmonitor *primary = glfwGetPrimaryMonitor();
         float xscale, yscale;
@@ -191,10 +197,36 @@ void Application::Run()
 
         // physics2d->world->Step(timeStep, velocityIterations, positionIterations);
         physics3d->GetWorld()->stepSimulation(1.0f / 60.0f); // Example: step the simulation with a time step of 1/60 seconds
+
         // ExecuteScripts(sceneGraph, lua);
 
         _camera->updateCameraVectors();
-        _renderer->_camera->setPerspective(_camera->Zoom, (float)width / (float)height, 1.0f, 1000.0f);
+        _renderer->_camera->setPerspective(_camera->Zoom, (float)width / (float)height, 1.0f, 100000.0f);
+
+        uint32_t index = 0;
+        for (auto fut : lua->futures)
+        {
+            if (fut.wait_for(1ms) == std::future_status::ready)
+            {
+                std::cout << "Building model!" << std::endl;
+                auto e = serviceLocator->GetService<World>()->gameWorld.entity();
+                auto id = AssetId().GetId();
+                auto modelShared = std::shared_ptr<Entropy::GLTF::Model>(fut.get());
+                e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
+                e.set<Scale>({glm::vec3(100.0, 100.0, 100.0)});
+                e.set<Entropy::Components::Model>({modelShared});
+                e.set<Entropy::Components::Renderable>({id, 0, true});
+                e.set<Entropy::Components::Color>({glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}});
+                e.set<Entropy::Components::BoxCollisionShape3D>({glm::vec3(10.0, 10.0, 10.0), glm::vec3{0.0, 0.0, 0.0}});
+                e.set<Entropy::Components::RigidBody3D>({});
+                e.set<Entropy::Components::Scripted>({});
+                e.get_mut<Entropy::Components::BoxCollisionShape3D>()->UpdateMotionState();
+                e.get_mut<Entropy::Components::RigidBody3D>()->Initialize(serviceLocator, e);
+                lua->loadedModels[index] = e;
+                lua->futures.erase(lua->futures.begin() + index);
+            }
+            index++;
+        }
 
         // Poll events
         glfwPollEvents();
@@ -273,7 +305,7 @@ void framebufferResizeCallback(GLFWwindow *window, int width, int height)
     auto &io = ImGui::GetIO();
     io.DisplaySize = ImVec2(width * xscale, height * yscale);
     app->GetRenderer()->Render(width * xscale, height * yscale, true);
-    app->_renderer->_camera->setPerspective(app->_camera->Zoom, (float)width / (float)height, 1.0f, 1000.0f);
+    app->_renderer->_camera->setPerspective(app->_camera->Zoom, (float)width / (float)height, 1.0f, 100000.0f);
     app->OnRender(0.0);
 }
 
@@ -301,6 +333,20 @@ void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
     io.MouseWheel += (float)yoffset;
 
     app->_camera->ProcessMouseScroll((float)yoffset);
+}
+
+void window_iconify_callback(GLFWwindow *window, int iconified)
+{
+    auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
+
+    if (iconified)
+    {
+        app->isMinimized = true;
+    }
+    else
+    {
+        app->isMinimized = false;
+    }
 }
 
 #endif

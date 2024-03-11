@@ -1,5 +1,5 @@
 #pragma once
-
+#include <future>
 #include <gltf/model.hpp>
 
 namespace Entropy

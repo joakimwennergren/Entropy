@@ -28,7 +28,6 @@
 #include <graphics/descriptorsets/descriptorset.hpp>
 #include <graphics/commandpools/commandpool.hpp>
 #include <graphics/commandbuffers/commandbuffer.hpp>
-#include <scenegraphs/scenegraph.hpp>
 #include <physics/2d/physics2d.hpp>
 #include <scripting/lua.hpp>
 #include <input/mouse/mouse.hpp>
@@ -56,7 +55,6 @@ using namespace Entropy::Graphics::CommandBuffers;
 using namespace Entropy::Graphics::DescriptorPools;
 using namespace Entropy::Graphics::DescriptorsetLayouts;
 using namespace Entropy::Graphics::Descriptorsets;
-using namespace Entropy::SceneGraphs;
 using namespace Entropy::Scripting;
 using namespace Entropy::Physics;
 using namespace Entropy::ServiceLocators;
@@ -70,6 +68,8 @@ using namespace Entropy::Graphics::Buffers;
 using namespace Entropy::Graphics::Utilities;
 using namespace Entropy::Graphics::Memory;
 using namespace Entropy::ECS;
+
+using namespace std::chrono_literals;
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
 
@@ -86,6 +86,7 @@ void window_refresh_callback(GLFWwindow *window);
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
 void character_callback(GLFWwindow *window, unsigned int codepoint);
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
+void window_iconify_callback(GLFWwindow *window, int iconified);
 
 class Application
 {
@@ -107,17 +108,19 @@ public:
     float lastX = 0.0;
     float lastY = 0.0;
     std::shared_ptr<ServiceLocator> serviceLocator;
-    std::shared_ptr<SceneGraph> sceneGraph;
     // @todo look over if this should be protected..
     std::shared_ptr<Renderer> _renderer;
     std::shared_ptr<Mouse> mouse;
     bool isResizing = false;
-    Entropy::Timing::Timer *_timer;
+    std::unique_ptr<Entropy::Timing::Timer> _timer;
     float mouse_x;
+    int nbFrames = 0;
+    float lastTime;
     float mouse_y;
     float screen_width;
     float screen_height;
     bool mouse0_state = false;
+    bool isMinimized = false;
 
 protected:
     GLFWwindow *_window;
@@ -139,8 +142,6 @@ protected:
     sol::protected_function luaOnRender;
 
 private:
-    void ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::shared_ptr<Lua> lua);
-
     float _lastTick = 0.0f;
     float _deltaTime = 0.0f;
 };
@@ -169,7 +170,6 @@ public:
     float lastY = 0.0;
 
     std::shared_ptr<ServiceLocator> serviceLocator;
-    std::shared_ptr<SceneGraph> sceneGraph;
     std::shared_ptr<Physics2D> physics2d;
     sol::protected_function luaOnRender;
     std::shared_ptr<Renderer> _renderer;
@@ -177,8 +177,6 @@ public:
     class MTKViewDelegate : public MTK::ViewDelegate
     {
     public:
-        std::shared_ptr<SceneGraph> graph;
-
         MTKViewDelegate(EntropyApplication *app) : MTK::ViewDelegate()
         {
             this->app = app;
@@ -302,10 +300,6 @@ public:
         serviceLocator->AddService(descriptorPool);
         serviceLocator->AddService(swapChain);
         serviceLocator->AddService(commandPool);
-
-        sceneGraph = std::make_shared<SceneGraph>();
-        serviceLocator->AddService(sceneGraph);
-
         physics2d = std::make_shared<Physics2D>(serviceLocator);
         serviceLocator->AddService(physics2d);
 
