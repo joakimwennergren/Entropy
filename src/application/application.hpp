@@ -1,9 +1,3 @@
-/**
-    application.hpp
-    Application wrapper interface, common for all platforms
-    @author Joakim Wennergren
-    @version 1.0 2/11/2023
-*/
 #pragma once
 
 #include <thread>
@@ -95,7 +89,6 @@ public:
     ~Application();
 
     virtual void OnInit() = 0;
-
     virtual void OnRender(float deltaTime) = 0;
 
     void Run();

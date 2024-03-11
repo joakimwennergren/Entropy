@@ -12,7 +12,6 @@
 #include <servicelocators/servicelocator.hpp>
 #include <ecs/world.hpp>
 #include <input/mouse/mouse.hpp>
-#include <data/vectors.hpp>
 #include <services/service.hpp>
 
 // Bound entities
@@ -38,7 +37,6 @@
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Primitives;
 // using namespace Entropy::Input;
-using namespace Entropy::Vectors;
 using namespace Entropy::Services;
 using namespace Entropy::Components;
 using namespace Entropy::GLTF;

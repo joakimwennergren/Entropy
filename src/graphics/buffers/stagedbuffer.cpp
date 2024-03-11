@@ -6,12 +6,12 @@ StagedBuffer::StagedBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkDev
 {
     auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
 
-    CreateBuffer(serviceLocator, size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, _buffer, _bufferMemory);
+    CreateBuffer(serviceLocator, size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 
-    void* mappedData;
+    void *mappedData;
     vmaMapMemory(_allocator->Get(), _allocation, &mappedData);
     memcpy(mappedData, dataIn, static_cast<size_t>(size));
     vmaUnmapMemory(_allocator->Get(), _allocation);
-    //std::memmove(data, dataIn, static_cast<size_t>(size));
-    //vmaUnmapMemory(_allocator->Get(), _allocation);
+    // std::memmove(data, dataIn, static_cast<size_t>(size));
+    // vmaUnmapMemory(_allocator->Get(), _allocation);
 }

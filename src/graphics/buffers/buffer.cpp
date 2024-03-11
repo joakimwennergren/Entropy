@@ -4,24 +4,21 @@ using namespace Entropy::Graphics::Buffers;
 
 Buffer::~Buffer()
 {
-    // vkDeviceWaitIdle(_logicalDevice->Get());
-
-    /*
-    // Destroy the buffer
-    vkDestroyBuffer(_logicalDevice->Get(), _buffer, nullptr);
-
-    // Free buffer memory
-    vkFreeMemory(_logicalDevice->Get(), _bufferMemory, nullptr);
-
-    */
-
+    // @todo Destroy buffer!!!
     // vmaDestroyBuffer(_allocator->Get(), _buffer, _allocation);
 }
 
-void Buffer::CreateBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory)
+/**
+ * @brief Create Buffer
+ * @param serviceLocator ServiceLocator
+ * @param size size of buffer
+ * @param usage VkBufferUsageFlags usage flags
+ * @return (void)
+ */
+void Buffer::CreateBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkDeviceSize size, VkBufferUsageFlags usage)
 {
     assert(serviceLocator != nullptr);
-    assert(size > 0);
+    assert(size != 0);
 
     _allocator = serviceLocator->GetService<Allocator>();
 
@@ -42,88 +39,32 @@ void Buffer::CreateBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkDevi
     }
 }
 
-void Buffer::CopyBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
-{
-    auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
-
-    // Create a commandBuffer
-    auto cmdBuffer = CommandBuffer(serviceLocator, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-    auto cmdBufferHandle = cmdBuffer.GetCommandBuffer();
-
-    // Start recording
-    cmdBuffer.Record();
-
-    // Copy buffer from src to dst
-    VkBufferCopy copyRegion{};
-    copyRegion.size = size;
-    vkCmdCopyBuffer(cmdBufferHandle, srcBuffer, dstBuffer, 1, &copyRegion);
-
-    // End recording
-    cmdBuffer.EndRecording();
-
-    // Submit to queue
-    VkSubmitInfo submitInfo{};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &cmdBufferHandle;
-    vkQueueSubmit(logicalDevice->GetGraphicQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-
-    // Wait until GPU processed queue
-    vkQueueWaitIdle(logicalDevice->GetGraphicQueue());
-}
-
+// @todo move this into seperate derived class
 void Buffer::CreateIndexBufferUint16(std::shared_ptr<ServiceLocator> serviceLocator, std::vector<uint16_t> indices)
 {
-    auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
-
     VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
 
-    // VkBuffer stagingBuffer;
-    // VkDeviceMemory stagingBufferMemory;
-    // CreateBuffer(serviceLocator, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, stagingBuffer, stagingBufferMemory);
+    assert(bufferSize != 0);
 
-    // void *data;
-    // vkMapMemory(logicalDevice->Get(), stagingBufferMemory, 0, bufferSize, 0, &data);
-    // memcpy(data, indices.data(), (size_t)bufferSize);
-    // vkUnmapMemory(logicalDevice->Get(), stagingBufferMemory);
-
-    CreateBuffer(serviceLocator, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _buffer, _bufferMemory);
+    CreateBuffer(serviceLocator, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 
     void *mappedData;
     vmaMapMemory(_allocator->Get(), _allocation, &mappedData);
     memcpy(mappedData, indices.data(), bufferSize);
     vmaUnmapMemory(_allocator->Get(), _allocation);
-
-    // CopyBuffer(serviceLocator, stagingBuffer, _buffer, bufferSize);
-
-    // vkDestroyBuffer(logicalDevice->Get(), stagingBuffer, nullptr);
-    // vkFreeMemory(logicalDevice->Get(), stagingBufferMemory, nullptr);
 }
 
+// @todo move this into seperate derived class
 void Buffer::CreateIndexBufferUint32(std::shared_ptr<ServiceLocator> serviceLocator, std::vector<uint32_t> indices)
 {
-    auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
-
     VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
 
-    VkBuffer stagingBuffer;
-    VkDeviceMemory stagingBufferMemory;
-    CreateBuffer(serviceLocator, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+    assert(bufferSize != 0);
+
+    CreateBuffer(serviceLocator, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 
     void *mappedData;
     vmaMapMemory(_allocator->Get(), _allocation, &mappedData);
     memcpy(mappedData, indices.data(), bufferSize);
     vmaUnmapMemory(_allocator->Get(), _allocation);
-
-    // void *data;
-    // vkMapMemory(logicalDevice->Get(), stagingBufferMemory, 0, bufferSize, 0, &data);
-    // memcpy(data, indices.data(), (size_t)bufferSize);
-    // vkUnmapMemory(logicalDevice->Get(), stagingBufferMemory);
-
-    // CreateBuffer(serviceLocator, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _buffer, _bufferMemory);
-
-    // CopyBuffer(serviceLocator, stagingBuffer, _buffer, bufferSize);
-
-    // vkDestroyBuffer(logicalDevice->Get(), stagingBuffer, nullptr);
-    // vkFreeMemory(logicalDevice->Get(), stagingBufferMemory, nullptr);
 }

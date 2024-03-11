@@ -4,21 +4,24 @@
 Application::Application()
 {
     ImGui::CreateContext();
+
     // Seed random
     srand(static_cast<unsigned>(time(0)));
 
     // Initialize GLFW
     if (!glfwInit())
     {
+        spdlog::critical("Could not initialize GLFW.");
         exit(EXIT_FAILURE);
     }
 
     // Create the window
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    _window = glfwCreateWindow(500, 500, "Entropy application", NULL, NULL);
+    _window = glfwCreateWindow(1000, 640, "Entropy application", NULL, NULL);
 
     if (!_window)
     {
+        spdlog::critical("Could not create a window.");
         glfwTerminate();
         exit(EXIT_FAILURE);
     }

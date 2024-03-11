@@ -6,6 +6,8 @@
 #include <string>
 #include <config.hpp>
 
+#include <spdlog/spdlog.h>
+
 #include <graphics/devices/logical_device.hpp>
 #include <graphics/descriptorsetlayouts/descriptorsetlayout.hpp>
 #include <graphics/descriptorpools/descriptorpool.hpp>

@@ -1,28 +1,12 @@
-/**
- * @file buffer.hpp
- * @author Joakim Wennergren (joakim.wennergren@databeams.se)
- * @brief
- * @version 0.1
- * @date 2023-08-22
- *
- * @copyright Copyright (c) 2023
- *
- */
-
 #pragma once
 
-#include <vulkan/vulkan.hpp>
 #include <cassert>
 
-#include <graphics/data/vertex.hpp>
-#include <graphics/utilities/utilities.hpp>
-#include <graphics/commandbuffers/commandbuffer.hpp>
-#include <graphics/memory/allocator.hpp>
-
+#include <vulkan/vulkan.hpp>
 #include <spdlog/spdlog.h>
 
-using namespace Entropy::Graphics::Utilities;
-using namespace Entropy::Graphics::CommandBuffers;
+#include <graphics/memory/allocator.hpp>
+
 using namespace Entropy::Graphics::Memory;
 
 namespace Entropy
@@ -31,78 +15,29 @@ namespace Entropy
     {
         namespace Buffers
         {
-            /**
-             * @brief
-             *
-             */
-
             class Buffer
             {
             public:
-                /**
-                 * @brief Destroy the Buffer object
-                 *
-                 */
                 ~Buffer();
-
-                /**
-                 * @brief Get the vulkan buffer
-                 *
-                 * @return VkBuffer
-                 */
-                inline VkBuffer GetVulkanBuffer() { return this->_buffer; };
-
-                /**
-                 * @brief Get the Buffer Memory object
-                 *
-                 * @return VkDeviceMemory
-                 */
-                inline VkDeviceMemory GetBufferMemory() { return this->_bufferMemory; };
 
                 void CreateIndexBufferUint16(std::shared_ptr<ServiceLocator> serviceLocator, std::vector<uint16_t> indices);
 
                 void CreateIndexBufferUint32(std::shared_ptr<ServiceLocator> serviceLocator, std::vector<uint32_t> indices);
 
-                /**
-                 * @brief Get the Mapped Memory object
-                 *
-                 * @return void*
-                 */
+                inline VkBuffer GetVulkanBuffer() { return this->_buffer; };
+
+                inline VkDeviceMemory GetBufferMemory() { return this->_bufferMemory; };
+
                 inline void *GetMappedMemory() { return this->_mappedMemory; };
-                /**
-                 * @brief Create a Buffer object
-                 *
-                 * @param size
-                 * @param usage
-                 * @param properties
-                 * @param buffer
-                 * @param bufferMemory
-                 */
-                void CreateBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory);
 
             protected:
-                /**
-                 * @brief Copy One Buffer into another
-                 *
-                 * @param srcBuffer VkBuffer source
-                 * @param dstBuffer VkBuffer destination
-                 * @param size srcBuffer size
-                 */
-                void CopyBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+                void CreateBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkDeviceSize size, VkBufferUsageFlags usage);
 
-                // Vulkan buffer
                 VkBuffer _buffer;
-
-                // Buffer in device memory
                 VkDeviceMemory _bufferMemory;
-
-                // Mapped memory towards GPU?
-                void *_mappedMemory;
-
-                std::shared_ptr<LogicalDevice> _logicalDevice;
-
                 VmaAllocation _allocation;
-
+                void *_mappedMemory;
+                std::shared_ptr<LogicalDevice> _logicalDevice;
                 std::shared_ptr<Allocator> _allocator;
             };
         }
