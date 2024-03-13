@@ -90,14 +90,14 @@ void Swapchain::CreateSwapChain(VkSwapchainKHR prev)
 
 void Swapchain::RecreateSwapChain()
 {
-    ZoneScopedN("Recreating swapchain");
+    vkDeviceWaitIdle(_logicalDevice);
 
     for (size_t i = 0; i < swapChainImageViews.size(); i++)
     {
         vkDestroyImageView(_logicalDevice, swapChainImageViews[i], nullptr);
     }
 
-    CreateSwapChain(_swapChain); // create new swapchain with swapchainOld = _swapChain
+    CreateSwapChain(_swapChain);
 }
 
 SwapChainSupportDetails Swapchain::QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface)

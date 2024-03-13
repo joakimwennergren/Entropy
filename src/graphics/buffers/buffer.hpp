@@ -20,9 +20,10 @@ namespace Entropy
             public:
                 ~Buffer();
 
-                void CreateIndexBufferUint16(std::shared_ptr<ServiceLocator> serviceLocator, std::vector<uint16_t> indices);
-
-                void CreateIndexBufferUint32(std::shared_ptr<ServiceLocator> serviceLocator, std::vector<uint32_t> indices);
+                void Destroy()
+                { // @todo Destroy buffer!!!
+                    vmaDestroyBuffer(_allocator->Get(), _buffer, _allocation);
+                };
 
                 inline VkBuffer GetVulkanBuffer() { return this->_buffer; };
 

@@ -6,5 +6,4 @@ Label::Label(std::shared_ptr<ServiceLocator> serviceLocator, std::shared_ptr<Fon
 {
     _serviceLocator = serviceLocator;
     _font = font;
-    type = 3;
 }

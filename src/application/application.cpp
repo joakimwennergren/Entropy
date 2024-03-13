@@ -82,7 +82,7 @@ Application::Application()
     world = std::make_shared<World>();
     serviceLocator->AddService(world);
 
-    auto queueSync = std::make_shared<QueueSync>(serviceLocator);
+    auto queueSync = std::make_shared<QueueSync>();
     serviceLocator->AddService(queueSync);
 
     physics3d = std::make_shared<Physics3D>(&world->gameWorld, serviceLocator);

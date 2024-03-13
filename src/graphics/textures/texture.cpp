@@ -298,7 +298,7 @@ void Texture::TransitionImageLayout(VkImage image, VkImageLayout oldLayout, VkIm
 
     // End one-time recording and add command buffer to queue
     commandBuffer->EndRecordingOnce();
-    _queueSync->_commandBuffers.push_back(commandBuffer->GetCommandBuffer());
+    _queueSync->commandBuffers.push_back(commandBuffer->GetCommandBuffer());
 }
 
 /**
@@ -336,7 +336,7 @@ void Texture::CopyBufferToImage(const VkBuffer buffer, const VkImage image, cons
 
     // End one-time recording and add command buffer to queue
     commandBuffer->EndRecordingOnce();
-    _queueSync->_commandBuffers.push_back(commandBuffer->GetCommandBuffer());
+    _queueSync->commandBuffers.push_back(commandBuffer->GetCommandBuffer());
 }
 
 /**

@@ -16,10 +16,10 @@
 #include <graphics/commandbuffers/commandbuffer.hpp>
 #include <graphics/data/ubo.hpp>
 #include <graphics/buffers/uniformbuffer.hpp>
+#include <graphics/buffers/indexbuffer.hpp>
 #include <graphics/data/pushcontants.hpp>
 #include <graphics/data/ubo.hpp>
 #include <graphics/synchronization/synchronizer.hpp>
-#include <renderables/renderable.hpp>
 // #include <graphics/cubemaps/cubemap.hpp>
 #include <servicelocators/servicelocator.hpp>
 #include <graphics/descriptorsets/descriptorset.hpp>
@@ -59,7 +59,6 @@
 #endif
 
 using namespace Entropy::Graphics::Utilities;
-using namespace Entropy::Renderables;
 using namespace Entropy::Graphics::Buffers;
 using namespace Entropy::Graphics::Textures;
 using namespace Entropy::Graphics::Pipelines;
@@ -171,6 +170,8 @@ namespace Entropy
                 Texture *fontTexture;
                 flecs::world *_world;
                 Timer *_timer;
+
+                VkFence _fence;
             };
         }
     }

@@ -9,10 +9,8 @@
 
 #include <graphics/primitives/2d/sprite.hpp>
 #include <filesystem/filesystem.hpp>
-#include <renderables/renderable.hpp>
 #include <servicelocators/servicelocator.hpp>
 
-using namespace Entropy::Renderables;
 using namespace Entropy::Graphics::Primitives;
 using namespace Entropy::ServiceLocators;
 

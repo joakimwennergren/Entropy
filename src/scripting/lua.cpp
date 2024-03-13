@@ -11,16 +11,16 @@ Lua::Lua(std::shared_ptr<ServiceLocator> serviceLocator)
     _lua.set_panic(sol::c_call<decltype(&Lua::my_panic), &Lua::my_panic>);
     _lua.open_libraries(sol::lib::base, sol::lib::coroutine);
 
-    _lua.new_usertype<Sprite>(
-        "Sprite",
-        sol::factories([serviceLocator, this](const std::string path)
-                       {
-                           // auto sprite = std::make_shared<Sprite>(serviceLocator, path);
-                           // sprite->script->environment = sol::environment(_lua, sol::create, _lua.globals());
-                           // sceneGraph->renderables.push_back(sprite);
-                           // return sprite;
-                       }),
-        "Translate", &Sprite::Translate2D, "Scale", &Sprite::Scale2D, "SetScript", &Sprite::SetScript, "SetScriptFile", &Sprite::SetScriptFile, "Parent", sol::property(&Sprite::parent));
+    // _lua.new_usertype<Sprite>(
+    //     "Sprite",
+    //     sol::factories([serviceLocator, this](const std::string path)
+    //                    {
+    //                        // auto sprite = std::make_shared<Sprite>(serviceLocator, path);
+    //                        // sprite->script->environment = sol::environment(_lua, sol::create, _lua.globals());
+    //                        // sceneGraph->renderables.push_back(sprite);
+    //                        // return sprite;
+    //                    }),
+    //     "Translate", &Sprite::Translate2D, "Scale", &Sprite::Scale2D, "SetScript", &Sprite::SetScript, "SetScriptFile", &Sprite::SetScriptFile, "Parent", sol::property(&Sprite::parent));
 
     _lua.new_usertype<Entropy::GLTF::Model>(
         "Model",

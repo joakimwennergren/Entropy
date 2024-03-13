@@ -33,8 +33,9 @@
 #include <graphics/textures/texture.hpp>
 #include <servicelocators/servicelocator.hpp>
 #include <graphics/devices/logical_device.hpp>
-#include <renderables/renderable.hpp>
 #include <graphics/buffers/uniformbuffer.hpp>
+#include <graphics/buffers/vertexbuffer.hpp>
+#include <graphics/buffers/indexbuffer.hpp>
 #include <graphics/data/vertex.hpp>
 #include <graphics/descriptorpools/descriptorpool.hpp>
 #include <graphics/pipelines/pipeline.hpp>
@@ -50,7 +51,6 @@
 using namespace Entropy::Graphics::Textures;
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Devices;
-using namespace Entropy::Renderables;
 using namespace Entropy::Graphics::Pipelines;
 using namespace Entropy::Graphics::Buffers;
 using namespace Entropy::Graphics::DescriptorPools;
@@ -233,7 +233,7 @@ namespace Entropy
             float end = std::numeric_limits<float>::lowest();
         };
 
-        class Model : public Renderable
+        class Model
         {
         public:
             struct Vertices
@@ -301,8 +301,8 @@ namespace Entropy
             void setupNodeDescriptorSet(Node *node, VkDescriptorSetLayout layout);
             void renderNode(Node *node, VkCommandBuffer commandBuffer, std::shared_ptr<Pipeline> pipeline, Material::AlphaMode alphaMode);
 
-            std::unique_ptr<VertexBuffer> _vertexBuffer;
-            std::unique_ptr<Buffer> _indexBuffer;
+            std::unique_ptr<VertexBuffer> vertexBuffer;
+            std::unique_ptr<IndexBuffer<uint16_t>> indexBuffer;
             Timer *timer;
 
             void Test(){};

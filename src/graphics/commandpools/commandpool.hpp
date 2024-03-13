@@ -1,11 +1,7 @@
 #pragma once
 
 #include <vulkan/vulkan.hpp>
-#include <iostream>
-#include <vector>
-#include <set>
-#include <string>
-#include <config.hpp>
+#include <spdlog/spdlog.h>
 
 #include <graphics/devices/logical_device.hpp>
 #include <graphics/devices/physical_device.hpp>
@@ -31,7 +27,7 @@ namespace Entropy
                 inline VkCommandPool Get() { return _commandPool; };
 
             private:
-                VkCommandPool _commandPool;
+                VkCommandPool _commandPool = VK_NULL_HANDLE;
             };
         }
     }

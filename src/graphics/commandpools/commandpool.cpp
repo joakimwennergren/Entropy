@@ -2,8 +2,18 @@
 
 using namespace Entropy::Graphics::CommandPools;
 
+/**
+ * @brief Constructor for CommandPool
+ * @param logicalDevice LogicalDevice device
+ * @param physicalDevice PhysicalDevice physical device
+ * @param surface WindowSurface surface
+ */
 CommandPool::CommandPool(std::shared_ptr<LogicalDevice> logicalDevice, std::shared_ptr<PhysicalDevice> physicalDevice, std::shared_ptr<WindowSurface> surface)
 {
+    assert(logicalDevice != nullptr);
+    assert(physicalDevice != nullptr);
+    assert(surface != nullptr);
+
     QueueFamilyIndices queueFamilyIndices = QueueFamily::FindQueueFamilies(physicalDevice->Get(), surface->Get());
 
     VkCommandPoolCreateInfo poolInfo{};
@@ -13,6 +23,6 @@ CommandPool::CommandPool(std::shared_ptr<LogicalDevice> logicalDevice, std::shar
 
     if (vkCreateCommandPool(logicalDevice->Get(), &poolInfo, nullptr, &_commandPool) != VK_SUCCESS)
     {
-        exit(EXIT_FAILURE);
+        spdlog::error("[CommandPool] Failed to create a command pool.");
     }
 }

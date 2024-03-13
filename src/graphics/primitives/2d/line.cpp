@@ -6,25 +6,14 @@ Line::Line(std::shared_ptr<ServiceLocator> serviceLocator, glm::vec3 start, glm:
 {
     _serviceLocator = serviceLocator;
 
-    script = std::make_unique<Script>();
-
-    _vertices = {
+    std::vector<Vertex> vertices = {
         {{start.x, start.y, start.z}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
         {{end.x, end.y, end.z}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}}};
 
-    this->position = glm::vec3(0.0f, 0.0f, 0.0f);
-    this->textureId = -1;
-    this->color = color;
-    this->scale = glm::vec3(1.0, 1.0, 1.0);
-
-    vertexBuffer = std::make_unique<VertexBuffer>(serviceLocator, _vertices);
-
-    type = 5;
+    vertexBuffer = std::make_unique<VertexBuffer>(serviceLocator, vertices);
 
     _blank = std::make_unique<Texture>(serviceLocator);
-
     _blank->CreateTextureImage(Filesystem::GetTexturesDir() + "blank.png");
-
     UpdateDescriptorSets();
 }
 

@@ -7,37 +7,25 @@ Plane::Plane(std::shared_ptr<ServiceLocator> serviceLocator)
 
     _serviceLocator = serviceLocator;
 
-    script = std::make_unique<Script>();
-
-    _indices = {
+    std::vector<uint16_t> indices = {
         0, 1, 2, 2, 3, 0};
 
-    _vertices = {
+    std::vector<Vertex> vertices = {
         {{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
         {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
         {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
         {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
 
-    _vertices[0].uv0 = {1.0f, 0.0f};
-    _vertices[1].uv0 = {0.0f, 0.0f};
-    _vertices[2].uv0 = {0.0f, 1.0f};
-    _vertices[3].uv0 = {1.0f, 1.0f};
+    vertices[0].uv0 = {1.0f, 0.0f};
+    vertices[1].uv0 = {0.0f, 0.0f};
+    vertices[2].uv0 = {0.0f, 1.0f};
+    vertices[3].uv0 = {1.0f, 1.0f};
 
-    this->position = glm::vec3(0.0f, 0.0f, 0.0f);
-    this->textureId = -1;
-    this->color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    this->scale = glm::vec3(1.0, 1.0, 1.0);
-
-    vertexBuffer = std::make_unique<VertexBuffer>(serviceLocator, _vertices);
-    indexBuffer = std::make_unique<Buffer>();
-    indexBuffer->CreateIndexBufferUint16(serviceLocator, _indices);
-
-    type = 5;
+    vertexBuffer = std::make_unique<VertexBuffer>(serviceLocator, vertices);
+    indexBuffer = std::make_unique<IndexBuffer<uint16_t>>(serviceLocator, indices);
 
     _blank = std::make_unique<Texture>(serviceLocator);
-
     _blank->CreateTextureImage(Filesystem::GetTexturesDir() + "blank.png");
-
     UpdateDescriptorSets();
 }
 

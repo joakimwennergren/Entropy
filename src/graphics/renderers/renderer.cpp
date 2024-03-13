@@ -16,6 +16,7 @@ size_t Renderer::pad_uniform_buffer_size(size_t originalSize)
 
 void Renderer::DrawGUI()
 {
+
     ImDrawData *imDrawData = ImGui::GetDrawData();
     ImGuiIO &io = ImGui::GetIO();
 
@@ -28,11 +29,6 @@ void Renderer::DrawGUI()
         return;
     }
 
-    // Vertex buffer
-
-    _vertexBuffer.reset();
-
-    // VkDeviceMemory stagingBufferMemory;
     global_vtx_offset = 0;
     std::vector<Vertex> vertices(imDrawData->TotalVtxCount);
     for (int n = 0; n < imDrawData->CmdListsCount; n++)
@@ -64,8 +60,7 @@ void Renderer::DrawGUI()
         }
         global_idx_offset += cmd_list->IdxBuffer.size();
     }
-    _indexBuffer = std::make_unique<Buffer>();
-    _indexBuffer->CreateIndexBufferUint16(_serviceLocator, indices);
+    _indexBuffer = std::make_unique<IndexBuffer<uint16_t>>(_serviceLocator, indices);
 
     PushConstBlock pushConstBlock{};
     // UI scale and translate via push constants
@@ -446,19 +441,22 @@ void Renderer::Wireframe(bool on)
 
 void Renderer::Render(int width, int height, bool resize)
 {
-    if (_queueSync->_commandBuffers.size() > 0)
-    {
-        VkSubmitInfo submitInfo{};
-        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-        submitInfo.commandBufferCount = _queueSync->_commandBuffers.size();
-        submitInfo.pCommandBuffers = _queueSync->_commandBuffers.data();
-        vkQueueSubmit(_logicalDevice->GetPresentQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-        _queueSync->_commandBuffers.clear();
-    }
-
     auto currentFence = _synchronizer->GetFences()[_currentFrame];
     vkWaitForFences(_logicalDevice->Get(), 1, &currentFence, VK_TRUE, UINT64_MAX);
-    _camera->update(0.1);
+
+    // Reset fences and current commandbuffer
+    vkResetFences(_logicalDevice->Get(), 1, &currentFence);
+
+    if (_queueSync->commandBuffers.size() > 0)
+    {
+
+        VkSubmitInfo submitInfo{};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.commandBufferCount = _queueSync->commandBuffers.size();
+        submitInfo.pCommandBuffers = _queueSync->commandBuffers.data();
+        vkQueueSubmit(_logicalDevice->GetPresentQueue(), 1, &submitInfo, nullptr);
+        _queueSync->commandBuffers.clear();
+    }
 
     auto acquire_result = vkAcquireNextImageKHR(_logicalDevice->Get(), _swapChain->Get(), UINT64_MAX, _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE, &imageIndex);
 
@@ -481,10 +479,7 @@ void Renderer::Render(int width, int height, bool resize)
         _renderPass->End(_commandBuffers[_currentFrame]);
         _commandBuffers[_currentFrame]->EndRecording();
 
-        // Reset fences and current commandbuffer
-        vkResetFences(_logicalDevice->Get(), 1, &currentFence);
-
-        submit_result = this->SubmitAndPresent(currentCmdBuffer, imageIndex);
+        submit_result = SubmitAndPresent(currentCmdBuffer, imageIndex);
 
         _currentFrame = (_currentFrame + 1) % MAX_CONCURRENT_FRAMES_IN_FLIGHT;
     }
@@ -576,15 +571,6 @@ void Renderer::DrawEntity(flecs::entity entity, uint32_t index)
         {
             model->model->renderNode(node, currentCmdBuffer, _pipelines["SkinnedPipeline"], Material::ALPHAMODE_OPAQUE);
         }
-
-        // Bind vertex & index buffers
-        // Bind descriptor sets
-        VkBuffer vertexBuffers[] = {model->model->_vertexBuffer->GetVulkanBuffer()};
-        VkDeviceSize offsets[] = {0};
-        vkCmdBindVertexBuffers(currentCmdBuffer, 0, 1, vertexBuffers, offsets);
-        vkCmdBindIndexBuffer(currentCmdBuffer, model->model->_indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT16);
-        // Draw current renderable
-        vkCmdDrawIndexed(currentCmdBuffer, model->model->GetIndices().size(), 1, 0, 0, 0);
     }
 
     if (entity.has<Entropy::Components::Gizmo>())
@@ -715,5 +701,7 @@ VkResult Renderer::SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageInd
     presentInfo.pImageIndices = &imageIndex;
 
     // Present
-    return vkQueuePresentKHR(_logicalDevice->GetPresentQueue(), &presentInfo);
+    auto retval = vkQueuePresentKHR(_logicalDevice->GetPresentQueue(), &presentInfo);
+
+    return retval;
 }

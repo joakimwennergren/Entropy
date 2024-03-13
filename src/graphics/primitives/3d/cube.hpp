@@ -3,10 +3,8 @@
 #include <graphics/data/vertex.hpp>
 #include <graphics/textures/texture.hpp>
 #include <graphics/buffers/vertexbuffer.hpp>
-#include <renderables/renderable.hpp>
 
 using namespace Entropy::Graphics::Textures;
-using namespace Entropy::Renderables;
 
 namespace Entropy
 {
@@ -14,7 +12,7 @@ namespace Entropy
     {
         namespace Primitives
         {
-            class Cube : public Renderable
+            class Cube
             {
             public:
                 /**

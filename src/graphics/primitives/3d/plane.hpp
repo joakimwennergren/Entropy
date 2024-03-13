@@ -3,11 +3,12 @@
 #include <graphics/data/vertex.hpp>
 #include <graphics/textures/texture.hpp>
 #include <graphics/buffers/vertexbuffer.hpp>
-#include <renderables/renderable.hpp>
+#include <graphics/buffers/indexbuffer.hpp>
+#include <graphics/descriptorpools/descriptorpool.hpp>
 #include <filesystem/filesystem.hpp>
 
 using namespace Entropy::Graphics::Textures;
-using namespace Entropy::Renderables;
+using namespace Entropy::Graphics::DescriptorPools;
 
 namespace Entropy
 {
@@ -15,7 +16,7 @@ namespace Entropy
     {
         namespace Primitives
         {
-            class Plane : public Renderable
+            class Plane
             {
             public:
                 /**
@@ -38,6 +39,12 @@ namespace Entropy
                  *
                  */
                 ~Plane();
+                std::unique_ptr<VertexBuffer> vertexBuffer;
+                std::unique_ptr<IndexBuffer<uint16_t>> indexBuffer;
+
+            private:
+                VkSampler _textureSampler;
+                std::shared_ptr<ServiceLocator> _serviceLocator;
             };
         }
     }

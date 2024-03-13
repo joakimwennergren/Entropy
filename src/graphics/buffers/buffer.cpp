@@ -38,33 +38,3 @@ void Buffer::CreateBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkDevi
         spdlog::error("Error while creating buffer with size: {}", size);
     }
 }
-
-// @todo move this into seperate derived class
-void Buffer::CreateIndexBufferUint16(std::shared_ptr<ServiceLocator> serviceLocator, std::vector<uint16_t> indices)
-{
-    VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
-
-    assert(bufferSize != 0);
-
-    CreateBuffer(serviceLocator, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
-
-    void *mappedData;
-    vmaMapMemory(_allocator->Get(), _allocation, &mappedData);
-    memcpy(mappedData, indices.data(), bufferSize);
-    vmaUnmapMemory(_allocator->Get(), _allocation);
-}
-
-// @todo move this into seperate derived class
-void Buffer::CreateIndexBufferUint32(std::shared_ptr<ServiceLocator> serviceLocator, std::vector<uint32_t> indices)
-{
-    VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
-
-    assert(bufferSize != 0);
-
-    CreateBuffer(serviceLocator, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
-
-    void *mappedData;
-    vmaMapMemory(_allocator->Get(), _allocation, &mappedData);
-    memcpy(mappedData, indices.data(), bufferSize);
-    vmaUnmapMemory(_allocator->Get(), _allocation);
-}

@@ -4,16 +4,18 @@
 #include <android/asset_manager.h>
 #endif
 
+#include <graphics/descriptorpools/descriptorpool.hpp>
 #include <graphics/data/vertex.hpp>
 #include <graphics/textures/texture.hpp>
 #include <graphics/buffers/vertexbuffer.hpp>
-#include <renderables/renderable.hpp>
+#include <graphics/buffers/indexbuffer.hpp>
 #include <filesystem/filesystem.hpp>
 #include <scripting/script.hpp>
 
 using namespace Entropy::Graphics::Textures;
-using namespace Entropy::Renderables;
+using namespace Entropy::Graphics::Buffers;
 using namespace Entropy::Scripting;
+using namespace Entropy::Graphics::DescriptorPools;
 
 namespace Entropy
 {
@@ -21,14 +23,11 @@ namespace Entropy
     {
         namespace Primitives
         {
-            class Sprite : public Renderable
+            class Sprite
             {
             public:
                 Sprite();
-
                 ~Sprite();
-
-                void Test(){};
 
                 Sprite(std::shared_ptr<ServiceLocator> serviceLocator, FT_Bitmap bitmap);
 
@@ -40,8 +39,12 @@ namespace Entropy
 
                 VkDescriptorSet _descriptorSet = VK_NULL_HANDLE;
                 VkDescriptorSetLayout _descriptorSetLayout = VK_NULL_HANDLE;
+                std::unique_ptr<VertexBuffer> vertexBuffer;
+                std::unique_ptr<IndexBuffer<uint16_t>> indexBuffer;
 
             private:
+                VkSampler _textureSampler;
+                std::shared_ptr<ServiceLocator> _serviceLocator;
                 void UpdateDescriptorSets();
             };
         }

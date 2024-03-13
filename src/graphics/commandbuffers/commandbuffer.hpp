@@ -4,12 +4,10 @@
 
 #include <servicelocators/servicelocator.hpp>
 #include <graphics/commandpools/commandpool.hpp>
-#include <services/service.hpp>
 #include <graphics/synchronization/queuesync.hpp>
 
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::CommandPools;
-using namespace Entropy::Services;
 using namespace Entropy::Graphics::Synchronization;
 
 namespace Entropy
@@ -29,7 +27,7 @@ namespace Entropy
                 void RecordOnce();
                 void EndRecordingOnce();
 
-                VkCommandBuffer GetCommandBuffer() { return this->_commandBuffer; };
+                inline VkCommandBuffer GetCommandBuffer() { return _commandBuffer; };
 
             private:
                 VkCommandBuffer _commandBuffer = VK_NULL_HANDLE;

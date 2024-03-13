@@ -74,7 +74,7 @@ namespace Entropy
 #ifdef BUILD_FOR_IOS
                         return Filesystem::GetProjectBasePath() + "/";
 #else
-                        return Filesystem::GetProjectBasePath() + "/shaders/basic/";
+                        return Filesystem::GetProjectBasePath() + "/shaders/compiled/";
 #endif
                 }
 

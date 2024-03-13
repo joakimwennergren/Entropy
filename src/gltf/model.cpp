@@ -189,7 +189,6 @@ Model::Model(std::shared_ptr<ServiceLocator> serviceLocator, AAssetManager *asse
 {
 
     assetManager = assetmngr;
-    type = 4;
     _serviceLocator = serviceLocator;
     noTexture = new Texture(_serviceLocator);
 
@@ -307,7 +306,6 @@ Model::Model(std::shared_ptr<ServiceLocator> serviceLocator, AAssetManager *asse
 
 Model::Model(std::shared_ptr<ServiceLocator> serviceLocator)
 {
-    type = 4;
     timer = new Timer(1000.0);
     _serviceLocator = serviceLocator;
 
@@ -1261,20 +1259,19 @@ void Model::loadFromFile(std::string filename, float scale)
     {
         vertices_temp.push_back(loaderInfo.vertexBuffer[i]);
     }
-    _vertexBuffer = std::make_unique<VertexBuffer>(_serviceLocator, vertices_temp);
+    vertexBuffer = std::make_unique<VertexBuffer>(_serviceLocator, vertices_temp);
 
     // Index data
     if (indexCount > 0)
     {
-        std::vector<uint32_t> indices;
+        std::vector<uint16_t> indices;
 
         for (int i = 0; i < indexCount; i++)
         {
             indices.push_back(loaderInfo.indexBuffer[i]);
         }
 
-        _indexBuffer = std::make_unique<Buffer>();
-        _indexBuffer->CreateIndexBufferUint32(_serviceLocator, indices);
+        indexBuffer = std::make_unique<IndexBuffer<uint16_t>>(_serviceLocator, indices);
     }
 
     auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
@@ -1593,16 +1590,16 @@ void Model::renderNode(Node *node, VkCommandBuffer commandBuffer, std::shared_pt
                 }
 
                 VkDeviceSize offsets[1] = {0};
-                auto vertices = _vertexBuffer->GetVulkanBuffer();
+                auto vertices = vertexBuffer->GetVulkanBuffer();
                 vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertices, offsets);
-                vkCmdBindIndexBuffer(commandBuffer, _indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT32);
+                vkCmdBindIndexBuffer(commandBuffer, indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT16);
 
                 // Pass material index for this primitive using a push constant, the shader uses this to index into the material buffer
                 // vkCmdPushConstants(commandBuffers[cbIndex], pipelineLayout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(uint32_t), &primitive->material.index);
 
                 if (primitive->hasIndices)
                 {
-                    vkCmdDrawIndexed(commandBuffer, primitive->indexCount, 1, primitive->firstIndex, 0, 0);
+                    vkCmdDrawIndexed(commandBuffer, primitive->indexCount, 1, 0, 0, 0);
                 }
                 else
                 {

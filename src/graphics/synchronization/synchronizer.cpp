@@ -4,10 +4,12 @@ using namespace Entropy::Graphics::Synchronization;
 
 Synchronizer::Synchronizer(unsigned int numObjects, std::shared_ptr<ServiceLocator> serviceLocator)
 {
-    // Get required depenencies
-    auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
 
-    _logicalDevice = logicalDevice;
+    assert(numObjects != 0);
+    assert(serviceLocator != nullptr);
+
+    // Get required depenencies
+    _logicalDevice = serviceLocator->GetService<LogicalDevice>();
     _numObjects = numObjects;
 
     _imageSemaphores.resize(numObjects);
@@ -23,11 +25,11 @@ Synchronizer::Synchronizer(unsigned int numObjects, std::shared_ptr<ServiceLocat
 
     for (size_t i = 0; i < _numObjects; i++)
     {
-        if (vkCreateSemaphore(logicalDevice->Get(), &semaphoreInfo, nullptr, &_imageSemaphores[i]) != VK_SUCCESS ||
-            vkCreateSemaphore(logicalDevice->Get(), &semaphoreInfo, nullptr, &_renderFinishedSemaphores[i]) != VK_SUCCESS ||
-            vkCreateFence(logicalDevice->Get(), &fenceInfo, nullptr, &_fences[i]) != VK_SUCCESS)
+        if (vkCreateSemaphore(_logicalDevice->Get(), &semaphoreInfo, nullptr, &_imageSemaphores[i]) != VK_SUCCESS ||
+            vkCreateSemaphore(_logicalDevice->Get(), &semaphoreInfo, nullptr, &_renderFinishedSemaphores[i]) != VK_SUCCESS ||
+            vkCreateFence(_logicalDevice->Get(), &fenceInfo, nullptr, &_fences[i]) != VK_SUCCESS)
         {
-            exit(EXIT_FAILURE);
+            spdlog::error("Could not create synchronizer objects.");
         }
     }
 }

@@ -26,56 +26,24 @@ namespace Entropy
             class RenderPass
             {
             public:
-                /**
-                 * @brief Construct a new Render Pass object
-                 *
-                 * @param context
-                 */
                 RenderPass(std::shared_ptr<ServiceLocator> serviceLocator);
-
-                /**
-                 * @brief Destroy the Render Pass object
-                 *
-                 */
                 ~RenderPass();
 
-                /**
-                 * @brief
-                 *
-                 * @param commandBuffer
-                 * @param imageIndex
-                 */
-                void Begin(std::shared_ptr<CommandBuffer> commandBuffer, uint32_t imageIndex);
+                void Begin(std::shared_ptr<CommandBuffer> commandBuffer, uint32_t imageIndex) const;
+                void End(std::shared_ptr<CommandBuffer> commandBuffer) const;
 
-                /**
-                 * @brief
-                 *
-                 * @param commandBuffer
-                 */
-                void End(std::shared_ptr<CommandBuffer> commandBuffer);
-
-                /**
-                 * @brief
-                 *
-                 */
                 void RecreateFrameBuffers();
-
                 void RecreateDepthBuffer();
 
-                /**
-                 * @brief Get the Render Pass object
-                 *
-                 * @return VkRenderPass
-                 */
-                VkRenderPass GetRenderPass() { return this->_renderPass; };
+                inline VkRenderPass GetRenderPass() const { return this->_renderPass; };
 
             private:
                 void CreateFramebuffers();
 
                 VkFormat findSupportedFormat(const std::vector<VkFormat> &candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
-                VkFormat findDepthFormat();
-                bool hasStencilComponent(VkFormat format);
-                void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory);
+                VkFormat FindDepthFormat();
+
+                void CreateImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage);
                 uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
                 VkRenderPass _renderPass;
                 std::vector<VkFramebuffer> _swapChainFramebuffers;
@@ -85,8 +53,7 @@ namespace Entropy
                 std::shared_ptr<PhysicalDevice> _physicalDevice;
                 std::shared_ptr<ServiceLocator> _serviceLocator;
 
-                VkImage depthImage = VK_NULL_HANDLE;
-                VkDeviceMemory depthImageMemory;
+                VkImage _depthImage = VK_NULL_HANDLE;
                 VkImageView depthImageView;
                 VmaAllocation _allocation;
             };

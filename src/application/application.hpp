@@ -28,7 +28,6 @@
 #include <filesystem/filesystem.hpp>
 #include <input/keyboard/keyboard.hpp>
 #include <graphics/cameras/flying_camera.hpp>
-#include <renderables/renderable.hpp>
 #include <graphics/utilities/utilities.hpp>
 #include <graphics/textures/texture.hpp>
 #include <graphics/buffers/buffer.hpp>
@@ -54,7 +53,6 @@ using namespace Entropy::Physics;
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Textures;
 using namespace Entropy::Graphics::Renderers;
-using namespace Entropy::Renderables;
 using namespace Entropy;
 using namespace Entropy::Graphics::Synchronization;
 using namespace Entropy::Input;
