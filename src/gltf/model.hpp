@@ -302,10 +302,9 @@ namespace Entropy
             void renderNode(Node *node, VkCommandBuffer commandBuffer, std::shared_ptr<Pipeline> pipeline, Material::AlphaMode alphaMode);
 
             std::unique_ptr<VertexBuffer> vertexBuffer;
-            std::unique_ptr<IndexBuffer<uint16_t>> indexBuffer;
+            std::unique_ptr<IndexBuffer<uint32_t>> indexBuffer;
             Timer *timer;
-
-            void Test(){};
+            float tick;
 
         private:
             std::shared_ptr<ServiceLocator> _serviceLocator;

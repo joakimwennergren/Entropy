@@ -251,8 +251,6 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator, float xscal
 
     // ********* START IMGUI STUFF ***********
 
-    // Setup Dear ImGui context
-
     ImGuiIO &io = ImGui::GetIO();
     // io.Fonts->AddFontFromFileTTF("/Users/joakim/Entropy-Engine/resources/fonts/Roboto-2/Roboto-Regular.ttf", 16);
     //  io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
@@ -263,13 +261,13 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator, float xscal
     int texWidth, texHeight;
     io.Fonts->GetTexDataAsRGBA32(&fontData, &texWidth, &texHeight);
 
-    fontTexture = new Texture(serviceLocator);
+    fontTexture = new Texture(_serviceLocator);
     fontTexture->CreateTextureImageFromPixels(fontData, texWidth, texHeight);
 
     VkSampler _sampler;
 
     VkPhysicalDeviceProperties properties{};
-    vkGetPhysicalDeviceProperties(physicalDevice->Get(), &properties);
+    vkGetPhysicalDeviceProperties(_physicalDevice->Get(), &properties);
 
     VkSamplerCreateInfo samplerInfo{};
     samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -363,6 +361,7 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator, flecs::world 
 {
     _queueSync = serviceLocator->GetService<QueueSync>();
     _world = world;
+    _physicalDevice = serviceLocator->GetService<PhysicalDevice>();
     // Create renderpass
     _renderPass = std::make_shared<RenderPass>(serviceLocator);
     // Create skinned pipeline
@@ -439,8 +438,9 @@ void Renderer::Wireframe(bool on)
     }
 }
 
-void Renderer::Render(int width, int height, bool resize)
+void Renderer::Render(int width, int height, float xscale, float yscale)
 {
+
     auto currentFence = _synchronizer->GetFences()[_currentFrame];
     vkWaitForFences(_logicalDevice->Get(), 1, &currentFence, VK_TRUE, UINT64_MAX);
 
@@ -496,16 +496,25 @@ void Renderer::DrawEntity(flecs::entity entity, uint32_t index)
     auto scale_component = entity.get_ref<Entropy::Components::Scale>();
     auto renderable_component = entity.get_ref<Entropy::Components::Renderable>();
     auto color_component = entity.get_ref<Entropy::Components::Color>();
+    auto rotation_component = entity.get_ref<Entropy::Components::Rotation>();
 
     auto translate = glm::mat4(1.0f);
     auto rotation = glm::mat4(1.0f);
     auto scaling = glm::mat4(1.0f);
 
-    if (position_component.get() != nullptr && scale_component.get() != nullptr)
+    if (position_component.get() != nullptr)
     {
         translate = glm::translate(glm::mat4(1.0f), position_component->pos);
-        rotation = glm::mat4(1.0);
+    }
+
+    if (scale_component.get() != nullptr)
+    {
         scaling = glm::scale(glm::mat4(1.0f), scale_component->scale);
+    }
+
+    if (rotation_component.get() != nullptr)
+    {
+        rotation = glm::rotate(glm::mat4(1.0f), glm::radians(rotation_component->angle), rotation_component->orientation);
     }
 
     // if (renderable->type == 4)

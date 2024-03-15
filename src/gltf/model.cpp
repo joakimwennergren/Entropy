@@ -1264,14 +1264,14 @@ void Model::loadFromFile(std::string filename, float scale)
     // Index data
     if (indexCount > 0)
     {
-        std::vector<uint16_t> indices;
+        std::vector<uint32_t> indices;
 
         for (int i = 0; i < indexCount; i++)
         {
             indices.push_back(loaderInfo.indexBuffer[i]);
         }
 
-        indexBuffer = std::make_unique<IndexBuffer<uint16_t>>(_serviceLocator, indices);
+        indexBuffer = std::make_unique<IndexBuffer<uint32_t>>(_serviceLocator, indices);
     }
 
     auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
@@ -1592,7 +1592,7 @@ void Model::renderNode(Node *node, VkCommandBuffer commandBuffer, std::shared_pt
                 VkDeviceSize offsets[1] = {0};
                 auto vertices = vertexBuffer->GetVulkanBuffer();
                 vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertices, offsets);
-                vkCmdBindIndexBuffer(commandBuffer, indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT16);
+                vkCmdBindIndexBuffer(commandBuffer, indexBuffer->GetVulkanBuffer(), 0, VK_INDEX_TYPE_UINT32);
 
                 // Pass material index for this primitive using a push constant, the shader uses this to index into the material buffer
                 // vkCmdPushConstants(commandBuffers[cbIndex], pipelineLayout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(uint32_t), &primitive->material.index);

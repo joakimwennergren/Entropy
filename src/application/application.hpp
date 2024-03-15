@@ -79,6 +79,7 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 void character_callback(GLFWwindow *window, unsigned int codepoint);
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 void window_iconify_callback(GLFWwindow *window, int iconified);
+void window_content_scale_callback(GLFWwindow *window, float xscale, float yscale);
 
 class Application
 {
@@ -112,6 +113,8 @@ public:
     float screen_height;
     bool mouse0_state = false;
     bool isMinimized = false;
+    float xscale = 1.0;
+    float yscale = 1.0;
 
 protected:
     GLFWwindow *_window;

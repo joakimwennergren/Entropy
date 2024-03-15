@@ -51,6 +51,7 @@
 #include <ecs/components/line.hpp>
 #include <ecs/components/color.hpp>
 #include <ecs/components/tags/scripted.hpp>
+#include <ecs/components/rotation.hpp>
 
 #include <timing/timer.hpp>
 
@@ -88,7 +89,7 @@ namespace Entropy
                 Renderer(std::shared_ptr<ServiceLocator> serviceLocator, AAssetManager *assetManager);
                 std::vector<char> loadShader(std::string filename, AAssetManager *assetManager);
 #endif
-                void Render(int width, int height, bool resize);
+                void Render(int width, int height, float xscale, float yscale);
                 VkResult DoRender(int width, int height);
                 void DrawGizmo(Entropy::Components::Gizmo gizmo);
                 void DrawGUI();
@@ -154,6 +155,7 @@ namespace Entropy
                 VkResult imageResult;
 
                 std::shared_ptr<QueueSync> _queueSync;
+                std::shared_ptr<PhysicalDevice> _physicalDevice;
 
                 size_t pad_uniform_buffer_size(size_t originalSize);
 
@@ -170,7 +172,7 @@ namespace Entropy
                 Texture *fontTexture;
                 flecs::world *_world;
                 Timer *_timer;
-
+                float oldXscale = 1.0;
                 VkFence _fence;
             };
         }

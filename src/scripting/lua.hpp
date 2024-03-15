@@ -31,6 +31,7 @@
 #include <ecs/components/rigidbody3d.hpp>
 #include <assetmanagers/assetmanager.hpp>
 #include <ecs/components/tags/scripted.hpp>
+#include <ecs/components/rotation.hpp>
 
 #include <assetmanagers/assetid.hpp>
 
@@ -78,7 +79,7 @@ namespace Entropy
 
             sol::state _lua;
             std::vector<std::shared_future<Entropy::GLTF::Model *>> futures;
-            std::map<int, flecs::entity> loadedModels;
+            std::vector<flecs::entity> loadedModels;
 
         private:
         };

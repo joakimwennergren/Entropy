@@ -35,6 +35,7 @@ Application::Application()
     glfwSetCharCallback(_window, character_callback);
     glfwSetScrollCallback(_window, scroll_callback);
     glfwSetWindowIconifyCallback(_window, window_iconify_callback);
+    glfwSetWindowContentScaleCallback(_window, window_content_scale_callback);
 
     // Get initial window framebuffer size
     int width,
@@ -88,14 +89,17 @@ Application::Application()
     physics3d = std::make_shared<Physics3D>(&world->gameWorld, serviceLocator);
     serviceLocator->AddService(physics3d);
 
-    GLFWmonitor *primary = glfwGetPrimaryMonitor();
-    float xscale, yscale;
-    glfwGetMonitorContentScale(primary, &xscale, &yscale);
-
     _renderer = std::make_shared<Renderer>(serviceLocator, &world->gameWorld, xscale, yscale);
 
     auto &io = ImGui::GetIO();
     io.DisplaySize = ImVec2(width, height);
+
+    auto monitor = glfwGetPrimaryMonitor();
+    float xs, ys;
+    glfwGetWindowContentScale(_window, &xs, &ys);
+
+    xscale = xs;
+    yscale = ys;
 
     _renderer->_camera->setPerspective(60.0f, (float)width / (float)height, 1.0f, 100000.0f);
 }
@@ -137,6 +141,7 @@ void Application::Run()
 {
     auto lua = serviceLocator->GetService<Lua>();
     auto physics3d = serviceLocator->GetService<Physics3D>();
+    auto physicalDevice = serviceLocator->GetService<PhysicalDevice>();
     auto &io = ImGui::GetIO();
 
     this->OnInit();
@@ -150,6 +155,8 @@ void Application::Run()
 
     while (!glfwWindowShouldClose(_window))
     {
+        io.FontGlobalScale = xscale;
+
         // spdlog::info("ms/frame = {}", _deltaTime);
 
         // Calculate delta time
@@ -159,6 +166,7 @@ void Application::Run()
         // Update screen dimensions
         int width, height;
         glfwGetFramebufferSize(_window, &width, &height);
+        int contentScaleWidth, contentScaleHeight;
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) || defined(BUILD_FOR_WINDOWS)
         while (isMinimized)
@@ -167,12 +175,8 @@ void Application::Run()
         }
 #endif
 
-        GLFWmonitor *primary = glfwGetPrimaryMonitor();
-        float xscale, yscale;
-        glfwGetMonitorContentScale(primary, &xscale, &yscale);
-
         this->OnRender(_deltaTime);
-        this->_renderer->Render(width, height, true);
+        this->_renderer->Render(width * xscale, height * yscale, xscale, yscale);
         // On render
 
         // Increment current frame
@@ -212,15 +216,17 @@ void Application::Run()
         uint32_t index = 0;
         for (auto fut : lua->futures)
         {
+            if (!fut.valid())
+                continue;
+
             if (fut.wait_for(1ms) == std::future_status::ready)
             {
                 std::cout << "Building model!" << std::endl;
                 auto e = serviceLocator->GetService<World>()->gameWorld.entity();
                 auto id = AssetId().GetId();
-                auto modelShared = std::shared_ptr<Entropy::GLTF::Model>(fut.get());
                 e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
                 e.set<Scale>({glm::vec3(100.0, 100.0, 100.0)});
-                e.set<Entropy::Components::Model>({modelShared});
+                e.set<Entropy::Components::Model>({fut.get()});
                 e.set<Entropy::Components::Renderable>({id, 0, true});
                 e.set<Entropy::Components::Color>({glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}});
                 e.set<Entropy::Components::BoxCollisionShape3D>({glm::vec3(10.0, 10.0, 10.0), glm::vec3{0.0, 0.0, 0.0}});
@@ -270,13 +276,6 @@ void cursor_position_callback(GLFWwindow *window, double xposIn, double yposIn)
         return;
     }
 
-    GLFWmonitor *primary = glfwGetPrimaryMonitor();
-    float xscale, yscale;
-    glfwGetMonitorContentScale(primary, &xscale, &yscale);
-
-    app->mouse_x = (float)xposIn * xscale;
-    app->mouse_y = (float)yposIn * yscale;
-
     float xpos = static_cast<float>(xposIn);
     float ypos = static_cast<float>(yposIn);
 
@@ -293,8 +292,8 @@ void cursor_position_callback(GLFWwindow *window, double xposIn, double yposIn)
     app->lastX = xpos;
     app->lastY = ypos;
 
-    io.MousePos.x = (float)xposIn * xscale;
-    io.MousePos.y = (float)yposIn * yscale;
+    io.MousePos.x = (float)xposIn * app->xscale;
+    io.MousePos.y = (float)yposIn * app->yscale;
 
     if (io.MouseDown[2] || io.MouseDown[1])
         app->_camera->ProcessMouseMovement(xoffset, yoffset);
@@ -305,12 +304,11 @@ void framebufferResizeCallback(GLFWwindow *window, int width, int height)
     auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
 
     GLFWmonitor *primary = glfwGetPrimaryMonitor();
-    float xscale, yscale;
-    glfwGetMonitorContentScale(primary, &xscale, &yscale);
 
     auto &io = ImGui::GetIO();
-    io.DisplaySize = ImVec2(width * xscale, height * yscale);
-    app->GetRenderer()->Render(width * xscale, height * yscale, true);
+
+    io.DisplaySize = ImVec2(width * app->xscale, height * app->yscale);
+    app->GetRenderer()->Render(width * app->xscale, height * app->yscale, app->xscale, app->yscale);
     app->_renderer->_camera->setPerspective(app->_camera->Zoom, (float)width / (float)height, 1.0f, 100000.0f);
     app->OnRender(0.0);
 }
@@ -353,6 +351,14 @@ void window_iconify_callback(GLFWwindow *window, int iconified)
     {
         app->isMinimized = false;
     }
+}
+
+void window_content_scale_callback(GLFWwindow *window, float xscale, float yscale)
+{
+    auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
+
+    app->xscale = xscale;
+    app->yscale = yscale;
 }
 
 #endif
