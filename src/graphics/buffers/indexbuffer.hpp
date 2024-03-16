@@ -1,5 +1,7 @@
 #pragma once
 
+#include <spdlog/spdlog.h>
+
 #include <graphics/buffers/buffer.hpp>
 
 using namespace Entropy::Graphics::Buffers;
@@ -16,7 +18,7 @@ namespace Entropy
             public:
                 IndexBuffer(std::shared_ptr<ServiceLocator> serviceLocator, std::vector<T> indices)
                 {
-                    VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+                    VkDeviceSize bufferSize = sizeof(T) * indices.size();
                     assert(bufferSize != 0);
 
                     CreateBuffer(serviceLocator, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
@@ -26,8 +28,6 @@ namespace Entropy
                     memcpy(mappedData, indices.data(), bufferSize);
                     vmaUnmapMemory(_allocator->Get(), _allocation);
                 }
-
-            private:
             };
         }
     }

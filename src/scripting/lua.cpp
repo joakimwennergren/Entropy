@@ -77,11 +77,13 @@ Lua::Lua(std::shared_ptr<ServiceLocator> serviceLocator)
                 e.set<Entropy::Components::Model>({model});
                 e.set<Entropy::Components::Renderable>({id, 0, true});
                 e.set<Entropy::Components::Color>({glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}});
-                e.set<Entropy::Components::BoxCollisionShape3D>({glm::vec3(10.0, 10.0, 10.0), glm::vec3{0.0, 0.0, 0.0}});
+                model->getSceneDimensions();
+                e.set<Entropy::Components::BoxCollisionShape3D>({glm::vec3{model->dimensions.max.x, model->dimensions.max.y / 2.0, model->dimensions.max.z}, glm::vec3{0.0, 0.0 - (model->dimensions.max.y / 2.0), 0.0}});
                 e.set<Entropy::Components::RigidBody3D>({});
                 e.set<Entropy::Components::Scripted>({});
                 e.get_mut<Entropy::Components::BoxCollisionShape3D>()->UpdateMotionState();
                 e.get_mut<Entropy::Components::RigidBody3D>()->Initialize(serviceLocator, e);
+
                 return e;
             }
         }

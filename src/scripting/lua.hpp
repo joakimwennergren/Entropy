@@ -32,6 +32,7 @@
 #include <assetmanagers/assetmanager.hpp>
 #include <ecs/components/tags/scripted.hpp>
 #include <ecs/components/rotation.hpp>
+#include <ecs/components/trianglemeshcollisionshape3d.hpp>
 
 #include <assetmanagers/assetid.hpp>
 

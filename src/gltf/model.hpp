@@ -236,6 +236,8 @@ namespace Entropy
         class Model
         {
         public:
+            std::vector<Vertex> vertices_temp;
+            std::vector<uint32_t> indices_temp;
             struct Vertices
             {
                 VkBuffer buffer = VK_NULL_HANDLE;
@@ -303,7 +305,7 @@ namespace Entropy
 
             std::unique_ptr<VertexBuffer> vertexBuffer;
             std::unique_ptr<IndexBuffer<uint32_t>> indexBuffer;
-            Timer *timer;
+            Entropy::Timing::Timer *timer;
             float tick;
 
         private:

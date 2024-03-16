@@ -1246,6 +1246,8 @@ void Model::loadFromFile(std::string filename, float scale)
     size_t vertexBufferSize = vertexCount * sizeof(Vertex);
     size_t indexBufferSize = indexCount * sizeof(uint32_t);
 
+    spdlog::info(indexCount);
+
     assert(vertexBufferSize > 0);
 
     struct StagingBuffer
@@ -1254,7 +1256,6 @@ void Model::loadFromFile(std::string filename, float scale)
         VkDeviceMemory memory;
     } vertexStaging, indexStaging;
 
-    std::vector<Vertex> vertices_temp;
     for (int i = 0; i < vertexCount; i++)
     {
         vertices_temp.push_back(loaderInfo.vertexBuffer[i]);
@@ -1264,14 +1265,12 @@ void Model::loadFromFile(std::string filename, float scale)
     // Index data
     if (indexCount > 0)
     {
-        std::vector<uint32_t> indices;
-
         for (int i = 0; i < indexCount; i++)
         {
-            indices.push_back(loaderInfo.indexBuffer[i]);
+            indices_temp.push_back(loaderInfo.indexBuffer[i]);
         }
 
-        indexBuffer = std::make_unique<IndexBuffer<uint32_t>>(_serviceLocator, indices);
+        indexBuffer = std::make_unique<IndexBuffer<uint32_t>>(_serviceLocator, indices_temp);
     }
 
     auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
@@ -1599,7 +1598,7 @@ void Model::renderNode(Node *node, VkCommandBuffer commandBuffer, std::shared_pt
 
                 if (primitive->hasIndices)
                 {
-                    vkCmdDrawIndexed(commandBuffer, primitive->indexCount, 1, 0, 0, 0);
+                    vkCmdDrawIndexed(commandBuffer, primitive->indexCount, 1, primitive->firstIndex, 0, 0);
                 }
                 else
                 {
