@@ -142,6 +142,7 @@ void Application::Run()
     auto lua = serviceLocator->GetService<Lua>();
     auto physics3d = serviceLocator->GetService<Physics3D>();
     auto physicalDevice = serviceLocator->GetService<PhysicalDevice>();
+    auto queueSync = serviceLocator->GetService<QueueSync>();
     auto &io = ImGui::GetIO();
 
     this->OnInit();
@@ -212,33 +213,6 @@ void Application::Run()
 
         _camera->updateCameraVectors();
         _renderer->_camera->setPerspective(_camera->Zoom, (float)width / (float)height, 1.0f, 100000.0f);
-
-        uint32_t index = 0;
-        for (auto fut : lua->futures)
-        {
-            if (!fut.valid())
-                continue;
-
-            if (fut.wait_for(1ms) == std::future_status::ready)
-            {
-                std::cout << "Building model!" << std::endl;
-                auto e = serviceLocator->GetService<World>()->gameWorld.entity();
-                auto id = AssetId().GetId();
-                e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
-                e.set<Scale>({glm::vec3(100.0, 100.0, 100.0)});
-                e.set<Entropy::Components::Model>({fut.get()});
-                e.set<Entropy::Components::Renderable>({id, 0, true});
-                e.set<Entropy::Components::Color>({glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}});
-                e.set<Entropy::Components::BoxCollisionShape3D>({glm::vec3(10.0, 10.0, 10.0), glm::vec3{0.0, 0.0, 0.0}});
-                e.set<Entropy::Components::RigidBody3D>({});
-                e.set<Entropy::Components::Scripted>({});
-                e.get_mut<Entropy::Components::BoxCollisionShape3D>()->UpdateMotionState();
-                e.get_mut<Entropy::Components::RigidBody3D>()->Initialize(serviceLocator, e);
-                lua->loadedModels[index] = e;
-                lua->futures.erase(lua->futures.begin() + index);
-            }
-            index++;
-        }
 
         // Poll events
         glfwPollEvents();

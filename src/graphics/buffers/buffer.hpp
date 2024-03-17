@@ -4,6 +4,7 @@
 
 #include <vulkan/vulkan.hpp>
 #include <spdlog/spdlog.h>
+#include <tracy/Tracy.hpp>
 
 #include <graphics/memory/allocator.hpp>
 
@@ -21,7 +22,8 @@ namespace Entropy
                 ~Buffer();
 
                 void Destroy()
-                { // @todo Destroy buffer!!!
+                {
+                    ZoneScopedN("Destroy buffer called");
                     vmaDestroyBuffer(_allocator->Get(), _buffer, _allocation);
                 };
 

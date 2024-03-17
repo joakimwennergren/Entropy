@@ -27,13 +27,19 @@ namespace Entropy
                 void RecordOnce();
                 void EndRecordingOnce();
 
-                inline VkCommandBuffer GetCommandBuffer() { return _commandBuffer; };
+                void RecordSecondary(VkRenderPass renderpass);
+
+                inline VkCommandBuffer GetCommandBuffer()
+                {
+                    return _commandBuffer;
+                };
 
             private:
                 VkCommandBuffer _commandBuffer = VK_NULL_HANDLE;
                 std::shared_ptr<LogicalDevice> _logicalDevice;
                 std::shared_ptr<QueueSync> _queueSync;
                 std::unique_ptr<CommandPool> _pool;
+                VkCommandBufferLevel _level;
             };
         }
     }

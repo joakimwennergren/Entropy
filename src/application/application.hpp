@@ -11,6 +11,8 @@
 #include <timing/timer.hpp>
 #include <graphics/devices/logical_device.hpp>
 
+#include <ecs/components/renderable.hpp>
+
 // new includes
 #include <graphics/instances/vk_instance.hpp>
 #include <graphics/surfaces/surface.hpp>

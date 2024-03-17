@@ -8,7 +8,7 @@ namespace Entropy
     {
         struct Model
         {
-            Entropy::GLTF::Model *model;
+            std::shared_ptr<Entropy::GLTF::Model> model;
         };
     }
 }

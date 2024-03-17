@@ -36,6 +36,7 @@ namespace Entropy
 
             void SetPosition()
             {
+                /*
                 auto model = _entity.get<Entropy::Components::Model>()->model;
                 auto pos = _entity.get<Entropy::Components::Position>()->pos;
 
@@ -57,6 +58,7 @@ namespace Entropy
                 btDefaultMotionState *motionState = new btDefaultMotionState(boxTransform);
 
                 body->setMotionState(motionState);
+                 */
             }
 
         private:

@@ -9,6 +9,7 @@ namespace Entropy
             uint32_t id = 0;
             int type = 0;
             bool visible = true;
+            bool shouldBeDeleted = false;
         };
     }
 }

@@ -122,6 +122,8 @@ namespace Entropy
                 std::vector<std::shared_ptr<CommandBuffer>> _commandBuffers;
                 void Wireframe(bool on);
                 std::shared_ptr<Camera> _camera;
+                std::vector<std::unique_ptr<VertexBuffer>> _vertexBuffer;
+                std::vector<std::unique_ptr<Buffer>> _indexBuffer;
 
             private:
                 void Setup(std::shared_ptr<ServiceLocator> serviceLocator, float xscale, float yscale);
@@ -167,8 +169,7 @@ namespace Entropy
 
                 std::shared_ptr<Keyboard> _keyboard;
                 std::shared_ptr<Cam> _cam;
-                std::unique_ptr<VertexBuffer> _vertexBuffer;
-                std::unique_ptr<Buffer> _indexBuffer;
+                std::shared_ptr<CommandBuffer> secondary;
                 Texture *fontTexture;
                 flecs::world *_world;
                 Timer *_timer;

@@ -17,6 +17,13 @@ size_t Renderer::pad_uniform_buffer_size(size_t originalSize)
 void Renderer::DrawGUI()
 {
 
+    if (_vertexBuffer[_currentFrame] != nullptr && _indexBuffer[_currentFrame] != nullptr)
+    {
+        _vertexBuffer[_currentFrame]->Destroy();
+        _indexBuffer[_currentFrame]->Destroy();
+    }
+
+    ZoneScopedN("Draw GUI");
     ImDrawData *imDrawData = ImGui::GetDrawData();
     ImGuiIO &io = ImGui::GetIO();
 
@@ -47,7 +54,7 @@ void Renderer::DrawGUI()
         }
         global_vtx_offset += cmd_list->VtxBuffer.size();
     }
-    _vertexBuffer = std::make_unique<VertexBuffer>(_serviceLocator, vertices);
+    _vertexBuffer[_currentFrame] = std::make_unique<VertexBuffer>(_serviceLocator, vertices);
 
     global_idx_offset = 0;
     std::vector<uint16_t> indices(imDrawData->TotalIdxCount);
@@ -60,7 +67,7 @@ void Renderer::DrawGUI()
         }
         global_idx_offset += cmd_list->IdxBuffer.size();
     }
-    _indexBuffer = std::make_unique<IndexBuffer<uint16_t>>(_serviceLocator, indices);
+    _indexBuffer[_currentFrame] = std::make_unique<IndexBuffer<uint16_t>>(_serviceLocator, indices);
 
     PushConstBlock pushConstBlock{};
     // UI scale and translate via push constants
@@ -80,10 +87,9 @@ void Renderer::DrawGUI()
 
     if (imDrawData->CmdListsCount > 0)
     {
-
         VkDeviceSize offsets[1] = {0};
-        auto indexBuff = _indexBuffer->GetVulkanBuffer();
-        auto v = _vertexBuffer->GetVulkanBuffer();
+        auto indexBuff = _indexBuffer[_currentFrame]->GetVulkanBuffer();
+        auto v = _vertexBuffer[_currentFrame]->GetVulkanBuffer();
 
         global_idx_offset = 0;
         global_vtx_offset = 0;
@@ -378,17 +384,11 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator, flecs::world 
     _world->system<Entropy::Components::Renderable>()
         .each([this](flecs::entity e, Entropy::Components::Renderable r)
               {
-                  if(e.has<Entropy::Components::Scripted>())
-                  {
-                    if(e.get_ref<Entropy::Components::Scripted>()->shouldBeRemoved)
-                    {
-                        std::cout << "Destroying scripted entity" << std::endl;
-                        e.destruct();
-                    }
-                  }
-
                   if (_world->is_alive(e))
                       DrawEntity(e, r.id); });
+
+    _indexBuffer.resize(2);
+    _vertexBuffer.resize(2);
 }
 
 void Renderer::HandleResize(int width, int height)
@@ -440,16 +440,14 @@ void Renderer::Wireframe(bool on)
 
 void Renderer::Render(int width, int height, float xscale, float yscale)
 {
-
     auto currentFence = _synchronizer->GetFences()[_currentFrame];
-    vkWaitForFences(_logicalDevice->Get(), 1, &currentFence, VK_TRUE, UINT64_MAX);
 
-    // Reset fences and current commandbuffer
-    vkResetFences(_logicalDevice->Get(), 1, &currentFence);
+    vkWaitForFences(_logicalDevice->Get(), 1, &currentFence, VK_TRUE, UINT64_MAX);
 
     if (_queueSync->commandBuffers.size() > 0)
     {
-
+        ZoneScopedN("Submitting Queued commandbuffers!");
+        spdlog::info("submitting cmdbuf");
         VkSubmitInfo submitInfo{};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submitInfo.commandBufferCount = _queueSync->commandBuffers.size();
@@ -457,6 +455,9 @@ void Renderer::Render(int width, int height, float xscale, float yscale)
         vkQueueSubmit(_logicalDevice->GetPresentQueue(), 1, &submitInfo, nullptr);
         _queueSync->commandBuffers.clear();
     }
+
+    // Reset fences
+    vkResetFences(_logicalDevice->Get(), 1, &currentFence);
 
     auto acquire_result = vkAcquireNextImageKHR(_logicalDevice->Get(), _swapChain->Get(), UINT64_MAX, _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE, &imageIndex);
 
@@ -488,6 +489,8 @@ void Renderer::Render(int width, int height, float xscale, float yscale)
     {
         HandleResize(width, height);
     }
+
+
 }
 
 void Renderer::DrawEntity(flecs::entity entity, uint32_t index)
@@ -574,7 +577,7 @@ void Renderer::DrawEntity(flecs::entity entity, uint32_t index)
         auto ds0 = _pipelines["SkinnedPipeline"]->descriptorSets[0]->Get()[_currentFrame];
         vkCmdBindPipeline(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["SkinnedPipeline"]->GetPipeline());
         vkCmdBindDescriptorSets(currentCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines["SkinnedPipeline"]->GetPipelineLayout(), 0, 1, &ds0, 1, &offset);
-        auto model = entity.get<Entropy::Components::Model>();
+        auto model = entity.get_ref<Entropy::Components::Model>();
 
         for (auto node : model->model->nodes)
         {
@@ -677,17 +680,20 @@ void Renderer::DrawEntity(flecs::entity entity, uint32_t index)
 
 VkResult Renderer::SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex)
 {
+    ZoneScopedN("Submitting & Presenting");
     // Submit info
     VkSubmitInfo submitInfo{};
     VkSemaphore signalSemaphores[] = {_synchronizer->GetRenderFinishedSemaphores()[_currentFrame]};
     VkSemaphore waitSemaphores[] = {_synchronizer->GetImageSemaphores()[_currentFrame]};
     VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+
+    std::vector<VkCommandBuffer> submittables = {cmdBuffer};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     submitInfo.waitSemaphoreCount = 1;
     submitInfo.pWaitSemaphores = waitSemaphores;
     submitInfo.pWaitDstStageMask = waitStages;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &cmdBuffer;
+    submitInfo.commandBufferCount = submittables.size();
+    submitInfo.pCommandBuffers = submittables.data();
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
 

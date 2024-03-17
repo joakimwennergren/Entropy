@@ -9,6 +9,7 @@ using namespace Entropy::Graphics::CommandBuffers;
  */
 CommandBuffer::CommandBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkCommandBufferLevel level)
 {
+    _level = level;
     // Get required depenencies
     auto physicalDevice = serviceLocator->GetService<PhysicalDevice>();
     auto surface = serviceLocator->GetService<WindowSurface>();
@@ -59,6 +60,29 @@ void CommandBuffer::Record()
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     beginInfo.flags = 0;                  // Optional
     beginInfo.pInheritanceInfo = nullptr; // Optional
+
+    if (vkBeginCommandBuffer(_commandBuffer, &beginInfo) != VK_SUCCESS)
+    {
+        spdlog::warn("[CommandBuffer] Error while start recording command buffer.");
+    }
+}
+
+/**
+ * @brief Start recording command buffer
+ * @return (void)
+ */
+void CommandBuffer::RecordSecondary(VkRenderPass renderpass)
+{
+    assert(_commandBuffer != VK_NULL_HANDLE);
+
+    VkCommandBufferInheritanceInfo inheritanceInfo = {};
+    inheritanceInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
+    inheritanceInfo.renderPass = renderpass;
+
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = 0;                           // Optional
+    beginInfo.pInheritanceInfo = &inheritanceInfo; // Optional
 
     if (vkBeginCommandBuffer(_commandBuffer, &beginInfo) != VK_SUCCESS)
     {

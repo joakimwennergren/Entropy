@@ -146,8 +146,10 @@ Node::~Node()
 
 // Model
 
-void Model::destroy(VkDevice device)
+void Model::destroy()
 {
+
+    spdlog::info("Destroying model!");
     /*
     if (vertices.buffer != VK_NULL_HANDLE)
     {
@@ -1245,8 +1247,6 @@ void Model::loadFromFile(std::string filename, float scale)
 
     size_t vertexBufferSize = vertexCount * sizeof(Vertex);
     size_t indexBufferSize = indexCount * sizeof(uint32_t);
-
-    spdlog::info(indexCount);
 
     assert(vertexBufferSize > 0);
 

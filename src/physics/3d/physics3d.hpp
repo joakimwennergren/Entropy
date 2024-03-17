@@ -131,7 +131,7 @@ namespace Entropy
                 btCollisionWorld::ClosestRayResultCallback rayCallback(btVector3(rayFrom.x, rayFrom.y, rayFrom.z), btVector3(rayEndpoint.x, rayEndpoint.y, rayEndpoint.z));
                 _dynamicsWorld->rayTest(btVector3(rayFrom.x, rayFrom.y, rayFrom.z), btVector3(rayEndpoint.x, rayEndpoint.y, rayEndpoint.z), rayCallback);
 
-                _dynamicsWorld->debugDrawWorld();
+                //_dynamicsWorld->debugDrawWorld();
                 //_dynamicsWorld->getDebugDrawer()->drawLine(btVector3{rayFrom.x, rayFrom.y, rayFrom.z}, btVector3{rayEndpoint.x, rayEndpoint.y, rayEndpoint.z}, btVector4(0, 1, 0, 1));
 
                 // Check if the ray hit anything

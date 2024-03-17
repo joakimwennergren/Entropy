@@ -4,8 +4,9 @@ using namespace Entropy::Graphics::Buffers;
 
 Buffer::~Buffer()
 {
+    ZoneScopedN("Buffer decontructor called");
     // @todo Destroy buffer!!!
-    // vmaDestroyBuffer(_allocator->Get(), _buffer, _allocation);
+    //vmaDestroyBuffer(_allocator->Get(), _buffer, _allocation);
 }
 
 /**

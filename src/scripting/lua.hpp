@@ -35,6 +35,7 @@
 #include <ecs/components/trianglemeshcollisionshape3d.hpp>
 
 #include <assetmanagers/assetid.hpp>
+#include <tracy/Tracy.hpp>
 
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Primitives;
@@ -54,6 +55,15 @@ namespace Entropy
         class Lua : public Service
         {
         public:
+            class Awaitable
+            {
+            public:
+                std::shared_ptr<Entropy::GLTF::Model> Get() { return fut.get(); };
+                std::future<std::shared_ptr<Entropy::GLTF::Model>> fut;
+            };
+
+            flecs::entity GetAsync(std::shared_ptr<Entropy::GLTF::Model> models);
+
             Lua(std::shared_ptr<ServiceLocator> serviceLocator);
             inline bool ExecuteScript(std::string script, std::string scriptFile, sol::environment env)
             {
@@ -81,6 +91,8 @@ namespace Entropy
             sol::state _lua;
             std::vector<std::shared_future<Entropy::GLTF::Model *>> futures;
             std::vector<flecs::entity> loadedModels;
+            std::shared_ptr<ServiceLocator> _serviceLocator;
+            std::shared_ptr<World> _world;
 
         private:
         };

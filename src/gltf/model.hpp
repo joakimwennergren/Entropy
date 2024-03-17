@@ -281,7 +281,52 @@ namespace Entropy
             Model(std::shared_ptr<ServiceLocator> serviceLocator, AAssetManager *assetmngr);
 #endif
 
-            void destroy(VkDevice device);
+            ~Model()
+            {
+                spdlog::info("Destroying model!");
+                /*
+                if (vertices.buffer != VK_NULL_HANDLE)
+                {
+                    vkDestroyBuffer(device, vertices.buffer, nullptr);
+                    vkFreeMemory(device, vertices.memory, nullptr);
+                    vertices.buffer = VK_NULL_HANDLE;
+                }
+                if (indices.buffer != VK_NULL_HANDLE)
+                {
+                    vkDestroyBuffer(device, indices.buffer, nullptr);
+                    vkFreeMemory(device, indices.memory, nullptr);
+                    indices.buffer = VK_NULL_HANDLE;
+                }
+                */
+                /*
+                for (auto &texture : textures)
+                {
+                    texture.destroy();
+                }*/
+                // textures.resize(0);
+                textureSamplers.resize(0);
+                for (auto node : nodes)
+                {
+                    delete node;
+                }
+                materials.resize(0);
+                animations.resize(0);
+                nodes.resize(0);
+                linearNodes.resize(0);
+                extensions.resize(0);
+                for (auto skin : skins)
+                {
+                    delete skin;
+                }
+                skins.resize(0);
+                vertexBuffer->Destroy();
+                indexBuffer->Destroy();
+
+                vertexBuffer.reset();
+                indexBuffer.reset();
+            }
+
+            void destroy();
             void loadNode(Node *parent, const tinygltf::Node &node, uint32_t nodeIndex, const tinygltf::Model &model, LoaderInfo &loaderInfo, float globalscale);
             void getNodeProps(const tinygltf::Node &node, const tinygltf::Model &model, size_t &vertexCount, size_t &indexCount);
             void loadSkins(tinygltf::Model &gltfModel);
