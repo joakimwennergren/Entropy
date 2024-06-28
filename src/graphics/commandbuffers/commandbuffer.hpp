@@ -2,45 +2,39 @@
 
 #include <spdlog/spdlog.h>
 
-#include <servicelocators/servicelocator.hpp>
 #include <graphics/commandpools/commandpool.hpp>
 #include <graphics/synchronization/queuesync.hpp>
+#include <servicelocators/servicelocator.hpp>
 
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::CommandPools;
 using namespace Entropy::Graphics::Synchronization;
 
-namespace Entropy
-{
-    namespace Graphics
-    {
-        namespace CommandBuffers
-        {
-            class CommandBuffer
-            {
-            public:
-                CommandBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkCommandBufferLevel level);
+namespace Entropy {
+namespace Graphics {
+namespace CommandBuffers {
+class CommandBuffer {
+public:
+  CommandBuffer(std::shared_ptr<ServiceLocator> serviceLocator,
+                VkCommandBufferLevel level);
 
-                void Record();
-                void EndRecording();
+  void Record();
+  void EndRecording();
 
-                void RecordOnce();
-                void EndRecordingOnce();
+  void RecordOnce();
+  void EndRecordingOnce();
 
-                void RecordSecondary(VkRenderPass renderpass);
+  void RecordSecondary(VkRenderPass renderpass);
 
-                inline VkCommandBuffer GetCommandBuffer()
-                {
-                    return _commandBuffer;
-                };
+  inline VkCommandBuffer GetCommandBuffer() { return _commandBuffer; };
 
-            private:
-                VkCommandBuffer _commandBuffer = VK_NULL_HANDLE;
-                std::shared_ptr<LogicalDevice> _logicalDevice;
-                std::shared_ptr<QueueSync> _queueSync;
-                std::unique_ptr<CommandPool> _pool;
-                VkCommandBufferLevel _level;
-            };
-        }
-    }
-}
+private:
+  VkCommandBuffer _commandBuffer = VK_NULL_HANDLE;
+  std::shared_ptr<LogicalDevice> _logicalDevice;
+  std::shared_ptr<QueueSync> _queueSync;
+  std::unique_ptr<CommandPool> _pool;
+  VkCommandBufferLevel _level;
+};
+} // namespace CommandBuffers
+} // namespace Graphics
+} // namespace Entropy

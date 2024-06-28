@@ -52,9 +52,6 @@
 [submodule "glfw"]
 	path = external/glfw
 	url = https://github.com/glfw/glfw.git
-[submodule "imgui"]
-	path = external/imgui
-	url = https://github.com/ocornut/imgui.git
 [submodule "VulkanMemoryAllocator"]
 	path = external/VulkanMemoryAllocator
 	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
@@ -64,3 +61,9 @@
 [submodule "bullet3"]
 	path = external/bullet3
 	url = https://github.com/bulletphysics/bullet3.git
+[submodule "tinyobjloader"]
+	path = external/tinyobjloader
+	url = https://github.com/tinyobjloader/tinyobjloader.git
+[submodule "kangaru"]
+	path = external/kangaru
+	url = https://github.com/gracicot/kangaru.git

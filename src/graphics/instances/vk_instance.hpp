@@ -1,7 +1,8 @@
 #pragma once
 
-#include <vulkan/vulkan.hpp>
+#include "vulkan/vulkan_core.h"
 #include <iostream>
+#include <vulkan/vulkan.hpp>
 
 #include <spdlog/spdlog.h>
 
@@ -12,49 +13,52 @@
 using namespace Entropy::Graphics::ValidationLayers;
 using namespace Entropy::Services;
 
-namespace Entropy
-{
-    namespace Graphics
-    {
-        namespace Instances
-        {
-            class VulkanInstance : public Service
-            {
-            public:
-                VulkanInstance(std::string applicationName);
-                ~VulkanInstance();
-                inline VkInstance Get() { return _instance; };
-                inline bool isValid() { return _instance != nullptr; };
+namespace Entropy {
+namespace Graphics {
+namespace Instances {
 
-            private:
-                const std::vector<const char *> _validationLayers = {
-                    "VK_LAYER_KHRONOS_validation"};
-                VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo, const VkAllocationCallbacks *pAllocator, VkDebugUtilsMessengerEXT *pDebugMessenger);
-                void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks *pAllocator);
-                static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-                    VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-                    VkDebugUtilsMessageTypeFlagsEXT messageType,
-                    const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
-                    void *pUserData)
-                {
+class VulkanInstance : public Service {
+public:
+  VulkanInstance();
+  ~VulkanInstance();
+  inline VkInstance Get() { return _instance; };
 
-                    if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
-                        spdlog::error(pCallbackData->pMessage);
+private:
+  VkResult CreateDebugUtilsMessengerEXT(
+      VkInstance instance,
+      const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
+      const VkAllocationCallbacks *pAllocator,
+      VkDebugUtilsMessengerEXT *pDebugMessenger);
+  void DestroyDebugUtilsMessengerEXT(VkInstance instance,
+                                     VkDebugUtilsMessengerEXT debugMessenger,
+                                     const VkAllocationCallbacks *pAllocator);
+  static VKAPI_ATTR VkBool32 VKAPI_CALL
+  debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+                VkDebugUtilsMessageTypeFlagsEXT messageType,
+                const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
+                void *pUserData) {
 
-                    if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
-                        spdlog::warn(pCallbackData->pMessage);
+    if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
+      spdlog::error(pCallbackData->pMessage);
 
-                    if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
-                        spdlog::info(pCallbackData->pMessage);
+    if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
+      spdlog::warn(pCallbackData->pMessage);
 
-                    if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT)
-                        spdlog::info(pCallbackData->pMessage);
+    if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
+      spdlog::info(pCallbackData->pMessage);
 
-                    return VK_FALSE;
-                }
-                VkInstance _instance;
-                VkDebugUtilsMessengerEXT _debugMessenger;
-            };
-        }
-    }
-}
+    if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT)
+      spdlog::info(pCallbackData->pMessage);
+
+    return VK_FALSE;
+  }
+
+  const std::vector<const char *> _validationLayers = {
+      "VK_LAYER_KHRONOS_validation"};
+  VkInstance _instance = VK_NULL_HANDLE;
+  VkDebugUtilsMessengerEXT _debugMessenger = VK_NULL_HANDLE;
+};
+
+} // namespace Instances
+} // namespace Graphics
+} // namespace Entropy

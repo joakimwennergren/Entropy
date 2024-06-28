@@ -2,11 +2,9 @@
 
 using namespace Entropy::Graphics::Buffers;
 
-Buffer::~Buffer()
-{
-    ZoneScopedN("Buffer decontructor called");
-    // @todo Destroy buffer!!!
-    //vmaDestroyBuffer(_allocator->Get(), _buffer, _allocation);
+Buffer::~Buffer() {
+  // @todo Destroy buffer!!!
+  // vmaDestroyBuffer(_allocator->Get(), _buffer, _allocation);
 }
 
 /**
@@ -16,26 +14,28 @@ Buffer::~Buffer()
  * @param usage VkBufferUsageFlags usage flags
  * @return (void)
  */
-void Buffer::CreateBuffer(std::shared_ptr<ServiceLocator> serviceLocator, VkDeviceSize size, VkBufferUsageFlags usage)
-{
-    assert(serviceLocator != nullptr);
-    assert(size != 0);
+void Buffer::CreateBuffer(std::shared_ptr<ServiceLocator> serviceLocator,
+                          VkDeviceSize size, VkBufferUsageFlags usage) {
 
-    _allocator = serviceLocator->GetService<Allocator>();
+  assert(serviceLocator != nullptr);
+  assert(size != 0);
 
-    assert(_allocator != nullptr);
+  _allocator = serviceLocator->GetService<Allocator>();
+  _logicalDevice = serviceLocator->GetService<LogicalDevice>();
 
-    VkBufferCreateInfo bufferInfo = {};
-    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    bufferInfo.size = size;
-    bufferInfo.usage = usage;
+  assert(_allocator != nullptr);
 
-    VmaAllocationCreateInfo allocInfo = {};
-    allocInfo.usage = VMA_MEMORY_USAGE_AUTO;
-    allocInfo.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT;
+  VkBufferCreateInfo bufferInfo = {};
+  bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+  bufferInfo.size = size;
+  bufferInfo.usage = usage;
 
-    if (vmaCreateBuffer(_allocator->Get(), &bufferInfo, &allocInfo, &_buffer, &_allocation, nullptr) != VK_SUCCESS)
-    {
-        spdlog::error("Error while creating buffer with size: {}", size);
-    }
+  VmaAllocationCreateInfo allocInfo = {};
+  allocInfo.usage = VMA_MEMORY_USAGE_AUTO;
+  allocInfo.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT;
+
+  if (vmaCreateBuffer(_allocator->Get(), &bufferInfo, &allocInfo, &_buffer,
+                      &_allocation, nullptr) != VK_SUCCESS) {
+    spdlog::error("Error while creating buffer with size: {}", size);
+  }
 }

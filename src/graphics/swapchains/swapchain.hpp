@@ -1,14 +1,14 @@
 #pragma once
 
+#include <config.hpp>
+#include <iostream>
 #include <limits>
 #include <vulkan/vulkan.hpp>
-#include <iostream>
-#include <config.hpp>
 
-#include <graphics/surfaces/surface.hpp>
-#include <graphics/queuefamilies/queuefamily.hpp>
-#include <services/service.hpp>
 #include <graphics/imageviews/imageview.hpp>
+#include <graphics/queuefamilies/queuefamily.hpp>
+#include <graphics/surfaces/surface.hpp>
+#include <services/service.hpp>
 
 #include <tracy/Tracy.hpp>
 
@@ -17,44 +17,68 @@ using namespace Entropy::Graphics::QueueFamilies;
 using namespace Entropy::Graphics::ImageViews;
 using namespace Entropy::Services;
 
-namespace Entropy
-{
-    namespace Graphics
-    {
-        namespace Swapchains
-        {
-            struct SwapChainSupportDetails
-            {
-                VkSurfaceCapabilitiesKHR capabilities;
-                std::vector<VkSurfaceFormatKHR> formats;
-                std::vector<VkPresentModeKHR> presentModes;
-            };
+namespace Entropy {
+namespace Graphics {
+namespace Swapchains {
+struct SwapChainSupportDetails {
+  VkSurfaceCapabilitiesKHR capabilities;
+  std::vector<VkSurfaceFormatKHR> formats;
+  std::vector<VkPresentModeKHR> presentModes;
+};
 
-            class Swapchain : public Service
-            {
-            public:
-                Swapchain(VkPhysicalDevice physicalDevice, VkDevice logicalDevice, std::shared_ptr<WindowSurface> surface, VkExtent2D frame);
-                ~Swapchain();
-                void CreateSwapChain(VkSwapchainKHR prev);
-                void RecreateSwapChain();
-                static SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
-                std::vector<VkImageView> swapChainImageViews;
-                std::vector<VkImage> swapChainImages;
-                VkExtent2D swapChainExtent;
-                VkFormat swapChainImageFormat;
-                inline VkSwapchainKHR Get() { return _swapChain; };
-                std::shared_ptr<WindowSurface> _surface;
+class Swapchain : public Service {
+public:
+  Swapchain(VkPhysicalDevice physicalDevice, VkDevice logicalDevice,
+            std::shared_ptr<WindowSurface> surface, VkExtent2D frame);
+  Swapchain(VkPhysicalDevice physicalDevice, VkDevice logicalDevice,
+            VkExtent2D frame, int width, int height);
+  ~Swapchain();
+  void CreateSwapChain(VkSwapchainKHR prev);
+  void RecreateSwapChain();
+  void RecreateSwapChain(int width, int height);
+  static SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device,
+                                                       VkSurfaceKHR surface);
+  std::vector<VkImageView> swapChainImageViews;
+  std::vector<VkImage> swapChainImages;
+  VkExtent2D swapChainExtent;
+  VkFormat swapChainImageFormat;
+  inline VkSwapchainKHR Get() { return _swapChain; };
+  std::shared_ptr<WindowSurface> _surface;
 
-            private:
-                VkSwapchainKHR _swapChain;
-                VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats);
-                VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes);
-                VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities, VkExtent2D frame);
-                VkDevice _logicalDevice;
-                VkPhysicalDevice _physicalDevice;
+private:
+  VkSwapchainKHR _swapChain;
+  VkSurfaceFormatKHR ChooseSwapSurfaceFormat(
+      const std::vector<VkSurfaceFormatKHR> &availableFormats);
+  VkPresentModeKHR ChooseSwapPresentMode(
+      const std::vector<VkPresentModeKHR> &availablePresentModes);
+  VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities,
+                              VkExtent2D frame);
+  VkDevice _logicalDevice;
+  VkPhysicalDevice _physicalDevice;
 
-                VkExtent2D _frame;
-            };
-        }
+  VkExtent2D _frame;
+  VkDeviceMemory _renderImageMemory = nullptr;
+
+  uint32_t FindMemoryTypeIndex(VkPhysicalDevice physicalDevice,
+                               uint32_t typeFilter,
+                               VkMemoryPropertyFlags properties) {
+
+    // Get the physical device's memory properties
+    VkPhysicalDeviceMemoryProperties memProperties;
+    vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
+
+    // Iterate over memoryproperties and return index of matched property
+    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+      if ((typeFilter & (1 << i)) &&
+          (memProperties.memoryTypes[i].propertyFlags & properties) ==
+              properties) {
+        return i;
+      }
     }
-}
+
+    return 0;
+  }
+};
+} // namespace Swapchains
+} // namespace Graphics
+} // namespace Entropy

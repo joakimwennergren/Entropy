@@ -2,65 +2,83 @@
 
 using namespace Entropy::Graphics::Devices;
 
-PhysicalDevice::PhysicalDevice(std::shared_ptr<VulkanInstance> instance, std::shared_ptr<WindowSurface> surface)
-{
-    uint32_t deviceCount = 0;
-    vkEnumeratePhysicalDevices(instance->Get(), &deviceCount, nullptr);
+PhysicalDevice::PhysicalDevice(std::shared_ptr<VulkanInstance> instance,
+                               std::shared_ptr<WindowSurface> surface) {
+  uint32_t deviceCount = 0;
+  vkEnumeratePhysicalDevices(instance->Get(), &deviceCount, nullptr);
 
-    if (deviceCount == 0)
-    {
-        spdlog::error("Enumerate physical devices returned {} devices", deviceCount);
-        return;
+  if (deviceCount == 0) {
+    spdlog::error("Enumerate physical devices returned {} devices",
+                  deviceCount);
+    return;
+  }
+
+  std::vector<VkPhysicalDevice> devices(deviceCount);
+  vkEnumeratePhysicalDevices(instance->Get(), &deviceCount, devices.data());
+
+  for (const auto &device : devices) {
+    if (IsDeviceSuitable(device, surface->Get(), deviceExtensions)) {
+      _physicalDevice = device;
+      break;
     }
+  }
 
-    std::vector<VkPhysicalDevice> devices(deviceCount);
-    vkEnumeratePhysicalDevices(instance->Get(), &deviceCount, devices.data());
-
-    for (const auto &device : devices)
-    {
-        if (IsDeviceSuitable(device, surface->Get(), deviceExtensions))
-        {
-            _physicalDevice = device;
-            break;
-        }
-    }
-
-    if (_physicalDevice == VK_NULL_HANDLE)
-    {
-        spdlog::error("Couldn't find a suitable physical device regarding device extension and swapchain support");
-    }
+  if (_physicalDevice == VK_NULL_HANDLE) {
+    spdlog::error("Couldn't find a suitable physical device regarding device "
+                  "extension and swapchain support");
+  }
 }
 
-bool PhysicalDevice::IsDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface, const std::vector<const char *> deviceExtensions)
-{
-    QueueFamilyIndices indices = QueueFamily::FindQueueFamilies(device, surface);
+PhysicalDevice::PhysicalDevice(std::shared_ptr<VulkanInstance> instance) {
 
-    bool extensionsSupported = CheckDeviceExtensionSupport(device, deviceExtensions);
+  uint32_t deviceCount;
+  std::vector<VkPhysicalDevice> physicalDevices;
 
-    bool swapChainAdequate = false;
-    if (extensionsSupported)
-    {
-        SwapChainSupportDetails swapChainSupport = Swapchain::QuerySwapChainSupport(device, surface);
-        swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
-    }
+  vkEnumeratePhysicalDevices(instance->Get(), &deviceCount, NULL);
 
-    return indices.isComplete() && extensionsSupported && swapChainAdequate;
+  physicalDevices.resize(deviceCount);
+
+  vkEnumeratePhysicalDevices(instance->Get(), &deviceCount,
+                             physicalDevices.data());
+
+  _physicalDevice = physicalDevices[0];
 }
 
-bool PhysicalDevice::CheckDeviceExtensionSupport(VkPhysicalDevice device, const std::vector<const char *> extensions)
-{
-    uint32_t extensionCount;
-    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+bool PhysicalDevice::IsDeviceSuitable(
+    VkPhysicalDevice device, VkSurfaceKHR surface,
+    const std::vector<const char *> deviceExtensions) {
+  QueueFamilyIndices indices = QueueFamily::FindQueueFamilies(device, surface);
 
-    std::vector<VkExtensionProperties> availableExtensions(extensionCount);
-    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+  bool extensionsSupported =
+      CheckDeviceExtensionSupport(device, deviceExtensions);
 
-    std::set<std::string> requiredExtensions(extensions.begin(), extensions.end());
+  bool swapChainAdequate = false;
+  if (extensionsSupported) {
+    SwapChainSupportDetails swapChainSupport =
+        Swapchain::QuerySwapChainSupport(device, surface);
+    swapChainAdequate = !swapChainSupport.formats.empty() &&
+                        !swapChainSupport.presentModes.empty();
+  }
 
-    for (const auto &extension : availableExtensions)
-    {
-        requiredExtensions.erase(extension.extensionName);
-    }
+  return indices.isComplete() && extensionsSupported && swapChainAdequate;
+}
 
-    return requiredExtensions.empty();
+bool PhysicalDevice::CheckDeviceExtensionSupport(
+    VkPhysicalDevice device, const std::vector<const char *> extensions) {
+  uint32_t extensionCount;
+  vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount,
+                                       nullptr);
+
+  std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+  vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount,
+                                       availableExtensions.data());
+
+  std::set<std::string> requiredExtensions(extensions.begin(),
+                                           extensions.end());
+
+  for (const auto &extension : availableExtensions) {
+    requiredExtensions.erase(extension.extensionName);
+  }
+
+  return requiredExtensions.empty();
 }
