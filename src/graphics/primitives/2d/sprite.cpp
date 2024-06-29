@@ -2,242 +2,242 @@
 
 using namespace Entropy::Graphics::Primitives;
 
-Sprite::Sprite()
-{
-    /*
-    _indices = {
-        0, 1, 2, 2, 3, 0};
+Sprite::Sprite() {
+  /*
+  _indices = {
+      0, 1, 2, 2, 3, 0};
 
-    _vertices = {
-        {{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-        {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
-        {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
-        {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
+  _vertices = {
+      {{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+      {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
+      {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
+      {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
 
-    texture = new Texture();
+  texture = new Texture();
 
-    // Create buffers @todo temp!!!
-    vertexBuffer = std::make_unique<VertexBuffer>(_vertices);
-    indexBuffer = std::make_unique<Buffer>();
+  // Create buffers @todo temp!!!
+  vertexBuffer = std::make_unique<VertexBuffer>(_vertices);
+  indexBuffer = std::make_unique<Buffer>();
 
-    indexBuffer->CreateIndexBufferUint16(_indices);
-    */
+  indexBuffer->CreateIndexBufferUint16(_indices);
+  */
 }
 
-Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator, FT_Bitmap bitmap)
-{
-    _serviceLocator = serviceLocator;
+Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator,
+               FT_Bitmap bitmap) {
+  _serviceLocator = serviceLocator;
 
-    std::vector<uint16_t> indices = {
-        0, 1, 2, 2, 3, 0};
+  std::vector<uint16_t> indices = {0, 1, 2, 2, 3, 0};
 
-    std::vector<Vertex> vertices = {
-        {{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-        {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
-        {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
-        {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
+  std::vector<Vertex> vertices = {
+      {{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+      {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
+      {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
+      {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
 
-    // texture = new Texture(serviceLocator);
+  // texture = new Texture(serviceLocator);
 
-    // Create buffers @todo temp!!!
-    vertexBuffer = std::make_unique<VertexBuffer>(serviceLocator, vertices);
-    indexBuffer = std::make_unique<IndexBuffer<uint16_t>>(serviceLocator, indices);
+  // Create buffers @todo temp!!!
+  // vertexBuffer = std::make_unique<VertexBuffer>(vertices);
+  // indexBuffer = std::make_unique<IndexBuffer<uint16_t>>(indices);
 
-    // texture->CreateTextureImageFromBuffer(bitmap);
+  // texture->CreateTextureImageFromBuffer(bitmap);
 
-    UpdateDescriptorSets();
+  UpdateDescriptorSets();
 }
 
 #ifdef BUILD_FOR_ANDROID
-Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator, std::string path, AAssetManager *assetmanager)
-{
-    _serviceLocator = serviceLocator;
+Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator, std::string path,
+               AAssetManager *assetmanager) {
+  _serviceLocator = serviceLocator;
 
-    script = std::make_unique<Script>();
+  script = std::make_unique<Script>();
 
-    _indices = {0, 1, 2, 2, 3, 0};
+  _indices = {0, 1, 2, 2, 3, 0};
 
-    _vertices = {
-        {{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-        {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
-        {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
-        {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
+  _vertices = {{{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+               {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
+               {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
+               {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
 
-    texture = new Texture(serviceLocator);
+  texture = new Texture(serviceLocator);
 
-    // Create buffers @todo temp!!!
-    vertexBuffer = std::make_unique<VertexBuffer>(serviceLocator, _vertices);
+  // Create buffers @todo temp!!!
+  vertexBuffer = std::make_unique<VertexBuffer>(serviceLocator, _vertices);
 
-    indexBuffer = std::make_unique<Buffer>();
-    indexBuffer->CreateIndexBufferUint16(serviceLocator, _indices);
+  indexBuffer = std::make_unique<Buffer>();
+  indexBuffer->CreateIndexBufferUint16(serviceLocator, _indices);
 
-    this->position = glm::vec3(0.0f, 0.0f, 0.0f);
-    this->color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    this->scale = glm::vec3(1.0, 1.0, 1.0);
-    this->texture->CreateTextureImage(path, assetmanager);
+  this->position = glm::vec3(0.0f, 0.0f, 0.0f);
+  this->color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+  this->scale = glm::vec3(1.0, 1.0, 1.0);
+  this->texture->CreateTextureImage(path, assetmanager);
 
-    UpdateDescriptorSets();
+  UpdateDescriptorSets();
 
-    type = 1;
+  type = 1;
 }
 #endif
 
-Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator, std::string path)
-{
-    _serviceLocator = serviceLocator;
+Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator,
+               std::string path) {
+  _serviceLocator = serviceLocator;
 
-    std::vector<uint16_t> indices = {
-        0, 1, 2, 2, 3, 0};
+  std::vector<uint16_t> indices = {0, 1, 2, 2, 3, 0};
 
-    std::vector<Vertex> vertices = {
-        {{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-        {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
-        {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
-        {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
+  std::vector<Vertex> vertices = {
+      {{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+      {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
+      {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
+      {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
 
-    // texture = new Texture(serviceLocator);
+  // texture = new Texture(serviceLocator);
 
-    // Create buffers @todo temp!!!
-    vertexBuffer = std::make_unique<VertexBuffer>(serviceLocator, vertices);
-    indexBuffer = std::make_unique<IndexBuffer<uint16_t>>(serviceLocator, indices);
+  // Create buffers @todo temp!!!
+  // vertexBuffer = std::make_unique<VertexBuffer>(vertices);
+  // indexBuffer = std::make_unique<IndexBuffer<uint16_t>>(indices);
 
-    // this->texture->CreateTextureImage(path);
+  // this->texture->CreateTextureImage(path);
 
-    UpdateDescriptorSets();
+  UpdateDescriptorSets();
 }
 
-Sprite::Sprite(unsigned char *pixels, int width, int height)
-{
-    /*
-    _indices = {
-        0, 1, 2, 2, 3, 0};
+Sprite::Sprite(unsigned char *pixels, int width, int height) {
+  /*
+  _indices = {
+      0, 1, 2, 2, 3, 0};
 
-    _vertices = {
-        {{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-        {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
-        {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
-        {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
+  _vertices = {
+      {{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+      {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
+      {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
+      {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
 
-    texture = new Texture();
+  texture = new Texture();
 
-    // Create buffers @todo temp!!!
-    vertexBuffer = std::make_unique<VertexBuffer>(_vertices);
+  // Create buffers @todo temp!!!
+  vertexBuffer = std::make_unique<VertexBuffer>(_vertices);
 
-    indexBuffer = std::make_unique<Buffer>();
-    indexBuffer->CreateIndexBufferUint16(_indices);
+  indexBuffer = std::make_unique<Buffer>();
+  indexBuffer->CreateIndexBufferUint16(_indices);
 
-    this->position = glm::vec3(0.0f, 0.0f, 0.0f);
-    this->textureId = 1;
-    this->color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    this->scale = glm::vec3(1.0, 1.0, 1.0);
-    this->texture->CreateTextureImageFromPixels(pixels, width, height);
+  this->position = glm::vec3(0.0f, 0.0f, 0.0f);
+  this->textureId = 1;
+  this->color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+  this->scale = glm::vec3(1.0, 1.0, 1.0);
+  this->texture->CreateTextureImageFromPixels(pixels, width, height);
 
-    UpdateImage();
-    */
+  UpdateImage();
+  */
 }
 
-void Sprite::UpdateDescriptorSets()
-{
-    // // Get required depenencies
-    // auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
-    // auto physicalDevice = _serviceLocator->GetService<PhysicalDevice>();
-    // auto descriptorPool = _serviceLocator->GetService<DescriptorPool>();
+void Sprite::UpdateDescriptorSets() {
+  // // Get required depenencies
+  // auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
+  // auto physicalDevice = _serviceLocator->GetService<PhysicalDevice>();
+  // auto descriptorPool = _serviceLocator->GetService<DescriptorPool>();
 
-    // VkPhysicalDeviceProperties properties{};
-    // vkGetPhysicalDeviceProperties(physicalDevice->Get(), &properties);
+  // VkPhysicalDeviceProperties properties{};
+  // vkGetPhysicalDeviceProperties(physicalDevice->Get(), &properties);
 
-    // VkSamplerCreateInfo samplerInfo{};
-    // samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-    // samplerInfo.magFilter = VK_FILTER_LINEAR;
-    // samplerInfo.minFilter = VK_FILTER_LINEAR;
+  // VkSamplerCreateInfo samplerInfo{};
+  // samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+  // samplerInfo.magFilter = VK_FILTER_LINEAR;
+  // samplerInfo.minFilter = VK_FILTER_LINEAR;
 
-    // samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-    // samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-    // samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-    // samplerInfo.anisotropyEnable = VK_TRUE;
-    // samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
-    // samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
-    // samplerInfo.unnormalizedCoordinates = VK_FALSE;
-    // samplerInfo.compareEnable = VK_FALSE;
-    // samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
-    // samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-    // samplerInfo.mipLodBias = 0.0f;
-    // samplerInfo.minLod = 0.0f;
-    // samplerInfo.maxLod = 0.0f;
+  // samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+  // samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+  // samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+  // samplerInfo.anisotropyEnable = VK_TRUE;
+  // samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+  // samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+  // samplerInfo.unnormalizedCoordinates = VK_FALSE;
+  // samplerInfo.compareEnable = VK_FALSE;
+  // samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+  // samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+  // samplerInfo.mipLodBias = 0.0f;
+  // samplerInfo.minLod = 0.0f;
+  // samplerInfo.maxLod = 0.0f;
 
-    // if (vkCreateSampler(logicalDevice->Get(), &samplerInfo, nullptr, &_textureSampler) != VK_SUCCESS)
-    // {
-    //     throw std::runtime_error("failed to create texture sampler!");
-    // }
+  // if (vkCreateSampler(logicalDevice->Get(), &samplerInfo, nullptr,
+  // &_textureSampler) != VK_SUCCESS)
+  // {
+  //     throw std::runtime_error("failed to create texture sampler!");
+  // }
 
-    // VkDescriptorSetLayoutBinding samplerLayoutBinding{};
-    // samplerLayoutBinding.binding = 1;
-    // samplerLayoutBinding.descriptorCount = 1;
-    // samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
-    // samplerLayoutBinding.pImmutableSamplers = nullptr;
-    // samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+  // VkDescriptorSetLayoutBinding samplerLayoutBinding{};
+  // samplerLayoutBinding.binding = 1;
+  // samplerLayoutBinding.descriptorCount = 1;
+  // samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
+  // samplerLayoutBinding.pImmutableSamplers = nullptr;
+  // samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-    // VkDescriptorSetLayoutBinding texturesLayoutBinding{};
-    // texturesLayoutBinding.binding = 2;
-    // texturesLayoutBinding.descriptorCount = 1;
-    // texturesLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-    // texturesLayoutBinding.pImmutableSamplers = nullptr;
-    // texturesLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+  // VkDescriptorSetLayoutBinding texturesLayoutBinding{};
+  // texturesLayoutBinding.binding = 2;
+  // texturesLayoutBinding.descriptorCount = 1;
+  // texturesLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+  // texturesLayoutBinding.pImmutableSamplers = nullptr;
+  // texturesLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-    // std::array<VkDescriptorSetLayoutBinding, 2> bindings = {samplerLayoutBinding, texturesLayoutBinding};
-    // VkDescriptorSetLayoutCreateInfo layoutInfo{};
-    // layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-    // layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
-    // layoutInfo.pBindings = bindings.data();
+  // std::array<VkDescriptorSetLayoutBinding, 2> bindings =
+  // {samplerLayoutBinding, texturesLayoutBinding};
+  // VkDescriptorSetLayoutCreateInfo layoutInfo{};
+  // layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+  // layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+  // layoutInfo.pBindings = bindings.data();
 
-    // if (vkCreateDescriptorSetLayout(logicalDevice->Get(), &layoutInfo, nullptr, &_descriptorSetLayout) != VK_SUCCESS)
-    // {
-    //     throw std::runtime_error("failed to create descriptor set layout!");
-    // }
+  // if (vkCreateDescriptorSetLayout(logicalDevice->Get(), &layoutInfo, nullptr,
+  // &_descriptorSetLayout) != VK_SUCCESS)
+  // {
+  //     throw std::runtime_error("failed to create descriptor set layout!");
+  // }
 
-    // std::vector<VkDescriptorSetLayout> layouts(1, _descriptorSetLayout);
+  // std::vector<VkDescriptorSetLayout> layouts(1, _descriptorSetLayout);
 
-    // VkDescriptorSetAllocateInfo allocInfo{};
-    // allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    // allocInfo.descriptorPool = descriptorPool->Get();
-    // allocInfo.descriptorSetCount = 1; // MAX_CONCURRENT_FRAMES_IN_FLIGHT;
-    // allocInfo.pSetLayouts = layouts.data();
+  // VkDescriptorSetAllocateInfo allocInfo{};
+  // allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+  // allocInfo.descriptorPool = descriptorPool->Get();
+  // allocInfo.descriptorSetCount = 1; // MAX_CONCURRENT_FRAMES_IN_FLIGHT;
+  // allocInfo.pSetLayouts = layouts.data();
 
-    // if (vkAllocateDescriptorSets(logicalDevice->Get(), &allocInfo, &_descriptorSet) != VK_SUCCESS)
-    // {
-    //     throw std::runtime_error("failed to allocate descriptor sets!");
-    // }
+  // if (vkAllocateDescriptorSets(logicalDevice->Get(), &allocInfo,
+  // &_descriptorSet) != VK_SUCCESS)
+  // {
+  //     throw std::runtime_error("failed to allocate descriptor sets!");
+  // }
 
-    // VkDescriptorImageInfo imageInfo{};
-    // imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    // imageInfo.imageView = texture->GetImageView();
-    // imageInfo.sampler = _textureSampler;
+  // VkDescriptorImageInfo imageInfo{};
+  // imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+  // imageInfo.imageView = texture->GetImageView();
+  // imageInfo.sampler = _textureSampler;
 
-    // std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
+  // std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 
-    // descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    // descriptorWrites[0].dstSet = _descriptorSet;
-    // descriptorWrites[0].dstBinding = 2;
-    // descriptorWrites[0].dstArrayElement = 0;
-    // descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-    // descriptorWrites[0].descriptorCount = 1;
-    // descriptorWrites[0].pImageInfo = &imageInfo;
+  // descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+  // descriptorWrites[0].dstSet = _descriptorSet;
+  // descriptorWrites[0].dstBinding = 2;
+  // descriptorWrites[0].dstArrayElement = 0;
+  // descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+  // descriptorWrites[0].descriptorCount = 1;
+  // descriptorWrites[0].pImageInfo = &imageInfo;
 
-    // descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    // descriptorWrites[1].dstSet = _descriptorSet;
-    // descriptorWrites[1].dstBinding = 1;
-    // descriptorWrites[1].dstArrayElement = 0;
-    // descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
-    // descriptorWrites[1].descriptorCount = 1;
-    // descriptorWrites[1].pImageInfo = &imageInfo;
+  // descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+  // descriptorWrites[1].dstSet = _descriptorSet;
+  // descriptorWrites[1].dstBinding = 1;
+  // descriptorWrites[1].dstArrayElement = 0;
+  // descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
+  // descriptorWrites[1].descriptorCount = 1;
+  // descriptorWrites[1].pImageInfo = &imageInfo;
 
-    // vkUpdateDescriptorSets(logicalDevice->Get(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+  // vkUpdateDescriptorSets(logicalDevice->Get(),
+  // static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0,
+  // nullptr);
 }
 
-Sprite::~Sprite()
-{
-    auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
-    auto descriptorPool = _serviceLocator->GetService<DescriptorPool>();
-    vkDeviceWaitIdle(logicalDevice->Get());
-    vkFreeDescriptorSets(logicalDevice->Get(), descriptorPool->Get(), 1, &_descriptorSet);
+Sprite::~Sprite() {
+  auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
+  auto descriptorPool = _serviceLocator->GetService<DescriptorPool>();
+  vkDeviceWaitIdle(logicalDevice->Get());
+  vkFreeDescriptorSets(logicalDevice->Get(), descriptorPool->Get(), 1,
+                       &_descriptorSet);
 }

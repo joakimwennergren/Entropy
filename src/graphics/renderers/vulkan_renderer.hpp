@@ -1,5 +1,6 @@
 #pragma once
 
+#include "vulkan_backend.hpp"
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -22,7 +23,7 @@
 #include <graphics/vulkan/synchronization/synchronizer.hpp>
 // #include <graphics/cubemaps/cubemap.hpp>
 #include <gltf/model.hpp>
-// #include <graphics/cameras/perspective_camera.hpp>
+#include <graphics/cameras/perspective_camera.hpp>
 #include <graphics/descriptorsets/descriptorset.hpp>
 #include <graphics/primitives/3d/plane.hpp>
 #include <graphics/swapchains/swapchain.hpp>
@@ -35,7 +36,6 @@
 #include <graphics/cameras/flying_camera.hpp>
 
 #include <graphics/pipelines/gizmo_pipeline.hpp>
-#include <graphics/vulkan/utilities/utilities.hpp>
 #include <input/keyboard/keyboard.hpp>
 
 #include <graphics/vulkan/synchronization/queuesync.hpp>
@@ -59,7 +59,6 @@
 #include <android/asset_manager.h>
 #endif
 
-using namespace Entropy::Graphics::Vulkan::Utilities;
 using namespace Entropy::Graphics::Vulkan::Buffers;
 using namespace Entropy::Graphics::Vulkan::Textures;
 using namespace Entropy::Graphics::Pipelines;
@@ -77,16 +76,11 @@ using namespace Entropy::Input;
 namespace Entropy {
 namespace Graphics {
 namespace Renderers {
-class Renderer {
-public:
-  Renderer(std::shared_ptr<ServiceLocator> serviceLocator, flecs::world *world,
-           float xscale, float yscale);
-#ifdef BUILD_FOR_ANDROID
-  Renderer(std::shared_ptr<ServiceLocator> serviceLocator,
-           AAssetManager *assetManager);
-  std::vector<char> loadShader(std::string filename,
-                               AAssetManager *assetManager);
-#endif
+
+struct VulkanRenderer {
+  Vulkan::VulkanBackend backend;
+
+  /*
   void Render(int width, int height, float xscale, float yscale);
   VkResult DoRender(int width, int height);
   void DrawGizmo(Entropy::Components::Gizmo gizmo);
@@ -118,7 +112,7 @@ public:
   std::shared_ptr<Synchronizer> _synchronizer;
   std::vector<std::shared_ptr<CommandBuffer>> _commandBuffers;
   void Wireframe(bool on);
-  // std::shared_ptr<Camera> _camera;
+  std::shared_ptr<Camera> _camera;
   std::vector<std::unique_ptr<VertexBuffer>> _vertexBuffer;
   std::vector<std::unique_ptr<Buffer>> _indexBuffer;
 
@@ -143,8 +137,6 @@ private:
   VkCommandBuffer currentCmdBuffer;
   VkDescriptorSet currentDescriptorSet;
 
-  /** @brief Properties of the physical device including limits that the
-   * application can check against */
   VkPhysicalDeviceProperties properties;
 
   // One big uniform buffer that contains all matrices
@@ -175,6 +167,7 @@ private:
   Timer *_timer;
   float oldXscale = 1.0;
   VkFence _fence;
+  */
 };
 } // namespace Renderers
 } // namespace Graphics

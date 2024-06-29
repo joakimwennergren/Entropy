@@ -34,14 +34,14 @@
 
 #include "tiny_gltf.h"
 #include <filesystem/filesystem.hpp>
-#include <graphics/buffers/indexbuffer.hpp>
-#include <graphics/buffers/uniformbuffer.hpp>
-#include <graphics/buffers/vertexbuffer.hpp>
 #include <graphics/data/vertex.hpp>
 #include <graphics/descriptorpools/descriptorpool.hpp>
 #include <graphics/devices/logical_device.hpp>
 #include <graphics/pipelines/pipeline.hpp>
-#include <graphics/textures/texture.hpp>
+#include <graphics/vulkan/buffers/indexbuffer.hpp>
+#include <graphics/vulkan/buffers/uniformbuffer.hpp>
+#include <graphics/vulkan/buffers/vertexbuffer.hpp>
+#include <graphics/vulkan/textures/texture.hpp>
 #include <servicelocators/servicelocator.hpp>
 #include <timing/timer.hpp>
 
@@ -50,11 +50,11 @@
 // Changing this value here also requires changing it in the vertex shader
 #define MAX_NUM_JOINTS 128u
 
-using namespace Entropy::Graphics::Textures;
+using namespace Entropy::Graphics::Vulkan::Textures;
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Devices;
 using namespace Entropy::Graphics::Pipelines;
-using namespace Entropy::Graphics::Buffers;
+using namespace Entropy::Graphics::Vulkan::Buffers;
 using namespace Entropy::Graphics::DescriptorPools;
 using namespace Entropy::Timing;
 

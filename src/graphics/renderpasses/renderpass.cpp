@@ -207,29 +207,30 @@ VkFormat RenderPass::FindDepthFormat() {
  */
 void RenderPass::CreateImage(uint32_t width, uint32_t height, VkFormat format,
                              VkImageTiling tiling, VkImageUsageFlags usage) {
-  auto allocator = _serviceLocator->GetService<Allocator>();
 
-  VmaAllocationCreateInfo allocCreateInfo = {};
-  allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO;
-  allocCreateInfo.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
+  /*
+VmaAllocationCreateInfo allocCreateInfo = {};
+allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO;
+allocCreateInfo.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
 
-  VkImageCreateInfo imageInfo{};
-  imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-  imageInfo.imageType = VK_IMAGE_TYPE_2D;
-  imageInfo.extent.width = width;
-  imageInfo.extent.height = height;
-  imageInfo.extent.depth = 1;
-  imageInfo.mipLevels = 1;
-  imageInfo.arrayLayers = 1;
-  imageInfo.format = format;
-  imageInfo.tiling = tiling;
-  imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-  imageInfo.usage = usage;
-  imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-  imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+VkImageCreateInfo imageInfo{};
+imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+imageInfo.imageType = VK_IMAGE_TYPE_2D;
+imageInfo.extent.width = width;
+imageInfo.extent.height = height;
+imageInfo.extent.depth = 1;
+imageInfo.mipLevels = 1;
+imageInfo.arrayLayers = 1;
+imageInfo.format = format;
+imageInfo.tiling = tiling;
+imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+imageInfo.usage = usage;
+imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-  VkResult res = vmaCreateImage(allocator->Get(), &imageInfo, &allocCreateInfo,
-                                &_depthImage, &_allocation, nullptr);
+VkResult res = vmaCreateImage(allocator->Get(), &imageInfo, &allocCreateInfo,
+    &_depthImage, &_allocation, nullptr);
+    */
 }
 
 /**
@@ -258,10 +259,11 @@ uint32_t RenderPass::findMemoryType(uint32_t typeFilter,
  * @return (void)
  */
 void RenderPass::RecreateDepthBuffer() {
+  /*
   if (_depthImage != VK_NULL_HANDLE) {
-    auto allocator = _serviceLocator->GetService<Allocator>();
     vmaDestroyImage(allocator->Get(), _depthImage, _allocation);
   }
+  */
 
   VkFormat depthFormat = FindDepthFormat();
 

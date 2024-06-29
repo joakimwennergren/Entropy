@@ -3,15 +3,16 @@
 #include <spdlog/spdlog.h>
 
 #include <graphics/commandpools/commandpool.hpp>
-#include <graphics/synchronization/queuesync.hpp>
+#include <graphics/vulkan/synchronization/queuesync.hpp>
 #include <servicelocators/servicelocator.hpp>
 
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::CommandPools;
-using namespace Entropy::Graphics::Synchronization;
+using namespace Entropy::Graphics::Vulkan::Synchronization;
 
 namespace Entropy {
 namespace Graphics {
+namespace Vulkan {
 namespace CommandBuffers {
 class CommandBuffer {
 public:
@@ -36,5 +37,6 @@ private:
   VkCommandBufferLevel _level;
 };
 } // namespace CommandBuffers
+} // namespace Vulkan
 } // namespace Graphics
 } // namespace Entropy

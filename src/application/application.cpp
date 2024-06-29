@@ -1,7 +1,13 @@
 #include "application.hpp"
 #include "graphics/devices/device.hpp"
-#include "services/device_service.hpp"
+#include "graphics/renderers/vulkan_renderer.hpp"
+#include "services/allocator_service.hpp"
+#include "services/logical_device_service.hpp"
 #include "services/physical_device_service.hpp"
+#include "services/vk_instance_service.hpp"
+#include "services/vulkan_backend_service.hpp"
+#include "services/vulkan_render_service.hpp"
+#include "vulkan_backend.hpp"
 
 using namespace Entropy;
 
@@ -10,9 +16,10 @@ using namespace Entropy;
 
 Application::Application() {
 
-  kgr::container container;
+  kgr::container vulkanContainer;
 
-  Device vulkanBackend = container.service<Graphics::Services::DeviceService>();
+  VulkanRenderer vulkanRenderer =
+      vulkanContainer.service<Graphics::Services::VulkanRenderService>();
 
   /*
 
@@ -52,71 +59,74 @@ glfwGetFramebufferSize(_window, &width, &height);
 VkExtent2D frame = {(uint32_t)width, (uint32_t)height};
 
 */
-  VkExtent2D frame = {(uint32_t)400, (uint32_t)400};
-  // Create 1ms Timer
-  _timer = std::make_unique<Timer>(1.0);
 
-  // Create items for vulkan
-  _vkInstance = std::make_shared<VulkanInstance>();
-  //_windowSurface = std::make_shared<WindowSurface>(_vkInstance, _window);
-  _physicalDevice = std::make_shared<PhysicalDevice>(_vkInstance);
-  _logicalDevice = std::make_shared<LogicalDevice>(_physicalDevice);
-  _allocator =
-      std::make_shared<Allocator>(_vkInstance, _logicalDevice, _physicalDevice);
-  _swapChain = std::make_shared<Swapchain>(
-      _physicalDevice->Get(), _logicalDevice->Get(), frame, 800, 800);
-  auto commandPool =
-      std::make_shared<CommandPool>(_logicalDevice, _physicalDevice);
-  _descriptorPool = std::make_shared<DescriptorPool>(_logicalDevice);
+  /*
+    VkExtent2D frame = {(uint32_t)400, (uint32_t)400};
+    // Create 1ms Timer
+    _timer = std::make_unique<Timer>(1.0);
 
-  // Add services to service locator
-  serviceLocator = std::make_shared<ServiceLocator>();
+    // Create items for vulkan
+    //_vkInstance = std::make_shared<VulkanInstance>();
+    //_windowSurface = std::make_shared<WindowSurface>(_vkInstance, _window);
+    _physicalDevice = std::make_shared<PhysicalDevice>(instance);
+    _logicalDevice = std::make_shared<LogicalDevice>(_physicalDevice);
+    _allocator =
+        std::make_shared<Allocator>(instance, _logicalDevice, _physicalDevice);
+    _swapChain = std::make_shared<Swapchain>(
+        _physicalDevice->Get(), _logicalDevice->Get(), frame, 800, 800);
+    auto commandPool =
+        std::make_shared<CommandPool>(_logicalDevice, _physicalDevice);
+    _descriptorPool = std::make_shared<DescriptorPool>(_logicalDevice);
 
-  _keyboard = std::make_shared<Keyboard>(serviceLocator);
-  _camera = std::make_shared<Cam>(glm::vec3(0.0f, 0.0f, 3.0f));
-  serviceLocator->AddService(_camera);
-  serviceLocator->AddService(_keyboard);
-  serviceLocator->AddService(_physicalDevice);
-  serviceLocator->AddService(_logicalDevice);
-  serviceLocator->AddService(_allocator);
-  serviceLocator->AddService(_descriptorPool);
-  serviceLocator->AddService(_swapChain);
-  serviceLocator->AddService(commandPool);
-  // serviceLocator->AddService(_windowSurface);
+    // Add services to service locator
+    serviceLocator = std::make_shared<ServiceLocator>();
 
-  physics2d = std::make_shared<Physics2D>(serviceLocator);
-  serviceLocator->AddService(physics2d);
+    _keyboard = std::make_shared<Keyboard>(serviceLocator);
+    _camera = std::make_shared<Cam>(glm::vec3(0.0f, 0.0f, 3.0f));
+    serviceLocator->AddService(_camera);
+    serviceLocator->AddService(_keyboard);
+    serviceLocator->AddService(_physicalDevice);
+    serviceLocator->AddService(_logicalDevice);
+    serviceLocator->AddService(_allocator);
+    serviceLocator->AddService(_descriptorPool);
+    serviceLocator->AddService(_swapChain);
+    serviceLocator->AddService(commandPool);
+    // serviceLocator->AddService(_windowSurface);
 
-  mouse = std::make_shared<Mouse>(_window);
-  serviceLocator->AddService(mouse);
+    physics2d = std::make_shared<Physics2D>(serviceLocator);
+    serviceLocator->AddService(physics2d);
 
-  lua = std::make_shared<Lua>(serviceLocator);
-  serviceLocator->AddService(lua);
+    mouse = std::make_shared<Mouse>(_window);
+    serviceLocator->AddService(mouse);
 
-  world = std::make_shared<World>();
-  serviceLocator->AddService(world);
+    lua = std::make_shared<Lua>(serviceLocator);
+    serviceLocator->AddService(lua);
 
-  auto queueSync = std::make_shared<QueueSync>();
-  serviceLocator->AddService(queueSync);
+    world = std::make_shared<World>();
+    serviceLocator->AddService(world);
 
-  physics3d = std::make_shared<Physics3D>(&world->gameWorld, serviceLocator);
-  serviceLocator->AddService(physics3d);
+    auto queueSync = std::make_shared<QueueSync>();
+    serviceLocator->AddService(queueSync);
 
-  _renderer = std::make_shared<Renderer>(serviceLocator, &world->gameWorld,
-                                         xscale, yscale);
+    physics3d = std::make_shared<Physics3D>(&world->gameWorld, serviceLocator);
+    serviceLocator->AddService(physics3d);
 
-  //   auto &io = ImGui::GetIO();
-  //   io.DisplaySize = ImVec2(width, height);
+    _renderer = std::make_shared<Renderer>(serviceLocator, &world->gameWorld,
+                                           xscale, yscale);
 
-  // auto monitor = glfwGetPrimaryMonitor();
-  // float xs, ys;
-  // glfwGetWindowContentScale(_window, &xs, &ys);
+    //   auto &io = ImGui::GetIO();
+    //   io.DisplaySize = ImVec2(width, height);
 
-  // xscale = xs;
-  // yscale = ys;
+    // auto monitor = glfwGetPrimaryMonitor();
+    // float xs, ys;
+    // glfwGetWindowContentScale(_window, &xs, &ys);
 
-  _renderer->_camera->setPerspective(60.0f, (float)400 / (float)400, 1.0f,
-                                     100000.0f);
+    // xscale = xs;
+    // yscale = ys;
+
+    _renderer->_camera->setPerspective(60.0f, (float)400 / (float)400, 1.0f,
+                                       100000.0f);
+    */
 }
 
 // void Application::ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph,
@@ -220,6 +230,7 @@ void Application::Run() {
     // int32 velocityIterations = 6;
     // int32 positionIterations = 2;
 
+    /*
     // physics2d->world->Step(timeStep, velocityIterations, positionIterations);
     physics3d->GetWorld()->stepSimulation(
         1.0f /
@@ -239,6 +250,7 @@ void Application::Run() {
       deletable.destruct();
       serviceLocator->GetService<QueueSync>()->_deletables.pop_back();
     }
+      */
   }
 }
 
@@ -298,8 +310,8 @@ void framebufferResizeCallback(GLFWwindow *window, int width, int height) {
 
   app->GetRenderer()->Render(width * app->xscale, height * app->yscale,
                              app->xscale, app->yscale);
-  app->_renderer->_camera->setPerspective(
-      app->_camera->Zoom, (float)width / (float)height, 1.0f, 100000.0f);
+  // app->_renderer->_camera->setPerspective(
+  //     app->_camera->Zoom, (float)width / (float)height, 1.0f, 100000.0f);
   app->OnRender(0.0);
 }
 
@@ -307,7 +319,8 @@ void mouse_button_callback(GLFWwindow *window, int button, int action,
                            int mods) {
   /*
   auto &io = ImGui::GetIO();
-  auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
+  auto app = reinterpret_cast<Application
+  *>(glfwGetWindowUserPointer(window));
 
   if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
     io.MouseDown[0] = true;

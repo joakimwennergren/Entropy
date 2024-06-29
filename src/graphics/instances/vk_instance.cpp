@@ -2,6 +2,7 @@
 
 using namespace Entropy::Graphics::Instances;
 
+/*
 VulkanInstance::VulkanInstance() {
   VkApplicationInfo appInfo{};
   appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -98,3 +99,4 @@ void VulkanInstance::DestroyDebugUtilsMessengerEXT(
     func(instance, debugMessenger, pAllocator);
   }
 }
+*/

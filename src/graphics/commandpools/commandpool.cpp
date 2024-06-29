@@ -46,6 +46,6 @@ CommandPool::CommandPool(std::shared_ptr<LogicalDevice> logicalDevice,
 
   if (vkCreateCommandPool(logicalDevice->Get(), &poolInfo, nullptr,
                           &_commandPool) != VK_SUCCESS) {
-    spdlog::error("[CommandPool] Failed to create a command pool.");
+    spdlog::error("Failed to create command pool.");
   }
 }

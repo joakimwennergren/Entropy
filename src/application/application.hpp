@@ -17,10 +17,7 @@
 // new includes
 #include <ecs/world.hpp>
 #include <filesystem/filesystem.hpp>
-#include <graphics/buffers/buffer.hpp>
-#include <graphics/buffers/vertexbuffer.hpp>
 #include <graphics/cameras/flying_camera.hpp>
-#include <graphics/commandbuffers/commandbuffer.hpp>
 #include <graphics/commandpools/commandpool.hpp>
 #include <graphics/descriptorpools/descriptorpool.hpp>
 #include <graphics/descriptorsetlayouts/descriptorsetlayout.hpp>
@@ -31,9 +28,11 @@
 #include <graphics/memory/allocator.hpp>
 #include <graphics/surfaces/surface.hpp>
 #include <graphics/swapchains/swapchain.hpp>
-#include <graphics/synchronization/queuesync.hpp>
-#include <graphics/textures/texture.hpp>
-#include <graphics/utilities/utilities.hpp>
+#include <graphics/vulkan/buffers/buffer.hpp>
+#include <graphics/vulkan/buffers/vertexbuffer.hpp>
+#include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
+#include <graphics/vulkan/synchronization/queuesync.hpp>
+#include <graphics/vulkan/textures/texture.hpp>
 #include <input/keyboard/keyboard.hpp>
 #include <input/mouse/mouse.hpp>
 #include <physics/2d/physics2d.hpp>
@@ -47,20 +46,19 @@ using namespace Entropy::Graphics::Surfaces;
 using namespace Entropy::Graphics::Swapchains;
 using namespace Entropy::Graphics::ImageViews;
 using namespace Entropy::Graphics::CommandPools;
-using namespace Entropy::Graphics::CommandBuffers;
+using namespace Entropy::Graphics::Vulkan::CommandBuffers;
 using namespace Entropy::Graphics::DescriptorPools;
 using namespace Entropy::Graphics::DescriptorsetLayouts;
 using namespace Entropy::Graphics::Descriptorsets;
 using namespace Entropy::Scripting;
 using namespace Entropy::Physics;
 using namespace Entropy::ServiceLocators;
-using namespace Entropy::Graphics::Textures;
+using namespace Entropy::Graphics::Vulkan::Textures;
 using namespace Entropy::Graphics::Renderers;
 using namespace Entropy;
-using namespace Entropy::Graphics::Synchronization;
+using namespace Entropy::Graphics::Vulkan::Synchronization;
 using namespace Entropy::Input;
-using namespace Entropy::Graphics::Buffers;
-using namespace Entropy::Graphics::Utilities;
+using namespace Entropy::Graphics::Vulkan::Buffers;
 using namespace Entropy::Graphics::Memory;
 using namespace Entropy::ECS;
 

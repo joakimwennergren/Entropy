@@ -2,6 +2,7 @@
 
 using namespace Entropy::Graphics::Devices;
 
+/*
 PhysicalDevice::PhysicalDevice(std::shared_ptr<VulkanInstance> instance,
                                std::shared_ptr<WindowSurface> surface) {
   uint32_t deviceCount = 0;
@@ -82,3 +83,5 @@ bool PhysicalDevice::CheckDeviceExtensionSupport(
 
   return requiredExtensions.empty();
 }
+
+*/

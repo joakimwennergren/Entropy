@@ -1,27 +1,23 @@
 #pragma once
 
 #include <graphics/data/vertex.hpp>
-#include <graphics/textures/texture.hpp>
-#include <graphics/buffers/vertexbuffer.hpp>
+#include <graphics/vulkan/buffers/vertexbuffer.hpp>
+#include <graphics/vulkan/textures/texture.hpp>
 
-using namespace Entropy::Graphics::Textures;
+using namespace Entropy::Graphics::Vulkan::Textures;
 
-namespace Entropy
-{
-    namespace Graphics
-    {
-        namespace Primitives
-        {
-            class Cube
-            {
-            public:
-                /**
-                 * @brief Construct a new Quad object
-                 *
-                 * @param context
-                 */
-                Cube(std::shared_ptr<ServiceLocator> serviceLocator);
-            };
-        }
-    }
-}
+namespace Entropy {
+namespace Graphics {
+namespace Primitives {
+class Cube {
+public:
+  /**
+   * @brief Construct a new Quad object
+   *
+   * @param context
+   */
+  Cube(std::shared_ptr<ServiceLocator> serviceLocator);
+};
+} // namespace Primitives
+} // namespace Graphics
+} // namespace Entropy

@@ -19,6 +19,7 @@ namespace Graphics {
 namespace CommandPools {
 class CommandPool : public Service {
 public:
+  CommandPool() = default;
   CommandPool(std::shared_ptr<LogicalDevice> logicalDevice,
               std::shared_ptr<PhysicalDevice> physicalDevice,
               std::shared_ptr<WindowSurface> surface);

@@ -28,6 +28,7 @@ struct SwapChainSupportDetails {
 
 class Swapchain : public Service {
 public:
+  Swapchain() = default;
   Swapchain(VkPhysicalDevice physicalDevice, VkDevice logicalDevice,
             std::shared_ptr<WindowSurface> surface, VkExtent2D frame);
   Swapchain(VkPhysicalDevice physicalDevice, VkDevice logicalDevice,

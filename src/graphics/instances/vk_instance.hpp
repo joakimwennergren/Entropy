@@ -7,20 +7,23 @@
 #include <spdlog/spdlog.h>
 
 #include <config.hpp>
-#include <graphics/validationlayers/validationlayer.hpp>
+#include <graphics/vulkan/validationlayers/validationlayer.hpp>
 #include <services/service.hpp>
 
-using namespace Entropy::Graphics::ValidationLayers;
+using namespace Entropy::Graphics::Vulkan::ValidationLayers;
 using namespace Entropy::Services;
 
 namespace Entropy {
 namespace Graphics {
 namespace Instances {
 
-class VulkanInstance : public Service {
+struct VulkanInstance {
+
+  int test;
+
 public:
-  VulkanInstance();
-  ~VulkanInstance();
+  // VulkanInstance();
+  //~VulkanInstance();
   inline VkInstance Get() { return _instance; };
 
 private:
@@ -53,8 +56,8 @@ private:
     return VK_FALSE;
   }
 
-  const std::vector<const char *> _validationLayers = {
-      "VK_LAYER_KHRONOS_validation"};
+  std::vector<const char *> _validationLayers = {"VK_LAYER_KHRONOS_validation"};
+
   VkInstance _instance = VK_NULL_HANDLE;
   VkDebugUtilsMessengerEXT _debugMessenger = VK_NULL_HANDLE;
 };

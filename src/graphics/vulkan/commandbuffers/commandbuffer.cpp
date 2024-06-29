@@ -1,6 +1,6 @@
 #include "commandbuffer.hpp"
 
-using namespace Entropy::Graphics::CommandBuffers;
+using namespace Entropy::Graphics::Vulkan::CommandBuffers;
 
 /**
  * @brief Constructor for CommandBuffer

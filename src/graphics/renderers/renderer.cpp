@@ -25,8 +25,8 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator,
   auto physicalDevice = serviceLocator->GetService<PhysicalDevice>();
 
   // Create synchronizer
-  _synchronizer = std::make_shared<Synchronizer>(
-      MAX_CONCURRENT_FRAMES_IN_FLIGHT, serviceLocator);
+  //_synchronizer = std::make_shared<Synchronizer>(
+  //    MAX_CONCURRENT_FRAMES_IN_FLIGHT, serviceLocator);
 
   for (uint32_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++) {
     _commandBuffers.push_back(std::make_shared<CommandBuffer>(
@@ -35,10 +35,9 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator,
 
   // Create buffers @todo temp!!!
   for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++) {
-    _uniformBuffers.push_back(
-        new UniformBuffer(serviceLocator, sizeof(UniformBufferObject)));
-    dynUbos.push_back(
-        new UniformBuffer(serviceLocator, sizeof(UboDataDynamic) * 10000));
+    // _uniformBuffers.push_back(new
+    // UniformBuffer(sizeof(UniformBufferObject))); dynUbos.push_back(new
+    // UniformBuffer(sizeof(UboDataDynamic) * 10000));
   }
 
   for (unsigned int i = 0; i < _uniformBuffers.size(); i++) {
@@ -159,10 +158,12 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator,
                            descriptorWrites.data(), 0, nullptr);
   }
 
-  _camera = std::make_shared<Camera>();
-  _camera->type = Camera::CameraType::firstperson;
-  _camera->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-  _camera->setRotation(glm::vec3(0.0f));
+  /*
+    _camera = std::make_shared<Camera>();
+    _camera->type = Camera::CameraType::firstperson;
+    _camera->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+    _camera->setRotation(glm::vec3(0.0f));
+    */
 }
 
 #ifdef BUILD_FOR_ANDROID
@@ -259,8 +260,8 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator,
 
 void Renderer::HandleResize(int width, int height) {
   // ZoneScopedN("Resizing");
-  _synchronizer = std::make_unique<Synchronizer>(
-      MAX_CONCURRENT_FRAMES_IN_FLIGHT, _serviceLocator);
+  //_synchronizer = std::make_unique<Synchronizer>(
+  //    MAX_CONCURRENT_FRAMES_IN_FLIGHT, _serviceLocator);
   _swapChain->RecreateSwapChain();
   _renderPass->RecreateDepthBuffer();
   _renderPass->RecreateFrameBuffers();
@@ -422,9 +423,9 @@ void Renderer::DrawEntity(flecs::entity entity, uint32_t index) {
   //     _camera->update(0.1);
   // }
 
-  ubodyn.view = _cam->GetViewMatrix();
-  // ubodyn.invView = glm::inverse(_cam->GetViewMatrix());
-  ubodyn.proj = _camera->matrices.perspective;
+  // ubodyn.view = _cam->GetViewMatrix();
+  //  ubodyn.invView = glm::inverse(_cam->GetViewMatrix());
+  //  ubodyn.proj = _camera->matrices.perspective;
   ubodyn.model = translate * rotation * scaling;
   // ubodyn.shapeId = renderable_component->type;
   // ubodyn.color = color_component.get() == nullptr ?

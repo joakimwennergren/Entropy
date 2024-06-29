@@ -1,35 +1,51 @@
 #pragma once
 
+#include "graphics/devices/logical_device.hpp"
+#include "graphics/devices/physical_device.hpp"
+#include "graphics/instances/vk_instance.hpp"
 #include "spdlog/spdlog.h"
-#include <services/service.hpp>
-#include <graphics/instances/vk_instance.hpp>
-#include <graphics/devices/physical_device.hpp>
-#include <graphics/devices/logical_device.hpp>
-#include <servicelocators/servicelocator.hpp>
-
 #include "vk_mem_alloc.h"
+#include "vulkan/vulkan_core.h"
 
-using namespace Entropy::ServiceLocators;
-using namespace Entropy::Graphics::Devices;
 using namespace Entropy::Graphics::Instances;
 
-namespace Entropy
-{
-    namespace Graphics
-    {
-        namespace Memory
-        {
-            class Allocator : public Service
-            {
-            public:
-                Allocator(std::shared_ptr<VulkanInstance> instance, std::shared_ptr<LogicalDevice> logicalDevice, std::shared_ptr<PhysicalDevice> phyiscalDevice);
-                ~Allocator(); 
+namespace Entropy {
+namespace Graphics {
+namespace Memory {
 
-                inline VmaAllocator Get() { return _allocator;};
+struct Allocator {
 
-            private:
-                VmaAllocator _allocator;
-            };
-        }
+  Allocator(VulkanInstance i, PhysicalDevice pd, LogicalDevice ld)
+      : _instance{i}, _physicalDevice{pd}, _logicalDevice{ld} {
+
+    VmaVulkanFunctions vulkanFunctions = {};
+    vulkanFunctions.vkGetInstanceProcAddr = &vkGetInstanceProcAddr;
+    vulkanFunctions.vkGetDeviceProcAddr = &vkGetDeviceProcAddr;
+
+    VmaAllocatorCreateInfo allocatorCreateInfo = {};
+    allocatorCreateInfo.flags = VMA_ALLOCATOR_CREATE_EXT_MEMORY_BUDGET_BIT;
+    allocatorCreateInfo.vulkanApiVersion = VK_API_VERSION_1_3;
+    allocatorCreateInfo.physicalDevice = _physicalDevice.Get();
+    allocatorCreateInfo.device = _logicalDevice.Get();
+    allocatorCreateInfo.instance = _instance.Get();
+    allocatorCreateInfo.pVulkanFunctions = &vulkanFunctions;
+
+    if (vmaCreateAllocator(&allocatorCreateInfo, &_allocator) != VK_SUCCESS) {
+      spdlog::error("Couldn't create allocator");
     }
-}
+  }
+
+  ~Allocator() { vmaDestroyAllocator(_allocator); }
+
+  inline VmaAllocator Get() { return _allocator; };
+
+private:
+  VulkanInstance _instance;
+  Devices::PhysicalDevice _physicalDevice;
+  Devices::LogicalDevice _logicalDevice;
+
+  VmaAllocator _allocator = VK_NULL_HANDLE;
+};
+} // namespace Memory
+} // namespace Graphics
+} // namespace Entropy
