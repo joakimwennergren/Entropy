@@ -7,7 +7,7 @@
 #include "services/vk_instance_service.hpp"
 #include "services/vulkan_backend_service.hpp"
 #include "services/vulkan_render_service.hpp"
-#include "vulkan_backend.hpp"
+#include <graphics/vulkan/vulkan_backend.hpp>
 
 using namespace Entropy;
 

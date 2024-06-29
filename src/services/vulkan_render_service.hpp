@@ -9,7 +9,7 @@
 #include "services/physical_device_service.hpp"
 #include "services/vk_instance_service.hpp"
 #include "services/vulkan_backend_service.hpp"
-#include "vulkan_backend.hpp"
+#include <graphics/vulkan/vulkan_backend.hpp>
 #include <graphics/renderers/renderer.hpp>
 #include <graphics/vulkan/synchronization/synchronizer.hpp>
 #include <kangaru/kangaru.hpp>
