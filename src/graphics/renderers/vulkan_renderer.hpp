@@ -10,23 +10,23 @@
 #include <graphics/data/pushcontants.hpp>
 #include <graphics/data/ubo.hpp>
 #include <graphics/data/vertex.hpp>
-#include <graphics/pipelines/2d_pipeline.hpp>
-#include <graphics/pipelines/cubemap_pipeline.hpp>
-#include <graphics/pipelines/gui_pipeline.hpp>
-#include <graphics/pipelines/line_pipeline.hpp>
-#include <graphics/pipelines/skinned_pipeline.hpp>
-#include <graphics/pipelines/static_pipeline.hpp>
-#include <graphics/renderpasses/renderpass.hpp>
 #include <graphics/vulkan/buffers/indexbuffer.hpp>
 #include <graphics/vulkan/buffers/uniformbuffer.hpp>
 #include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
+#include <graphics/vulkan/pipelines/2d_pipeline.hpp>
+#include <graphics/vulkan/pipelines/cubemap_pipeline.hpp>
+#include <graphics/vulkan/pipelines/gui_pipeline.hpp>
+#include <graphics/vulkan/pipelines/line_pipeline.hpp>
+#include <graphics/vulkan/pipelines/skinned_pipeline.hpp>
+#include <graphics/vulkan/pipelines/static_pipeline.hpp>
+#include <graphics/vulkan/renderpasses/renderpass.hpp>
 #include <graphics/vulkan/synchronization/synchronizer.hpp>
 // #include <graphics/cubemaps/cubemap.hpp>
 #include <gltf/model.hpp>
 #include <graphics/cameras/perspective_camera.hpp>
 #include <graphics/descriptorsets/descriptorset.hpp>
 #include <graphics/primitives/3d/plane.hpp>
-#include <graphics/swapchains/swapchain.hpp>
+#include <graphics/vulkan/swapchains/swapchain.hpp>
 #include <servicelocators/servicelocator.hpp>
 
 #include <graphics/primitives/2d/quad.hpp>
@@ -35,7 +35,7 @@
 
 #include <graphics/cameras/flying_camera.hpp>
 
-#include <graphics/pipelines/gizmo_pipeline.hpp>
+#include <graphics/vulkan/pipelines/gizmo_pipeline.hpp>
 #include <input/keyboard/keyboard.hpp>
 
 #include <graphics/vulkan/synchronization/queuesync.hpp>
@@ -61,13 +61,13 @@
 
 using namespace Entropy::Graphics::Vulkan::Buffers;
 using namespace Entropy::Graphics::Vulkan::Textures;
-using namespace Entropy::Graphics::Pipelines;
-using namespace Entropy::Graphics::RenderPasses;
+using namespace Entropy::Graphics::Vulkan::Pipelines;
+using namespace Entropy::Graphics::Vulkan::RenderPasses;
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
 using namespace Entropy::Graphics::Descriptorsets;
 using namespace Entropy::ServiceLocators;
-using namespace Entropy::Graphics::Swapchains;
+using namespace Entropy::Graphics::Vulkan::Swapchains;
 using namespace Entropy::Graphics::Primitives;
 using namespace Entropy::GLTF;
 // using namespace Entropy::Graphics::CubeMaps;

@@ -5,10 +5,10 @@
 #include "services/logical_device_service.hpp"
 #include "services/physical_device_service.hpp"
 #include "services/vk_instance_service.hpp"
-#include <graphics/memory/allocator.hpp>
+#include <graphics/vulkan/memory/allocator.hpp>
 #include <kangaru/kangaru.hpp>
 
-using namespace Entropy::Graphics::Memory;
+using namespace Entropy::Graphics::Vulkan::Memory;
 
 namespace Entropy {
 namespace Graphics {

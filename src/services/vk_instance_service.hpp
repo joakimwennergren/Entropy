@@ -1,9 +1,9 @@
 #pragma once
 
-#include <graphics/instances/vk_instance.hpp>
+#include <graphics/vulkan/instances/vk_instance.hpp>
 #include <kangaru/kangaru.hpp>
 
-using namespace Entropy::Graphics::Instances;
+using namespace Entropy::Graphics::Vulkan::Instances;
 
 namespace Entropy {
 namespace Graphics {

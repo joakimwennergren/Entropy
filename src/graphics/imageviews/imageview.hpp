@@ -1,37 +1,31 @@
 #pragma once
 
-#include <vulkan/vulkan.hpp>
+#include <config.hpp>
 #include <iostream>
 #include <set>
 #include <string>
-#include <config.hpp>
+#include <vulkan/vulkan.hpp>
 
-#include <graphics/surfaces/surface.hpp>
-#include <graphics/queuefamilies/queuefamily.hpp>
+#include <graphics/vulkan/queuefamilies/queuefamily.hpp>
+#include <graphics/vulkan/surfaces/surface.hpp>
 
-using namespace Entropy::Graphics::Surfaces;
-using namespace Entropy::Graphics::QueueFamilies;
+using namespace Entropy::Graphics::Vulkan::Surfaces;
+using namespace Entropy::Graphics::Vulkan::QueueFamilies;
 
-namespace Entropy
-{
-    namespace Graphics
-    {
-        namespace ImageViews
-        {
-            class ImageView
-            {
-            public:
-                ImageView() = default;
-                ImageView(VkDevice logicalDevice, VkImage image, VkFormat format);
-                ImageView(VkDevice logicalDevice, VkImage depthImage, VkFormat format, uint32_t flags);
-                inline VkImageView Get()
-                {
-                    return _imageView;
-                };
+namespace Entropy {
+namespace Graphics {
+namespace ImageViews {
+class ImageView {
+public:
+  ImageView() = default;
+  ImageView(VkDevice logicalDevice, VkImage image, VkFormat format);
+  ImageView(VkDevice logicalDevice, VkImage depthImage, VkFormat format,
+            uint32_t flags);
+  inline VkImageView Get() { return _imageView; };
 
-            private:
-                VkImageView _imageView;
-            };
-        }
-    }
-}
+private:
+  VkImageView _imageView;
+};
+} // namespace ImageViews
+} // namespace Graphics
+} // namespace Entropy

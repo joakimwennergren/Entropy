@@ -1,13 +1,13 @@
 #pragma once
 
-#include <graphics/vulkan/vulkan_backend.hpp>
 #include <cassert>
+#include <graphics/vulkan/vulkan_backend.hpp>
 #include <spdlog/spdlog.h>
 #include <vulkan/vulkan.hpp>
 
-#include <graphics/memory/allocator.hpp>
+#include <graphics/vulkan/memory/allocator.hpp>
 
-using namespace Entropy::Graphics::Memory;
+using namespace Entropy::Graphics::Vulkan::Memory;
 
 namespace Entropy {
 namespace Graphics {

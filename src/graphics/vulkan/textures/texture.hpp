@@ -12,10 +12,10 @@
 #include "tiny_gltf.h"
 
 #include <graphics/imageviews/imageview.hpp>
-#include <graphics/memory/allocator.hpp>
 #include <graphics/vulkan/buffers/buffer.hpp>
 #include <graphics/vulkan/buffers/stagedbuffer.hpp>
 #include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
+#include <graphics/vulkan/memory/allocator.hpp>
 #include <graphics/vulkan/synchronization/queuesync.hpp>
 #include <graphics/vulkan/utilities/utilities.hpp>
 
@@ -30,7 +30,7 @@ using namespace Entropy::Graphics::Vulkan::Buffers;
 using namespace Entropy::Graphics::Vulkan::Utilities;
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;
 using namespace Entropy::Graphics::ImageViews;
-using namespace Entropy::Graphics::Memory;
+using namespace Entropy::Graphics::Vulkan::Memory;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
 
 namespace Entropy {

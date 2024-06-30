@@ -8,16 +8,14 @@
 
 #include "spdlog/spdlog.h"
 
-#include <graphics/instances/vk_instance.hpp>
-#include <graphics/queuefamilies/queuefamily.hpp>
-#include <graphics/surfaces/surface.hpp>
-#include <graphics/swapchains/swapchain.hpp>
+#include <graphics/vulkan/instances/vk_instance.hpp>
+#include <graphics/vulkan/queuefamilies/queuefamily.hpp>
+#include <graphics/vulkan/surfaces/surface.hpp>
 #include <services/service.hpp>
 
-using namespace Entropy::Graphics::Instances;
-using namespace Entropy::Graphics::Surfaces;
-using namespace Entropy::Graphics::QueueFamilies;
-using namespace Entropy::Graphics::Swapchains;
+using namespace Entropy::Graphics::Vulkan::Instances;
+using namespace Entropy::Graphics::Vulkan::Surfaces;
+using namespace Entropy::Graphics::Vulkan::QueueFamilies;
 
 using namespace Entropy::Services;
 

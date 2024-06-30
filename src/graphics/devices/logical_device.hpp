@@ -8,12 +8,12 @@
 #include <vulkan/vulkan.hpp>
 
 #include <graphics/devices/physical_device.hpp>
-#include <graphics/queuefamilies/queuefamily.hpp>
-#include <graphics/surfaces/surface.hpp>
+#include <graphics/vulkan/queuefamilies/queuefamily.hpp>
+#include <graphics/vulkan/surfaces/surface.hpp>
 #include <services/service.hpp>
 
-using namespace Entropy::Graphics::Surfaces;
-using namespace Entropy::Graphics::QueueFamilies;
+using namespace Entropy::Graphics::Vulkan::Surfaces;
+using namespace Entropy::Graphics::Vulkan::QueueFamilies;
 using namespace Entropy::Graphics::Devices;
 
 namespace Entropy {

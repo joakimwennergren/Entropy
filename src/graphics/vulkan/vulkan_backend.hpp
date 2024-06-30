@@ -2,7 +2,7 @@
 
 #include "graphics/devices/logical_device.hpp"
 #include "graphics/devices/physical_device.hpp"
-#include "graphics/instances/vk_instance.hpp"
+#include "graphics/vulkan/instances/vk_instance.hpp"
 #include "vulkan/vulkan_core.h"
 #include <cassert>
 
@@ -10,7 +10,7 @@
 #include <tracy/Tracy.hpp>
 #include <vulkan/vulkan.hpp>
 
-#include <graphics/memory/allocator.hpp>
+#include <graphics/vulkan/memory/allocator.hpp>
 
 namespace Entropy {
 namespace Graphics {

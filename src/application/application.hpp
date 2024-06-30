@@ -24,13 +24,13 @@
 #include <graphics/descriptorsets/descriptorset.hpp>
 #include <graphics/devices/physical_device.hpp>
 #include <graphics/imageviews/imageview.hpp>
-#include <graphics/instances/vk_instance.hpp>
-#include <graphics/memory/allocator.hpp>
-#include <graphics/surfaces/surface.hpp>
-#include <graphics/swapchains/swapchain.hpp>
 #include <graphics/vulkan/buffers/buffer.hpp>
 #include <graphics/vulkan/buffers/vertexbuffer.hpp>
 #include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
+#include <graphics/vulkan/instances/vk_instance.hpp>
+#include <graphics/vulkan/memory/allocator.hpp>
+#include <graphics/vulkan/surfaces/surface.hpp>
+#include <graphics/vulkan/swapchains/swapchain.hpp>
 #include <graphics/vulkan/synchronization/queuesync.hpp>
 #include <graphics/vulkan/textures/texture.hpp>
 #include <input/keyboard/keyboard.hpp>
@@ -41,9 +41,9 @@
 
 #include <graphics/primitives/2d/line.hpp>
 
-using namespace Entropy::Graphics::Instances;
-using namespace Entropy::Graphics::Surfaces;
-using namespace Entropy::Graphics::Swapchains;
+using namespace Entropy::Graphics::Vulkan::Instances;
+using namespace Entropy::Graphics::Vulkan::Surfaces;
+using namespace Entropy::Graphics::Vulkan::Swapchains;
 using namespace Entropy::Graphics::ImageViews;
 using namespace Entropy::Graphics::CommandPools;
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;
@@ -59,7 +59,7 @@ using namespace Entropy;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
 using namespace Entropy::Input;
 using namespace Entropy::Graphics::Vulkan::Buffers;
-using namespace Entropy::Graphics::Memory;
+using namespace Entropy::Graphics::Vulkan::Memory;
 using namespace Entropy::ECS;
 
 using namespace std::chrono_literals;
