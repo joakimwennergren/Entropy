@@ -7,16 +7,15 @@ using namespace Entropy::Graphics::Vulkan::CommandBuffers;
  * @param serviceLocator ServiceLocator
  * @param level VkCommandBufferLevel primary/secondary
  */
-CommandBuffer::CommandBuffer(std::shared_ptr<ServiceLocator> serviceLocator,
-                             VkCommandBufferLevel level) {
+CommandBuffer::CommandBuffer(VkCommandBufferLevel level) {
   _level = level;
   // Get required depenencies
-  auto physicalDevice = serviceLocator->GetService<PhysicalDevice>();
-  // auto surface = serviceLocator->GetService<WindowSurface>();
-  _logicalDevice = serviceLocator->GetService<LogicalDevice>();
-  _queueSync = serviceLocator->GetService<QueueSync>();
+  // auto physicalDevice = serviceLocator->GetService<PhysicalDevice>();
+  // // auto surface = serviceLocator->GetService<WindowSurface>();
+  // _logicalDevice = serviceLocator->GetService<LogicalDevice>();
+  // _queueSync = serviceLocator->GetService<QueueSync>();
 
-  _pool = std::make_unique<CommandPool>(_logicalDevice, physicalDevice);
+  //_pool = std::make_unique<CommandPool>(_logicalDevice, physicalDevice);
 
   VkCommandBufferAllocateInfo allocInfo{};
   allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;

@@ -9,10 +9,8 @@
 
 #include <sol/sol.hpp>
 
-#include <servicelocators/servicelocator.hpp>
 #include <ecs/world.hpp>
 #include <input/mouse/mouse.hpp>
-#include <services/service.hpp>
 
 // Bound entities
 #include <graphics/primitives/2d/sprite.hpp>
@@ -29,7 +27,6 @@
 #include <ecs/components/color.hpp>
 #include <ecs/components/boxcollisionshape3d.hpp>
 #include <ecs/components/rigidbody3d.hpp>
-#include <assetmanagers/assetmanager.hpp>
 #include <ecs/components/tags/scripted.hpp>
 #include <ecs/components/rotation.hpp>
 #include <ecs/components/trianglemeshcollisionshape3d.hpp>
@@ -37,14 +34,11 @@
 #include <assetmanagers/assetid.hpp>
 #include <tracy/Tracy.hpp>
 
-using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Primitives;
 // using namespace Entropy::Input;
-using namespace Entropy::Services;
 using namespace Entropy::Components;
 using namespace Entropy::GLTF;
 using namespace Entropy::ECS;
-using namespace EntropyEditor;
 
 using namespace std::chrono_literals;
 
@@ -52,7 +46,7 @@ namespace Entropy
 {
     namespace Scripting
     {
-        class Lua : public Service
+        class Lua 
         {
         public:
             class Awaitable
@@ -64,7 +58,7 @@ namespace Entropy
 
             flecs::entity GetAsync(std::shared_ptr<Entropy::GLTF::Model> models);
 
-            Lua(std::shared_ptr<ServiceLocator> serviceLocator);
+            Lua();
             inline bool ExecuteScript(std::string script, std::string scriptFile, sol::environment env)
             {
                 if (script.length() > 0)
@@ -91,7 +85,6 @@ namespace Entropy
             sol::state _lua;
             std::vector<std::shared_future<Entropy::GLTF::Model *>> futures;
             std::vector<flecs::entity> loadedModels;
-            std::shared_ptr<ServiceLocator> _serviceLocator;
             std::shared_ptr<World> _world;
 
         private:

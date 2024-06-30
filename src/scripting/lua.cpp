@@ -3,33 +3,29 @@
 using namespace Entropy::Scripting;
 
 flecs::entity Lua::GetAsync(std::shared_ptr<Entropy::GLTF::Model> model) {
-  auto e = _serviceLocator->GetService<World>()->gameWorld.entity();
+  // auto e = _serviceLocator->GetService<World>()->gameWorld.entity();
 
-  auto id = AssetId().GetId();
-  e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
-  e.set<Scale>({glm::vec3(1.0, 1.0, 1.0)});
-  e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 1.0});
-  e.set<Entropy::Components::Model>({model});
-  e.set<Entropy::Components::Renderable>({id, 0, true});
-  e.set<Entropy::Components::Color>({glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}});
-  model->getSceneDimensions();
-  e.set<Entropy::Components::BoxCollisionShape3D>(
-      {glm::vec3{model->dimensions.max.x, model->dimensions.max.y / 2.0,
-                 model->dimensions.max.z},
-       glm::vec3{0.0, 0.0 - (model->dimensions.max.y / 2.0), 0.0}});
-  e.set<Entropy::Components::RigidBody3D>({});
-  e.set<Entropy::Components::Scripted>({});
-  e.get_mut<Entropy::Components::BoxCollisionShape3D>()->UpdateMotionState();
-  e.get_mut<Entropy::Components::RigidBody3D>()->Initialize(_serviceLocator, e);
-  return e;
+  // auto id = AssetId().GetId();
+  // e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
+  // e.set<Scale>({glm::vec3(1.0, 1.0, 1.0)});
+  // e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 1.0});
+  // e.set<Entropy::Components::Model>({model});
+  // e.set<Entropy::Components::Renderable>({id, 0, true});
+  // e.set<Entropy::Components::Color>({glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}});
+  // model->getSceneDimensions();
+  // e.set<Entropy::Components::BoxCollisionShape3D>(
+  //     {glm::vec3{model->dimensions.max.x, model->dimensions.max.y / 2.0,
+  //                model->dimensions.max.z},
+  //      glm::vec3{0.0, 0.0 - (model->dimensions.max.y / 2.0), 0.0}});
+  // e.set<Entropy::Components::RigidBody3D>({});
+  // e.set<Entropy::Components::Scripted>({});
+  // e.get_mut<Entropy::Components::BoxCollisionShape3D>()->UpdateMotionState();
+  // e.get_mut<Entropy::Components::RigidBody3D>()->Initialize(_serviceLocator, e);
+  // return e;
 }
 
-Lua::Lua(std::shared_ptr<ServiceLocator> serviceLocator) {
-  _serviceLocator = serviceLocator;
+Lua::Lua() {
   // Get required depenencies
-  auto world = serviceLocator->GetService<World>();
-
-  _world = world;
 
   // auto mouse =
   // std::dynamic_pointer_cast<Mouse>(serviceLocator->getService("Mouse"));
@@ -51,35 +47,35 @@ Lua::Lua(std::shared_ptr<ServiceLocator> serviceLocator) {
   //     &Sprite::SetScriptFile, "Parent", sol::property(&Sprite::parent));
 
   _lua.new_usertype<Entropy::GLTF::Model>(
-      "Model", sol::factories([serviceLocator, this](const std::string path) {
+      "Model", sol::factories([this](const std::string path) {
         if (path.length() > 0) {
 
-          auto model = std::make_shared<Entropy::GLTF::Model>(serviceLocator);
-          model->loadFromFile(path);
-          auto e = _serviceLocator->GetService<World>()->gameWorld.entity();
+          // auto model = std::make_shared<Entropy::GLTF::Model>();
+          // model->loadFromFile(path);
+          // auto e = _serviceLocator->GetService<World>()->gameWorld.entity();
 
-          auto id = AssetId().GetId();
-          e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
-          e.set<Scale>({glm::vec3(1.0, 1.0, 1.0)});
-          e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 1.0});
-          e.set<Entropy::Components::Model>({model});
-          e.set<Entropy::Components::Renderable>({id, 0, true});
-          e.set<Entropy::Components::Color>(
-              {glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}});
-          model->getSceneDimensions();
-          e.set<Entropy::Components::BoxCollisionShape3D>(
-              {glm::vec3{model->dimensions.max.x, model->dimensions.max.y / 2.0,
-                         model->dimensions.max.z},
-               glm::vec3{0.0, 0.0 - (model->dimensions.max.y / 2.0), 0.0}});
-          e.set<Entropy::Components::RigidBody3D>({});
-          e.set<Entropy::Components::Scripted>({});
-          e.get_mut<Entropy::Components::BoxCollisionShape3D>()
-              ->UpdateMotionState();
-          e.get_mut<Entropy::Components::RigidBody3D>()->Initialize(
-              _serviceLocator, e);
+          // auto id = AssetId().GetId();
+          // e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
+          // e.set<Scale>({glm::vec3(1.0, 1.0, 1.0)});
+          // e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 1.0});
+          // e.set<Entropy::Components::Model>({model});
+          // e.set<Entropy::Components::Renderable>({id, 0, true});
+          // e.set<Entropy::Components::Color>(
+          //     {glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}});
+          // model->getSceneDimensions();
+          // e.set<Entropy::Components::BoxCollisionShape3D>(
+          //     {glm::vec3{model->dimensions.max.x, model->dimensions.max.y / 2.0,
+          //                model->dimensions.max.z},
+          //      glm::vec3{0.0, 0.0 - (model->dimensions.max.y / 2.0), 0.0}});
+          // e.set<Entropy::Components::RigidBody3D>({});
+          // e.set<Entropy::Components::Scripted>({});
+          // e.get_mut<Entropy::Components::BoxCollisionShape3D>()
+          //     ->UpdateMotionState();
+          // e.get_mut<Entropy::Components::RigidBody3D>()->Initialize(
+          //     _serviceLocator, e);
 
-          spdlog::info("Returning entity!");
-          return e;
+          // spdlog::info("Returning entity!");
+          // return e;
 
           // auto awaitable = new Awaitable();
           // awaitable->fut = std::async(std::launch::async, [serviceLocator,
@@ -132,9 +128,9 @@ Lua::Lua(std::shared_ptr<ServiceLocator> serviceLocator) {
     model->model->updateAnimation(0, tick);
   };
 
-  _lua["Destroy"] = [serviceLocator](flecs::entity e) {
-    serviceLocator->GetService<QueueSync>()->_deletables.push_back(e);
-  };
+  // _lua["Destroy"] = [serviceLocator](flecs::entity e) {
+  //   serviceLocator->GetService<QueueSync>()->_deletables.push_back(e);
+  // };
 
   _lua["AsyncGet"] = [this](std::shared_ptr<Entropy::GLTF::Model> m) {
     return GetAsync(m);

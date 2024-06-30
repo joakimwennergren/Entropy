@@ -11,19 +11,16 @@
 #include <graphics/vulkan/instances/vk_instance.hpp>
 #include <graphics/vulkan/queuefamilies/queuefamily.hpp>
 #include <graphics/vulkan/surfaces/surface.hpp>
-#include <services/service.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Instances;
 using namespace Entropy::Graphics::Vulkan::Surfaces;
 using namespace Entropy::Graphics::Vulkan::QueueFamilies;
 
-using namespace Entropy::Services;
-
 namespace Entropy {
 namespace Graphics {
 namespace Vulkan {
 namespace Devices {
-class PhysicalDevice : public Service {
+class PhysicalDevice {
 public:
   /*
     PhysicalDevice() = default;

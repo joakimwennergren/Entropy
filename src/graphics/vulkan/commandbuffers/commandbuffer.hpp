@@ -4,9 +4,7 @@
 
 #include <graphics/vulkan/commandpools/commandpool.hpp>
 #include <graphics/vulkan/synchronization/queuesync.hpp>
-#include <servicelocators/servicelocator.hpp>
 
-using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Vulkan::CommandPools;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
 
@@ -16,8 +14,7 @@ namespace Vulkan {
 namespace CommandBuffers {
 class CommandBuffer {
 public:
-  CommandBuffer(std::shared_ptr<ServiceLocator> serviceLocator,
-                VkCommandBufferLevel level);
+  CommandBuffer(VkCommandBufferLevel level);
 
   void Record();
   void EndRecording();

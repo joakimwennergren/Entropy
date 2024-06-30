@@ -8,17 +8,15 @@
 #include <vulkan/vulkan.hpp>
 
 #include <graphics/vulkan/devices/logical_device.hpp>
-#include <services/service.hpp>
 
 using namespace Entropy::Graphics::Vulkan::QueueFamilies;
 using namespace Entropy::Graphics::Vulkan::Devices;
-using namespace Entropy::Services;
 
 namespace Entropy {
 namespace Graphics {
 namespace Vulkan {
 namespace DescriptorsetLayouts {
-class DescriptorsetLayout : public Service {
+class DescriptorsetLayout  {
 public:
   DescriptorsetLayout(std::shared_ptr<LogicalDevice> logicalDevice, std::vector<VkDescriptorSetLayoutBinding> layoutBindings)
   {

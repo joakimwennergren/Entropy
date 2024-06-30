@@ -13,14 +13,12 @@
 #include <graphics/vulkan/renderpasses/renderpass.hpp>
 #include <graphics/vulkan/shaders/shader.hpp>
 #include <graphics/vulkan/swapchains/swapchain.hpp>
-#include <servicelocators/servicelocator.hpp>
 
 #include "spdlog/spdlog.h"
 
 using namespace Entropy::Filesystem;
 using namespace Symbios::Graphics::Vulkan::Shaders;
 using namespace Entropy::Graphics::Vulkan::RenderPasses;
-using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Vulkan::Swapchains;
 using namespace Entropy::Graphics::Vulkan::Descriptorsets;
 using namespace Entropy::Graphics::Vulkan::DescriptorPools;
@@ -32,9 +30,7 @@ namespace Vulkan {
 namespace Pipelines {
 class Pipeline {
 public:
-  Pipeline(std::shared_ptr<RenderPass> renderPass,
-           std::shared_ptr<ServiceLocator> serviceLocator,
-           VkPolygonMode polygonMode);
+  Pipeline(std::shared_ptr<RenderPass> renderPass,VkPolygonMode polygonMode);
   ~Pipeline();
 
   void Setup(std::unique_ptr<Shader> shader,
@@ -64,7 +60,6 @@ protected:
   std::shared_ptr<Swapchain> _swapchain;
   std::shared_ptr<DescriptorsetLayout> _descriptorSetLayout;
   std::shared_ptr<DescriptorPool> _descriptorPool;
-  std::shared_ptr<ServiceLocator> _serviceLocator;
 };
 } // namespace Pipelines
 } // namespace Vulkan

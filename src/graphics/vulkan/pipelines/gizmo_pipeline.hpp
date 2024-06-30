@@ -9,9 +9,8 @@ namespace Pipelines {
 class GizmoPipeline : public Pipeline {
 public:
   GizmoPipeline(std::shared_ptr<RenderPass> renderPass,
-                std::shared_ptr<ServiceLocator> serviceLocator,
                 VkPolygonMode polygonMode)
-      : Pipeline(renderPass, serviceLocator, polygonMode) {
+      : Pipeline(renderPass, polygonMode) {
     auto dsLayouts = Setup();
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -24,22 +23,22 @@ public:
           VK_TRUE, depthBounds, pipelineLayoutInfo, polygonMode);
   }
 
-  GizmoPipeline(std::shared_ptr<RenderPass> renderPass,
-                std::shared_ptr<ServiceLocator> serviceLocator,
-                std::vector<char> vert_shader, std::vector<char> frag_shader,
-                VkPolygonMode polygonMode)
-      : Pipeline(renderPass, serviceLocator, polygonMode) {
-    auto dsLayouts = Setup();
-    VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = dsLayouts.size();
-    pipelineLayoutInfo.pSetLayouts = dsLayouts.data();
-    pipelineLayoutInfo.pPushConstantRanges = nullptr; //&push_constant;
-    pipelineLayoutInfo.pushConstantRangeCount = 0;
-    glm::vec2 depthBounds = {-1.0, 1.0};
-    Build("GizmoPipeline", vert_shader, frag_shader, dsLayouts, VK_TRUE,
-          depthBounds, pipelineLayoutInfo, VK_POLYGON_MODE_LINE);
-  }
+  // GizmoPipeline(std::shared_ptr<RenderPass> renderPass,
+  //               std::shared_ptr<ServiceLocator> serviceLocator,
+  //               std::vector<char> vert_shader, std::vector<char> frag_shader,
+  //               VkPolygonMode polygonMode)
+  //     : Pipeline(renderPass, serviceLocator, polygonMode) {
+  //   auto dsLayouts = Setup();
+  //   VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+  //   pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+  //   pipelineLayoutInfo.setLayoutCount = dsLayouts.size();
+  //   pipelineLayoutInfo.pSetLayouts = dsLayouts.data();
+  //   pipelineLayoutInfo.pPushConstantRanges = nullptr; //&push_constant;
+  //   pipelineLayoutInfo.pushConstantRangeCount = 0;
+  //   glm::vec2 depthBounds = {-1.0, 1.0};
+  //   Build("GizmoPipeline", vert_shader, frag_shader, dsLayouts, VK_TRUE,
+  //         depthBounds, pipelineLayoutInfo, VK_POLYGON_MODE_LINE);
+  // }
 
 private:
   std::vector<VkDescriptorSetLayout> Setup() {

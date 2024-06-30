@@ -9,11 +9,9 @@
 
 #include <graphics/primitives/2d/sprite.hpp>
 #include <filesystem/filesystem.hpp>
-#include <servicelocators/servicelocator.hpp>
 #include <graphics/text/font.hpp>
 
 using namespace Entropy::Graphics::Primitives;
-using namespace Entropy::ServiceLocators;
 using namespace Entropy::Text;
 
 namespace Entropy
@@ -34,7 +32,7 @@ namespace Entropy
 
         public:
             std::string text;
-            Label(std::shared_ptr<ServiceLocator> serviceLocator, std::shared_ptr<Font> font);
+            Label(std::shared_ptr<Font> font);
             void Test(){};
             std::vector<std::shared_ptr<Sprite>> sprites;
 
@@ -99,7 +97,6 @@ namespace Entropy
         private:
             FT_Library ft;
             FT_Face face;
-            std::shared_ptr<ServiceLocator> _serviceLocator;
             std::map<unsigned char, Character> _characters;
             std::shared_ptr<Font> _font;
         };

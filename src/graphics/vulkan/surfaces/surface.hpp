@@ -30,16 +30,14 @@
 #endif
 
 #include <graphics/vulkan/instances/vk_instance.hpp>
-#include <services/service.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Instances;
-using namespace Entropy::Services;
 
 namespace Entropy {
 namespace Graphics {
 namespace Vulkan {
 namespace Surfaces {
-class WindowSurface : public Service {
+class WindowSurface {
 public:
 #ifdef BUILD_FOR_MACOS
   WindowSurface(std::shared_ptr<VulkanInstance> instance, GLFWwindow *window);

@@ -25,11 +25,11 @@ public:
   Sprite();
   ~Sprite();
 
-  Sprite(std::shared_ptr<ServiceLocator> serviceLocator, FT_Bitmap bitmap);
+  Sprite(FT_Bitmap bitmap);
 
-  Sprite(std::shared_ptr<ServiceLocator> serviceLocator, std::string path);
+  Sprite(std::string path);
 #ifdef BUILD_FOR_ANDROID
-  Sprite(std::shared_ptr<ServiceLocator> serviceLocator, std::string path,
+  Sprite(std::string path,
          AAssetManager *assetmanager);
 #endif
   Sprite(unsigned char *pixels, int width, int height);
@@ -41,7 +41,6 @@ public:
 
 private:
   VkSampler _textureSampler;
-  std::shared_ptr<ServiceLocator> _serviceLocator;
   void UpdateDescriptorSets();
 };
 } // namespace Primitives

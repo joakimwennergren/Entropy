@@ -2,6 +2,8 @@
 
 using namespace Symbios::Graphics::Vulkan::Shaders;
 
+/*
+
 Shader::Shader(std::shared_ptr<ServiceLocator> serviceLocator,
                const std::vector<char> vert, const std::vector<char> frag) {
   _logicalDevice = serviceLocator->GetService<LogicalDevice>();
@@ -24,6 +26,8 @@ Shader::Shader(std::shared_ptr<ServiceLocator> serviceLocator,
     this->_shaderModuleFrag = this->BuildShader(this->_fragCode);
   }
 }
+
+*/
 
 Shader::~Shader() {
   // vkDestroyShaderModule(_logicalDevice->Get(), this->_shaderModuleVert,

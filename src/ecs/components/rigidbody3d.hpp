@@ -16,22 +16,21 @@ namespace Entropy
         struct RigidBody3D
         {
         public:
-            void Initialize(std::shared_ptr<ServiceLocator> serviceLocator, flecs::entity entity)
+            void Initialize(flecs::entity entity)
             {
-                _entity = entity;
-                _serviceLocator = serviceLocator;
-                auto physics3d = _serviceLocator->GetService<Physics::Physics3D>();
+                // _entity = entity;
+                // auto physics3d = _serviceLocator->GetService<Physics::Physics3D>();
 
-                if (entity.has<Entropy::Components::BoxCollisionShape3D>())
-                {
-                    auto boxcollider = entity.get_ref<Entropy::Components::BoxCollisionShape3D>();
-                    if (boxcollider.get() != nullptr)
-                    {
-                        body = new btRigidBody(btRigidBody::btRigidBodyConstructionInfo(btScalar(0.0f), boxcollider->box_motion_state, boxcollider->boxShape, btVector3(0, 0, 0)));
-                        body->setUserPointer(&_entity);
-                        physics3d->GetWorld()->addRigidBody(body);
-                    }
-                }
+                // if (entity.has<Entropy::Components::BoxCollisionShape3D>())
+                // {
+                //     auto boxcollider = entity.get_ref<Entropy::Components::BoxCollisionShape3D>();
+                //     if (boxcollider.get() != nullptr)
+                //     {
+                //         body = new btRigidBody(btRigidBody::btRigidBodyConstructionInfo(btScalar(0.0f), boxcollider->box_motion_state, boxcollider->boxShape, btVector3(0, 0, 0)));
+                //         body->setUserPointer(&_entity);
+                //         physics3d->GetWorld()->addRigidBody(body);
+                //     }
+                // }
             }
 
             void SetPosition()
@@ -65,7 +64,6 @@ namespace Entropy
             btTransform boxTransform;
             btRigidBody *body;
             flecs::entity _entity;
-            std::shared_ptr<ServiceLocator> _serviceLocator;
         };
     }
 }

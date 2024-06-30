@@ -9,7 +9,6 @@
 
 #include <graphics/vulkan/devices/logical_device.hpp>
 #include <graphics/renderers/renderer.hpp>
-#include <servicelocators/servicelocator.hpp>
 #include <timing/timer.hpp>
 
 #include <ecs/components/renderable.hpp>
@@ -52,7 +51,6 @@ using namespace Entropy::Graphics::Vulkan::DescriptorsetLayouts;
 using namespace Entropy::Graphics::Vulkan::Descriptorsets;
 using namespace Entropy::Scripting;
 using namespace Entropy::Physics;
-using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Vulkan::Textures;
 using namespace Entropy::Graphics::Renderers;
 using namespace Entropy;
@@ -71,7 +69,6 @@ using namespace std::chrono_literals;
 
 using namespace Entropy::Graphics::Renderers;
 using namespace Entropy::Timing;
-using namespace Entropy::ServiceLocators;
 
 void framebufferResizeCallback(GLFWwindow *window, int width, int height);
 void keyCallback(GLFWwindow *window, int key, int scancode, int action,
@@ -104,7 +101,6 @@ public:
   bool firstMouse;
   float lastX = 0.0;
   float lastY = 0.0;
-  std::shared_ptr<ServiceLocator> serviceLocator;
   // @todo look over if this should be protected..
   std::shared_ptr<Renderer> _renderer;
   std::shared_ptr<Mouse> mouse;

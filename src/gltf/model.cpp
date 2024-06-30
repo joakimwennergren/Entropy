@@ -61,7 +61,7 @@ void Primitive::setBoundingBox(glm::vec3 min, glm::vec3 max) {
 }
 
 // Mesh
-Mesh::Mesh(std::shared_ptr<ServiceLocator> serviceLocator, glm::mat4 matrix) {
+Mesh::Mesh(glm::mat4 matrix) {
   uniformBlock.matrix = matrix;
   // tempBuffer =
   //     new Entropy::Graphics::Buffers::UniformBuffer(sizeof(uniformBlock));
@@ -302,43 +302,42 @@ Model::Model(std::shared_ptr<ServiceLocator> serviceLocator,
 }
 #endif
 
-Model::Model(std::shared_ptr<ServiceLocator> serviceLocator) {
+Model::Model() {
   timer = new Timer(1000.0);
-  _serviceLocator = serviceLocator;
 
-  noTexture = new Texture(_serviceLocator);
-  noTexture->CreateTextureImage(Entropy::Filesystem::GetTexturesDir() +
-                                "/checkered.png");
+  // noTexture = new Texture(_serviceLocator);
+  // noTexture->CreateTextureImage(Entropy::Filesystem::GetTexturesDir() +
+  //                               "/checkered.png");
 
-  VkPhysicalDeviceProperties properties{};
-  vkGetPhysicalDeviceProperties(
-      serviceLocator->GetService<PhysicalDevice>()->Get(), &properties);
+  // VkPhysicalDeviceProperties properties{};
+  // vkGetPhysicalDeviceProperties(
+  //     serviceLocator->GetService<PhysicalDevice>()->Get(), &properties);
 
   VkSamplerCreateInfo samplerInfo{};
   samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
   samplerInfo.magFilter = VK_FILTER_LINEAR;
   samplerInfo.minFilter = VK_FILTER_LINEAR;
 
-  samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-  samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-  samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-  samplerInfo.anisotropyEnable = VK_TRUE;
-  samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
-  samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
-  samplerInfo.unnormalizedCoordinates = VK_FALSE;
-  samplerInfo.compareEnable = VK_FALSE;
-  samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
-  samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-  samplerInfo.mipLodBias = 0.0f;
-  samplerInfo.minLod = 0.0f;
-  samplerInfo.maxLod = 0.0f;
+  // samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+  // samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+  // samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+  // samplerInfo.anisotropyEnable = VK_TRUE;
+  // samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+  // samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+  // samplerInfo.unnormalizedCoordinates = VK_FALSE;
+  // samplerInfo.compareEnable = VK_FALSE;
+  // samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+  // samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+  // samplerInfo.mipLodBias = 0.0f;
+  // samplerInfo.minLod = 0.0f;
+  // samplerInfo.maxLod = 0.0f;
 
-  VkSampler _textureSampler;
+  // VkSampler _textureSampler;
 
-  if (vkCreateSampler(serviceLocator->GetService<LogicalDevice>()->Get(),
-                      &samplerInfo, nullptr, &_textureSampler) != VK_SUCCESS) {
-    throw std::runtime_error("failed to create texture sampler!");
-  }
+  // if (vkCreateSampler(serviceLocator->GetService<LogicalDevice>()->Get(),
+  //                     &samplerInfo, nullptr, &_textureSampler) != VK_SUCCESS) {
+  //   throw std::runtime_error("failed to create texture sampler!");
+  // }
 
   VkDescriptorSetLayoutBinding samplerLayoutBinding{};
   samplerLayoutBinding.binding = 1;
@@ -363,60 +362,60 @@ Model::Model(std::shared_ptr<ServiceLocator> serviceLocator) {
 
   VkDescriptorSetLayout _descriptorSetLayout;
 
-  if (vkCreateDescriptorSetLayout(
-          serviceLocator->GetService<LogicalDevice>()->Get(), &layoutInfo,
-          nullptr, &_descriptorSetLayout) != VK_SUCCESS) {
-    throw std::runtime_error("failed to create descriptor set layout!");
-  }
+  // if (vkCreateDescriptorSetLayout(
+  //         serviceLocator->GetService<LogicalDevice>()->Get(), &layoutInfo,
+  //         nullptr, &_descriptorSetLayout) != VK_SUCCESS) {
+  //   throw std::runtime_error("failed to create descriptor set layout!");
+  // }
 
   std::vector<VkDescriptorSetLayout> layouts(1, _descriptorSetLayout);
 
-  VkDescriptorSetAllocateInfo allocInfo{};
-  allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-  allocInfo.descriptorPool =
-      serviceLocator->GetService<DescriptorPool>()->Get();
-  allocInfo.descriptorSetCount = 1; // MAX_CONCURRENT_FRAMES_IN_FLIGHT;
-  allocInfo.pSetLayouts = layouts.data();
+  // VkDescriptorSetAllocateInfo allocInfo{};
+  // allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+  // allocInfo.descriptorPool =
+  //     serviceLocator->GetService<DescriptorPool>()->Get();
+  // allocInfo.descriptorSetCount = 1; // MAX_CONCURRENT_FRAMES_IN_FLIGHT;
+  // allocInfo.pSetLayouts = layouts.data();
 
-  if (vkAllocateDescriptorSets(
-          serviceLocator->GetService<LogicalDevice>()->Get(), &allocInfo,
-          &_noTextureDs) != VK_SUCCESS) {
-    throw std::runtime_error("failed to allocate descriptor sets!");
-  }
+  // if (vkAllocateDescriptorSets(
+  //         serviceLocator->GetService<LogicalDevice>()->Get(), &allocInfo,
+  //         &_noTextureDs) != VK_SUCCESS) {
+  //   throw std::runtime_error("failed to allocate descriptor sets!");
+  // }
 
-  VkDescriptorImageInfo imageInfo{};
-  imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-  imageInfo.imageView = noTexture->GetImageView();
-  imageInfo.sampler = _textureSampler;
+  // VkDescriptorImageInfo imageInfo{};
+  // imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+  // imageInfo.imageView = noTexture->GetImageView();
+  // imageInfo.sampler = _textureSampler;
 
-  std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
+  // std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 
-  descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-  descriptorWrites[0].dstSet = _noTextureDs;
-  descriptorWrites[0].dstBinding = 2;
-  descriptorWrites[0].dstArrayElement = 0;
-  descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-  descriptorWrites[0].descriptorCount = 1;
-  descriptorWrites[0].pImageInfo = &imageInfo;
+  // descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+  // descriptorWrites[0].dstSet = _noTextureDs;
+  // descriptorWrites[0].dstBinding = 2;
+  // descriptorWrites[0].dstArrayElement = 0;
+  // descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+  // descriptorWrites[0].descriptorCount = 1;
+  // descriptorWrites[0].pImageInfo = &imageInfo;
 
-  descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-  descriptorWrites[1].dstSet = _noTextureDs;
-  descriptorWrites[1].dstBinding = 1;
-  descriptorWrites[1].dstArrayElement = 0;
-  descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
-  descriptorWrites[1].descriptorCount = 1;
-  descriptorWrites[1].pImageInfo = &imageInfo;
+  // descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+  // descriptorWrites[1].dstSet = _noTextureDs;
+  // descriptorWrites[1].dstBinding = 1;
+  // descriptorWrites[1].dstArrayElement = 0;
+  // descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
+  // descriptorWrites[1].descriptorCount = 1;
+  // descriptorWrites[1].pImageInfo = &imageInfo;
 
-  vkUpdateDescriptorSets(serviceLocator->GetService<LogicalDevice>()->Get(),
-                         static_cast<uint32_t>(descriptorWrites.size()),
-                         descriptorWrites.data(), 0, nullptr);
+  // vkUpdateDescriptorSets(serviceLocator->GetService<LogicalDevice>()->Get(),
+  //                        static_cast<uint32_t>(descriptorWrites.size()),
+  //                        descriptorWrites.data(), 0, nullptr);
 }
 
 void Model::loadNode(Node *parent, const tinygltf::Node &node,
                      uint32_t nodeIndex, const tinygltf::Model &model,
                      LoaderInfo &loaderInfo, float globalscale) {
 
-  auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
+  // auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
   Node *newNode = new Node{};
   newNode->index = nodeIndex;
   newNode->parent = parent;
@@ -455,7 +454,7 @@ void Model::loadNode(Node *parent, const tinygltf::Node &node,
   // Node contains mesh data
   if (node.mesh > -1) {
     const tinygltf::Mesh mesh = model.meshes[node.mesh];
-    Mesh *newMesh = new Mesh(_serviceLocator, newNode->matrix);
+    Mesh *newMesh = new Mesh(newNode->matrix);
     for (size_t j = 0; j < mesh.primitives.size(); j++) {
       const tinygltf::Primitive &primitive = mesh.primitives[j];
       uint32_t vertexStart = static_cast<uint32_t>(loaderInfo.vertexPos);
@@ -799,7 +798,7 @@ void Model::loadTextures(tinygltf::Model &gltfModel) {
     } else {
       textureSampler = textureSamplers[tex.sampler];
     }
-    Texture *texture = new Texture(_serviceLocator);
+    Texture *texture = new Texture();
     texture->CreateTextureFromGLTFImage(image);
     textures.push_back(texture);
   }
@@ -855,10 +854,10 @@ void Model::loadTextureSamplers(tinygltf::Model &gltfModel) {
 }
 
 void Model::loadMaterials(tinygltf::Model &gltfModel) {
-  // Get required depenencies
-  auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
-  auto physicalDevice = _serviceLocator->GetService<PhysicalDevice>();
-  auto descriptorPool = _serviceLocator->GetService<DescriptorPool>();
+  // // Get required depenencies
+  // auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
+  // auto physicalDevice = _serviceLocator->GetService<PhysicalDevice>();
+  // auto descriptorPool = _serviceLocator->GetService<DescriptorPool>();
 
   for (tinygltf::Material &mat : gltfModel.materials) {
     Material material{};
@@ -869,34 +868,34 @@ void Model::loadMaterials(tinygltf::Model &gltfModel) {
       material.texCoordSets.baseColor =
           mat.values["baseColorTexture"].TextureTexCoord();
 
-      VkPhysicalDeviceProperties properties{};
-      vkGetPhysicalDeviceProperties(physicalDevice->Get(), &properties);
+      // VkPhysicalDeviceProperties properties{};
+      // vkGetPhysicalDeviceProperties(physicalDevice->Get(), &properties);
 
       VkSamplerCreateInfo samplerInfo{};
       samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
       samplerInfo.magFilter = VK_FILTER_LINEAR;
       samplerInfo.minFilter = VK_FILTER_LINEAR;
 
-      samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-      samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-      samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-      samplerInfo.anisotropyEnable = VK_TRUE;
-      samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
-      samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
-      samplerInfo.unnormalizedCoordinates = VK_FALSE;
-      samplerInfo.compareEnable = VK_FALSE;
-      samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
-      samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-      samplerInfo.mipLodBias = 0.0f;
-      samplerInfo.minLod = 0.0f;
-      samplerInfo.maxLod = 0.0f;
+      // samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+      // samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+      // samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+      // samplerInfo.anisotropyEnable = VK_TRUE;
+      // samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+      // samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+      // samplerInfo.unnormalizedCoordinates = VK_FALSE;
+      // samplerInfo.compareEnable = VK_FALSE;
+      // samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+      // samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+      // samplerInfo.mipLodBias = 0.0f;
+      // samplerInfo.minLod = 0.0f;
+      // samplerInfo.maxLod = 0.0f;
 
       VkSampler _textureSampler;
 
-      if (vkCreateSampler(logicalDevice->Get(), &samplerInfo, nullptr,
-                          &_textureSampler) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create texture sampler!");
-      }
+      // if (vkCreateSampler(logicalDevice->Get(), &samplerInfo, nullptr,
+      //                     &_textureSampler) != VK_SUCCESS) {
+      //   throw std::runtime_error("failed to create texture sampler!");
+      // }
 
       VkDescriptorSetLayoutBinding samplerLayoutBinding{};
       samplerLayoutBinding.binding = 1;
@@ -921,24 +920,24 @@ void Model::loadMaterials(tinygltf::Model &gltfModel) {
 
       VkDescriptorSetLayout _descriptorSetLayout;
 
-      if (vkCreateDescriptorSetLayout(logicalDevice->Get(), &layoutInfo,
-                                      nullptr,
-                                      &_descriptorSetLayout) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create descriptor set layout!");
-      }
+      // if (vkCreateDescriptorSetLayout(logicalDevice->Get(), &layoutInfo,
+      //                                 nullptr,
+      //                                 &_descriptorSetLayout) != VK_SUCCESS) {
+      //   throw std::runtime_error("failed to create descriptor set layout!");
+      // }
 
       std::vector<VkDescriptorSetLayout> layouts(1, _descriptorSetLayout);
 
-      VkDescriptorSetAllocateInfo allocInfo{};
-      allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-      allocInfo.descriptorPool = descriptorPool->Get();
-      allocInfo.descriptorSetCount = 1; // MAX_CONCURRENT_FRAMES_IN_FLIGHT;
-      allocInfo.pSetLayouts = layouts.data();
+      // VkDescriptorSetAllocateInfo allocInfo{};
+      // allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+      // allocInfo.descriptorPool = descriptorPool->Get();
+      // allocInfo.descriptorSetCount = 1; // MAX_CONCURRENT_FRAMES_IN_FLIGHT;
+      // allocInfo.pSetLayouts = layouts.data();
 
-      if (vkAllocateDescriptorSets(logicalDevice->Get(), &allocInfo,
-                                   &material.descriptorSet) != VK_SUCCESS) {
-        throw std::runtime_error("failed to allocate descriptor sets!");
-      }
+      // if (vkAllocateDescriptorSets(logicalDevice->Get(), &allocInfo,
+      //                              &material.descriptorSet) != VK_SUCCESS) {
+      //   throw std::runtime_error("failed to allocate descriptor sets!");
+      // }
 
       VkDescriptorImageInfo imageInfo{};
       imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -963,9 +962,9 @@ void Model::loadMaterials(tinygltf::Model &gltfModel) {
       descriptorWrites[1].descriptorCount = 1;
       descriptorWrites[1].pImageInfo = &imageInfo;
 
-      vkUpdateDescriptorSets(logicalDevice->Get(),
-                             static_cast<uint32_t>(descriptorWrites.size()),
-                             descriptorWrites.data(), 0, nullptr);
+      // vkUpdateDescriptorSets(logicalDevice->Get(),
+      //                        static_cast<uint32_t>(descriptorWrites.size()),
+      //                        descriptorWrites.data(), 0, nullptr);
     }
     if (mat.values.find("metallicRoughnessTexture") != mat.values.end()) {
       material.metallicRoughnessTexture =
@@ -1297,8 +1296,8 @@ void Model::loadFromFile(std::string filename, float scale) {
     // indexBuffer = std::make_unique<IndexBuffer<uint32_t>>(indices_temp);
   }
 
-  auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
-  auto descriptorPool = _serviceLocator->GetService<DescriptorPool>();
+  // auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
+  // auto descriptorPool = _serviceLocator->GetService<DescriptorPool>();
 
   VkDescriptorSetLayoutBinding skinBinding{};
   skinBinding.binding = 0;
@@ -1315,10 +1314,10 @@ void Model::loadFromFile(std::string filename, float scale) {
 
   VkDescriptorSetLayout descriptorSetLayout;
 
-  if (vkCreateDescriptorSetLayout(logicalDevice->Get(), &layoutInfo, nullptr,
-                                  &descriptorSetLayout) != VK_SUCCESS) {
-    throw std::runtime_error("failed to create descriptor set layout!");
-  }
+  // if (vkCreateDescriptorSetLayout(logicalDevice->Get(), &layoutInfo, nullptr,
+  //                                 &descriptorSetLayout) != VK_SUCCESS) {
+  //   throw std::runtime_error("failed to create descriptor set layout!");
+  // }
 
   // TODO: scene handling with no default scene
   for (size_t i = 0; i < nodes.size(); i++) {
@@ -1330,22 +1329,22 @@ void Model::loadFromFile(std::string filename, float scale) {
 
 void Model::setupNodeDescriptorSet(Node *node, VkDescriptorSetLayout layout) {
 
-  auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
-  auto descriptorPool = _serviceLocator->GetService<DescriptorPool>();
+  // auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
+  // auto descriptorPool = _serviceLocator->GetService<DescriptorPool>();
 
   if (node->mesh) {
-    VkDescriptorSetAllocateInfo descriptorSetAllocInfo{};
-    descriptorSetAllocInfo.sType =
-        VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    descriptorSetAllocInfo.descriptorPool = descriptorPool->Get();
-    descriptorSetAllocInfo.pSetLayouts = &layout;
-    descriptorSetAllocInfo.descriptorSetCount = 1;
-    if (vkAllocateDescriptorSets(logicalDevice->Get(), &descriptorSetAllocInfo,
-                                 &node->mesh->uniformBuffer.descriptorSet) !=
-        VK_SUCCESS) {
-      std::cout << "FAILED TO ALLOCATE DESC SET" << std::endl;
-      exit(-1);
-    }
+    // VkDescriptorSetAllocateInfo descriptorSetAllocInfo{};
+    // descriptorSetAllocInfo.sType =
+    //     VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    // descriptorSetAllocInfo.descriptorPool = descriptorPool->Get();
+    // descriptorSetAllocInfo.pSetLayouts = &layout;
+    // descriptorSetAllocInfo.descriptorSetCount = 1;
+    // if (vkAllocateDescriptorSets(logicalDevice->Get(), &descriptorSetAllocInfo,
+    //                              &node->mesh->uniformBuffer.descriptorSet) !=
+    //     VK_SUCCESS) {
+    //   std::cout << "FAILED TO ALLOCATE DESC SET" << std::endl;
+    //   exit(-1);
+    // }
 
     VkWriteDescriptorSet writeDescriptorSet{};
     writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -1355,8 +1354,8 @@ void Model::setupNodeDescriptorSet(Node *node, VkDescriptorSetLayout layout) {
     writeDescriptorSet.dstBinding = 0;
     writeDescriptorSet.pBufferInfo = &node->mesh->uniformBuffer.descriptor;
 
-    vkUpdateDescriptorSets(logicalDevice->Get(), 1, &writeDescriptorSet, 0,
-                           nullptr);
+    // vkUpdateDescriptorSets(logicalDevice->Get(), 1, &writeDescriptorSet, 0,
+    //                        nullptr);
   }
   for (auto &child : node->children) {
     setupNodeDescriptorSet(child, layout);
@@ -1615,11 +1614,11 @@ void Model::renderNode(Node *node, VkCommandBuffer commandBuffer,
 
 void Model::SetupCubeMap(std::shared_ptr<Texture> texture) {
 
-  auto physicalDevice = _serviceLocator->GetService<PhysicalDevice>();
-  auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
-  auto descriptorPool = _serviceLocator->GetService<DescriptorPool>();
-  VkPhysicalDeviceProperties properties{};
-  vkGetPhysicalDeviceProperties(physicalDevice->Get(), &properties);
+  // auto physicalDevice = _serviceLocator->GetService<PhysicalDevice>();
+  // auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
+  // auto descriptorPool = _serviceLocator->GetService<DescriptorPool>();
+  // VkPhysicalDeviceProperties properties{};
+  // vkGetPhysicalDeviceProperties(physicalDevice->Get(), &properties);
 
   VkSamplerCreateInfo samplerInfo{};
   samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -1629,8 +1628,8 @@ void Model::SetupCubeMap(std::shared_ptr<Texture> texture) {
   samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
   samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
   samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-  samplerInfo.anisotropyEnable = VK_TRUE;
-  samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+  // samplerInfo.anisotropyEnable = VK_TRUE;
+  // samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
   samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
   samplerInfo.unnormalizedCoordinates = VK_FALSE;
   samplerInfo.compareEnable = VK_FALSE;
@@ -1642,10 +1641,10 @@ void Model::SetupCubeMap(std::shared_ptr<Texture> texture) {
 
   VkSampler _textureSampler;
 
-  if (vkCreateSampler(logicalDevice->Get(), &samplerInfo, nullptr,
-                      &_textureSampler) != VK_SUCCESS) {
-    throw std::runtime_error("failed to create texture sampler!");
-  }
+  // if (vkCreateSampler(logicalDevice->Get(), &samplerInfo, nullptr,
+  //                     &_textureSampler) != VK_SUCCESS) {
+  //   throw std::runtime_error("failed to create texture sampler!");
+  // }
 
   VkDescriptorSetLayoutBinding samplerLayoutBinding{};
   samplerLayoutBinding.binding = 0;
@@ -1663,23 +1662,23 @@ void Model::SetupCubeMap(std::shared_ptr<Texture> texture) {
 
   VkDescriptorSetLayout _descriptorSetLayout;
 
-  if (vkCreateDescriptorSetLayout(logicalDevice->Get(), &layoutInfo, nullptr,
-                                  &_descriptorSetLayout) != VK_SUCCESS) {
-    throw std::runtime_error("failed to create descriptor set layout!");
-  }
+  // if (vkCreateDescriptorSetLayout(logicalDevice->Get(), &layoutInfo, nullptr,
+  //                                 &_descriptorSetLayout) != VK_SUCCESS) {
+  //   throw std::runtime_error("failed to create descriptor set layout!");
+  // }
 
   std::vector<VkDescriptorSetLayout> layouts(1, _descriptorSetLayout);
 
   VkDescriptorSetAllocateInfo allocInfo{};
   allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-  allocInfo.descriptorPool = descriptorPool->Get();
+  // allocInfo.descriptorPool = descriptorPool->Get();
   allocInfo.descriptorSetCount = 1; // MAX_CONCURRENT_FRAMES_IN_FLIGHT;
   allocInfo.pSetLayouts = layouts.data();
 
-  if (vkAllocateDescriptorSets(logicalDevice->Get(), &allocInfo, &_cubeMapDS) !=
-      VK_SUCCESS) {
-    throw std::runtime_error("failed to allocate descriptor sets!");
-  }
+  // if (vkAllocateDescriptorSets(logicalDevice->Get(), &allocInfo, &_cubeMapDS) !=
+  //     VK_SUCCESS) {
+  //   throw std::runtime_error("failed to allocate descriptor sets!");
+  // }
 
   VkDescriptorImageInfo imageInfo{};
   imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -1697,9 +1696,9 @@ void Model::SetupCubeMap(std::shared_ptr<Texture> texture) {
   descriptorWrites[0].descriptorCount = 1;
   descriptorWrites[0].pImageInfo = &imageInfo;
 
-  vkUpdateDescriptorSets(logicalDevice->Get(),
-                         static_cast<uint32_t>(descriptorWrites.size()),
-                         descriptorWrites.data(), 0, nullptr);
+  // vkUpdateDescriptorSets(logicalDevice->Get(),
+  //                        static_cast<uint32_t>(descriptorWrites.size()),
+  //                        descriptorWrites.data(), 0, nullptr);
 
   isCubeMap = true;
 }

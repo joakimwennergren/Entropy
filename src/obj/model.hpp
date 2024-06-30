@@ -7,7 +7,6 @@
 #include <graphics/vulkan/buffers/indexbuffer.hpp>
 #include <graphics/vulkan/buffers/vertexbuffer.hpp>
 #include <graphics/vulkan/textures/texture.hpp>
-#include <servicelocators/servicelocator.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Buffers;
 using namespace Entropy::Graphics::Vulkan::DescriptorPools;
@@ -17,8 +16,7 @@ namespace Entropy {
 namespace OBJ {
 class ObjModel {
 public:
-  ObjModel(std::shared_ptr<ServiceLocator> serviceLocator) {
-    _serviceLocator = serviceLocator;
+  ObjModel() {
   }
 
   void loadFromFile(std::string file, std::string tex) {
@@ -51,12 +49,12 @@ public:
 
     // vertexBuffer = std::make_unique<VertexBuffer>(vertices);
 
-    texture = new Texture(_serviceLocator);
+    texture = new Texture();
     texture->CreateTextureImage(tex);
 
     VkPhysicalDeviceProperties properties{};
-    vkGetPhysicalDeviceProperties(
-        _serviceLocator->GetService<PhysicalDevice>()->Get(), &properties);
+    // vkGetPhysicalDeviceProperties(
+    //     _serviceLocator->GetService<PhysicalDevice>()->Get(), &properties);
 
     VkSamplerCreateInfo samplerInfo{};
     samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -79,11 +77,11 @@ public:
 
     VkSampler _textureSampler;
 
-    if (vkCreateSampler(_serviceLocator->GetService<LogicalDevice>()->Get(),
-                        &samplerInfo, nullptr,
-                        &_textureSampler) != VK_SUCCESS) {
-      throw std::runtime_error("failed to create texture sampler!");
-    }
+    // if (vkCreateSampler(_serviceLocator->GetService<LogicalDevice>()->Get(),
+    //                     &samplerInfo, nullptr,
+    //                     &_textureSampler) != VK_SUCCESS) {
+    //   throw std::runtime_error("failed to create texture sampler!");
+    // }
 
     VkDescriptorSetLayoutBinding samplerLayoutBinding{};
     samplerLayoutBinding.binding = 1;
@@ -108,26 +106,26 @@ public:
 
     VkDescriptorSetLayout _descriptorSetLayout;
 
-    if (vkCreateDescriptorSetLayout(
-            _serviceLocator->GetService<LogicalDevice>()->Get(), &layoutInfo,
-            nullptr, &_descriptorSetLayout) != VK_SUCCESS) {
-      throw std::runtime_error("failed to create descriptor set layout!");
-    }
+    // if (vkCreateDescriptorSetLayout(
+    //         _serviceLocator->GetService<LogicalDevice>()->Get(), &layoutInfo,
+    //         nullptr, &_descriptorSetLayout) != VK_SUCCESS) {
+    //   throw std::runtime_error("failed to create descriptor set layout!");
+    // }
 
     std::vector<VkDescriptorSetLayout> layouts(1, _descriptorSetLayout);
 
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    allocInfo.descriptorPool =
-        _serviceLocator->GetService<DescriptorPool>()->Get();
+    // allocInfo.descriptorPool =
+    //     _serviceLocator->GetService<DescriptorPool>()->Get();
     allocInfo.descriptorSetCount = 1; // MAX_CONCURRENT_FRAMES_IN_FLIGHT;
     allocInfo.pSetLayouts = layouts.data();
 
-    if (vkAllocateDescriptorSets(
-            _serviceLocator->GetService<LogicalDevice>()->Get(), &allocInfo,
-            &ds) != VK_SUCCESS) {
-      throw std::runtime_error("failed to allocate descriptor sets!");
-    }
+    // if (vkAllocateDescriptorSets(
+    //         _serviceLocator->GetService<LogicalDevice>()->Get(), &allocInfo,
+    //         &ds) != VK_SUCCESS) {
+    //   throw std::runtime_error("failed to allocate descriptor sets!");
+    // }
 
     VkDescriptorImageInfo imageInfo{};
     imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -152,9 +150,9 @@ public:
     descriptorWrites[1].descriptorCount = 1;
     descriptorWrites[1].pImageInfo = &imageInfo;
 
-    vkUpdateDescriptorSets(_serviceLocator->GetService<LogicalDevice>()->Get(),
-                           static_cast<uint32_t>(descriptorWrites.size()),
-                           descriptorWrites.data(), 0, nullptr);
+    // vkUpdateDescriptorSets(_serviceLocator->GetService<LogicalDevice>()->Get(),
+    //                        static_cast<uint32_t>(descriptorWrites.size()),
+    //                        descriptorWrites.data(), 0, nullptr);
   }
 
   std::vector<Vertex> vertices;
@@ -163,7 +161,6 @@ public:
   VkDescriptorSet ds;
 
 private:
-  std::shared_ptr<ServiceLocator> _serviceLocator;
 };
 } // namespace OBJ
 } // namespace Entropy

@@ -9,18 +9,16 @@
 #include <graphics/vulkan/devices/logical_device.hpp>
 #include <graphics/vulkan/queuefamilies/queuefamily.hpp>
 #include <graphics/vulkan/surfaces/surface.hpp>
-#include <services/service.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Surfaces;
 using namespace Entropy::Graphics::Vulkan::QueueFamilies;
 using namespace Entropy::Graphics::Vulkan::Devices;
-using namespace Entropy::Services;
 
 namespace Entropy {
 namespace Graphics {
 namespace Vulkan {
 namespace DescriptorPools {
-class DescriptorPool : public Service {
+class DescriptorPool {
 public:
   DescriptorPool(std::shared_ptr<LogicalDevice> logicalDevice)
   {

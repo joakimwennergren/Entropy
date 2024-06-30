@@ -2,9 +2,8 @@
 
 using namespace Entropy::Graphics::Primitives;
 
-Plane::Plane(std::shared_ptr<ServiceLocator> serviceLocator) {
+Plane::Plane() {
 
-  _serviceLocator = serviceLocator;
 
   std::vector<uint16_t> indices = {0, 1, 2, 2, 3, 0};
 
@@ -22,14 +21,16 @@ Plane::Plane(std::shared_ptr<ServiceLocator> serviceLocator) {
   // vertexBuffer = std::make_unique<VertexBuffer>(vertices);
   //  indexBuffer = std::make_unique<IndexBuffer<uint16_t>>(indices);
 
-  _blank = std::make_unique<Texture>(serviceLocator);
-  _blank->CreateTextureImage(Filesystem::GetTexturesDir() + "blank.png");
-  UpdateDescriptorSets();
+  // _blank = std::make_unique<Texture>(serviceLocator);
+  // _blank->CreateTextureImage(Filesystem::GetTexturesDir() + "blank.png");
+  // UpdateDescriptorSets();
 }
 
 Plane::~Plane() {}
 
 void Plane::UpdateDescriptorSets() {
+
+  /*
   // Get required depenencies
   auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
   auto physicalDevice = _serviceLocator->GetService<PhysicalDevice>();
@@ -127,4 +128,5 @@ void Plane::UpdateDescriptorSets() {
   vkUpdateDescriptorSets(logicalDevice->Get(),
                          static_cast<uint32_t>(descriptorWrites.size()),
                          descriptorWrites.data(), 0, nullptr);
+  */
 }

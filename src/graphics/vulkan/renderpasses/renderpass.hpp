@@ -5,13 +5,11 @@
 #include <graphics/vulkan/imageviews/imageview.hpp>
 #include <graphics/vulkan/memory/allocator.hpp>
 #include <graphics/vulkan/swapchains/swapchain.hpp>
-#include <servicelocators/servicelocator.hpp>
 #include <vulkan/vulkan.hpp>
 
 #include "spdlog/spdlog.h"
 
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;
-using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Vulkan::Swapchains;
 using namespace Entropy::Graphics::Vulkan::Devices;
 using namespace Entropy::Graphics::Vulkan::ImageViews;
@@ -23,7 +21,7 @@ namespace Vulkan {
 namespace RenderPasses {
 class RenderPass {
 public:
-  RenderPass(std::shared_ptr<ServiceLocator> serviceLocator);
+  RenderPass();
   ~RenderPass();
 
   void Begin(std::shared_ptr<CommandBuffer> commandBuffer,
@@ -53,7 +51,6 @@ private:
   std::shared_ptr<Swapchain> _swapChain;
   std::shared_ptr<LogicalDevice> _logicalDevice;
   std::shared_ptr<PhysicalDevice> _physicalDevice;
-  std::shared_ptr<ServiceLocator> _serviceLocator;
 
   VkImage _depthImage = VK_NULL_HANDLE;
   VkImageView depthImageView;

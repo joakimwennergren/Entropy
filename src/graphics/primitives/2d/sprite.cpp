@@ -23,9 +23,7 @@ Sprite::Sprite() {
   */
 }
 
-Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator,
-               FT_Bitmap bitmap) {
-  _serviceLocator = serviceLocator;
+Sprite::Sprite(FT_Bitmap bitmap) {
 
   std::vector<uint16_t> indices = {0, 1, 2, 2, 3, 0};
 
@@ -47,31 +45,29 @@ Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator,
 }
 
 #ifdef BUILD_FOR_ANDROID
-Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator, std::string path,
-               AAssetManager *assetmanager) {
-  _serviceLocator = serviceLocator;
+Sprite::Sprite(std::string path,AAssetManager *assetmanager) {
 
-  script = std::make_unique<Script>();
+  // script = std::make_unique<Script>();
 
-  _indices = {0, 1, 2, 2, 3, 0};
+  // _indices = {0, 1, 2, 2, 3, 0};
 
-  _vertices = {{{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-               {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
-               {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
-               {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
+  // _vertices = {{{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+  //              {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
+  //              {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
+  //              {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
 
-  texture = new Texture(serviceLocator);
+  // texture = new Texture(serviceLocator);
 
-  // Create buffers @todo temp!!!
-  vertexBuffer = std::make_unique<VertexBuffer>(serviceLocator, _vertices);
+  // // Create buffers @todo temp!!!
+  // vertexBuffer = std::make_unique<VertexBuffer>(serviceLocator, _vertices);
 
-  indexBuffer = std::make_unique<Buffer>();
-  indexBuffer->CreateIndexBufferUint16(serviceLocator, _indices);
+  // indexBuffer = std::make_unique<Buffer>();
+  // indexBuffer->CreateIndexBufferUint16(serviceLocator, _indices);
 
-  this->position = glm::vec3(0.0f, 0.0f, 0.0f);
-  this->color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-  this->scale = glm::vec3(1.0, 1.0, 1.0);
-  this->texture->CreateTextureImage(path, assetmanager);
+  // this->position = glm::vec3(0.0f, 0.0f, 0.0f);
+  // this->color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+  // this->scale = glm::vec3(1.0, 1.0, 1.0);
+  // this->texture->CreateTextureImage(path, assetmanager);
 
   UpdateDescriptorSets();
 
@@ -79,9 +75,7 @@ Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator, std::string path,
 }
 #endif
 
-Sprite::Sprite(std::shared_ptr<ServiceLocator> serviceLocator,
-               std::string path) {
-  _serviceLocator = serviceLocator;
+Sprite::Sprite(std::string path) {
 
   std::vector<uint16_t> indices = {0, 1, 2, 2, 3, 0};
 
@@ -235,9 +229,9 @@ void Sprite::UpdateDescriptorSets() {
 }
 
 Sprite::~Sprite() {
-  auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
-  auto descriptorPool = _serviceLocator->GetService<DescriptorPool>();
+  /*
   vkDeviceWaitIdle(logicalDevice->Get());
   vkFreeDescriptorSets(logicalDevice->Get(), descriptorPool->Get(), 1,
                        &_descriptorSet);
+  */
 }

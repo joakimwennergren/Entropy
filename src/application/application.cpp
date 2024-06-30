@@ -165,10 +165,10 @@ Application::~Application() {
 
 void Application::Run() {
 
-  auto lua = serviceLocator->GetService<Lua>();
-  auto physics3d = serviceLocator->GetService<Physics3D>();
-  auto physicalDevice = serviceLocator->GetService<PhysicalDevice>();
-  auto queueSync = serviceLocator->GetService<QueueSync>();
+  // auto lua = serviceLocator->GetService<Lua>();
+  // auto physics3d = serviceLocator->GetService<Physics3D>();
+  // auto physicalDevice = serviceLocator->GetService<PhysicalDevice>();
+  // auto queueSync = serviceLocator->GetService<QueueSync>();
 
   this->OnInit();
 

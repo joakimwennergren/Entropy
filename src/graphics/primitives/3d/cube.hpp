@@ -16,7 +16,7 @@ public:
    *
    * @param context
    */
-  Cube(std::shared_ptr<ServiceLocator> serviceLocator);
+  Cube();
 };
 } // namespace Primitives
 } // namespace Graphics

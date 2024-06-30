@@ -8,10 +8,8 @@
 
 #include <config.hpp>
 #include <graphics/vulkan/validationlayers/validationlayer.hpp>
-#include <services/service.hpp>
 
 using namespace Entropy::Graphics::Vulkan::ValidationLayers;
-using namespace Entropy::Services;
 
 namespace Entropy {
 namespace Graphics {

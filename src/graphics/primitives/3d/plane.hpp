@@ -20,7 +20,7 @@ public:
    *
    * @param context
    */
-  Plane(std::shared_ptr<ServiceLocator> serviceLocator);
+  Plane();
 
   void Test(){};
 
@@ -40,7 +40,6 @@ public:
 
 private:
   VkSampler _textureSampler;
-  std::shared_ptr<ServiceLocator> _serviceLocator;
 };
 } // namespace Primitives
 } // namespace Graphics

@@ -2,7 +2,7 @@
 
 using namespace Entropy::Graphics::Primitives;
 
-Cube::Cube(std::shared_ptr<ServiceLocator> serviceLocator)
+Cube::Cube()
 {
 
     /*

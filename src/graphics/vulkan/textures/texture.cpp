@@ -7,7 +7,7 @@ using namespace Entropy::Graphics::Vulkan::Textures;
 /**
  * @param serviceLocator
  */
-Texture::Texture(std::shared_ptr<ServiceLocator> serviceLocator) {}
+Texture::Texture() {}
 
 /**
  * @brief Destroy the image texture
@@ -269,7 +269,7 @@ void Texture::TransitionImageLayout(VkImage image, VkImageLayout oldLayout,
 
   // Create a new command buffer and start one-time recording
   auto commandBuffer =
-      new CommandBuffer(_serviceLocator, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+      new CommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
   commandBuffer->RecordOnce();
 
   // Create pipeline barrier
@@ -336,7 +336,7 @@ void Texture::CopyBufferToImage(const VkBuffer buffer, const VkImage image,
 
   // Create a new command buffer and start one-time recording
   auto commandBuffer =
-      new CommandBuffer(_serviceLocator, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+      new CommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
   commandBuffer->RecordOnce();
 
   // Make the actual copy

@@ -11,7 +11,6 @@
 #include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
 #include <graphics/vulkan/descriptorsetlayouts/descriptorsetlayout.hpp>
 #include <graphics/vulkan/devices/logical_device.hpp>
-#include <services/service.hpp>
 
 using namespace Entropy::Graphics::Vulkan::QueueFamilies;
 using namespace Entropy::Graphics::Vulkan::Devices;
@@ -22,7 +21,7 @@ namespace Entropy {
 namespace Graphics {
 namespace Vulkan {
 namespace Descriptorsets {
-class Descriptorset : public Service {
+class Descriptorset  {
 public:
   Descriptorset(std::shared_ptr<LogicalDevice> logicalDevice, std::shared_ptr<DescriptorPool> pool, std::shared_ptr<DescriptorsetLayout> layout)
   {

@@ -12,11 +12,10 @@ size_t Renderer::pad_uniform_buffer_size(size_t originalSize) {
   return alignedSize;
 }
 
-void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator,
-                     float xscale, float yscale) {
+void Renderer::Setup(float xscale, float yscale) {
   // Store service locator
-  _serviceLocator = serviceLocator;
 
+    /*
   // Get required depenencies
   _logicalDevice = serviceLocator->GetService<LogicalDevice>();
   _swapChain = serviceLocator->GetService<Swapchain>();
@@ -158,6 +157,7 @@ void Renderer::Setup(std::shared_ptr<ServiceLocator> serviceLocator,
                            descriptorWrites.data(), 0, nullptr);
   }
 
+*/
   /*
     _camera = std::make_shared<Camera>();
     _camera->type = Camera::CameraType::firstperson;
@@ -210,10 +210,10 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator,
       */
 }
 #endif
-Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator,
-                   flecs::world *world, float xscale, float yscale)
+Renderer::Renderer(flecs::world *world, float xscale, float yscale)
 
 {
+    /*
   _queueSync = serviceLocator->GetService<QueueSync>();
   _world = world;
   _physicalDevice = serviceLocator->GetService<PhysicalDevice>();
@@ -237,6 +237,8 @@ Renderer::Renderer(std::shared_ptr<ServiceLocator> serviceLocator,
   Setup(serviceLocator, xscale, yscale);
 
   _timer = new Timer(1.0);
+
+  */
 
   /*
   _world->system<Entropy::Components::Renderable>()
@@ -269,7 +271,7 @@ void Renderer::HandleResize(int width, int height) {
 
 void Renderer::Wireframe(bool on) {
   _pipelines["SkinnedPipeline"] = std::make_shared<SkinnedPipeline>(
-      _renderPass, _serviceLocator,
+      _renderPass,
       on == true ? VK_POLYGON_MODE_LINE : VK_POLYGON_MODE_FILL);
 
   for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++) {

@@ -13,10 +13,6 @@
 
 #include <graphics/cameras/flying_camera.hpp>
 
-#include <servicelocators/servicelocator.hpp>
-
-using namespace Entropy::ServiceLocators;
-using namespace Entropy::Services;
 
 namespace Entropy
 {
@@ -26,10 +22,9 @@ namespace Entropy
         class BulletDebugDrawer : public btIDebugDraw
         {
         public:
-            BulletDebugDrawer(flecs::world *world, std::shared_ptr<ServiceLocator> serviceLocator)
+            BulletDebugDrawer(flecs::world *world)
             {
                 _world = world;
-                _serviceLocator = serviceLocator;
             }
 
             void drawLine(const btVector3 &from, const btVector3 &to, const btVector3 &color) override
@@ -44,9 +39,9 @@ namespace Entropy
                 {
                     c = glm::vec4(1.0, 1.0, 1.0, 1.0);
                 }
-                gizmo.set<Entropy::Components::LineGizmo>({std::make_shared<Line>(_serviceLocator, f, t, c)});
-                gizmo.set<Entropy::Components::Renderable>({id++, 1, true});
-                gizmo.set<Entropy::Components::Color>({c});
+                // gizmo.set<Entropy::Components::LineGizmo>({std::make_shared<Line>(_serviceLocator, f, t, c)});
+                // gizmo.set<Entropy::Components::Renderable>({id++, 1, true});
+                // gizmo.set<Entropy::Components::Color>({c});
             }
 
             void drawContactPoint(const btVector3 &PointOnB, const btVector3 &normalOnB, btScalar distance, int lifeTime, const btVector3 &color) override
@@ -80,16 +75,14 @@ namespace Entropy
 
         private:
             flecs::world *_world;
-            std::shared_ptr<ServiceLocator> _serviceLocator;
             uint32_t id = 3;
         };
 
-        class Physics3D : public Service
+        class Physics3D
         {
         public:
-            Physics3D(flecs::world *world, std::shared_ptr<ServiceLocator> serviceLocator)
+            Physics3D(flecs::world *world)
             {
-                _serviceLocator = serviceLocator;
                 // Build the broadphase
                 _broadphase = new btDbvtBroadphase();
 
@@ -104,7 +97,7 @@ namespace Entropy
                 _dynamicsWorld = new btDiscreteDynamicsWorld(_dispatcher, _broadphase, _solver, _collisionConfiguration);
                 _dynamicsWorld->setGravity(btVector3(0, -9.81f, 0));
 
-                BulletDebugDrawer *dbgDrawer = new BulletDebugDrawer(world, serviceLocator);
+                BulletDebugDrawer *dbgDrawer = new BulletDebugDrawer(world);
 
                 _dynamicsWorld->setDebugDrawer(dbgDrawer);
 
@@ -116,49 +109,49 @@ namespace Entropy
             // Function to perform mouse picking
             void pickObject(int width, int height, int mouseX, int mouseY, const glm::mat4 &projectionMatrix, const glm::mat4 &viewMatrix)
             {
-                auto camera = _serviceLocator->GetService<Cam>();
+                // auto camera = _serviceLocator->GetService<Cam>();
 
-                // Convert screen coordinates to a 3D ray
-                glm::vec3 rayTo = getRayTo(width, height, mouseX, mouseY, projectionMatrix, viewMatrix);
+                // // Convert screen coordinates to a 3D ray
+                // glm::vec3 rayTo = getRayTo(width, height, mouseX, mouseY, projectionMatrix, viewMatrix);
 
-                glm::vec3 rayFrom = camera->Position;
+                // glm::vec3 rayFrom = camera->Position;
 
-                // Define the endpoint of the ray using a scaling factor
-                float rayLength = 1000.0f; // Adjust this value as needed
-                glm::vec3 rayEndpoint = rayFrom + rayTo * rayLength;
+                // // Define the endpoint of the ray using a scaling factor
+                // float rayLength = 1000.0f; // Adjust this value as needed
+                // glm::vec3 rayEndpoint = rayFrom + rayTo * rayLength;
 
-                // Perform ray casting against the physics world
-                btCollisionWorld::ClosestRayResultCallback rayCallback(btVector3(rayFrom.x, rayFrom.y, rayFrom.z), btVector3(rayEndpoint.x, rayEndpoint.y, rayEndpoint.z));
-                _dynamicsWorld->rayTest(btVector3(rayFrom.x, rayFrom.y, rayFrom.z), btVector3(rayEndpoint.x, rayEndpoint.y, rayEndpoint.z), rayCallback);
+                // // Perform ray casting against the physics world
+                // btCollisionWorld::ClosestRayResultCallback rayCallback(btVector3(rayFrom.x, rayFrom.y, rayFrom.z), btVector3(rayEndpoint.x, rayEndpoint.y, rayEndpoint.z));
+                // _dynamicsWorld->rayTest(btVector3(rayFrom.x, rayFrom.y, rayFrom.z), btVector3(rayEndpoint.x, rayEndpoint.y, rayEndpoint.z), rayCallback);
 
-                //_dynamicsWorld->debugDrawWorld();
-                //_dynamicsWorld->getDebugDrawer()->drawLine(btVector3{rayFrom.x, rayFrom.y, rayFrom.z}, btVector3{rayEndpoint.x, rayEndpoint.y, rayEndpoint.z}, btVector4(0, 1, 0, 1));
+                // //_dynamicsWorld->debugDrawWorld();
+                // //_dynamicsWorld->getDebugDrawer()->drawLine(btVector3{rayFrom.x, rayFrom.y, rayFrom.z}, btVector3{rayEndpoint.x, rayEndpoint.y, rayEndpoint.z}, btVector4(0, 1, 0, 1));
 
-                // Check if the ray hit anything
-                if (rayCallback.hasHit())
-                {
+                // // Check if the ray hit anything
+                // if (rayCallback.hasHit())
+                // {
 
-                    auto point = btVector3(0.0f, 0.0f, 0.0f);
+                //     auto point = btVector3(0.0f, 0.0f, 0.0f);
 
-                    // Get the hit object
-                    btRigidBody *hitObject = (btRigidBody *)btRigidBody::upcast(rayCallback.m_collisionObject);
-                    if (hitObject)
-                    {
-                        glm::vec3 newPos = glm::vec3(point.x(), point.y(), point.z());
-                        _lastPlanePoint = newPos;
+                //     // Get the hit object
+                //     btRigidBody *hitObject = (btRigidBody *)btRigidBody::upcast(rayCallback.m_collisionObject);
+                //     if (hitObject)
+                //     {
+                //         glm::vec3 newPos = glm::vec3(point.x(), point.y(), point.z());
+                //         _lastPlanePoint = newPos;
 
-                        auto entity = (flecs::entity *)hitObject->getUserPointer();
-                        if (entity != nullptr)
-                        {
-                            _lastSelectedEntity = entity;
-                        }
-                        else
-                        {
-                            point = rayCallback.m_hitPointWorld;
-                            _lastSelectedEntity = nullptr;
-                        }
-                    }
-                }
+                //         auto entity = (flecs::entity *)hitObject->getUserPointer();
+                //         if (entity != nullptr)
+                //         {
+                //             _lastSelectedEntity = entity;
+                //         }
+                //         else
+                //         {
+                //             point = rayCallback.m_hitPointWorld;
+                //             _lastSelectedEntity = nullptr;
+                //         }
+                //     }
+                // }
             }
 
             glm::vec3 GetPoint() { return _lastPlanePoint; };
@@ -190,7 +183,6 @@ namespace Entropy
                 return worldRay;
             }
 
-            std::shared_ptr<ServiceLocator> _serviceLocator;
             btBroadphaseInterface *_broadphase;
             btDefaultCollisionConfiguration *_collisionConfiguration;
             btCollisionDispatcher *_dispatcher;

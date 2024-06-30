@@ -10,9 +10,8 @@ namespace Pipelines {
 class GUIPipeline : public Pipeline {
 public:
   GUIPipeline(std::shared_ptr<RenderPass> renderPass,
-              std::shared_ptr<ServiceLocator> serviceLocator,
               VkPolygonMode polygonMode)
-      : Pipeline(renderPass, serviceLocator, polygonMode) {
+      : Pipeline(renderPass, polygonMode) {
     auto dsLayouts = Setup();
     VkPushConstantRange pushConstantRange{};
     pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;

@@ -8,14 +8,12 @@
 #include <graphics/vulkan/imageviews/imageview.hpp>
 #include <graphics/vulkan/queuefamilies/queuefamily.hpp>
 #include <graphics/vulkan/surfaces/surface.hpp>
-#include <services/service.hpp>
 
 #include <tracy/Tracy.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Surfaces;
 using namespace Entropy::Graphics::Vulkan::QueueFamilies;
 using namespace Entropy::Graphics::Vulkan::ImageViews;
-using namespace Entropy::Services;
 
 namespace Entropy {
 namespace Graphics {
@@ -28,7 +26,7 @@ struct SwapChainSupportDetails {
   std::vector<VkPresentModeKHR> presentModes;
 };
 
-class Swapchain : public Service {
+class Swapchain {
 public:
   Swapchain() = default;
   Swapchain(VkPhysicalDevice physicalDevice, VkDevice logicalDevice,

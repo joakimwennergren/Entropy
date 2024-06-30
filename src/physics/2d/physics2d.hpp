@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vulkan/vulkan.hpp>
-#include <servicelocators/servicelocator.hpp>
 // #include <box2d/box2d.h>
 
 #include <iostream>
@@ -9,17 +8,14 @@
 #include "spdlog/spdlog.h"
 #include <glm/glm.hpp>
 
-using namespace Entropy::ServiceLocators;
-using namespace Entropy::Services;
-
 namespace Entropy
 {
     namespace Physics
     {
-        class Physics2D : public Service
+        class Physics2D
         {
         public:
-            Physics2D(std::shared_ptr<ServiceLocator> serviceLocator);
+            Physics2D();
 
             // inline b2Body *CreateBody(float x, float y)
             //{

@@ -2,9 +2,8 @@
 
 using namespace Entropy::Graphics::Primitives;
 
-Line::Line(std::shared_ptr<ServiceLocator> serviceLocator, glm::vec3 start,
+Line::Line(glm::vec3 start,
            glm::vec3 end, glm::vec4 color) {
-  _serviceLocator = serviceLocator;
 
   std::vector<Vertex> vertices = {
       {{start.x, start.y, start.z}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
@@ -12,14 +11,15 @@ Line::Line(std::shared_ptr<ServiceLocator> serviceLocator, glm::vec3 start,
 
   // vertexBuffer = std::make_unique<VertexBuffer>(vertices);
 
-  _blank = std::make_unique<Texture>(serviceLocator);
-  _blank->CreateTextureImage(Filesystem::GetTexturesDir() + "blank.png");
-  UpdateDescriptorSets();
+  // _blank = std::make_unique<Texture>(serviceLocator);
+  // _blank->CreateTextureImage(Filesystem::GetTexturesDir() + "blank.png");
+  // UpdateDescriptorSets();
 }
 
 Line::~Line() {}
 
 void Line::UpdateDescriptorSets() {
+  /*
   // Get required depenencies
   auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
   auto physicalDevice = _serviceLocator->GetService<PhysicalDevice>();
@@ -117,4 +117,5 @@ void Line::UpdateDescriptorSets() {
   vkUpdateDescriptorSets(logicalDevice->Get(),
                          static_cast<uint32_t>(descriptorWrites.size()),
                          descriptorWrites.data(), 0, nullptr);
+                        */
 }

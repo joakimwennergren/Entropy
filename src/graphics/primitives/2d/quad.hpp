@@ -21,7 +21,7 @@ public:
    *
    * @param context
    */
-  Quad(std::shared_ptr<ServiceLocator> serviceLocator);
+  Quad();
   ~Quad();
 
   VkDescriptorSet _descriptorSet = VK_NULL_HANDLE;
@@ -36,7 +36,6 @@ public:
 
 private:
   VkSampler _textureSampler;
-  std::shared_ptr<ServiceLocator> _serviceLocator;
 };
 } // namespace Primitives
 } // namespace Graphics

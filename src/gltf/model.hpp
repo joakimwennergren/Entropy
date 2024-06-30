@@ -42,7 +42,6 @@
 #include <graphics/vulkan/buffers/vertexbuffer.hpp>
 #include <graphics/vulkan/pipelines/pipeline.hpp>
 #include <graphics/vulkan/textures/texture.hpp>
-#include <servicelocators/servicelocator.hpp>
 #include <timing/timer.hpp>
 
 #include <stb_image.h>
@@ -51,7 +50,6 @@
 #define MAX_NUM_JOINTS 128u
 
 using namespace Entropy::Graphics::Vulkan::Textures;
-using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Vulkan::Devices;
 using namespace Entropy::Graphics::Vulkan::Pipelines;
 using namespace Entropy::Graphics::Vulkan::Buffers;
@@ -150,7 +148,7 @@ struct Mesh {
     glm::mat4 jointMatrix[MAX_NUM_JOINTS]{};
     float jointcount{0};
   } uniformBlock;
-  Mesh(std::shared_ptr<ServiceLocator> serviceLocator, glm::mat4 matrix);
+  Mesh(glm::mat4 matrix);
   ~Mesh();
   void setBoundingBox(glm::vec3 min, glm::vec3 max);
 };
@@ -242,10 +240,9 @@ public:
     size_t vertexPos = 0;
   };
 
-  Model(std::shared_ptr<ServiceLocator> serviceLocator);
+  Model();
 #if defined(BUILD_FOR_ANDROID)
-  Model(std::shared_ptr<ServiceLocator> serviceLocator,
-        AAssetManager *assetmngr);
+  Model(AAssetManager *assetmngr);
 #endif
 
   ~Model() {
@@ -308,8 +305,6 @@ public:
   VkDescriptorSet _noTextureDs;
 
 private:
-  std::shared_ptr<ServiceLocator> _serviceLocator;
-
   Texture *noTexture;
   bool isCubeMap = false;
   VkDescriptorSet _cubeMapDS;

@@ -21,7 +21,7 @@ public:
    *
    * @param context
    */
-  Line(std::shared_ptr<ServiceLocator> serviceLocator, glm::vec3 start,
+  Line(glm::vec3 start,
        glm::vec3 end, glm::vec4 color);
 
   VkDescriptorSet _descriptorSet = VK_NULL_HANDLE;
@@ -39,7 +39,6 @@ public:
 
 private:
   VkSampler _textureSampler;
-  std::shared_ptr<ServiceLocator> _serviceLocator;
 };
 } // namespace Primitives
 } // namespace Graphics

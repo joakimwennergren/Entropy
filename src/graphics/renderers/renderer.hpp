@@ -26,7 +26,6 @@
 #include <graphics/vulkan/descriptorsets/descriptorset.hpp>
 #include <graphics/primitives/3d/plane.hpp>
 #include <graphics/vulkan/swapchains/swapchain.hpp>
-#include <servicelocators/servicelocator.hpp>
 
 #include <graphics/primitives/2d/quad.hpp>
 #include <graphics/primitives/2d/sprite.hpp>
@@ -67,7 +66,6 @@ using namespace Entropy::Graphics::Vulkan::RenderPasses;
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
 using namespace Entropy::Graphics::Vulkan::Descriptorsets;
-using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Vulkan::Swapchains;
 using namespace Entropy::Graphics::Primitives;
 using namespace Entropy::GLTF;
@@ -79,11 +77,10 @@ namespace Graphics {
 namespace Renderers {
 class Renderer {
 public:
-  Renderer(std::shared_ptr<ServiceLocator> serviceLocator, flecs::world *world,
+  Renderer(flecs::world *world,
            float xscale, float yscale);
 #ifdef BUILD_FOR_ANDROID
-  Renderer(std::shared_ptr<ServiceLocator> serviceLocator,
-           AAssetManager *assetManager);
+  Renderer(AAssetManager *assetManager);
   std::vector<char> loadShader(std::string filename,
                                AAssetManager *assetManager);
 #endif
@@ -123,7 +120,7 @@ public:
   std::vector<std::unique_ptr<Buffer>> _indexBuffer;
 
 private:
-  void Setup(std::shared_ptr<ServiceLocator> serviceLocator, float xscale,
+  void Setup(float xscale,
              float yscale);
 
   std::unique_ptr<Pipeline> _pipeline;
@@ -133,8 +130,6 @@ private:
   std::vector<VkBuffer> uniformBuffersInstances;
 
   std::vector<UniformBuffer *> _uniformBuffers;
-
-  std::shared_ptr<ServiceLocator> _serviceLocator;
 
   std::shared_ptr<Descriptorset> _descriptorSet;
   std::shared_ptr<LogicalDevice> _logicalDevice;

@@ -2,6 +2,6 @@
 
 using namespace Entropy::Input;
 
-Keyboard::Keyboard(std::shared_ptr<ServiceLocator> serviceLocator)
+Keyboard::Keyboard()
 {
 }

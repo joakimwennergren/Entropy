@@ -27,7 +27,6 @@
 #include <graphics/vulkan/descriptorsets/descriptorset.hpp>
 #include <graphics/primitives/3d/plane.hpp>
 #include <graphics/vulkan/swapchains/swapchain.hpp>
-#include <servicelocators/servicelocator.hpp>
 
 #include <graphics/primitives/2d/quad.hpp>
 #include <graphics/primitives/2d/sprite.hpp>
@@ -66,7 +65,6 @@ using namespace Entropy::Graphics::Vulkan::RenderPasses;
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
 using namespace Entropy::Graphics::Vulkan::Descriptorsets;
-using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Vulkan::Swapchains;
 using namespace Entropy::Graphics::Primitives;
 using namespace Entropy::GLTF;

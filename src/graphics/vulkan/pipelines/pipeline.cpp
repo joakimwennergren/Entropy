@@ -174,11 +174,11 @@ void Pipeline::Build(const std::string name, const std::string vertexShader,
                      bool depthWrite, glm::vec2 depthBounds,
                      VkPipelineLayoutCreateInfo pipelinelayout,
                      VkPolygonMode polygonMode) {
-  auto shader =
-      std::make_unique<Shader>(_serviceLocator, GetShadersDir() + vertexShader,
-                               GetShadersDir() + fragmentShader);
-  Setup(std::move(shader), dsLayout, depthWrite, depthBounds, pipelinelayout,
-        polygonMode);
+//   auto shader =
+//       std::make_unique<Shader>(_serviceLocator, GetShadersDir() + vertexShader,
+//                                GetShadersDir() + fragmentShader);
+//   Setup(std::move(shader), dsLayout, depthWrite, depthBounds, pipelinelayout,
+//         polygonMode);
 }
 
 void Pipeline::Build(const std::string name, std::vector<char> vert_shader,
@@ -187,26 +187,24 @@ void Pipeline::Build(const std::string name, std::vector<char> vert_shader,
                      bool depthWrite, glm::vec2 depthBounds,
                      VkPipelineLayoutCreateInfo pipelinelayout,
                      VkPolygonMode polygonMode) {
-  auto shader =
-      std::make_unique<Shader>(_serviceLocator, vert_shader, frag_shader);
-  Setup(std::move(shader), dsLayout, depthWrite, depthBounds, pipelinelayout,
-        polygonMode);
+//   auto shader =
+//       std::make_unique<Shader>(_serviceLocator, vert_shader, frag_shader);
+//   Setup(std::move(shader), dsLayout, depthWrite, depthBounds, pipelinelayout,
+//         polygonMode);
 }
 
-Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass,
-                   std::shared_ptr<ServiceLocator> serviceLocator,
-                   VkPolygonMode polygonMode) {
-  // Get required depenencies
-  auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
-  auto swapChain = serviceLocator->GetService<Swapchain>();
-  auto descriptorPool = serviceLocator->GetService<DescriptorPool>();
+Pipeline::Pipeline(std::shared_ptr<RenderPass> renderPass,VkPolygonMode polygonMode) {
+//   // Get required depenencies
+//   auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
+//   auto swapChain = serviceLocator->GetService<Swapchain>();
+//   auto descriptorPool = serviceLocator->GetService<DescriptorPool>();
 
-  // Assign services
-  _logicalDevice = logicalDevice;
-  _swapchain = swapChain;
-  _descriptorPool = descriptorPool;
-  _serviceLocator = serviceLocator;
-  _renderPass = renderPass;
+//   // Assign services
+//   _logicalDevice = logicalDevice;
+//   _swapchain = swapChain;
+//   _descriptorPool = descriptorPool;
+//   _serviceLocator = serviceLocator;
+//   _renderPass = renderPass;
 }
 
 Pipeline::~Pipeline() {

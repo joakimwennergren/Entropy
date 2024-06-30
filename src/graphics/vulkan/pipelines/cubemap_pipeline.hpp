@@ -8,10 +8,8 @@ namespace Vulkan {
 namespace Pipelines {
 class CubeMapPipeline : public Pipeline {
 public:
-  CubeMapPipeline(std::shared_ptr<RenderPass> renderPass,
-                  std::shared_ptr<ServiceLocator> serviceLocator,
-                  VkPolygonMode polygonMode)
-      : Pipeline(renderPass, serviceLocator, polygonMode) {
+  CubeMapPipeline(std::shared_ptr<RenderPass> renderPass,VkPolygonMode polygonMode)
+      : Pipeline(renderPass,  polygonMode) {
     auto dsLayouts = Setup();
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -24,22 +22,22 @@ public:
           VK_FALSE, depthBounds, pipelineLayoutInfo, polygonMode);
   }
 
-  CubeMapPipeline(std::shared_ptr<RenderPass> renderPass,
-                  std::shared_ptr<ServiceLocator> serviceLocator,
-                  std::vector<char> vert_shader, std::vector<char> frag_shader,
-                  VkPolygonMode polygonMode)
-      : Pipeline(renderPass, serviceLocator, polygonMode) {
-    auto dsLayouts = Setup();
-    VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = dsLayouts.size();
-    pipelineLayoutInfo.pSetLayouts = dsLayouts.data();
-    pipelineLayoutInfo.pPushConstantRanges = nullptr; //&push_constant;
-    pipelineLayoutInfo.pushConstantRangeCount = 0;
-    glm::vec2 depthBounds = {0.0, 1.0};
-    Build("SkinnedPipeline", vert_shader, frag_shader, dsLayouts, VK_FALSE,
-          depthBounds, pipelineLayoutInfo, polygonMode);
-  }
+  // CubeMapPipeline(std::shared_ptr<RenderPass> renderPass,
+  //                 std::shared_ptr<ServiceLocator> serviceLocator,
+  //                 std::vector<char> vert_shader, std::vector<char> frag_shader,
+  //                 VkPolygonMode polygonMode)
+  //     : Pipeline(renderPass, serviceLocator, polygonMode) {
+  //   auto dsLayouts = Setup();
+  //   VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+  //   pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+  //   pipelineLayoutInfo.setLayoutCount = dsLayouts.size();
+  //   pipelineLayoutInfo.pSetLayouts = dsLayouts.data();
+  //   pipelineLayoutInfo.pPushConstantRanges = nullptr; //&push_constant;
+  //   pipelineLayoutInfo.pushConstantRangeCount = 0;
+  //   glm::vec2 depthBounds = {0.0, 1.0};
+  //   Build("SkinnedPipeline", vert_shader, frag_shader, dsLayouts, VK_FALSE,
+  //         depthBounds, pipelineLayoutInfo, polygonMode);
+  // }
 
 private:
   std::vector<VkDescriptorSetLayout> Setup() {

@@ -5,17 +5,16 @@
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
 #include <GLFW/glfw3.h>
 
-#include <services/service.hpp>
 
 #include "spdlog/spdlog.h"
 
-using namespace Entropy::Services;
+
 
 namespace Entropy
 {
     namespace Input
     {
-        class Mouse : public Service
+        class Mouse
         {
         public:
             Mouse(GLFWwindow *window);

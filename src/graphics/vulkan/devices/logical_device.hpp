@@ -10,7 +10,6 @@
 #include <graphics/vulkan/devices/physical_device.hpp>
 #include <graphics/vulkan/queuefamilies/queuefamily.hpp>
 #include <graphics/vulkan/surfaces/surface.hpp>
-#include <services/service.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Surfaces;
 using namespace Entropy::Graphics::Vulkan::QueueFamilies;
@@ -21,7 +20,7 @@ namespace Graphics {
 namespace Vulkan {
 namespace Devices {
 
-class LogicalDevice : public Service {
+class LogicalDevice{
 public:
   /*
   LogicalDevice() = default;

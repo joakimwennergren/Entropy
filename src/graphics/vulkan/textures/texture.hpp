@@ -39,7 +39,7 @@ namespace Vulkan {
 namespace Textures {
 class Texture {
 public:
-  Texture(std::shared_ptr<ServiceLocator> serviceLocator);
+  Texture();
   ~Texture();
 
   void CreateTextureImage(std::string path);
@@ -74,7 +74,6 @@ private:
   VkImage _textureImage = VK_NULL_HANDLE;
   VkImageView _imageView = VK_NULL_HANDLE;
   VmaAllocation _allocation = VK_NULL_HANDLE;
-  std::shared_ptr<ServiceLocator> _serviceLocator;
   std::shared_ptr<LogicalDevice> _logicalDevice;
   std::shared_ptr<QueueSync> _queueSync;
   std::shared_ptr<Allocator> _allocator;

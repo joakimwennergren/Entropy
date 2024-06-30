@@ -2,17 +2,17 @@
 
 using namespace Entropy::Graphics::Vulkan::RenderPasses;
 
-RenderPass::RenderPass(std::shared_ptr<ServiceLocator> serviceLocator) {
-  // Get required depenencies
-  auto swapChain = serviceLocator->GetService<Swapchain>();
-  auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
-  auto physicalDevice = serviceLocator->GetService<PhysicalDevice>();
+RenderPass::RenderPass() {
+  // // Get required depenencies
+  // auto swapChain = serviceLocator->GetService<Swapchain>();
+  // auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
+  // auto physicalDevice = serviceLocator->GetService<PhysicalDevice>();
 
-  // Store swapchain and logical device
-  _swapChain = swapChain;
-  _logicalDevice = logicalDevice;
-  _physicalDevice = physicalDevice;
-  _serviceLocator = serviceLocator;
+  // // Store swapchain and logical device
+  // _swapChain = swapChain;
+  // _logicalDevice = logicalDevice;
+  // _physicalDevice = physicalDevice;
+  // _serviceLocator = serviceLocator;
 
   RecreateDepthBuffer();
 
@@ -32,7 +32,7 @@ RenderPass::RenderPass(std::shared_ptr<ServiceLocator> serviceLocator) {
   depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
   VkAttachmentDescription colorAttachment{};
-  colorAttachment.format = swapChain->swapChainImageFormat;
+  // colorAttachment.format = swapChain->swapChainImageFormat;
   colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
   colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
   colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -69,11 +69,11 @@ RenderPass::RenderPass(std::shared_ptr<ServiceLocator> serviceLocator) {
   renderPassInfo.dependencyCount = 1;
   renderPassInfo.pDependencies = &dependency;
 
-  if (vkCreateRenderPass(logicalDevice->Get(), &renderPassInfo, nullptr,
-                         &_renderPass) != VK_SUCCESS) {
-    spdlog::error("Couln't create renderpass");
-    return;
-  }
+  // if (vkCreateRenderPass(logicalDevice->Get(), &renderPassInfo, nullptr,
+  //                        &_renderPass) != VK_SUCCESS) {
+  //   spdlog::error("Couln't create renderpass");
+  //   return;
+  // }
 
   this->CreateFramebuffers();
 }

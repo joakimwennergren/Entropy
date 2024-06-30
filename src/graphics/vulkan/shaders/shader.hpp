@@ -2,9 +2,7 @@
 
 #include <fstream>
 #include <graphics/vulkan/devices/logical_device.hpp>
-#include <servicelocators/servicelocator.hpp>
 
-using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Vulkan::Devices;
 
 namespace Symbios {
@@ -25,11 +23,11 @@ public:
    * @param frag
    * @param context
    */
-  Shader(std::shared_ptr<ServiceLocator> serviceLocator, const std::string vert,
-         const std::string frag);
+  // Shader(std::shared_ptr<ServiceLocator> serviceLocator, const std::string vert,
+  //        const std::string frag);
 
-  Shader(std::shared_ptr<ServiceLocator> serviceLocator,
-         const std::vector<char> vert, const std::vector<char> frag);
+  // Shader(std::shared_ptr<ServiceLocator> serviceLocator,
+  //        const std::vector<char> vert, const std::vector<char> frag);
 
   /**
    * @brief Destroy the Shader object
