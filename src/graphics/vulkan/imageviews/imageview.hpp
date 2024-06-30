@@ -14,6 +14,7 @@ using namespace Entropy::Graphics::Vulkan::QueueFamilies;
 
 namespace Entropy {
 namespace Graphics {
+namespace Vulkan {
 namespace ImageViews {
 class ImageView {
 public:
@@ -27,5 +28,6 @@ private:
   VkImageView _imageView;
 };
 } // namespace ImageViews
+} // namespace Vulkan
 } // namespace Graphics
 } // namespace Entropy
