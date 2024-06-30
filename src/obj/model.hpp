@@ -3,14 +3,14 @@
 #include <tiny_obj_loader.h>
 
 #include <graphics/data/vertex.hpp>
-#include <graphics/descriptorpools/descriptorpool.hpp>
+#include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
 #include <graphics/vulkan/buffers/indexbuffer.hpp>
 #include <graphics/vulkan/buffers/vertexbuffer.hpp>
 #include <graphics/vulkan/textures/texture.hpp>
 #include <servicelocators/servicelocator.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Buffers;
-using namespace Entropy::Graphics::DescriptorPools;
+using namespace Entropy::Graphics::Vulkan::DescriptorPools;
 using namespace Entropy::Graphics::Vulkan::Textures;
 
 namespace Entropy {

@@ -5,10 +5,10 @@
 #include <spdlog/spdlog.h>
 #include <vulkan/vulkan.hpp>
 
-#include <graphics/devices/logical_device.hpp>
+#include <graphics/vulkan/devices/logical_device.hpp>
 #include <servicelocators/servicelocator.hpp>
 
-using namespace Entropy::Graphics::Devices;
+using namespace Entropy::Graphics::Vulkan::Devices;
 
 namespace Entropy {
 namespace Graphics {

@@ -1,6 +1,6 @@
 #include "commandpool.hpp"
 
-using namespace Entropy::Graphics::CommandPools;
+using namespace Entropy::Graphics::Vulkan::CommandPools;
 
 /**
  * @brief Constructor for CommandPool

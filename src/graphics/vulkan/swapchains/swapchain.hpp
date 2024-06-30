@@ -5,7 +5,7 @@
 #include <limits>
 #include <vulkan/vulkan.hpp>
 
-#include <graphics/imageviews/imageview.hpp>
+#include <graphics/vulkan/imageviews/imageview.hpp>
 #include <graphics/vulkan/queuefamilies/queuefamily.hpp>
 #include <graphics/vulkan/surfaces/surface.hpp>
 #include <services/service.hpp>
@@ -14,7 +14,7 @@
 
 using namespace Entropy::Graphics::Vulkan::Surfaces;
 using namespace Entropy::Graphics::Vulkan::QueueFamilies;
-using namespace Entropy::Graphics::ImageViews;
+using namespace Entropy::Graphics::Vulkan::ImageViews;
 using namespace Entropy::Services;
 
 namespace Entropy {

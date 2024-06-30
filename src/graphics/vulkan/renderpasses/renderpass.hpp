@@ -1,6 +1,6 @@
 #pragma once
 
-#include <graphics/devices/logical_device.hpp>
+#include <graphics/vulkan/devices/logical_device.hpp>
 #include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
 #include <graphics/vulkan/imageviews/imageview.hpp>
 #include <graphics/vulkan/memory/allocator.hpp>
@@ -13,7 +13,7 @@
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Vulkan::Swapchains;
-using namespace Entropy::Graphics::Devices;
+using namespace Entropy::Graphics::Vulkan::Devices;
 using namespace Entropy::Graphics::Vulkan::ImageViews;
 using namespace Entropy::Graphics::Vulkan::Memory;
 

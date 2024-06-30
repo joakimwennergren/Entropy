@@ -3,19 +3,20 @@
 #include <spdlog/spdlog.h>
 #include <vulkan/vulkan.hpp>
 
-#include <graphics/devices/logical_device.hpp>
-#include <graphics/devices/physical_device.hpp>
+#include <graphics/vulkan/devices/logical_device.hpp>
+#include <graphics/vulkan/devices/physical_device.hpp>
 #include <graphics/vulkan/queuefamilies/queuefamily.hpp>
 #include <graphics/vulkan/surfaces/surface.hpp>
 #include <services/service.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Surfaces;
 using namespace Entropy::Graphics::Vulkan::QueueFamilies;
-using namespace Entropy::Graphics::Devices;
+using namespace Entropy::Graphics::Vulkan::Devices;
 using namespace Entropy::Services;
 
 namespace Entropy {
 namespace Graphics {
+namespace Vulkan {
 namespace CommandPools {
 class CommandPool : public Service {
 public:
@@ -33,3 +34,4 @@ private:
 } // namespace CommandPools
 } // namespace Graphics
 } // namespace Entropy
+}

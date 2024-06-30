@@ -1,7 +1,6 @@
 #pragma once
 
 #include "services/physical_device_service.hpp"
-#include <graphics/devices/device.hpp>
 #include <kangaru/kangaru.hpp>
 
 namespace Entropy {

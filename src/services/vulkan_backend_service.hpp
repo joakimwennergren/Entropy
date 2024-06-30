@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "graphics/devices/logical_device.hpp"
+#include "graphics/vulkan/devices/logical_device.hpp"
 #include "kangaru/service.hpp"
 #include "services/allocator_service.hpp"
 #include "services/logical_device_service.hpp"

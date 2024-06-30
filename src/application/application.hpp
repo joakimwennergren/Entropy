@@ -7,7 +7,7 @@
 #include <flecs/flecs.h>
 #include <kangaru/kangaru.hpp>
 
-#include <graphics/devices/logical_device.hpp>
+#include <graphics/vulkan/devices/logical_device.hpp>
 #include <graphics/renderers/renderer.hpp>
 #include <servicelocators/servicelocator.hpp>
 #include <timing/timer.hpp>
@@ -18,12 +18,12 @@
 #include <ecs/world.hpp>
 #include <filesystem/filesystem.hpp>
 #include <graphics/cameras/flying_camera.hpp>
-#include <graphics/commandpools/commandpool.hpp>
-#include <graphics/descriptorpools/descriptorpool.hpp>
-#include <graphics/descriptorsetlayouts/descriptorsetlayout.hpp>
-#include <graphics/descriptorsets/descriptorset.hpp>
-#include <graphics/devices/physical_device.hpp>
-#include <graphics/imageviews/imageview.hpp>
+#include <graphics/vulkan/commandpools/commandpool.hpp>
+#include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
+#include <graphics/vulkan/descriptorsetlayouts/descriptorsetlayout.hpp>
+#include <graphics/vulkan/descriptorsets/descriptorset.hpp>
+#include <graphics/vulkan/devices/physical_device.hpp>
+#include <graphics/vulkan/imageviews/imageview.hpp>
 #include <graphics/vulkan/buffers/buffer.hpp>
 #include <graphics/vulkan/buffers/vertexbuffer.hpp>
 #include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
@@ -44,12 +44,12 @@
 using namespace Entropy::Graphics::Vulkan::Instances;
 using namespace Entropy::Graphics::Vulkan::Surfaces;
 using namespace Entropy::Graphics::Vulkan::Swapchains;
-using namespace Entropy::Graphics::ImageViews;
-using namespace Entropy::Graphics::CommandPools;
+using namespace Entropy::Graphics::Vulkan::ImageViews;
+using namespace Entropy::Graphics::Vulkan::CommandPools;
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;
-using namespace Entropy::Graphics::DescriptorPools;
-using namespace Entropy::Graphics::DescriptorsetLayouts;
-using namespace Entropy::Graphics::Descriptorsets;
+using namespace Entropy::Graphics::Vulkan::DescriptorPools;
+using namespace Entropy::Graphics::Vulkan::DescriptorsetLayouts;
+using namespace Entropy::Graphics::Vulkan::Descriptorsets;
 using namespace Entropy::Scripting;
 using namespace Entropy::Physics;
 using namespace Entropy::ServiceLocators;

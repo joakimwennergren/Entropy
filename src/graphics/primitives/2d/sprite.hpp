@@ -6,7 +6,7 @@
 
 #include <filesystem/filesystem.hpp>
 #include <graphics/data/vertex.hpp>
-#include <graphics/descriptorpools/descriptorpool.hpp>
+#include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
 #include <graphics/vulkan/buffers/indexbuffer.hpp>
 #include <graphics/vulkan/buffers/vertexbuffer.hpp>
 #include <graphics/vulkan/textures/texture.hpp>
@@ -15,7 +15,7 @@
 using namespace Entropy::Graphics::Vulkan::Textures;
 using namespace Entropy::Graphics::Vulkan::Buffers;
 using namespace Entropy::Scripting;
-using namespace Entropy::Graphics::DescriptorPools;
+using namespace Entropy::Graphics::Vulkan::DescriptorPools;
 
 namespace Entropy {
 namespace Graphics {

@@ -1,7 +1,7 @@
 #include "logical_device.hpp"
-#include "graphics/devices/physical_device.hpp"
+#include "graphics/vulkan/devices/physical_device.hpp"
 
-using namespace Entropy::Graphics::Devices;
+using namespace Entropy::Graphics::Vulkan::Devices;
 
 /*
 

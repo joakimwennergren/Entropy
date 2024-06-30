@@ -1,7 +1,7 @@
 #pragma once
 
-#include "graphics/devices/logical_device.hpp"
-#include "graphics/devices/physical_device.hpp"
+#include "graphics/vulkan/devices/logical_device.hpp"
+#include "graphics/vulkan/devices/physical_device.hpp"
 #include "graphics/vulkan/instances/vk_instance.hpp"
 #include "vulkan/vulkan_core.h"
 #include <cassert>

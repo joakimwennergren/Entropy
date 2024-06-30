@@ -1,11 +1,11 @@
 #pragma once
 
 #include <fstream>
-#include <graphics/devices/logical_device.hpp>
+#include <graphics/vulkan/devices/logical_device.hpp>
 #include <servicelocators/servicelocator.hpp>
 
 using namespace Entropy::ServiceLocators;
-using namespace Entropy::Graphics::Devices;
+using namespace Entropy::Graphics::Vulkan::Devices;
 
 namespace Symbios {
 namespace Graphics {

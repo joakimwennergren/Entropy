@@ -1,5 +1,4 @@
 #include "application.hpp"
-#include "graphics/devices/device.hpp"
 #include "graphics/renderers/vulkan_renderer.hpp"
 #include "services/allocator_service.hpp"
 #include "services/logical_device_service.hpp"

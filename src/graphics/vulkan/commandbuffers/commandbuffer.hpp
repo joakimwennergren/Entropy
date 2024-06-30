@@ -2,12 +2,12 @@
 
 #include <spdlog/spdlog.h>
 
-#include <graphics/commandpools/commandpool.hpp>
+#include <graphics/vulkan/commandpools/commandpool.hpp>
 #include <graphics/vulkan/synchronization/queuesync.hpp>
 #include <servicelocators/servicelocator.hpp>
 
 using namespace Entropy::ServiceLocators;
-using namespace Entropy::Graphics::CommandPools;
+using namespace Entropy::Graphics::Vulkan::CommandPools;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
 
 namespace Entropy {

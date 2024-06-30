@@ -23,7 +23,7 @@
 // #include <graphics/cubemaps/cubemap.hpp>
 #include <gltf/model.hpp>
 // #include <graphics/cameras/perspective_camera.hpp>
-#include <graphics/descriptorsets/descriptorset.hpp>
+#include <graphics/vulkan/descriptorsets/descriptorset.hpp>
 #include <graphics/primitives/3d/plane.hpp>
 #include <graphics/vulkan/swapchains/swapchain.hpp>
 #include <servicelocators/servicelocator.hpp>
@@ -66,7 +66,7 @@ using namespace Entropy::Graphics::Vulkan::Pipelines;
 using namespace Entropy::Graphics::Vulkan::RenderPasses;
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
-using namespace Entropy::Graphics::Descriptorsets;
+using namespace Entropy::Graphics::Vulkan::Descriptorsets;
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Vulkan::Swapchains;
 using namespace Entropy::Graphics::Primitives;

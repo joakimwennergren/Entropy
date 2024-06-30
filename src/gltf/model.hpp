@@ -35,8 +35,8 @@
 #include "tiny_gltf.h"
 #include <filesystem/filesystem.hpp>
 #include <graphics/data/vertex.hpp>
-#include <graphics/descriptorpools/descriptorpool.hpp>
-#include <graphics/devices/logical_device.hpp>
+#include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
+#include <graphics/vulkan/devices/logical_device.hpp>
 #include <graphics/vulkan/buffers/indexbuffer.hpp>
 #include <graphics/vulkan/buffers/uniformbuffer.hpp>
 #include <graphics/vulkan/buffers/vertexbuffer.hpp>
@@ -52,10 +52,10 @@
 
 using namespace Entropy::Graphics::Vulkan::Textures;
 using namespace Entropy::ServiceLocators;
-using namespace Entropy::Graphics::Devices;
+using namespace Entropy::Graphics::Vulkan::Devices;
 using namespace Entropy::Graphics::Vulkan::Pipelines;
 using namespace Entropy::Graphics::Vulkan::Buffers;
-using namespace Entropy::Graphics::DescriptorPools;
+using namespace Entropy::Graphics::Vulkan::DescriptorPools;
 using namespace Entropy::Timing;
 
 #ifdef BUILD_FOR_ANDROID

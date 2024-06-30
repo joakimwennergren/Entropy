@@ -7,17 +7,18 @@
 #include <string>
 #include <vulkan/vulkan.hpp>
 
-#include <graphics/devices/physical_device.hpp>
+#include <graphics/vulkan/devices/physical_device.hpp>
 #include <graphics/vulkan/queuefamilies/queuefamily.hpp>
 #include <graphics/vulkan/surfaces/surface.hpp>
 #include <services/service.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Surfaces;
 using namespace Entropy::Graphics::Vulkan::QueueFamilies;
-using namespace Entropy::Graphics::Devices;
+using namespace Entropy::Graphics::Vulkan::Devices;
 
 namespace Entropy {
 namespace Graphics {
+namespace Vulkan {
 namespace Devices {
 
 class LogicalDevice : public Service {
@@ -96,3 +97,4 @@ private:
 } // namespace Devices
 } // namespace Graphics
 } // namespace Entropy
+}

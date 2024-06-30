@@ -6,10 +6,10 @@
 #include <filesystem/filesystem.hpp>
 #include <graphics/data/pushcontants.hpp>
 #include <graphics/data/vertex.hpp>
-#include <graphics/descriptorpools/descriptorpool.hpp>
-#include <graphics/descriptorsetlayouts/descriptorsetlayout.hpp>
-#include <graphics/descriptorsets/descriptorset.hpp>
-#include <graphics/devices/logical_device.hpp>
+#include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
+#include <graphics/vulkan/descriptorsetlayouts/descriptorsetlayout.hpp>
+#include <graphics/vulkan/descriptorsets/descriptorset.hpp>
+#include <graphics/vulkan/devices/logical_device.hpp>
 #include <graphics/vulkan/renderpasses/renderpass.hpp>
 #include <graphics/vulkan/shaders/shader.hpp>
 #include <graphics/vulkan/swapchains/swapchain.hpp>
@@ -22,9 +22,9 @@ using namespace Symbios::Graphics::Vulkan::Shaders;
 using namespace Entropy::Graphics::Vulkan::RenderPasses;
 using namespace Entropy::ServiceLocators;
 using namespace Entropy::Graphics::Vulkan::Swapchains;
-using namespace Entropy::Graphics::Descriptorsets;
-using namespace Entropy::Graphics::DescriptorPools;
-using namespace Entropy::Graphics::Devices;
+using namespace Entropy::Graphics::Vulkan::Descriptorsets;
+using namespace Entropy::Graphics::Vulkan::DescriptorPools;
+using namespace Entropy::Graphics::Vulkan::Devices;
 
 namespace Entropy {
 namespace Graphics {

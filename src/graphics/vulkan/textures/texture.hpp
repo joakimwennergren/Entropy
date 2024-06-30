@@ -11,7 +11,7 @@
 #include "config.hpp"
 #include "tiny_gltf.h"
 
-#include <graphics/imageviews/imageview.hpp>
+#include <graphics/vulkan/imageviews/imageview.hpp>
 #include <graphics/vulkan/buffers/buffer.hpp>
 #include <graphics/vulkan/buffers/stagedbuffer.hpp>
 #include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
@@ -29,7 +29,7 @@
 using namespace Entropy::Graphics::Vulkan::Buffers;
 using namespace Entropy::Graphics::Vulkan::Utilities;
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;
-using namespace Entropy::Graphics::ImageViews;
+using namespace Entropy::Graphics::Vulkan::ImageViews;
 using namespace Entropy::Graphics::Vulkan::Memory;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
 

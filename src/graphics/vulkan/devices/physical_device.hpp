@@ -21,6 +21,7 @@ using namespace Entropy::Services;
 
 namespace Entropy {
 namespace Graphics {
+namespace Vulkan {
 namespace Devices {
 class PhysicalDevice : public Service {
 public:
@@ -78,3 +79,4 @@ private:
 } // namespace Devices
 } // namespace Graphics
 } // namespace Entropy
+}

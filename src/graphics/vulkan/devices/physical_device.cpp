@@ -1,6 +1,6 @@
 #include "physical_device.hpp"
 
-using namespace Entropy::Graphics::Devices;
+using namespace Entropy::Graphics::Vulkan::Devices;
 
 /*
 PhysicalDevice::PhysicalDevice(std::shared_ptr<VulkanInstance> instance,
