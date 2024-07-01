@@ -17,12 +17,9 @@ namespace Vulkan {
 namespace Instances {
 
 struct VulkanInstance {
-
-  int test;
-
 public:
-  // VulkanInstance();
-  //~VulkanInstance();
+  VulkanInstance();
+  ~VulkanInstance();
   inline VkInstance Get() { return _instance; };
 
 private:
