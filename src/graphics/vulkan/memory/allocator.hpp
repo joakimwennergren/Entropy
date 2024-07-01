@@ -36,7 +36,7 @@ struct Allocator {
     }
   }
 
-  ~Allocator() { vmaDestroyAllocator(_allocator); }
+  //~Allocator() { vmaDestroyAllocator(_allocator); }
 
   inline VmaAllocator Get() { return _allocator; };
 

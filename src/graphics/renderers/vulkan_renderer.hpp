@@ -13,11 +13,6 @@
 #include <graphics/vulkan/buffers/indexbuffer.hpp>
 #include <graphics/vulkan/buffers/uniformbuffer.hpp>
 #include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
-#include <graphics/vulkan/pipelines/2d_pipeline.hpp>
-#include <graphics/vulkan/pipelines/cubemap_pipeline.hpp>
-#include <graphics/vulkan/pipelines/gui_pipeline.hpp>
-#include <graphics/vulkan/pipelines/line_pipeline.hpp>
-#include <graphics/vulkan/pipelines/skinned_pipeline.hpp>
 #include <graphics/vulkan/pipelines/static_pipeline.hpp>
 #include <graphics/vulkan/renderpasses/renderpass.hpp>
 #include <graphics/vulkan/synchronization/synchronizer.hpp>
@@ -34,7 +29,6 @@
 
 #include <graphics/cameras/flying_camera.hpp>
 
-#include <graphics/vulkan/pipelines/gizmo_pipeline.hpp>
 #include <input/keyboard/keyboard.hpp>
 
 #include <graphics/vulkan/synchronization/queuesync.hpp>
@@ -57,6 +51,7 @@
 #ifdef BUILD_FOR_ANDROID
 #include <android/asset_manager.h>
 #endif
+#include <factories/vulkan/pipelinefactory.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Buffers;
 using namespace Entropy::Graphics::Vulkan::Textures;
@@ -71,18 +66,33 @@ using namespace Entropy::GLTF;
 // using namespace Entropy::Graphics::CubeMaps;
 using namespace Entropy::Input;
 
+using namespace Entropy::Factories::Vulkan;
+
 namespace Entropy {
 namespace Graphics {
 namespace Renderers {
 
 struct VulkanRenderer {
-  Vulkan::VulkanBackend backend;
+
+  VulkanRenderer(Vulkan::VulkanBackend vbe, QueueSync queueSync, RenderPass renderPass, PipelineFactory pipelineFactory) : _backend{vbe}, _queuSync{queueSync}, _renderPass{renderPass}, _pipelineFactory{pipelineFactory}
+  {
+    auto staticPipeline = _pipelineFactory.CreateStaticPipeline();
+    _staticPipeline = &staticPipeline;
+  }
+
+  void Render(int width, int height, float xscale, float yscale);
+
+  private:
+
+    StaticPipeline *_staticPipeline;
+
+    // Dependencies
+    Vulkan::VulkanBackend _backend;
+    QueueSync _queuSync;
+    RenderPass _renderPass;
+    PipelineFactory _pipelineFactory;
 
   /*
-  void Render(int width, int height, float xscale, float yscale);
-  VkResult DoRender(int width, int height);
-  void DrawGizmo(Entropy::Components::Gizmo gizmo);
-  void DrawGUI();
   VkResult SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex);
   void DrawEntity(flecs::entity entity, uint32_t index);
   void HandleResize(int width, int height);

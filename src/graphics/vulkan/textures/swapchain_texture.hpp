@@ -1,0 +1,70 @@
+#pragma once
+
+#include <graphics/vulkan/devices/logical_device.hpp>
+#include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
+#include <graphics/vulkan/imageviews/imageview.hpp>
+#include <graphics/vulkan/memory/allocator.hpp>
+#include <factories/vulkan/texturefactory.hpp>
+#include <graphics/vulkan/swapchains/swapchain.hpp>
+#include <vulkan/vulkan.hpp>
+#include <graphics/vulkan/imageviews/imageview.hpp>
+#include <graphics/vulkan/utilities/utilities.hpp>
+#include "spdlog/spdlog.h"
+
+using namespace Entropy::Graphics::Vulkan::CommandBuffers;
+using namespace Entropy::Graphics::Vulkan::Swapchains;
+using namespace Entropy::Graphics::Vulkan::Devices;
+using namespace Entropy::Graphics::Vulkan::ImageViews;
+using namespace Entropy::Graphics::Vulkan::Memory;
+using namespace Entropy::Graphics::Vulkan::Utilities;
+namespace Entropy {
+namespace Graphics {
+namespace Vulkan {
+namespace Textures {
+
+struct SwapChainTexture {
+  SwapChainTexture(VulkanBackend backend, QueueSync qs, Allocator a, unsigned int width, unsigned int height)
+  {
+    VkImageCreateInfo imageInfo{};
+    imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+    imageInfo.imageType = VK_IMAGE_TYPE_2D;
+    imageInfo.extent.width = width;
+    imageInfo.extent.height = height;
+    imageInfo.extent.depth = 1;
+    imageInfo.mipLevels = 1;
+    imageInfo.arrayLayers = 1;
+    imageInfo.format = textureFormat;
+    imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+    imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    imageInfo.usage =
+        VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+    imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+    imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+    VmaAllocationCreateInfo allocCreateInfo = {};
+    allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO;
+    allocCreateInfo.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
+
+    VkResult res = vmaCreateImage(a.Get(), &imageInfo, &allocCreateInfo,
+        &_swapChainImage, &_allocation, nullptr);
+
+    spdlog::warn(res);
+
+    _swapChainImageView = ImageView(backend, _swapChainImage, textureFormat)
+                      .Get();
+
+  };
+
+  VkFormat textureFormat = VK_FORMAT_B8G8R8A8_SRGB;
+  VkImageView _swapChainImageView = VK_NULL_HANDLE;
+  VkImage _swapChainImage = VK_NULL_HANDLE;
+  
+  private:
+
+    VmaAllocation _allocation = VK_NULL_HANDLE;
+};
+
+} // namespace RenderPasses
+} // namespace Vulkan
+} // namespace Graphics
+} // namespace Entropy

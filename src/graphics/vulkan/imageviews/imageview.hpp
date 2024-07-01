@@ -8,6 +8,7 @@
 
 #include <graphics/vulkan/queuefamilies/queuefamily.hpp>
 #include <graphics/vulkan/surfaces/surface.hpp>
+#include <graphics/vulkan/vulkan_backend.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Surfaces;
 using namespace Entropy::Graphics::Vulkan::QueueFamilies;
@@ -19,8 +20,8 @@ namespace ImageViews {
 class ImageView {
 public:
   ImageView() = default;
-  ImageView(VkDevice logicalDevice, VkImage image, VkFormat format);
-  ImageView(VkDevice logicalDevice, VkImage depthImage, VkFormat format,
+  ImageView(VulkanBackend vkBackend, VkImage image, VkFormat format);
+  ImageView(VulkanBackend vkBackend, VkImage depthImage, VkFormat format,
             uint32_t flags);
   inline VkImageView Get() { return _imageView; };
 

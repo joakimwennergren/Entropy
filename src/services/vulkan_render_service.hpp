@@ -9,6 +9,9 @@
 #include "services/physical_device_service.hpp"
 #include "services/vk_instance_service.hpp"
 #include "services/vulkan_backend_service.hpp"
+#include "services/queue_sync_service.hpp"
+#include "services/pipeline_factory_service.hpp"
+#include "services/renderpass_service.hpp"
 #include <graphics/vulkan/vulkan_backend.hpp>
 #include <graphics/renderers/renderer.hpp>
 #include <graphics/vulkan/synchronization/synchronizer.hpp>
@@ -23,7 +26,7 @@ namespace Services {
 
 struct VulkanRenderService
     : kgr::single_service<VulkanRenderer,
-                          kgr::dependency<VulkanBackendService>> {};
+                          kgr::dependency<VulkanBackendService, QueueSyncService, RenderPassService, PipelineFactoryService>> {};
 
 } // namespace Services
 } // namespace Graphics

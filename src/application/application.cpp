@@ -200,7 +200,7 @@ void Application::Run() {
 #endif
 
     this->OnRender(_deltaTime);
-    this->_renderer->Render(width * xscale, height * yscale, xscale, yscale);
+    //this->_renderer->Render(width * xscale, height * yscale, xscale, yscale);
     // On render
 
     // Increment current frame
@@ -307,8 +307,8 @@ void framebufferResizeCallback(GLFWwindow *window, int width, int height) {
 
   GLFWmonitor *primary = glfwGetPrimaryMonitor();
 
-  app->GetRenderer()->Render(width * app->xscale, height * app->yscale,
-                             app->xscale, app->yscale);
+  //app->GetRenderer()->Render(width * app->xscale, height * app->yscale,
+  //                           app->xscale, app->yscale);
   // app->_renderer->_camera->setPerspective(
   //     app->_camera->Zoom, (float)width / (float)height, 1.0f, 100000.0f);
   app->OnRender(0.0);

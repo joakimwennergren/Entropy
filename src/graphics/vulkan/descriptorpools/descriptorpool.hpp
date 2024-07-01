@@ -9,18 +9,20 @@
 #include <graphics/vulkan/devices/logical_device.hpp>
 #include <graphics/vulkan/queuefamilies/queuefamily.hpp>
 #include <graphics/vulkan/surfaces/surface.hpp>
+#include <graphics/vulkan/vulkan_backend.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Surfaces;
 using namespace Entropy::Graphics::Vulkan::QueueFamilies;
 using namespace Entropy::Graphics::Vulkan::Devices;
+using namespace Entropy::Graphics::Vulkan;
 
 namespace Entropy {
 namespace Graphics {
 namespace Vulkan {
 namespace DescriptorPools {
-class DescriptorPool {
-public:
-  DescriptorPool(std::shared_ptr<LogicalDevice> logicalDevice)
+struct DescriptorPool {
+
+  DescriptorPool(VulkanBackend vbe) : _backend{vbe}
   {
       std::array<VkDescriptorPoolSize, 6> poolSizes{};
 
@@ -49,14 +51,16 @@ public:
       poolInfo.maxSets = 100000;
       poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 
-      if (vkCreateDescriptorPool(logicalDevice->Get(), &poolInfo, nullptr, &_descriptorPool) != VK_SUCCESS)
+      if (vkCreateDescriptorPool(_backend.logicalDevice.Get(), &poolInfo, nullptr, &_descriptorPool) != VK_SUCCESS)
       {
           exit(EXIT_FAILURE);
       }
   }
+
   inline VkDescriptorPool Get() { return _descriptorPool; };
 
 private:
+  VulkanBackend _backend;
   VkDescriptorPool _descriptorPool;
 };
 } // namespace DescriptorPools

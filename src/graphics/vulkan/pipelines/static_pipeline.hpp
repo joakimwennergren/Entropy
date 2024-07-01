@@ -6,42 +6,21 @@ namespace Entropy {
 namespace Graphics {
 namespace Vulkan {
 namespace Pipelines {
-class StaticPipeline : public Pipeline {
-public:
-  StaticPipeline(std::shared_ptr<RenderPass> renderPass,
-                 VkPolygonMode polygonMode)
-      : Pipeline(renderPass, polygonMode) {
-    auto dsLayouts = Setup();
-    VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = dsLayouts.size();
-    pipelineLayoutInfo.pSetLayouts = dsLayouts.data();
-    pipelineLayoutInfo.pPushConstantRanges = nullptr; //&push_constant;
-    pipelineLayoutInfo.pushConstantRangeCount = 0;
-    glm::vec2 depthBounds = {0.0, 1.0};
-    Build("StaticPipeline", "static_vert.spv", "static_frag.spv", dsLayouts,
-          VK_TRUE, depthBounds, pipelineLayoutInfo, polygonMode);
+  
+struct StaticPipeline : public Pipeline {
+
+  StaticPipeline(VulkanBackend vbe, RenderPass rp, Swapchain sc, DescriptorPool dp, DescriptorSetLayoutFactory dslf, DescriptorSetFactory dsf)
+      : Pipeline(vbe,rp,sc,dp,dslf,dsf) 
+  {
+    auto dsLayouts = CreateDescriptorSets();
+    Shader vert = Shader();
+    Shader frag = Shader();
+    Build(vert, frag, dsLayouts);
   }
 
-  // StaticPipeline(std::shared_ptr<RenderPass> renderPass,
-  //                std::shared_ptr<ServiceLocator> serviceLocator,
-  //                std::vector<char> vert_shader, std::vector<char> frag_shader,
-  //                VkPolygonMode polygonMode)
-  //     : Pipeline(renderPass, serviceLocator, polygonMode) {
-  //   auto dsLayouts = Setup();
-  //   VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-  //   pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-  //   pipelineLayoutInfo.setLayoutCount = dsLayouts.size();
-  //   pipelineLayoutInfo.pSetLayouts = dsLayouts.data();
-  //   pipelineLayoutInfo.pPushConstantRanges = nullptr; //&push_constant;
-  //   pipelineLayoutInfo.pushConstantRangeCount = 0;
-  //   glm::vec2 depthBounds = {0.0, 1.0};
-  //   Build("StaticPipeline", vert_shader, frag_shader, dsLayouts, VK_TRUE,
-  //         depthBounds, pipelineLayoutInfo, polygonMode);
-  // }
-
 private:
-  std::vector<VkDescriptorSetLayout> Setup() {
+  std::vector<VkDescriptorSetLayout> CreateDescriptorSets() {
+
     std::vector<VkDescriptorSetLayout> dsLayouts(2);
 
     VkDescriptorSetLayoutBinding uboLayoutBinding{};
@@ -77,8 +56,7 @@ private:
         uboLayoutBinding, uboDynLayoutBinding, samplerLayoutBinding,
         textureLayoutBinding};
 
-    auto descriptorSetLayout0 =
-        std::make_shared<DescriptorsetLayout>(_logicalDevice, bindings);
+    auto descriptorSetLayout0 = _descriptorSetLayoutFactory->CreateLayout(bindings);
 
     VkDescriptorSetLayoutBinding samplerLayoutBinding1{};
     samplerLayoutBinding1.binding = 1;
@@ -97,16 +75,13 @@ private:
     std::vector<VkDescriptorSetLayoutBinding> textureBinding = {
         texturesLayoutBinding1, samplerLayoutBinding1};
 
-    auto descriptorSetLayout1 =
-        std::make_shared<DescriptorsetLayout>(_logicalDevice, textureBinding);
+    auto descriptorSetLayout1 = _descriptorSetLayoutFactory->CreateLayout(textureBinding);
 
-    dsLayouts[0] = descriptorSetLayout0->Get();
-    dsLayouts[1] = descriptorSetLayout1->Get();
+    dsLayouts[0] = descriptorSetLayout0.Get();
+    dsLayouts[1] = descriptorSetLayout1.Get();
 
-    descriptorSets.push_back(std::make_shared<Descriptorset>(
-        _logicalDevice, _descriptorPool, descriptorSetLayout0));
-    descriptorSets.push_back(std::make_shared<Descriptorset>(
-        _logicalDevice, _descriptorPool, descriptorSetLayout1));
+    descriptorSets.push_back(_descriptorSetFactory->CreateDescriptorSet(descriptorSetLayout0));
+    descriptorSets.push_back(_descriptorSetFactory->CreateDescriptorSet(descriptorSetLayout1));
 
     return dsLayouts;
   }

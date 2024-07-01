@@ -4,10 +4,6 @@
 
 using namespace Entropy::Graphics::Vulkan::Textures;
 
-/**
- * @param serviceLocator
- */
-Texture::Texture() {}
 
 /**
  * @brief Destroy the image texture

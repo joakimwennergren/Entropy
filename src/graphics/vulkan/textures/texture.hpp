@@ -37,6 +37,7 @@ namespace Entropy {
 namespace Graphics {
 namespace Vulkan {
 namespace Textures {
+  
 class Texture {
 public:
   Texture();

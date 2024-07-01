@@ -13,6 +13,8 @@
 #include <graphics/vulkan/renderpasses/renderpass.hpp>
 #include <graphics/vulkan/shaders/shader.hpp>
 #include <graphics/vulkan/swapchains/swapchain.hpp>
+#include <factories/vulkan/descriptorsetlayout_factory.hpp>
+#include <factories/vulkan/descriptorset_factory.hpp>
 
 #include "spdlog/spdlog.h"
 
@@ -23,6 +25,7 @@ using namespace Entropy::Graphics::Vulkan::Swapchains;
 using namespace Entropy::Graphics::Vulkan::Descriptorsets;
 using namespace Entropy::Graphics::Vulkan::DescriptorPools;
 using namespace Entropy::Graphics::Vulkan::Devices;
+using namespace Entropy::Factories::Vulkan;
 
 namespace Entropy {
 namespace Graphics {
@@ -30,36 +33,41 @@ namespace Vulkan {
 namespace Pipelines {
 class Pipeline {
 public:
-  Pipeline(std::shared_ptr<RenderPass> renderPass,VkPolygonMode polygonMode);
+  Pipeline(VulkanBackend vbe, RenderPass rp, Swapchain sc, DescriptorPool dp , DescriptorSetLayoutFactory dslf, DescriptorSetFactory dsf);
   ~Pipeline();
 
-  void Setup(std::unique_ptr<Shader> shader,
-             std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite,
-             glm::vec2 depthBounds, VkPipelineLayoutCreateInfo pipelinelayout,
-             VkPolygonMode polygonMode);
+  void Build(Shader vertShader, Shader fragShader, std::vector<VkDescriptorSetLayout> dsLayouts);
 
-  void Build(const std::string name, const std::string vertexShader,
-             const std::string fragmentShader,
-             std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite,
-             glm::vec2 depthBounds, VkPipelineLayoutCreateInfo pipelinelayout,
-             VkPolygonMode polygonMode);
-  void Build(const std::string name, std::vector<char> vert_shader,
-             std::vector<char> frag_shader,
-             std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite,
-             glm::vec2 depthBounds, VkPipelineLayoutCreateInfo pipelinelayout,
-             VkPolygonMode polygonMode);
+  // void Build(const std::string name, const std::string vertexShader,
+  //            const std::string fragmentShader,
+  //            std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite,
+  //            glm::vec2 depthBounds, VkPipelineLayoutCreateInfo pipelinelayout,
+  //            VkPolygonMode polygonMode);
+
+  // void Build(const std::string name, std::vector<char> vert_shader,
+  //            std::vector<char> frag_shader,
+  //            std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite,
+  //            glm::vec2 depthBounds, VkPipelineLayoutCreateInfo pipelinelayout,
+  //            VkPolygonMode polygonMode);
+
   inline VkPipeline GetPipeline() { return _pipeline; };
   inline VkPipelineLayout GetPipelineLayout() { return _pipelineLayout; };
-  std::vector<std::shared_ptr<Descriptorset>> descriptorSets;
+
+  std::vector<Descriptorset> descriptorSets;
 
 protected:
-  VkPipelineLayout _pipelineLayout;
-  VkPipeline _pipeline;
-  std::shared_ptr<RenderPass> _renderPass;
-  std::shared_ptr<LogicalDevice> _logicalDevice;
-  std::shared_ptr<Swapchain> _swapchain;
-  std::shared_ptr<DescriptorsetLayout> _descriptorSetLayout;
-  std::shared_ptr<DescriptorPool> _descriptorPool;
+
+  // PipelineLayout and pipeline
+  VkPipelineLayout _pipelineLayout = VK_NULL_HANDLE;
+  VkPipeline _pipeline = VK_NULL_HANDLE;
+
+  // Depedencies
+  VulkanBackend *_vulkanBackend = nullptr;
+  RenderPass *_renderPass = nullptr;
+  Swapchain *_swapChain = nullptr;
+  DescriptorPool *_descriptorPool = nullptr;
+  DescriptorSetLayoutFactory * _descriptorSetLayoutFactory = nullptr;
+  DescriptorSetFactory *_descriptorSetFactory = nullptr;
 };
 } // namespace Pipelines
 } // namespace Vulkan

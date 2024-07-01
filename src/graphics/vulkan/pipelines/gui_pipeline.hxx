@@ -9,9 +9,8 @@ namespace Vulkan {
 namespace Pipelines {
 class GUIPipeline : public Pipeline {
 public:
-  GUIPipeline(std::shared_ptr<RenderPass> renderPass,
-              VkPolygonMode polygonMode)
-      : Pipeline(renderPass, polygonMode) {
+  GUIPipeline(VulkanBackend vbe, RenderPass rp, Swapchain sc, DescriptorPool dp, DescriptorSetLayoutFactory dslf)
+      : Pipeline(vbe, rp, sc, dp, dslf) {
     auto dsLayouts = Setup();
     VkPushConstantRange pushConstantRange{};
     pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
@@ -27,7 +26,7 @@ public:
     pipelineLayoutInfo.pushConstantRangeCount = 1;
     glm::vec2 depthBounds = {0.0, 1.0};
     Build("GUIPipeline", "ui_vert.spv", "ui_frag.spv", dsLayouts, VK_FALSE,
-          depthBounds, pipelineLayoutInfo, polygonMode);
+          depthBounds, pipelineLayoutInfo, VK_POLYGON_MODE_FILL);
   }
 
 private:

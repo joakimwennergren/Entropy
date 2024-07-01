@@ -8,9 +8,8 @@ namespace Vulkan {
 namespace Pipelines {
 class SkinnedPipeline : public Pipeline {
 public:
-  SkinnedPipeline(std::shared_ptr<RenderPass> renderPass,
-                  VkPolygonMode polygonMode)
-      : Pipeline(renderPass, polygonMode) {
+  SkinnedPipeline(VulkanBackend vbe, RenderPass rp, Swapchain sc, DescriptorPool dp, DescriptorSetLayoutFactory dslf)
+      : Pipeline(vbe, rp, sc, dp, dslf) {
     auto dsLayouts = Setup();
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -20,7 +19,7 @@ public:
     pipelineLayoutInfo.pushConstantRangeCount = 0;
     glm::vec2 depthBounds = {0.0, 1.0};
     Build("SkinnedPipeline", "skinned_vert.spv", "skinned_frag.spv", dsLayouts,
-          VK_TRUE, depthBounds, pipelineLayoutInfo, polygonMode);
+          VK_TRUE, depthBounds, pipelineLayoutInfo, VK_POLYGON_MODE_FILL);
   }
 
 //   SkinnedPipeline(std::shared_ptr<RenderPass> renderPass,

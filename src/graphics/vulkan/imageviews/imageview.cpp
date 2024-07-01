@@ -2,7 +2,7 @@
 
 using namespace Entropy::Graphics::Vulkan::ImageViews;
 
-ImageView::ImageView(VkDevice logicalDevice, VkImage image, VkFormat format) {
+ImageView::ImageView(VulkanBackend vkBackend, VkImage image, VkFormat format) {
   VkImageViewCreateInfo viewInfo{};
   viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
   viewInfo.image = image;
@@ -14,13 +14,13 @@ ImageView::ImageView(VkDevice logicalDevice, VkImage image, VkFormat format) {
   viewInfo.subresourceRange.baseArrayLayer = 0;
   viewInfo.subresourceRange.layerCount = 1;
 
-  if (vkCreateImageView(logicalDevice, &viewInfo, nullptr, &_imageView) !=
+  if (vkCreateImageView(vkBackend.logicalDevice.Get(), &viewInfo, nullptr, &_imageView) !=
       VK_SUCCESS) {
     throw std::runtime_error("failed to create texture image view!");
   }
 }
 
-ImageView::ImageView(VkDevice logicalDevice, VkImage depthImage,
+ImageView::ImageView(VulkanBackend vkBackend, VkImage depthImage,
                      VkFormat format, uint32_t flags) {
   VkImageViewCreateInfo viewInfo{};
   viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -33,7 +33,7 @@ ImageView::ImageView(VkDevice logicalDevice, VkImage depthImage,
   viewInfo.subresourceRange.baseArrayLayer = 0;
   viewInfo.subresourceRange.layerCount = 1;
 
-  if (vkCreateImageView(logicalDevice, &viewInfo, nullptr, &_imageView) !=
+  if (vkCreateImageView(vkBackend.logicalDevice.Get(), &viewInfo, nullptr, &_imageView) !=
       VK_SUCCESS) {
     throw std::runtime_error("failed to create texture image view!");
   }

@@ -5,8 +5,10 @@
 #include <graphics/renderers/vulkan_renderer.hpp>
 #include <kangaru/kangaru.hpp>
 #include <services/vulkan_render_service.hpp>
+#include <services/buffer_factory_service.hpp>
 
 using namespace Entropy::Graphics::Renderers;
+using namespace Entropy::Factories::Vulkan;
 
 namespace Entropy {
 namespace Graphics {
@@ -16,12 +18,14 @@ namespace Drawables {
 struct Drawable {
 
   Drawable() {
+    _bufferFactory = &vulkanContainer.service<Graphics::Services::BufferFactoryService>();
     _vulkanRenderer =
         &vulkanContainer.service<Graphics::Services::VulkanRenderService>();
   }
 
   kgr::container vulkanContainer;
   VulkanRenderer *_vulkanRenderer;
+  BufferFactory *_bufferFactory;
 };
 
 } // namespace Drawables

@@ -6,10 +6,10 @@ namespace Entropy {
 namespace Graphics {
 namespace Vulkan {
 namespace Pipelines {
-class CubeMapPipeline : public Pipeline {
+class GizmoPipeline : public Pipeline {
 public:
-  CubeMapPipeline(std::shared_ptr<RenderPass> renderPass,VkPolygonMode polygonMode)
-      : Pipeline(renderPass,  polygonMode) {
+  GizmoPipeline(VulkanBackend vbe, RenderPass rp, Swapchain sc, DescriptorPool dp, DescriptorSetLayoutFactory dslf)
+      : Pipeline(vbe, rp ,sc, dp, dslf) {
     auto dsLayouts = Setup();
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -18,14 +18,14 @@ public:
     pipelineLayoutInfo.pPushConstantRanges = nullptr; //&push_constant;
     pipelineLayoutInfo.pushConstantRangeCount = 0;
     glm::vec2 depthBounds = {0.0, 1.0};
-    Build("SkinnedPipeline", "cubemap_vert.spv", "cubemap_frag.spv", dsLayouts,
-          VK_FALSE, depthBounds, pipelineLayoutInfo, polygonMode);
+    Build("GizmoPipeline", "gizmo_vert.spv", "gizmo_frag.spv", dsLayouts,
+          VK_TRUE, depthBounds, pipelineLayoutInfo, VK_POLYGON_MODE_FILL);
   }
 
-  // CubeMapPipeline(std::shared_ptr<RenderPass> renderPass,
-  //                 std::shared_ptr<ServiceLocator> serviceLocator,
-  //                 std::vector<char> vert_shader, std::vector<char> frag_shader,
-  //                 VkPolygonMode polygonMode)
+  // GizmoPipeline(std::shared_ptr<RenderPass> renderPass,
+  //               std::shared_ptr<ServiceLocator> serviceLocator,
+  //               std::vector<char> vert_shader, std::vector<char> frag_shader,
+  //               VkPolygonMode polygonMode)
   //     : Pipeline(renderPass, serviceLocator, polygonMode) {
   //   auto dsLayouts = Setup();
   //   VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
@@ -34,14 +34,14 @@ public:
   //   pipelineLayoutInfo.pSetLayouts = dsLayouts.data();
   //   pipelineLayoutInfo.pPushConstantRanges = nullptr; //&push_constant;
   //   pipelineLayoutInfo.pushConstantRangeCount = 0;
-  //   glm::vec2 depthBounds = {0.0, 1.0};
-  //   Build("SkinnedPipeline", vert_shader, frag_shader, dsLayouts, VK_FALSE,
-  //         depthBounds, pipelineLayoutInfo, polygonMode);
+  //   glm::vec2 depthBounds = {-1.0, 1.0};
+  //   Build("GizmoPipeline", vert_shader, frag_shader, dsLayouts, VK_TRUE,
+  //         depthBounds, pipelineLayoutInfo, VK_POLYGON_MODE_LINE);
   // }
 
 private:
   std::vector<VkDescriptorSetLayout> Setup() {
-    std::vector<VkDescriptorSetLayout> dsLayouts(2);
+    std::vector<VkDescriptorSetLayout> dsLayouts(1);
 
     VkDescriptorSetLayoutBinding uboLayoutBinding{};
     uboLayoutBinding.binding = 0;
@@ -79,27 +79,9 @@ private:
     auto descriptorSetLayout0 =
         std::make_shared<DescriptorsetLayout>(_logicalDevice, bindings);
 
-    VkDescriptorSetLayoutBinding samplerLayoutBinding1{};
-    samplerLayoutBinding1.binding = 0;
-    samplerLayoutBinding1.descriptorCount = 1;
-    samplerLayoutBinding1.descriptorType =
-        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    samplerLayoutBinding1.pImmutableSamplers = nullptr;
-    samplerLayoutBinding1.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-    std::vector<VkDescriptorSetLayoutBinding> bindings1 = {
-        samplerLayoutBinding1};
-
-    auto descriptorSetLayout1 =
-        std::make_shared<DescriptorsetLayout>(_logicalDevice, bindings1);
-
     dsLayouts[0] = descriptorSetLayout0->Get();
-    dsLayouts[1] = descriptorSetLayout1->Get();
-
     descriptorSets.push_back(std::make_shared<Descriptorset>(
         _logicalDevice, _descriptorPool, descriptorSetLayout0));
-    descriptorSets.push_back(std::make_shared<Descriptorset>(
-        _logicalDevice, _descriptorPool, descriptorSetLayout1));
 
     return dsLayouts;
   }
