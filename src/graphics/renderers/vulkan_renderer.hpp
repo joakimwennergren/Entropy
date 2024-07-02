@@ -1,5 +1,6 @@
 #pragma once
 
+#include "factories/vulkan/bufferfactory.hpp"
 #include <graphics/vulkan/vulkan_backend.hpp>
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include "glm/glm.hpp"
@@ -19,8 +20,8 @@
 // #include <graphics/cubemaps/cubemap.hpp>
 #include <gltf/model.hpp>
 #include <graphics/cameras/perspective_camera.hpp>
-#include <graphics/vulkan/descriptorsets/descriptorset.hpp>
 #include <graphics/primitives/3d/plane.hpp>
+#include <graphics/vulkan/descriptorsets/descriptorset.hpp>
 #include <graphics/vulkan/swapchains/swapchain.hpp>
 
 #include <graphics/primitives/2d/quad.hpp>
@@ -74,23 +75,27 @@ namespace Renderers {
 
 struct VulkanRenderer {
 
-  VulkanRenderer(Vulkan::VulkanBackend vbe, QueueSync queueSync, RenderPass renderPass, PipelineFactory pipelineFactory) : _backend{vbe}, _queuSync{queueSync}, _renderPass{renderPass}, _pipelineFactory{pipelineFactory}
-  {
+  VulkanRenderer(Vulkan::VulkanBackend vbe, QueueSync queueSync,
+                 RenderPass renderPass, PipelineFactory pipelineFactory,
+                 BufferFactory bf)
+      : _backend{vbe}, _queuSync{queueSync}, _renderPass{renderPass},
+        _pipelineFactory{pipelineFactory}, _bufferFactory{bf} {
+
     auto staticPipeline = _pipelineFactory.CreateStaticPipeline();
     _staticPipeline = &staticPipeline;
   }
 
   void Render(int width, int height, float xscale, float yscale);
 
-  private:
+private:
+  StaticPipeline *_staticPipeline;
 
-    StaticPipeline *_staticPipeline;
-
-    // Dependencies
-    Vulkan::VulkanBackend _backend;
-    QueueSync _queuSync;
-    RenderPass _renderPass;
-    PipelineFactory _pipelineFactory;
+  // Dependencies
+  Vulkan::VulkanBackend _backend;
+  QueueSync _queuSync;
+  RenderPass _renderPass;
+  PipelineFactory _pipelineFactory;
+  BufferFactory _bufferFactory;
 
   /*
   VkResult SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex);

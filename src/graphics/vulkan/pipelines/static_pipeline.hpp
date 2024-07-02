@@ -1,21 +1,23 @@
 #pragma once
 
+#include "filesystem/filesystem.hpp"
 #include <graphics/vulkan/pipelines/pipeline.hpp>
 
 namespace Entropy {
 namespace Graphics {
 namespace Vulkan {
 namespace Pipelines {
-  
+
 struct StaticPipeline : public Pipeline {
 
-  StaticPipeline(VulkanBackend vbe, RenderPass rp, Swapchain sc, DescriptorPool dp, DescriptorSetLayoutFactory dslf, DescriptorSetFactory dsf)
-      : Pipeline(vbe,rp,sc,dp,dslf,dsf) 
-  {
+  StaticPipeline(VulkanBackend vbe, RenderPass rp, Swapchain sc,
+                 DescriptorPool dp, DescriptorSetLayoutFactory dslf,
+                 DescriptorSetFactory dsf)
+      : Pipeline(vbe, rp, sc, dp, dslf, dsf) {
     auto dsLayouts = CreateDescriptorSets();
-    Shader vert = Shader();
-    Shader frag = Shader();
-    Build(vert, frag, dsLayouts);
+    Shader shader = Shader(vbe, GetShadersDir() + "static_vert.spv",
+                           GetShadersDir() + "static_frag.spv");
+    Build(shader, dsLayouts);
   }
 
 private:
@@ -56,7 +58,8 @@ private:
         uboLayoutBinding, uboDynLayoutBinding, samplerLayoutBinding,
         textureLayoutBinding};
 
-    auto descriptorSetLayout0 = _descriptorSetLayoutFactory->CreateLayout(bindings);
+    auto descriptorSetLayout0 =
+        _descriptorSetLayoutFactory->CreateLayout(bindings);
 
     VkDescriptorSetLayoutBinding samplerLayoutBinding1{};
     samplerLayoutBinding1.binding = 1;
@@ -75,13 +78,16 @@ private:
     std::vector<VkDescriptorSetLayoutBinding> textureBinding = {
         texturesLayoutBinding1, samplerLayoutBinding1};
 
-    auto descriptorSetLayout1 = _descriptorSetLayoutFactory->CreateLayout(textureBinding);
+    auto descriptorSetLayout1 =
+        _descriptorSetLayoutFactory->CreateLayout(textureBinding);
 
     dsLayouts[0] = descriptorSetLayout0.Get();
     dsLayouts[1] = descriptorSetLayout1.Get();
 
-    descriptorSets.push_back(_descriptorSetFactory->CreateDescriptorSet(descriptorSetLayout0));
-    descriptorSets.push_back(_descriptorSetFactory->CreateDescriptorSet(descriptorSetLayout1));
+    descriptorSets.push_back(
+        _descriptorSetFactory->CreateDescriptorSet(descriptorSetLayout0));
+    descriptorSets.push_back(
+        _descriptorSetFactory->CreateDescriptorSet(descriptorSetLayout1));
 
     return dsLayouts;
   }

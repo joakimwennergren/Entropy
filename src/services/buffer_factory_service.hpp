@@ -1,8 +1,9 @@
 
 #pragma once
 
-#include <kangaru/kangaru.hpp>
 #include <factories/vulkan/bufferfactory.hpp>
+#include <kangaru/kangaru.hpp>
+#include <services/vulkan_backend_service.hpp>
 
 using namespace Entropy::Factories::Vulkan;
 
@@ -11,7 +12,8 @@ namespace Graphics {
 namespace Services {
 
 struct BufferFactoryService
-    : kgr::single_service<BufferFactory, kgr::dependency<VulkanBackendService>> {};
+    : kgr::single_service<BufferFactory,
+                          kgr::dependency<VulkanBackendService>> {};
 
 } // namespace Services
 } // namespace Graphics

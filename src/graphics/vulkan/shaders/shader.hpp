@@ -1,5 +1,6 @@
 #pragma once
 
+#include "graphics/vulkan/vulkan_backend.hpp"
 #include <fstream>
 #include <graphics/vulkan/devices/logical_device.hpp>
 
@@ -14,17 +15,12 @@ public:
   /**
    * @brief Construct a new Shader object
    *
-   */
-  Shader() = default;
-  /**
-   * @brief Construct a new Shader object
-   *
    * @param vert
    * @param frag
    * @param context
    */
-  // Shader(std::shared_ptr<ServiceLocator> serviceLocator, const std::string vert,
-  //        const std::string frag);
+  Shader(Entropy::Graphics::Vulkan::VulkanBackend backend,
+         const std::string vert, const std::string frag);
 
   // Shader(std::shared_ptr<ServiceLocator> serviceLocator,
   //        const std::vector<char> vert, const std::vector<char> frag);
@@ -82,7 +78,8 @@ private:
    * @param code
    * @return VkShaderModule
    */
-  VkShaderModule BuildShader(std::vector<char> code);
+  VkShaderModule BuildShader(Entropy::Graphics::Vulkan::VulkanBackend backend,
+                             std::vector<char> code);
 
   /**
    * @brief
