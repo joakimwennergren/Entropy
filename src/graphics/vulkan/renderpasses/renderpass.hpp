@@ -92,7 +92,7 @@ struct RenderPass {
 
     this->CreateFramebuffers();
   }
-  void Begin(CommandBuffer commandBuffer,uint32_t imageIndex) const;
+  void Begin(CommandBuffer commandBuffer, uint32_t imageIndex) const;
   void End(CommandBuffer commandBuffer) const;
 
   // void RecreateFrameBuffers();
@@ -105,17 +105,15 @@ struct RenderPass {
     // auto depthBufferTexture =
     // _textureFactory.CreateDepthBufferTexture(_swapChain.swapChainExtent.width,
     // _swapChain.swapChainExtent.height);
-    auto depthBufferTexture =
-        _textureFactory.CreateDepthBufferTexture(800, 800);
-    _depthBufferTexture = &depthBufferTexture;
+    _depthBufferTexture = _textureFactory.CreateDepthBufferTexture(800, 800);
   }
 
   inline VkRenderPass Get() const { return this->_renderPass; };
 
   std::vector<VkFramebuffer> _frameBuffers;
   std::vector<SwapChainTexture> _swapChainTextures;
-private:
 
+private:
   DepthBufferTexture *_depthBufferTexture = nullptr;
   VkRenderPass _renderPass = VK_NULL_HANDLE;
 

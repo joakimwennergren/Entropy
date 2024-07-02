@@ -1,6 +1,7 @@
 #pragma once
 
 #include "factories/vulkan/bufferfactory.hpp"
+#include "obj/model.hpp"
 #include <graphics/vulkan/vulkan_backend.hpp>
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include "glm/glm.hpp"
@@ -34,9 +35,9 @@
 
 #include <input/keyboard/keyboard.hpp>
 
-#include <graphics/vulkan/synchronization/queuesync.hpp>
 #include <graphics/data/ubo.hpp>
 #include <graphics/vulkan/buffers/stagedbuffer.hpp>
+#include <graphics/vulkan/synchronization/queuesync.hpp>
 
 #include <tracy/Tracy.hpp>
 
@@ -84,23 +85,25 @@ struct VulkanRenderer {
                  RenderPass renderPass, PipelineFactory pipelineFactory,
                  BufferFactory bf, CommandPool cp, Swapchain sc)
       : _backend{vbe}, _queuSync{queueSync}, _renderPass{renderPass},
-        _pipelineFactory{pipelineFactory}, _bufferFactory{bf}, _commandPool{cp}, _swapChain{sc} {
-    
+        _pipelineFactory{pipelineFactory}, _bufferFactory{bf}, _commandPool{cp},
+        _swapChain{sc} {
+
     // Static Pipeline creation
-    auto staticPipeline = _pipelineFactory.CreateStaticPipeline();
-    _staticPipeline = &staticPipeline;
+    _staticPipeline = _pipelineFactory.CreateStaticPipeline();
 
     // Synchronizer
-    _synchronizer = new Synchronizer(vbe.logicalDevice, MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+    _synchronizer =
+        new Synchronizer(vbe.logicalDevice, MAX_CONCURRENT_FRAMES_IN_FLIGHT);
 
     // Command buffers
     for (uint32_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++) {
-      _commandBuffers.push_back(CommandBuffer(_backend, _queuSync, _commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY));
+      _commandBuffers.push_back(CommandBuffer(_backend, _queuSync, _commandPool,
+                                              VK_COMMAND_BUFFER_LEVEL_PRIMARY));
     }
 
     // Dynamic UBO
-    auto dynamicUBO = _bufferFactory.CreateUniformBuffer(sizeof(UboDataDynamic) * 10000);
-    _dynamicUBO = &dynamicUBO;
+    _dynamicUBO =
+        _bufferFactory.CreateUniformBuffer(sizeof(UboDataDynamic) * 10000);
 
     VkPhysicalDeviceProperties properties;
     vkGetPhysicalDeviceProperties(_backend.physicalDevice.Get(), &properties);
@@ -130,13 +133,12 @@ struct VulkanRenderer {
       descriptorWrites[0].pBufferInfo = &bufferInfo;
 
       vkUpdateDescriptorSets(_backend.logicalDevice.Get(),
-                            static_cast<uint32_t>(descriptorWrites.size()),
-                            descriptorWrites.data(), 0, nullptr);
+                             static_cast<uint32_t>(descriptorWrites.size()),
+                             descriptorWrites.data(), 0, nullptr);
     }
 
     // StagingBuffer
-    auto stagingBuffer = _bufferFactory.CreateStagingBuffer(800*800*4, nullptr);
-    _stagingBuffer = &stagingBuffer;
+    _stagingBuffer = _bufferFactory.CreateStagingBuffer(800 * 800 * 4, nullptr);
 
     // Camera
     _camera = new PerspectiveCamera();
@@ -144,15 +146,20 @@ struct VulkanRenderer {
     _camera->setPosition(glm::vec3(0.0f, 0.0f, -500.0f));
     _camera->setRotation(glm::vec3(0.0f));
 
+    _model = std::make_shared<Entropy::OBJ::ObjModel>(_backend, _bufferFactory);
+    _model->loadFromFile("/Users/joakim/Desktop/models/12140_Skull_v3_L2.obj",
+                         "/Users/joakim/Desktop/models/Skull.png");
   }
 
   void Render(int width, int height, float xscale, float yscale);
   StagedBuffer *_stagingBuffer;
-  
+
 protected:
+  PerspectiveCamera *_camera;
 
-PerspectiveCamera *_camera;
+  float z = 0.0;
 
+  std::shared_ptr<Entropy::OBJ::ObjModel> _model;
 
 private:
   uint32_t _currentFrame = 0;

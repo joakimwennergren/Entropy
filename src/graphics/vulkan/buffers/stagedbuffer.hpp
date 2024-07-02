@@ -11,9 +11,9 @@
 
 #pragma once
 
-#include <graphics/vulkan/vulkan_backend.hpp>
 #include <graphics/data/vertex.hpp>
 #include <graphics/vulkan/buffers/buffer.hpp>
+#include <graphics/vulkan/vulkan_backend.hpp>
 
 #include <cstring>
 #include <iostream>
@@ -39,17 +39,17 @@ public:
   StagedBuffer(Vulkan::VulkanBackend backend, VkDeviceSize size, uint8_t *data)
       : Buffer(backend) {
 
-    CreateBuffer(size, /*VK_BUFFER_USAGE_TRANSFER_SRC_BIT*/ VK_BUFFER_USAGE_TRANSFER_DST_BIT);
+    CreateBuffer(
+        size,
+        /*VK_BUFFER_USAGE_TRANSFER_SRC_BIT*/ VK_BUFFER_USAGE_TRANSFER_DST_BIT);
 
-    void *mappedData;
-    vmaMapMemory(_vkBackend.allocator.Get(), _allocation, &mappedData);
-    if(data != nullptr)
-    {
-      memcpy(mappedData, data, static_cast<size_t>(size));
+    vmaMapMemory(_vkBackend.allocator.Get(), _allocation, &_mappedMemory);
+    if (data != nullptr) {
+      memcpy(_mappedMemory, data, static_cast<size_t>(size));
     }
-    vmaUnmapMemory(_vkBackend.allocator.Get(), _allocation);
-    // std::memmove(data, dataIn, static_cast<size_t>(size));
-    // vmaUnmapMemory(_allocator->Get(), _allocation);
+    // vmaUnmapMemory(_vkBackend.allocator.Get(), _allocation);
+    //  std::memmove(data, dataIn, static_cast<size_t>(size));
+    //  vmaUnmapMemory(_allocator->Get(), _allocation);
   }
 
 private:

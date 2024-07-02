@@ -1,11 +1,13 @@
 #pragma once
 
+#include "factories/vulkan/bufferfactory.hpp"
+#include "graphics/vulkan/vulkan_backend.hpp"
 #include <tiny_obj_loader.h>
 
 #include <graphics/data/vertex.hpp>
-#include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
 #include <graphics/vulkan/buffers/indexbuffer.hpp>
 #include <graphics/vulkan/buffers/vertexbuffer.hpp>
+#include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
 #include <graphics/vulkan/textures/texture.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Buffers;
@@ -16,8 +18,8 @@ namespace Entropy {
 namespace OBJ {
 class ObjModel {
 public:
-  ObjModel() {
-  }
+  ObjModel(VulkanBackend vbe, Factories::Vulkan::BufferFactory bf)
+      : _vkBackend{vbe}, _bufferFactory{bf} {}
 
   void loadFromFile(std::string file, std::string tex) {
     tinyobj::attrib_t attrib;
@@ -47,7 +49,9 @@ public:
       }
     }
 
-    // vertexBuffer = std::make_unique<VertexBuffer>(vertices);
+    vertexBuffer = _bufferFactory.CreateVertexBuffer(vertices);
+
+    /*
 
     texture = new Texture();
     texture->CreateTextureImage(tex);
@@ -150,15 +154,19 @@ public:
     descriptorWrites[1].descriptorCount = 1;
     descriptorWrites[1].pImageInfo = &imageInfo;
 
-    // vkUpdateDescriptorSets(_serviceLocator->GetService<LogicalDevice>()->Get(),
+    //
+    vkUpdateDescriptorSets(_serviceLocator->GetService<LogicalDevice>()->Get(),
     //                        static_cast<uint32_t>(descriptorWrites.size()),
     //                        descriptorWrites.data(), 0, nullptr);
+    */
   }
 
   std::vector<Vertex> vertices;
-  std::unique_ptr<VertexBuffer> vertexBuffer;
+  VertexBuffer *vertexBuffer;
   Texture *texture;
   VkDescriptorSet ds;
+  VulkanBackend _vkBackend;
+  Factories::Vulkan::BufferFactory _bufferFactory;
 
 private:
 };
