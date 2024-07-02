@@ -84,6 +84,7 @@ struct VulkanRenderer {
   VulkanRenderer(Vulkan::VulkanBackend vbe, QueueSync queueSync,
                  RenderPass renderPass, PipelineFactory pipelineFactory,
                  BufferFactory bf, CommandPool cp, Swapchain sc)
+
       : _backend{vbe}, _queuSync{queueSync}, _renderPass{renderPass},
         _pipelineFactory{pipelineFactory}, _bufferFactory{bf}, _commandPool{cp},
         _swapChain{sc} {
@@ -146,9 +147,17 @@ struct VulkanRenderer {
     _camera->setPosition(glm::vec3(0.0f, 0.0f, -500.0f));
     _camera->setRotation(glm::vec3(0.0f));
 
+    // @todo temp!
     _model = std::make_shared<Entropy::OBJ::ObjModel>(_backend, _bufferFactory);
     _model->loadFromFile("/Users/joakim/Desktop/models/12140_Skull_v3_L2.obj",
                          "/Users/joakim/Desktop/models/Skull.png");
+  }
+
+  ~VulkanRenderer() {
+    delete _dynamicUBO;
+    delete _staticPipeline;
+    delete _camera;
+    delete _synchronizer;
   }
 
   void Render(int width, int height, float xscale, float yscale);
@@ -157,16 +166,16 @@ struct VulkanRenderer {
 protected:
   PerspectiveCamera *_camera;
 
+  // @todo temp!
   float z = 0.0;
-
   std::shared_ptr<Entropy::OBJ::ObjModel> _model;
 
 private:
   uint32_t _currentFrame = 0;
+  size_t dynamicAlignment = 0;
 
   std::vector<CommandBuffer> _commandBuffers;
   UniformBuffer *_dynamicUBO;
-  size_t dynamicAlignment = 0;
   StaticPipeline *_staticPipeline;
   Synchronizer *_synchronizer;
 
@@ -178,91 +187,6 @@ private:
   BufferFactory _bufferFactory;
   CommandPool _commandPool;
   Swapchain _swapChain;
-
-  /*
-  VkResult SubmitAndPresent(VkCommandBuffer cmdBuffer, uint32_t imageIndex);
-  void DrawEntity(flecs::entity entity, uint32_t index);
-  void HandleResize(int width, int height);
-  bool isResizing = true;
-  struct UboDataDynamic {
-    // glm::vec4 color;
-    // glm::vec4 colorBorder;
-    // glm::vec4 colorShadow;
-    glm::mat4 proj;
-    glm::mat4 view;
-    glm::mat4 model;
-    glm::mat4 invView;
-    // glm::vec2 position;
-    // glm::vec2 size;
-    // glm::vec4 borderRadius;
-    // int shapeId;
-    // int time;
-  };
-  size_t dynamicAlignment{0};
-  unsigned int _currentFrame = 0;
-  uint32_t imageIndex;
-  bool skip = false;
-  std::shared_ptr<CommandBuffer> cmdBufferUI;
-  std::shared_ptr<RenderPass> _renderPass;
-  std::shared_ptr<Synchronizer> _synchronizer;
-  std::vector<std::shared_ptr<CommandBuffer>> _commandBuffers;
-  void Wireframe(bool on);
-  std::shared_ptr<Camera> _camera;
-  std::vector<std::unique_ptr<VertexBuffer>> _vertexBuffer;
-  std::vector<std::unique_ptr<Buffer>> _indexBuffer;
-
-private:
-  void Setup(std::shared_ptr<ServiceLocator> serviceLocator, float xscale,
-             float yscale);
-
-  std::unique_ptr<Pipeline> _pipeline;
-  std::unordered_map<std::string, std::shared_ptr<Pipeline>> _pipelines;
-
-  std::vector<VkBuffer> rawUniformBuffers;
-  std::vector<VkBuffer> uniformBuffersInstances;
-
-  std::vector<UniformBuffer *> _uniformBuffers;
-
-  std::shared_ptr<ServiceLocator> _serviceLocator;
-
-  std::shared_ptr<Descriptorset> _descriptorSet;
-  std::shared_ptr<LogicalDevice> _logicalDevice;
-  std::shared_ptr<Swapchain> _swapChain;
-
-  VkCommandBuffer currentCmdBuffer;
-  VkDescriptorSet currentDescriptorSet;
-
-  VkPhysicalDeviceProperties properties;
-
-  // One big uniform buffer that contains all matrices
-  // Note that we need to manually allocate the data to cope for GPU-specific
-  // uniform buffer offset alignments
-
-  std::vector<UniformBuffer *> dynUbos;
-  size_t bufferSize;
-
-  VkResult imageResult;
-
-  std::shared_ptr<QueueSync> _queueSync;
-  std::shared_ptr<PhysicalDevice> _physicalDevice;
-
-  size_t pad_uniform_buffer_size(size_t originalSize);
-
-  uint32_t indexCount;
-  uint32_t vertexCount;
-
-  int32_t global_vtx_offset = 0;
-  int32_t global_idx_offset = 0;
-
-  std::shared_ptr<Keyboard> _keyboard;
-  std::shared_ptr<Cam> _cam;
-  std::shared_ptr<CommandBuffer> secondary;
-  Texture *fontTexture;
-  flecs::world *_world;
-  Timer *_timer;
-  float oldXscale = 1.0;
-  VkFence _fence;
-  */
 };
 } // namespace Renderers
 } // namespace Graphics

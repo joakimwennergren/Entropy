@@ -34,8 +34,17 @@ namespace Pipelines {
 class Pipeline {
 public:
   Pipeline(VulkanBackend vbe, RenderPass rp, Swapchain sc, DescriptorPool dp,
-           DescriptorSetLayoutFactory dslf, DescriptorSetFactory dsf);
-  ~Pipeline();
+           DescriptorSetLayoutFactory dslf, DescriptorSetFactory dsf)
+      : _vulkanBackend{vbe}, _renderPass{rp}, _swapChain{sc},
+        _descriptorPool{dp}, _descriptorSetLayoutFactory{dslf},
+        _descriptorSetFactory{dsf} {}
+
+  ~Pipeline() {
+    // vkDeviceWaitIdle(_logicalDevice->Get());
+    vkDestroyPipeline(_vulkanBackend.logicalDevice.Get(), _pipeline, nullptr);
+    vkDestroyPipelineLayout(_vulkanBackend.logicalDevice.Get(), _pipelineLayout,
+                            nullptr);
+  }
 
   void Build(Shader shader, std::vector<VkDescriptorSetLayout> dsLayouts);
 
@@ -62,12 +71,12 @@ protected:
   VkPipeline _pipeline = VK_NULL_HANDLE;
 
   // Depedencies
-  VulkanBackend *_vulkanBackend = nullptr;
-  RenderPass *_renderPass = nullptr;
-  Swapchain *_swapChain = nullptr;
-  DescriptorPool *_descriptorPool = nullptr;
-  DescriptorSetLayoutFactory *_descriptorSetLayoutFactory = nullptr;
-  DescriptorSetFactory *_descriptorSetFactory = nullptr;
+  VulkanBackend _vulkanBackend;
+  RenderPass _renderPass;
+  Swapchain _swapChain;
+  DescriptorPool _descriptorPool;
+  DescriptorSetLayoutFactory _descriptorSetLayoutFactory;
+  DescriptorSetFactory _descriptorSetFactory;
 };
 } // namespace Pipelines
 } // namespace Vulkan

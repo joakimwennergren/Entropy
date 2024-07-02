@@ -11,9 +11,9 @@
 
 #pragma once
 
-#include <graphics/vulkan/vulkan_backend.hpp>
 #include <graphics/data/vertex.hpp>
 #include <graphics/vulkan/buffers/buffer.hpp>
+#include <graphics/vulkan/vulkan_backend.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Buffers;
 
@@ -36,8 +36,8 @@ public:
   UniformBuffer(Vulkan::VulkanBackend backend, VkDeviceSize bufferSize)
       : Buffer(backend) {
     this->CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-
     vmaMapMemory(_vkBackend.allocator.Get(), _allocation, &_mappedMemory);
+    vmaUnmapMemory(_vkBackend.allocator.Get(), _allocation);
   }
 
 private:

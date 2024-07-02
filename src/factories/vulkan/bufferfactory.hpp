@@ -17,8 +17,8 @@ struct BufferFactory {
   BufferFactory(VulkanBackend backend) : _vkBackend{backend} {}
 
   template <typename T>
-  IndexBuffer<T> CreateIndexBuffer(std::vector<T> indices) {
-    return IndexBuffer<T>(_vkBackend, indices);
+  IndexBuffer<T> *CreateIndexBuffer(std::vector<T> indices) {
+    return new IndexBuffer<T>(_vkBackend, indices);
   }
 
   VertexBuffer *CreateVertexBuffer(std::vector<Vertex> vertices) {

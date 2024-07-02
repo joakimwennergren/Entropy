@@ -1,15 +1,14 @@
 #pragma once
 
-#include <graphics/vulkan/devices/logical_device.hpp>
+#include "spdlog/spdlog.h"
+#include <factories/vulkan/texturefactory.hpp>
 #include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
+#include <graphics/vulkan/devices/logical_device.hpp>
 #include <graphics/vulkan/imageviews/imageview.hpp>
 #include <graphics/vulkan/memory/allocator.hpp>
-#include <factories/vulkan/texturefactory.hpp>
 #include <graphics/vulkan/swapchains/swapchain.hpp>
-#include <vulkan/vulkan.hpp>
-#include <graphics/vulkan/imageviews/imageview.hpp>
 #include <graphics/vulkan/utilities/utilities.hpp>
-#include "spdlog/spdlog.h"
+#include <vulkan/vulkan.hpp>
 
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;
 using namespace Entropy::Graphics::Vulkan::Swapchains;
@@ -23,8 +22,8 @@ namespace Vulkan {
 namespace Textures {
 
 struct SwapChainTexture {
-  SwapChainTexture(VulkanBackend backend, QueueSync qs, Allocator a, unsigned int width, unsigned int height)
-  {
+  SwapChainTexture(VulkanBackend backend, QueueSync qs, Allocator a,
+                   unsigned int width, unsigned int height) {
     VkImageCreateInfo imageInfo{};
     imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
     imageInfo.imageType = VK_IMAGE_TYPE_2D;
@@ -46,25 +45,21 @@ struct SwapChainTexture {
     allocCreateInfo.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
 
     VkResult res = vmaCreateImage(a.Get(), &imageInfo, &allocCreateInfo,
-        &_swapChainImage, &_allocation, nullptr);
+                                  &_swapChainImage, &_allocation, nullptr);
 
-    spdlog::warn(res);
-
-    _swapChainImageView = ImageView(backend, _swapChainImage, textureFormat)
-                      .Get();
-
+    _swapChainImageView =
+        ImageView(backend, _swapChainImage, textureFormat).Get();
   };
 
   VkFormat textureFormat = VK_FORMAT_B8G8R8A8_SRGB;
   VkImageView _swapChainImageView = VK_NULL_HANDLE;
   VkImage _swapChainImage = VK_NULL_HANDLE;
-  
-  private:
 
-    VmaAllocation _allocation = VK_NULL_HANDLE;
+private:
+  VmaAllocation _allocation = VK_NULL_HANDLE;
 };
 
-} // namespace RenderPasses
+} // namespace Textures
 } // namespace Vulkan
 } // namespace Graphics
 } // namespace Entropy

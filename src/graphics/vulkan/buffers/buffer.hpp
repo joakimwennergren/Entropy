@@ -27,7 +27,7 @@ struct Buffer {
    * @brief Buffer destructor, destroy the created buffer
    */
   ~Buffer() {
-    //vmaDestroyBuffer(_vkBackend.allocator.Get(), _buffer, _allocation);
+    vmaDestroyBuffer(_vkBackend.allocator.Get(), _buffer, _allocation);
   }
 
   /**
@@ -56,7 +56,9 @@ protected:
    * @return (void)
    */
   inline void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage) {
+
     assert(size != 0);
+    assert(usage != 0);
 
     VkBufferCreateInfo bufferInfo = {};
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -78,7 +80,7 @@ protected:
   VmaAllocation _allocation = VK_NULL_HANDLE;
   void *_mappedMemory = nullptr;
 
-  // Vulkan Dependency
+  // Depdendencies
   Vulkan::VulkanBackend _vkBackend;
 };
 

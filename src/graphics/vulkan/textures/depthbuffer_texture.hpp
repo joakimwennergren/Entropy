@@ -1,14 +1,13 @@
 #pragma once
 
-#include <graphics/vulkan/devices/logical_device.hpp>
+#include "spdlog/spdlog.h"
+#include <factories/vulkan/texturefactory.hpp>
 #include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
+#include <graphics/vulkan/devices/logical_device.hpp>
 #include <graphics/vulkan/imageviews/imageview.hpp>
 #include <graphics/vulkan/memory/allocator.hpp>
-#include <factories/vulkan/texturefactory.hpp>
 #include <graphics/vulkan/swapchains/swapchain.hpp>
 #include <vulkan/vulkan.hpp>
-#include <graphics/vulkan/imageviews/imageview.hpp>
-#include "spdlog/spdlog.h"
 
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;
 using namespace Entropy::Graphics::Vulkan::Swapchains;
@@ -22,8 +21,8 @@ namespace Vulkan {
 namespace Textures {
 
 struct DepthBufferTexture {
-  DepthBufferTexture(VulkanBackend backend, QueueSync qs, Allocator a, unsigned int width, unsigned int height)
-  {
+  DepthBufferTexture(VulkanBackend backend, QueueSync qs, Allocator a,
+                     unsigned int width, unsigned int height) {
     VkFormat depthFormat = FindDepthFormat(backend);
 
     VmaAllocationCreateInfo allocCreateInfo = {};
@@ -46,54 +45,53 @@ struct DepthBufferTexture {
     imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
     VkResult res = vmaCreateImage(a.Get(), &imageInfo, &allocCreateInfo,
-        &_depthImage, &_allocation, nullptr);
+                                  &_depthImage, &_allocation, nullptr);
 
-    spdlog::warn(res);
-
-    _depthImageView = ImageView(backend, _depthImage, depthFormat,VK_IMAGE_ASPECT_DEPTH_BIT)
-                      .Get();
-
+    _depthImageView =
+        ImageView(backend, _depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT)
+            .Get();
   };
-    
-    VkImage _depthImage = VK_NULL_HANDLE;
-    VkImageView _depthImageView = VK_NULL_HANDLE;
-  private:
 
-    VkFormat findSupportedFormat(VulkanBackend backend, const std::vector<VkFormat> &candidates,
-                                    VkImageTiling tiling,
-                                    VkFormatFeatureFlags features) {
+  VkImage _depthImage = VK_NULL_HANDLE;
+  VkImageView _depthImageView = VK_NULL_HANDLE;
+
+private:
+  VkFormat findSupportedFormat(VulkanBackend backend,
+                               const std::vector<VkFormat> &candidates,
+                               VkImageTiling tiling,
+                               VkFormatFeatureFlags features) {
 
     for (VkFormat format : candidates) {
-        VkFormatProperties props;
-        vkGetPhysicalDeviceFormatProperties(backend.physicalDevice.Get(), format, &props);
+      VkFormatProperties props;
+      vkGetPhysicalDeviceFormatProperties(backend.physicalDevice.Get(), format,
+                                          &props);
 
-        if (tiling == VK_IMAGE_TILING_LINEAR &&
-            (props.linearTilingFeatures & features) == features) {
+      if (tiling == VK_IMAGE_TILING_LINEAR &&
+          (props.linearTilingFeatures & features) == features) {
         return format;
-        } else if (tiling == VK_IMAGE_TILING_OPTIMAL &&
-                (props.optimalTilingFeatures & features) == features) {
+      } else if (tiling == VK_IMAGE_TILING_OPTIMAL &&
+                 (props.optimalTilingFeatures & features) == features) {
         return format;
-        }
+      }
     }
 
     spdlog::warn("Failed to find supported format.");
-    }
+  }
 
-    VkFormat FindDepthFormat(VulkanBackend backend) {
+  VkFormat FindDepthFormat(VulkanBackend backend) {
 
-    return findSupportedFormat(
-        backend,
-        {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT,
-        VK_FORMAT_D24_UNORM_S8_UINT},
-        VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
-    }
+    return findSupportedFormat(backend,
+                               {VK_FORMAT_D32_SFLOAT,
+                                VK_FORMAT_D32_SFLOAT_S8_UINT,
+                                VK_FORMAT_D24_UNORM_S8_UINT},
+                               VK_IMAGE_TILING_OPTIMAL,
+                               VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+  }
 
-
-
-    VmaAllocation _allocation = VK_NULL_HANDLE;
+  VmaAllocation _allocation = VK_NULL_HANDLE;
 };
 
-} // namespace RenderPasses
+} // namespace Textures
 } // namespace Vulkan
 } // namespace Graphics
 } // namespace Entropy

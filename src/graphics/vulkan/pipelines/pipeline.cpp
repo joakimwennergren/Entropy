@@ -2,16 +2,16 @@
 
 using namespace Entropy::Graphics::Vulkan::Pipelines;
 
-Pipeline::Pipeline(VulkanBackend vbe, RenderPass rp, Swapchain sc,
-                   DescriptorPool dp, DescriptorSetLayoutFactory dslf,
-                   DescriptorSetFactory dsf) {
-  _vulkanBackend = &vbe;
-  _renderPass = &rp;
-  _swapChain = &sc;
-  _descriptorPool = &dp;
-  _descriptorSetLayoutFactory = &dslf;
-  _descriptorSetFactory = &dsf;
-}
+// Pipeline::Pipeline(VulkanBackend vbe, RenderPass rp, Swapchain sc,
+//                    DescriptorPool dp, DescriptorSetLayoutFactory dslf,
+//                    DescriptorSetFactory dsf) {
+//   _vulkanBackend = &vbe;
+//   _renderPass = &rp;
+//   _swapChain = &sc;
+//   _descriptorPool = &dp;
+//   _descriptorSetLayoutFactory = &dslf;
+//   _descriptorSetFactory = &dsf;
+// }
 
 void Pipeline::Build(Shader shader,
                      std::vector<VkDescriptorSetLayout> dsLayouts) {
@@ -68,14 +68,14 @@ void Pipeline::Build(Shader shader,
   VkViewport viewport{};
   viewport.x = 0.0f;
   viewport.y = 0.0f;
-  viewport.width = (float)_swapChain->swapChainExtent.width;
-  viewport.height = (float)_swapChain->swapChainExtent.height;
+  viewport.width = (float)_swapChain.swapChainExtent.width;
+  viewport.height = (float)_swapChain.swapChainExtent.height;
   viewport.minDepth = 0.0f;
   viewport.maxDepth = 1.0f;
 
   VkRect2D scissor{};
   scissor.offset = {0, 0};
-  scissor.extent = _swapChain->swapChainExtent;
+  scissor.extent = _swapChain.swapChainExtent;
 
   VkPipelineViewportStateCreateInfo viewportState{};
   viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -140,7 +140,7 @@ void Pipeline::Build(Shader shader,
   pipelineLayoutInfo.pushConstantRangeCount = 0;
   glm::vec2 depthBounds = {0.0, 1.0};
 
-  if (vkCreatePipelineLayout(_vulkanBackend->logicalDevice.Get(),
+  if (vkCreatePipelineLayout(_vulkanBackend.logicalDevice.Get(),
                              &pipelineLayoutInfo, nullptr,
                              &_pipelineLayout) != VK_SUCCESS) {
     spdlog::error("Failed to create pipeline layout!");
@@ -173,12 +173,12 @@ void Pipeline::Build(Shader shader,
   pipelineInfo.pColorBlendState = &colorBlending;
   pipelineInfo.pDynamicState = &dynamicState;
   pipelineInfo.layout = _pipelineLayout;
-  pipelineInfo.renderPass = _renderPass->Get();
+  pipelineInfo.renderPass = _renderPass.Get();
   pipelineInfo.subpass = 0;
   pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
   pipelineInfo.basePipelineIndex = -1;
 
-  if (vkCreateGraphicsPipelines(_vulkanBackend->logicalDevice.Get(),
+  if (vkCreateGraphicsPipelines(_vulkanBackend.logicalDevice.Get(),
                                 VK_NULL_HANDLE, 1, &pipelineInfo, nullptr,
                                 &_pipeline) != VK_SUCCESS) {
     spdlog::error("Failed to create pipeline!");
@@ -213,9 +213,3 @@ void Pipeline::Build(Shader shader,
 // pipelinelayout,
 // //         polygonMode);
 // }
-
-Pipeline::~Pipeline() {
-  //   vkDeviceWaitIdle(_logicalDevice->Get());
-  //   vkDestroyPipeline(_logicalDevice->Get(), _pipeline, nullptr);
-  //   vkDestroyPipelineLayout(_logicalDevice->Get(), _pipelineLayout, nullptr);
-}

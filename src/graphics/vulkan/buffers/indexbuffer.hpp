@@ -1,8 +1,7 @@
 #pragma once
 
-#include <graphics/vulkan/vulkan_backend.hpp>
 #include <graphics/vulkan/buffers/buffer.hpp>
-#include <spdlog/spdlog.h>
+#include <graphics/vulkan/vulkan_backend.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Buffers;
 

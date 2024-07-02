@@ -11,9 +11,9 @@
 
 #pragma once
 
-#include "vulkan_backend.hpp"
 #include <graphics/data/vertex.hpp>
 #include <graphics/vulkan/buffers/buffer.hpp>
+#include <graphics/vulkan/vulkan_backend.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Buffers;
 
@@ -26,8 +26,7 @@ namespace Buffers {
  *
  */
 
-class StorageBuffer : public Buffer {
-public:
+struct StorageBuffer : public Buffer {
   /**
    * @brief Construct a new Buffer object
    *
@@ -37,7 +36,7 @@ public:
                 void *input)
       : Buffer(backend) {
 
-    this->CreateBuffer(bufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+    CreateBuffer(bufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 
     // vkMapMemory(logicalDevice->Get(), _bufferMemory, 0, bufferSize, 0,
     // &_mappedMemory);

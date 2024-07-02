@@ -55,11 +55,10 @@ private:
     textureLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
     std::vector<VkDescriptorSetLayoutBinding> bindings = {
-        uboDynLayoutBinding, samplerLayoutBinding,
-        textureLayoutBinding};
+        uboDynLayoutBinding, samplerLayoutBinding, textureLayoutBinding};
 
     auto descriptorSetLayout0 =
-        _descriptorSetLayoutFactory->CreateLayout(bindings);
+        _descriptorSetLayoutFactory.CreateLayout(bindings);
 
     VkDescriptorSetLayoutBinding samplerLayoutBinding1{};
     samplerLayoutBinding1.binding = 1;
@@ -79,15 +78,15 @@ private:
         texturesLayoutBinding1, samplerLayoutBinding1};
 
     auto descriptorSetLayout1 =
-        _descriptorSetLayoutFactory->CreateLayout(textureBinding);
+        _descriptorSetLayoutFactory.CreateLayout(textureBinding);
 
     dsLayouts[0] = descriptorSetLayout0.Get();
     dsLayouts[1] = descriptorSetLayout1.Get();
 
     descriptorSets.push_back(
-        _descriptorSetFactory->CreateDescriptorSet(descriptorSetLayout0));
+        _descriptorSetFactory.CreateDescriptorSet(descriptorSetLayout0));
     descriptorSets.push_back(
-        _descriptorSetFactory->CreateDescriptorSet(descriptorSetLayout1));
+        _descriptorSetFactory.CreateDescriptorSet(descriptorSetLayout1));
 
     return dsLayouts;
   }
