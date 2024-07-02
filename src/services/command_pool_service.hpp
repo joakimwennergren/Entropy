@@ -2,19 +2,17 @@
 #pragma once
 
 #include "kangaru/service.hpp"
-#include "services/allocator_service.hpp"
-#include "services/device_service.hpp"
-#include <graphics/commandbuffers/commandbuffer.hpp>
+#include "services/vulkan_backend_service.hpp"
 #include <kangaru/kangaru.hpp>
 
-using namespace Entropy::Graphics::CommandPools;
+using namespace Entropy::Graphics::Vulkan::CommandPools;
 
 namespace Entropy {
 namespace Graphics {
 namespace Services {
 
 struct CommandPoolService
-    : kgr::service<CommandPool, kgr::dependency<DeviceService>> {};
+    : kgr::service<CommandPool, kgr::dependency<VulkanBackendService>> {};
 
 } // namespace Services
 } // namespace Graphics

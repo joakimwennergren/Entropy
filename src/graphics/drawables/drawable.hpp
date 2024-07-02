@@ -4,7 +4,6 @@
 #include "services/vk_instance_service.hpp"
 #include <graphics/renderers/vulkan_renderer.hpp>
 #include <kangaru/kangaru.hpp>
-#include <services/buffer_factory_service.hpp>
 #include <services/vulkan_render_service.hpp>
 
 using namespace Entropy::Graphics::Renderers;
@@ -24,7 +23,6 @@ struct Drawable {
 
   kgr::container vulkanContainer;
   VulkanRenderer *_vulkanRenderer;
-  BufferFactory *_bufferFactory;
 };
 
 } // namespace Drawables

@@ -39,11 +39,14 @@ public:
   StagedBuffer(Vulkan::VulkanBackend backend, VkDeviceSize size, uint8_t *data)
       : Buffer(backend) {
 
-    CreateBuffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+    CreateBuffer(size, /*VK_BUFFER_USAGE_TRANSFER_SRC_BIT*/ VK_BUFFER_USAGE_TRANSFER_DST_BIT);
 
     void *mappedData;
     vmaMapMemory(_vkBackend.allocator.Get(), _allocation, &mappedData);
-    memcpy(mappedData, data, static_cast<size_t>(size));
+    if(data != nullptr)
+    {
+      memcpy(mappedData, data, static_cast<size_t>(size));
+    }
     vmaUnmapMemory(_vkBackend.allocator.Get(), _allocation);
     // std::memmove(data, dataIn, static_cast<size_t>(size));
     // vmaUnmapMemory(_allocator->Get(), _allocation);

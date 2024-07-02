@@ -88,34 +88,31 @@ using namespace Entropy::Graphics::Vulkan::RenderPasses;
 //   vkDestroyRenderPass(_logicalDevice->Get(), _renderPass, nullptr);
 // }
 
-// void RenderPass::Begin(std::shared_ptr<CommandBuffer> commandBuffer,
-//                        uint32_t imageIndex) const {
-//   assert(commandBuffer != nullptr);
+void RenderPass::Begin(CommandBuffer commandBuffer,
+                       uint32_t imageIndex) const {
 
-//   VkRenderPassBeginInfo renderPassInfo{};
-//   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-//   renderPassInfo.renderPass = _renderPass;
-//   renderPassInfo.framebuffer = _swapChainFramebuffers[imageIndex];
+  VkRenderPassBeginInfo renderPassInfo{};
+  renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+  renderPassInfo.renderPass = _renderPass;
+  renderPassInfo.framebuffer = _frameBuffers[imageIndex];
 
-//   renderPassInfo.renderArea.offset = {0, 0};
-//   renderPassInfo.renderArea.extent = _swapChain->swapChainExtent;
+  renderPassInfo.renderArea.offset = {0, 0};
+  renderPassInfo.renderArea.extent = _swapChain.swapChainExtent;
 
-//   std::array<VkClearValue, 2> clearValues{};
-//   clearValues[0].color = {{0.1f, 0.1f, 0.1f, 1.0f}};
-//   clearValues[1].depthStencil = {1.0f, 0};
+  std::array<VkClearValue, 2> clearValues{};
+  clearValues[0].color = {{0.1f, 0.1f, 0.1f, 1.0f}};
+  clearValues[1].depthStencil = {1.0f, 0};
 
-//   renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-//   renderPassInfo.pClearValues = clearValues.data();
+  renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+  renderPassInfo.pClearValues = clearValues.data();
 
-//   vkCmdBeginRenderPass(commandBuffer->GetCommandBuffer(), &renderPassInfo,
-//                        VK_SUBPASS_CONTENTS_INLINE);
-// }
+  vkCmdBeginRenderPass(commandBuffer.GetCommandBuffer(), &renderPassInfo,
+                       VK_SUBPASS_CONTENTS_INLINE);
+}
 
-// void RenderPass::End(std::shared_ptr<CommandBuffer> commandBuffer) const {
-//   assert(commandBuffer != nullptr);
-
-//   vkCmdEndRenderPass(commandBuffer->GetCommandBuffer());
-// }
+void RenderPass::End(CommandBuffer commandBuffer) const {
+  vkCmdEndRenderPass(commandBuffer.GetCommandBuffer());
+}
 
 // /**
 //  * @brief Create frame buffers

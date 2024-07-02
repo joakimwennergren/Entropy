@@ -2,32 +2,6 @@
 
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;
 
-/**
- * @brief Constructor for CommandBuffer
- * @param serviceLocator ServiceLocator
- * @param level VkCommandBufferLevel primary/secondary
- */
-CommandBuffer::CommandBuffer(VkCommandBufferLevel level) {
-  _level = level;
-  // Get required depenencies
-  // auto physicalDevice = serviceLocator->GetService<PhysicalDevice>();
-  // // auto surface = serviceLocator->GetService<WindowSurface>();
-  // _logicalDevice = serviceLocator->GetService<LogicalDevice>();
-  // _queueSync = serviceLocator->GetService<QueueSync>();
-
-  //_pool = std::make_unique<CommandPool>(_logicalDevice, physicalDevice);
-
-  VkCommandBufferAllocateInfo allocInfo{};
-  allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-  allocInfo.commandPool = _pool->Get();
-  allocInfo.level = level;
-  allocInfo.commandBufferCount = 1;
-
-  if (vkAllocateCommandBuffers(_logicalDevice->Get(), &allocInfo,
-                               &_commandBuffer) != VK_SUCCESS) {
-    spdlog::warn("[CommandBuffer] Failed to allocate command buffer.");
-  }
-}
 
 /**
  * @brief Start recording one-time command buffer

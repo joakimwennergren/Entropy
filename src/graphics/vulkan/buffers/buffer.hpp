@@ -27,7 +27,7 @@ struct Buffer {
    * @brief Buffer destructor, destroy the created buffer
    */
   ~Buffer() {
-    vmaDestroyBuffer(_vkBackend.allocator.Get(), _buffer, _allocation);
+    //vmaDestroyBuffer(_vkBackend.allocator.Get(), _buffer, _allocation);
   }
 
   /**

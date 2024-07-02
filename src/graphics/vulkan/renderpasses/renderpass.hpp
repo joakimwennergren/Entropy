@@ -90,11 +90,10 @@ struct RenderPass {
       return;
     }
 
-    // this->CreateFramebuffers();
+    this->CreateFramebuffers();
   }
-  // void Begin(std::shared_ptr<CommandBuffer> commandBuffer,
-  //            uint32_t imageIndex) const;
-  // void End(std::shared_ptr<CommandBuffer> commandBuffer) const;
+  void Begin(CommandBuffer commandBuffer,uint32_t imageIndex) const;
+  void End(CommandBuffer commandBuffer) const;
 
   // void RecreateFrameBuffers();
   void RecreateDepthBuffer() {
@@ -114,9 +113,9 @@ struct RenderPass {
   inline VkRenderPass Get() const { return this->_renderPass; };
 
   std::vector<VkFramebuffer> _frameBuffers;
-
-private:
   std::vector<SwapChainTexture> _swapChainTextures;
+private:
+
   DepthBufferTexture *_depthBufferTexture = nullptr;
   VkRenderPass _renderPass = VK_NULL_HANDLE;
 
@@ -135,6 +134,7 @@ private:
   void CreateFramebuffers() {
     auto swapChainTexture = _textureFactory.CreateSwapChainTexture(800, 800);
     _swapChainTextures.push_back(swapChainTexture);
+    _frameBuffers.resize(1);
 
     for (size_t i = 0; i < _swapChainTextures.size(); i++) {
       std::array<VkImageView, 2> attachments = {

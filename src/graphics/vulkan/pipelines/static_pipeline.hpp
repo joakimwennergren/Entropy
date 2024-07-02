@@ -25,12 +25,12 @@ private:
 
     std::vector<VkDescriptorSetLayout> dsLayouts(2);
 
-    VkDescriptorSetLayoutBinding uboLayoutBinding{};
-    uboLayoutBinding.binding = 0;
-    uboLayoutBinding.descriptorCount = 1;
-    uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    uboLayoutBinding.pImmutableSamplers = nullptr;
-    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    // VkDescriptorSetLayoutBinding uboLayoutBinding{};
+    // uboLayoutBinding.binding = 0;
+    // uboLayoutBinding.descriptorCount = 1;
+    // uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    // uboLayoutBinding.pImmutableSamplers = nullptr;
+    // uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
     VkDescriptorSetLayoutBinding uboDynLayoutBinding{};
     uboDynLayoutBinding.binding = 1;
@@ -55,7 +55,7 @@ private:
     textureLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
     std::vector<VkDescriptorSetLayoutBinding> bindings = {
-        uboLayoutBinding, uboDynLayoutBinding, samplerLayoutBinding,
+        uboDynLayoutBinding, samplerLayoutBinding,
         textureLayoutBinding};
 
     auto descriptorSetLayout0 =

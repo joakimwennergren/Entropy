@@ -3,14 +3,9 @@
 #include <spdlog/spdlog.h>
 #include <vulkan/vulkan.hpp>
 
-#include <graphics/vulkan/devices/logical_device.hpp>
-#include <graphics/vulkan/devices/physical_device.hpp>
-#include <graphics/vulkan/queuefamilies/queuefamily.hpp>
-#include <graphics/vulkan/surfaces/surface.hpp>
+#include <graphics/vulkan/vulkan_backend.hpp>
 
-using namespace Entropy::Graphics::Vulkan::Surfaces;
-using namespace Entropy::Graphics::Vulkan::QueueFamilies;
-using namespace Entropy::Graphics::Vulkan::Devices;
+
 
 namespace Entropy {
 namespace Graphics {
@@ -18,15 +13,22 @@ namespace Vulkan {
 namespace CommandPools {
 class CommandPool{
 public:
-  CommandPool() = default;
-  CommandPool(std::shared_ptr<LogicalDevice> logicalDevice,
-              std::shared_ptr<PhysicalDevice> physicalDevice,
-              std::shared_ptr<WindowSurface> surface);
-  CommandPool(std::shared_ptr<LogicalDevice> logicalDevice,
-              std::shared_ptr<PhysicalDevice> physicalDevice);
+  CommandPool(VulkanBackend vbe) : _vkBackend{vbe}
+  {
+    VkCommandPoolCreateInfo poolInfo{};
+    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    poolInfo.queueFamilyIndex = _vkBackend.logicalDevice.queueFamiliy;
+
+    if (vkCreateCommandPool(_vkBackend.logicalDevice.Get(), &poolInfo, nullptr,
+                            &_commandPool) != VK_SUCCESS) {
+      spdlog::error("Failed to create command pool.");
+    }
+  }
   inline VkCommandPool Get() { return _commandPool; };
 
 private:
+  VulkanBackend _vkBackend;
   VkCommandPool _commandPool = VK_NULL_HANDLE;
 };
 } // namespace CommandPools
