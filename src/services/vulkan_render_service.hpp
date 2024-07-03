@@ -28,7 +28,7 @@ namespace Graphics {
 namespace Services {
 
 struct VulkanRenderService
-    : kgr::single_service<
+    : kgr::service<
           VulkanRenderer,
           kgr::dependency<VulkanBackendService, QueueSyncService,
                           RenderPassService, PipelineFactoryService,

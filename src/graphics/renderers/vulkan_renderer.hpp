@@ -142,22 +142,22 @@ struct VulkanRenderer {
     _stagingBuffer = _bufferFactory.CreateStagingBuffer(800 * 800 * 4, nullptr);
 
     // Camera
-    _camera = new PerspectiveCamera();
+    _camera = std::make_shared<PerspectiveCamera>();
     _camera->type = PerspectiveCamera::CameraType::firstperson;
     _camera->setPosition(glm::vec3(0.0f, 0.0f, -500.0f));
     _camera->setRotation(glm::vec3(0.0f));
 
     // @todo temp!
     _model = std::make_shared<Entropy::OBJ::ObjModel>(_backend, _bufferFactory);
-    _model->loadFromFile("/Users/joakim/Desktop/models/12140_Skull_v3_L2.obj",
-                         "/Users/joakim/Desktop/models/Skull.png");
+    _model->loadFromFile("/Users/joakimwennergren/Desktop/Entropy-Editor/12140_Skull_v3_L2.obj",
+                         "/Users/joakimwennergren/Desktop/Entropy-Editor/Skull.png");
   }
 
   ~VulkanRenderer() {
-    delete _dynamicUBO;
-    delete _staticPipeline;
-    delete _camera;
-    delete _synchronizer;
+    // delete _dynamicUBO;
+    // delete _staticPipeline;
+    // delete _camera;
+    // delete _synchronizer;
   }
 
   void Render(int width, int height, float xscale, float yscale,
@@ -165,13 +165,15 @@ struct VulkanRenderer {
   StagedBuffer *_stagingBuffer;
 
 protected:
-  PerspectiveCamera *_camera;
+
 
   // @todo temp!
   float z = 0.0;
   std::shared_ptr<Entropy::OBJ::ObjModel> _model;
 
 private:
+  std::shared_ptr<PerspectiveCamera> _camera;
+
   uint32_t _currentFrame = 0;
   size_t dynamicAlignment = 0;
 

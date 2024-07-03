@@ -15,10 +15,6 @@ using namespace Entropy;
 
 Application::Application() {
 
-  kgr::container vulkanContainer;
-
-  VulkanRenderer vulkanRenderer =
-      vulkanContainer.service<Graphics::Services::VulkanRenderService>();
 
   /*
 
