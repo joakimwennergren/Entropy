@@ -23,7 +23,7 @@ struct StaticPipeline : public Pipeline {
 private:
   std::vector<VkDescriptorSetLayout> CreateDescriptorSets() {
 
-    std::vector<VkDescriptorSetLayout> dsLayouts(2);
+    std::vector<VkDescriptorSetLayout> dsLayouts(1);
 
     // VkDescriptorSetLayoutBinding uboLayoutBinding{};
     // uboLayoutBinding.binding = 0;
@@ -77,16 +77,17 @@ private:
     std::vector<VkDescriptorSetLayoutBinding> textureBinding = {
         texturesLayoutBinding1, samplerLayoutBinding1};
 
-    auto descriptorSetLayout1 =
-        _descriptorSetLayoutFactory.CreateLayout(textureBinding);
+    // auto descriptorSetLayout1 =
+    //     _descriptorSetLayoutFactory.CreateLayout(textureBinding);
 
     dsLayouts[0] = descriptorSetLayout0.Get();
-    dsLayouts[1] = descriptorSetLayout1.Get();
+    // dsLayouts[1] = descriptorSetLayout1.Get();
 
     descriptorSets.push_back(
         _descriptorSetFactory.CreateDescriptorSet(descriptorSetLayout0));
-    descriptorSets.push_back(
-        _descriptorSetFactory.CreateDescriptorSet(descriptorSetLayout1));
+
+    // descriptorSets.push_back(
+    //     _descriptorSetFactory.CreateDescriptorSet(descriptorSetLayout1));
 
     return dsLayouts;
   }

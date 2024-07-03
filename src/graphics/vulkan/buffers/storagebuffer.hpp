@@ -1,17 +1,5 @@
-/**
- * @file uniformbuffer.hpp
- * @author Joakim Wennergren (joakim.wennergren@databeams.se)
- * @brief
- * @version 0.1
- * @date 2023-08-22
- *
- * @copyright Copyright (c) 2023
- *
- */
-
 #pragma once
 
-#include <graphics/data/vertex.hpp>
 #include <graphics/vulkan/buffers/buffer.hpp>
 #include <graphics/vulkan/vulkan_backend.hpp>
 
@@ -21,17 +9,7 @@ namespace Entropy {
 namespace Graphics {
 namespace Vulkan {
 namespace Buffers {
-/**
- * @brief
- *
- */
-
 struct StorageBuffer : public Buffer {
-  /**
-   * @brief Construct a new Buffer object
-   *
-   * @param context Vulkan context
-   */
   StorageBuffer(Vulkan::VulkanBackend backend, VkDeviceSize bufferSize,
                 void *input)
       : Buffer(backend) {

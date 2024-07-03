@@ -25,10 +25,12 @@ namespace Vulkan {
 namespace RenderPasses {
 
 struct RenderPass {
+
   RenderPass(VulkanBackend backend, Swapchain swapChain, TextureFactory tf)
       : _vkBackend{backend}, _swapChain{swapChain}, _textureFactory{tf} {
 
-    RecreateDepthBuffer();
+    RecreateDepthBuffer(_swapChain.swapChainExtent.width,
+                        _swapChain.swapChainExtent.height);
 
     VkAttachmentDescription depthAttachment{};
     depthAttachment.format = FindDepthFormat();
@@ -90,22 +92,28 @@ struct RenderPass {
       return;
     }
 
-    this->CreateFramebuffers();
+    this->CreateFramebuffers(_swapChain.swapChainExtent.width,
+                             _swapChain.swapChainExtent.height);
   }
-  void Begin(CommandBuffer commandBuffer, uint32_t imageIndex) const;
+  void Begin(CommandBuffer commandBuffer, uint32_t imageIndex, int width,
+             int height) const;
   void End(CommandBuffer commandBuffer) const;
 
-  // void RecreateFrameBuffers();
-  void RecreateDepthBuffer() {
-    /*
-    if (_depthImage != VK_NULL_HANDLE) {
-      vmaDestroyImage(allocator->Get(), _depthImage, _allocation);
+  void RecreateFrameBuffers(int width, int height) {
+    for (auto framebuffer : _frameBuffers) {
+      vkDestroyFramebuffer(_vkBackend.logicalDevice.Get(), framebuffer,
+                           nullptr);
     }
-    */
-    // auto depthBufferTexture =
-    // _textureFactory.CreateDepthBufferTexture(_swapChain.swapChainExtent.width,
-    // _swapChain.swapChainExtent.height);
-    _depthBufferTexture = _textureFactory.CreateDepthBufferTexture(800, 800);
+    this->CreateFramebuffers(width, height);
+  }
+  void RecreateDepthBuffer(int width, int height) {
+
+    if (_depthBufferTexture != VK_NULL_HANDLE) {
+      delete _depthBufferTexture;
+    }
+
+    _depthBufferTexture =
+        _textureFactory.CreateDepthBufferTexture(width, height);
   }
 
   inline VkRenderPass Get() const { return this->_renderPass; };
@@ -129,9 +137,16 @@ private:
   void CreateImage(uint32_t width, uint32_t height, VkFormat format,
                    VkImageTiling tiling, VkImageUsageFlags usage);
 
-  void CreateFramebuffers() {
-    auto swapChainTexture = _textureFactory.CreateSwapChainTexture(800, 800);
+  void CreateFramebuffers(int width, int height) {
+
+    _swapChainTextures.clear();
+    _frameBuffers.clear();
+
+    auto swapChainTexture =
+        _textureFactory.CreateSwapChainTexture(width, height);
+
     _swapChainTextures.push_back(swapChainTexture);
+
     _frameBuffers.resize(1);
 
     for (size_t i = 0; i < _swapChainTextures.size(); i++) {
@@ -145,8 +160,8 @@ private:
       framebufferInfo.attachmentCount =
           static_cast<uint32_t>(attachments.size());
       framebufferInfo.pAttachments = attachments.data();
-      framebufferInfo.width = _swapChain.swapChainExtent.width;
-      framebufferInfo.height = _swapChain.swapChainExtent.height;
+      framebufferInfo.width = width;
+      framebufferInfo.height = height;
       framebufferInfo.layers = 1;
 
       if (vkCreateFramebuffer(_vkBackend.logicalDevice.Get(), &framebufferInfo,
@@ -156,24 +171,8 @@ private:
       }
     }
   }
-  /*
-
-
-
-
-    uint32_t findMemoryType(uint32_t typeFilter,
-                            VkMemoryPropertyFlags properties);
-
-    std::vector<VkFramebuffer> _swapChainFramebuffers;
-
-    std::shared_ptr<LogicalDevice> _logicalDevice;
-    std::shared_ptr<PhysicalDevice> _physicalDevice;
-
-    VkImage _depthImage = VK_NULL_HANDLE;
-    VkImageView depthImageView;
-    VmaAllocation _allocation;
-    */
 };
+
 } // namespace RenderPasses
 } // namespace Vulkan
 } // namespace Graphics

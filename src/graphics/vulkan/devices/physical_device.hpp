@@ -1,34 +1,27 @@
 #pragma once
 
 #include <config.hpp>
-#include <iostream>
-#include <set>
-#include <string>
+#include <graphics/vulkan/instances/vk_instance.hpp>
+#include <spdlog/spdlog.h>
 #include <vulkan/vulkan.hpp>
 
-#include "spdlog/spdlog.h"
-
-#include <graphics/vulkan/instances/vk_instance.hpp>
-#include <graphics/vulkan/queuefamilies/queuefamily.hpp>
-#include <graphics/vulkan/surfaces/surface.hpp>
-
 using namespace Entropy::Graphics::Vulkan::Instances;
-using namespace Entropy::Graphics::Vulkan::Surfaces;
-using namespace Entropy::Graphics::Vulkan::QueueFamilies;
 
 namespace Entropy {
 namespace Graphics {
 namespace Vulkan {
 namespace Devices {
-class PhysicalDevice {
-public:
-  /*
-    PhysicalDevice() = default;
+/**
+ * @brief Wrapper for vulkan physical device
+ * @author Joakim Wennergren
+ * @since Tue Jul 02 2024
+ */
+struct PhysicalDevice {
 
-    PhysicalDevice(std::shared_ptr<VulkanInstance> instance,
-                   std::shared_ptr<WindowSurface> surface);
-
-  */
+  /**
+   * @brief Construct a new PhysicalDevice (simplified)
+   * @param instance VulkanInstance
+   */
   PhysicalDevice(VulkanInstance instance) : _instance{instance} {
 
     uint32_t deviceCount;
@@ -39,6 +32,8 @@ public:
 
     vkEnumeratePhysicalDevices(instance.Get(), &deviceCount,
                                physicalDevices.data());
+
+    assert(physicalDevices.size() != 0);
 
     _physicalDevice = physicalDevices[0];
   }
@@ -51,29 +46,47 @@ public:
 #endif
 
 #ifdef BUILD_FOR_IOS
-  const std::vector<const char *> deviceExtensions = {
-      VK_KHR_SWAPCHAIN_EXTENSION_NAME, "VK_KHR_portability_subset"};
+  std::vector<const char *> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+                                                "VK_KHR_portability_subset"};
 #endif
 
 #ifdef BUILD_FOR_WINDOWS
-  const std::vector<const char *> deviceExtensions = {
+  std::vector<const char *> deviceExtensions = {
       VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 #endif
 
 #ifdef BUILD_FOR_ANDROID
-  const std::vector<const char *> deviceExtensions = {
+  std::vector<const char *> deviceExtensions = {
       VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 #endif
 
 private:
+  /**
+   * @brief Helper method to see if device is suitable for vulkan
+   * @param device
+   * @param surface
+   * @param deviceExtensions
+   * @return
+   */
   bool IsDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface,
                         const std::vector<const char *> deviceExtensions);
+
+  /**
+   * @brief Helper method to check device extension support
+   * @param device
+   * @param extensions Extensions to check
+   * @return Bool supported extensions?
+   */
   bool CheckDeviceExtensionSupport(VkPhysicalDevice device,
                                    const std::vector<const char *> extensions);
+
+  // physical device handle
   VkPhysicalDevice _physicalDevice = VK_NULL_HANDLE;
+
+  // Depedencies
   VulkanInstance _instance;
 };
 } // namespace Devices
+} // namespace Vulkan
 } // namespace Graphics
 } // namespace Entropy
-}

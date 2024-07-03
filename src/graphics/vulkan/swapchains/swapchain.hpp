@@ -9,8 +9,8 @@
 #include <graphics/vulkan/queuefamilies/queuefamily.hpp>
 #include <graphics/vulkan/surfaces/surface.hpp>
 
-#include <tracy/Tracy.hpp>
 #include <graphics/vulkan/vulkan_backend.hpp>
+#include <tracy/Tracy.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Surfaces;
 using namespace Entropy::Graphics::Vulkan::QueueFamilies;
@@ -29,10 +29,10 @@ struct SwapChainSupportDetails {
 
 struct Swapchain {
 
-  Swapchain(VulkanBackend vbe) : _backend{vbe}
-  {
-  swapChainImageFormat = VK_FORMAT_B8G8R8A8_SRGB;
-  swapChainExtent = VkExtent2D{static_cast<uint32_t>(800), static_cast<uint32_t>(800)};
+  Swapchain(VulkanBackend vbe) : _backend{vbe} {
+    swapChainImageFormat = VK_FORMAT_B8G8R8A8_SRGB;
+    swapChainExtent =
+        VkExtent2D{static_cast<uint32_t>(800), static_cast<uint32_t>(800)};
   }
   // Swapchain(VkPhysicalDevice physicalDevice, VkDevice logicalDevice,
   //           std::shared_ptr<WindowSurface> surface, VkExtent2D frame);
@@ -41,8 +41,13 @@ struct Swapchain {
   // ~Swapchain();
   // void CreateSwapChain(VkSwapchainKHR prev);
   // void RecreateSwapChain();
-  // void RecreateSwapChain(int width, int height);
-  // static SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device,
+  void RecreateSwapChain(int width, int height) {
+    swapChainImageFormat = VK_FORMAT_B8G8R8A8_SRGB;
+    swapChainExtent =
+        VkExtent2D{static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
+  }
+  // static SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice
+  // device,
   //                                                      VkSurfaceKHR surface);
   // std::vector<VkImageView> swapChainImageViews;
   // std::vector<VkImage> swapChainImages;
@@ -52,9 +57,7 @@ struct Swapchain {
   // std::shared_ptr<WindowSurface> _surface;
 
 private:
-
-
-    Vulkan::VulkanBackend _backend;
+  Vulkan::VulkanBackend _backend;
 
   // VkSwapchainKHR _swapChain;
   // VkSurfaceFormatKHR ChooseSwapSurfaceFormat(

@@ -1,46 +1,34 @@
-/**
- * @file uniformbuffer.hpp
- * @author Joakim Wennergren (joakim.wennergren@databeams.se)
- * @brief
- * @version 0.1
- * @date 2023-08-22
- *
- * @copyright Copyright (c) 2023
- *
- */
-
 #pragma once
 
-#include <graphics/data/vertex.hpp>
 #include <graphics/vulkan/buffers/buffer.hpp>
 #include <graphics/vulkan/vulkan_backend.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Buffers;
+using namespace Entropy::Graphics::Vulkan;
 
 namespace Entropy {
 namespace Graphics {
 namespace Vulkan {
 namespace Buffers {
-/**
- * @brief
- *
- */
 
-class UniformBuffer : public Buffer {
-public:
+/**
+ * @brief Uniform buffer
+ * @author Joakim Wennergren
+ * @since Wed Jul 03 2024
+ */
+struct UniformBuffer : public Buffer {
   /**
-   * @brief Construct a new Buffer object
-   *
-   * @param context Vulkan context
+   * @brief Constructor for uniform buffer
+   * @param backend VulkanBackend
+   * @param bufferSize size of buffer
    */
   UniformBuffer(Vulkan::VulkanBackend backend, VkDeviceSize bufferSize)
       : Buffer(backend) {
-    this->CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+    assert(bufferSize != 0);
+    CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
     vmaMapMemory(_vkBackend.allocator.Get(), _allocation, &_mappedMemory);
     vmaUnmapMemory(_vkBackend.allocator.Get(), _allocation);
   }
-
-private:
 };
 } // namespace Buffers
 } // namespace Vulkan

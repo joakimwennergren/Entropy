@@ -4,16 +4,20 @@
 #include <graphics/vulkan/vulkan_backend.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Buffers;
+using namespace Entropy::Graphics::Vulkan;
 
 namespace Entropy {
 namespace Graphics {
 namespace Vulkan {
 namespace Buffers {
 
-template <class T> class IndexBuffer : public Buffer {
-public:
-  IndexBuffer(Vulkan::VulkanBackend backend, std::vector<T> indices)
-      : Buffer(backend) {
+template <class T> struct IndexBuffer : public Buffer {
+  /**
+   * @brief Constructor for indexbuffer
+   * @param backend VulkanBackend
+   * @param indices T indices
+   */
+  IndexBuffer(VulkanBackend backend, std::vector<T> indices) : Buffer(backend) {
 
     VkDeviceSize bufferSize = sizeof(T) * indices.size();
 
@@ -22,9 +26,8 @@ public:
     CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT |
                                  VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 
-    void *mappedData;
-    vmaMapMemory(_vkBackend.allocator.Get(), _allocation, &mappedData);
-    memcpy(mappedData, indices.data(), bufferSize);
+    vmaMapMemory(_vkBackend.allocator.Get(), _allocation, &_mappedMemory);
+    memcpy(_mappedMemory, indices.data(), bufferSize);
     vmaUnmapMemory(_vkBackend.allocator.Get(), _allocation);
   }
 };

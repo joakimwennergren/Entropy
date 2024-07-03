@@ -1,11 +1,10 @@
 #pragma once
 
 #include <cassert>
+#include <graphics/vulkan/memory/allocator.hpp>
 #include <graphics/vulkan/vulkan_backend.hpp>
 #include <spdlog/spdlog.h>
 #include <vulkan/vulkan.hpp>
-
-#include <graphics/vulkan/memory/allocator.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Memory;
 
@@ -21,6 +20,10 @@ namespace Buffers {
  */
 struct Buffer {
 
+  /**
+   * @brief Constructor for buffer
+   * @param backend VulkanBackend
+   */
   Buffer(Vulkan::VulkanBackend backend) : _vkBackend{backend} {}
 
   /**
@@ -75,9 +78,13 @@ protected:
     }
   }
 
+  // Vulkan Buffer handle
   VkBuffer _buffer = VK_NULL_HANDLE;
+  // Buffer memory
   VkDeviceMemory _bufferMemory = VK_NULL_HANDLE;
+  // Allocation
   VmaAllocation _allocation = VK_NULL_HANDLE;
+  // Mapped memory
   void *_mappedMemory = nullptr;
 
   // Depdendencies

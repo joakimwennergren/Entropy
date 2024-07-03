@@ -54,24 +54,22 @@ VulkanInstance::VulkanInstance() {
     exit(EXIT_FAILURE);
   }
 
-  // VkDebugUtilsMessengerCreateInfoEXT dbgCreateInfo{};
-  // dbgCreateInfo.sType =
-  // VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-  // dbgCreateInfo.messageSeverity =
-  //     VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
-  //     VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-  //     VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-  // dbgCreateInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-  //                             VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
-  //                             |
-  //                             VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-  // dbgCreateInfo.pfnUserCallback = debugCallback;
-  // dbgCreateInfo.pUserData = nullptr; // Optional
+  VkDebugUtilsMessengerCreateInfoEXT dbgCreateInfo{};
+  dbgCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+  dbgCreateInfo.messageSeverity =
+      VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
+      VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+      VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+  dbgCreateInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+                              VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+                              VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+  dbgCreateInfo.pfnUserCallback = debugCallback;
+  dbgCreateInfo.pUserData = nullptr; // Optional
 
-  // if (CreateDebugUtilsMessengerEXT(_instance, &dbgCreateInfo, nullptr,
-  //                                  &_debugMessenger) != VK_SUCCESS) {
-  //   throw std::runtime_error("failed to set up debug messenger!");
-  // }
+  if (CreateDebugUtilsMessengerEXT(_instance, &dbgCreateInfo, nullptr,
+                                   &_debugMessenger) != VK_SUCCESS) {
+    throw std::runtime_error("failed to setup debug messenger!");
+  }
 }
 
 VulkanInstance::~VulkanInstance() {

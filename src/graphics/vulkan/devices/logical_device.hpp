@@ -1,18 +1,8 @@
 #pragma once
 
-#include "vulkan/vulkan_core.h"
-#include <config.hpp>
-#include <iostream>
-#include <set>
-#include <string>
+#include <graphics/vulkan/devices/physical_device.hpp>
 #include <vulkan/vulkan.hpp>
 
-#include <graphics/vulkan/devices/physical_device.hpp>
-#include <graphics/vulkan/queuefamilies/queuefamily.hpp>
-#include <graphics/vulkan/surfaces/surface.hpp>
-
-using namespace Entropy::Graphics::Vulkan::Surfaces;
-using namespace Entropy::Graphics::Vulkan::QueueFamilies;
 using namespace Entropy::Graphics::Vulkan::Devices;
 
 namespace Entropy {
@@ -20,16 +10,18 @@ namespace Graphics {
 namespace Vulkan {
 namespace Devices {
 
-class LogicalDevice{
-public:
-  /*
-  LogicalDevice() = default;
-  LogicalDevice(std::shared_ptr<PhysicalDevice> physicalDevice,
-                std::shared_ptr<WindowSurface> surface);
-  LogicalDevice(std::shared_ptr<PhysicalDevice> physicalDevice);
-  */
-
-  LogicalDevice(PhysicalDevice pd) : _physicalDevice{pd} {
+/**
+ * @brief Wrapper for vulkan logical device
+ * @author Joakim Wennergren
+ * @since Tue Jul 02 2024
+ */
+struct LogicalDevice {
+  /**
+   * @brief Constructor for a logical device
+   * @param physicalDevice PhysicalDevice dependency
+   */
+  LogicalDevice(PhysicalDevice phyiscalDevice)
+      : _physicalDevice{phyiscalDevice} {
 
     uint32_t idx = 0;
     uint32_t queueFamilyPropertyCount;
@@ -49,7 +41,6 @@ public:
         queueFamiliy = idx;
         break;
       }
-
       ++idx;
     }
 
@@ -81,19 +72,30 @@ public:
     vkGetDeviceQueue(_logicalDevice, queueFamiliy, 0, &_graphicsQueue);
   }
 
+  /**
+   * @brief Get the logical device handle
+   * @return VkDevice
+   */
   inline VkDevice Get() { return _logicalDevice; };
-  inline VkQueue GetGraphicQueue() { return _graphicsQueue; };
-  inline VkQueue GetPresentQueue() { return _presentQueue; };
 
+  /**
+   * @brief Get the graphicsqueue
+   * @return VkQueue
+   */
+  inline VkQueue GetGraphicQueue() { return _graphicsQueue; };
+
+  // QueueFamily index
   uint32_t queueFamiliy = 0;
 
 private:
+  // Logical device handle
   VkDevice _logicalDevice = VK_NULL_HANDLE;
+  // GraphicsQueue handle
   VkQueue _graphicsQueue = VK_NULL_HANDLE;
-  VkQueue _presentQueue = VK_NULL_HANDLE;
+  // Dependecies
   PhysicalDevice _physicalDevice;
 };
 } // namespace Devices
+} // namespace Vulkan
 } // namespace Graphics
 } // namespace Entropy
-}

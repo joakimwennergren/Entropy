@@ -2,7 +2,6 @@
 
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;
 
-
 /**
  * @brief Start recording one-time command buffer
  * @return (void)
@@ -41,22 +40,23 @@ void CommandBuffer::Record() {
  * @brief Start recording command buffer
  * @return (void)
  */
-void CommandBuffer::RecordSecondary(VkRenderPass renderpass) {
-  assert(_commandBuffer != VK_NULL_HANDLE);
+// void CommandBuffer::RecordSecondary(VkRenderPass renderpass) {
+//   assert(_commandBuffer != VK_NULL_HANDLE);
 
-  VkCommandBufferInheritanceInfo inheritanceInfo = {};
-  inheritanceInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
-  inheritanceInfo.renderPass = renderpass;
+//   VkCommandBufferInheritanceInfo inheritanceInfo = {};
+//   inheritanceInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
+//   inheritanceInfo.renderPass = renderpass;
 
-  VkCommandBufferBeginInfo beginInfo{};
-  beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-  beginInfo.flags = 0;                           // Optional
-  beginInfo.pInheritanceInfo = &inheritanceInfo; // Optional
+//   VkCommandBufferBeginInfo beginInfo{};
+//   beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+//   beginInfo.flags = 0;                           // Optional
+//   beginInfo.pInheritanceInfo = &inheritanceInfo; // Optional
 
-  if (vkBeginCommandBuffer(_commandBuffer, &beginInfo) != VK_SUCCESS) {
-    spdlog::warn("[CommandBuffer] Error while start recording command buffer.");
-  }
-}
+//   if (vkBeginCommandBuffer(_commandBuffer, &beginInfo) != VK_SUCCESS) {
+//     spdlog::warn("[CommandBuffer] Error while start recording command
+//     buffer.");
+//   }
+// }
 
 /**
  * @brief End recording command buffer

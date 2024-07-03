@@ -4,6 +4,7 @@
 #include <graphics/vulkan/vulkan_backend.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Buffers;
+using namespace Entropy::Graphics::Vulkan;
 
 namespace Entropy {
 namespace Graphics {

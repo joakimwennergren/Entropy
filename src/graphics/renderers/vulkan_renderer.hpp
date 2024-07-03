@@ -160,7 +160,8 @@ struct VulkanRenderer {
     delete _synchronizer;
   }
 
-  void Render(int width, int height, float xscale, float yscale);
+  void Render(int width, int height, float xscale, float yscale,
+              bool needResize);
   StagedBuffer *_stagingBuffer;
 
 protected:

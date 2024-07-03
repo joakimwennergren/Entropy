@@ -2,29 +2,26 @@
 
 using namespace Entropy::Graphics::Renderers;
 
-void VulkanRenderer::Render(int width, int height, float xscale, float yscale) {
+void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
+                            bool needResize) {
+
   _camera->setPerspective(60.0f, (float)width / (float)height, 0.1f, 100000.0f);
 
-  // if (m_needResize) {
+  if (needResize) {
+    delete _stagingBuffer;
+    _stagingBuffer =
+        _bufferFactory.CreateStagingBuffer(width * height * 4, nullptr);
 
-  //   // vkDestroyBuffer(_logicalDevice->Get(), _stagingBuffer, nullptr);
-  //   // _stagingBuffer = nullptr;
-  //   // _stagingBufferMmap = nullptr;
-  //   // vkFreeMemory(_logicalDevice->Get(), _stagingBufferMemory, nullptr);
+    // Synchronizer
+    delete _synchronizer;
+    _synchronizer = new Synchronizer(_backend.logicalDevice,
+                                     MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+    _swapChain.RecreateSwapChain(width, height);
+    _renderPass.RecreateDepthBuffer(width, height);
+    _renderPass.RecreateFrameBuffers(width, height);
 
-  //   // CreateStagingBuffer(width, height);
-
-  //   // // ZoneScopedN("Resizing");
-  //   // //_synchronizer = std::make_unique<Synchronizer>(
-  //   // //    MAX_CONCURRENT_FRAMES_IN_FLIGHT, _serviceLocator);
-  //   // _swapChain->RecreateSwapChain(width, height);
-  //   // _renderPass->RecreateDepthBuffer();
-  //   // _renderPass->RecreateFrameBuffers();
-
-  //   set_size_request(width, height);
-
-  //   m_needResize = false;
-  // }
+    needResize = false;
+  }
 
   // Submit command buffers
   if (_queuSync.commandBuffers.size() > 0) {
@@ -40,7 +37,8 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale) {
 
   // Begin renderpass and commandbuffer recording
   _commandBuffers[_currentFrame].Record();
-  _renderPass.Begin(_commandBuffers[_currentFrame], VK_SUBPASS_CONTENTS_INLINE);
+  _renderPass.Begin(_commandBuffers[_currentFrame], VK_SUBPASS_CONTENTS_INLINE,
+                    width, height);
 
   UboDataDynamic ubodyn{};
 
@@ -61,8 +59,7 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale) {
   VkRect2D scissor{};
   scissor.offset = {0, 0};
   scissor.extent = {(unsigned int)width, (unsigned int)height};
-  vkCmdSetScissor(_commandBuffers[_currentFrame].GetCommandBuffer(), 0, 1,
-                  &scissor);
+  vkCmdSetScissor(_commandBuffers[_currentFrame].Get(), 0, 1, &scissor);
 
   // Set Viewport
   VkViewport viewport{};
@@ -72,19 +69,17 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale) {
   viewport.height = (float)height;
   viewport.minDepth = 0.0f;
   viewport.maxDepth = 1.0f;
-  vkCmdSetViewport(_commandBuffers[_currentFrame].GetCommandBuffer(), 0, 1,
-                   &viewport);
+  vkCmdSetViewport(_commandBuffers[_currentFrame].Get(), 0, 1, &viewport);
 
-  vkCmdBindPipeline(_commandBuffers[_currentFrame].GetCommandBuffer(),
+  vkCmdBindPipeline(_commandBuffers[_currentFrame].Get(),
                     VK_PIPELINE_BIND_POINT_GRAPHICS,
                     _staticPipeline->GetPipeline());
 
   auto ds0 = _staticPipeline->descriptorSets[0].Get()[_currentFrame];
 
-  vkCmdBindDescriptorSets(_commandBuffers[_currentFrame].GetCommandBuffer(),
-                          VK_PIPELINE_BIND_POINT_GRAPHICS,
-                          _staticPipeline->GetPipelineLayout(), 0, 1, &ds0, 1,
-                          &offset);
+  vkCmdBindDescriptorSets(
+      _commandBuffers[_currentFrame].Get(), VK_PIPELINE_BIND_POINT_GRAPHICS,
+      _staticPipeline->GetPipelineLayout(), 0, 1, &ds0, 1, &offset);
 
   // vkCmdBindDescriptorSets(_commandBuffers[_currentFrame].GetCommandBuffer(),
   //                         VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -95,11 +90,11 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale) {
   // // Bind descriptor sets
   VkBuffer vertexBuffers[] = {_model->vertexBuffer->GetVulkanBuffer()};
   VkDeviceSize offsets[] = {0};
-  vkCmdBindVertexBuffers(_commandBuffers[_currentFrame].GetCommandBuffer(), 0,
-                         1, vertexBuffers, offsets);
+  vkCmdBindVertexBuffers(_commandBuffers[_currentFrame].Get(), 0, 1,
+                         vertexBuffers, offsets);
 
-  vkCmdDraw(_commandBuffers[_currentFrame].GetCommandBuffer(),
-            _model->vertices.size(), 1, 0, 0);
+  vkCmdDraw(_commandBuffers[_currentFrame].Get(), _model->vertices.size(), 1, 0,
+            0);
 
   // End renderpass and commandbuffer recording
   _renderPass.End(_commandBuffers[_currentFrame]);
@@ -148,9 +143,9 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale) {
     throw std::invalid_argument("unsupported layout transition!");
   }
 
-  vkCmdPipelineBarrier(_commandBuffers[_currentFrame].GetCommandBuffer(),
-                       sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr,
-                       1, &barrier);
+  vkCmdPipelineBarrier(_commandBuffers[_currentFrame].Get(), sourceStage,
+                       destinationStage, 0, 0, nullptr, 0, nullptr, 1,
+                       &barrier);
 
   /* Copy framebuffer content to staging buffer. */
   VkBufferImageCopy region{
@@ -169,14 +164,14 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale) {
       .imageExtent = {static_cast<uint32_t>(width),
                       static_cast<uint32_t>(height), 1},
   };
-  vkCmdCopyImageToBuffer(_commandBuffers[_currentFrame].GetCommandBuffer(),
+  vkCmdCopyImageToBuffer(_commandBuffers[_currentFrame].Get(),
                          _renderPass._swapChainTextures[0]._swapChainImage,
                          VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
                          _stagingBuffer->GetVulkanBuffer(), 1, &region);
 
   _commandBuffers[_currentFrame].EndRecording();
 
-  auto cmdBuf = _commandBuffers[_currentFrame].GetCommandBuffer();
+  auto cmdBuf = _commandBuffers[_currentFrame].Get();
   VkSubmitInfo submitInfo{
       .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
       .waitSemaphoreCount = 0,
