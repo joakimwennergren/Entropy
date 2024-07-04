@@ -15,6 +15,7 @@
 #include "services/swapchain_service.hpp"
 #include "services/vk_instance_service.hpp"
 #include "services/vulkan_backend_service.hpp"
+#include "services/world_service.hpp"
 #include <graphics/vulkan/synchronization/synchronizer.hpp>
 #include <graphics/vulkan/vulkan_backend.hpp>
 #include <kangaru/kangaru.hpp>
@@ -31,7 +32,7 @@ struct VulkanRenderService
                    kgr::dependency<VulkanBackendService, QueueSyncService,
                                    RenderPassService, PipelineFactoryService,
                                    BufferFactoryService, CommandPoolService,
-                                   SwapchainService>> {};
+                                   SwapchainService, WorldService>> {};
 
 } // namespace Services
 } // namespace Graphics

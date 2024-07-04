@@ -6,6 +6,7 @@
 
 #include <cameras/perspective_camera.hpp>
 #include <data/ubo.hpp>
+#include <ecs/world.hpp>
 #include <factories/vulkan/bufferfactory.hpp>
 #include <factories/vulkan/pipelinefactory.hpp>
 #include <graphics/vulkan/buffers/stagedbuffer.hpp>
@@ -38,6 +39,7 @@ using namespace Entropy::Graphics::Vulkan::Swapchains;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
 using namespace Entropy::Factories::Vulkan;
 using namespace Entropy::Data;
+using namespace Entropy::ECS;
 
 using namespace Entropy::Cameras;
 
@@ -65,11 +67,11 @@ struct VulkanRenderer {
    */
   VulkanRenderer(Vulkan::VulkanBackend vbe, QueueSync queueSync,
                  RenderPass renderPass, PipelineFactory pipelineFactory,
-                 BufferFactory bf, CommandPool cp, Swapchain sc)
+                 BufferFactory bf, CommandPool cp, Swapchain sc, World world)
 
       : _backend{vbe}, _queuSync{queueSync}, _renderPass{renderPass},
         _pipelineFactory{pipelineFactory}, _bufferFactory{bf}, _commandPool{cp},
-        _swapChain{sc} {
+        _swapChain{sc}, _world{world} {
 
     // Static Pipeline creation
     _staticPipeline = _pipelineFactory.CreateStaticPipeline();
@@ -187,6 +189,7 @@ private:
   BufferFactory _bufferFactory;
   CommandPool _commandPool;
   Swapchain _swapChain;
+  World _world;
 };
 } // namespace Renderers
 } // namespace Vulkan

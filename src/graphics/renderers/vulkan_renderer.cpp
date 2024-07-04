@@ -5,6 +5,8 @@ using namespace Entropy::Graphics::Vulkan::Renderers;
 void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
                             bool needResize) {
 
+  _world.gameWorld->progress();
+
   _camera->setPerspective(60.0f, (float)width / (float)height, 0.1f, 100000.0f);
 
   if (needResize) {
@@ -38,6 +40,11 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
   _commandBuffers[_currentFrame].Record();
   _renderPass.Begin(_commandBuffers[_currentFrame], VK_SUBPASS_CONTENTS_INLINE,
                     width, height);
+
+  //     _world->each<Entropy::Components::Renderable>(
+  //         [this](flecs::entity e, Entropy::Components::Renderable r) {
+  //           DrawEntity(e, r.id);
+  //         });
 
   UboDataDynamic ubodyn{};
 
