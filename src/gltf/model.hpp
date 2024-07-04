@@ -33,13 +33,13 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include "tiny_gltf.h"
+#include <data/vertex.hpp>
 #include <filesystem/filesystem.hpp>
-#include <graphics/data/vertex.hpp>
-#include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
-#include <graphics/vulkan/devices/logical_device.hpp>
 #include <graphics/vulkan/buffers/indexbuffer.hpp>
 #include <graphics/vulkan/buffers/uniformbuffer.hpp>
 #include <graphics/vulkan/buffers/vertexbuffer.hpp>
+#include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
+#include <graphics/vulkan/devices/logical_device.hpp>
 #include <graphics/vulkan/pipelines/pipeline.hpp>
 #include <graphics/vulkan/textures/texture.hpp>
 #include <timing/timer.hpp>
@@ -55,6 +55,7 @@ using namespace Entropy::Graphics::Vulkan::Pipelines;
 using namespace Entropy::Graphics::Vulkan::Buffers;
 using namespace Entropy::Graphics::Vulkan::DescriptorPools;
 using namespace Entropy::Timing;
+using namespace Entropy::Data;
 
 #ifdef BUILD_FOR_ANDROID
 #include <android/asset_manager.h>

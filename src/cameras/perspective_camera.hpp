@@ -1,12 +1,3 @@
-/*
- * Basic camera class
- *
- * Copyright (C) 2016-2023 by Sascha Willems - www.saschawillems.de
- *
- * This code is licensed under the MIT license (MIT)
- * (http://opensource.org/licenses/MIT)
- */
-
 #pragma once
 
 #define GLM_FORCE_RADIANS
@@ -15,6 +6,14 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 
+namespace Entropy {
+namespace Cameras {
+
+/**
+ * @brief Perspective Camera
+ * @author Joakim Wennergren
+ * @since Thu Jul 04 2024
+ */
 class PerspectiveCamera {
 private:
   float fov;
@@ -235,3 +234,5 @@ public:
     return retVal;
   }
 };
+} // namespace Cameras
+} // namespace Entropy

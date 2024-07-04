@@ -25,8 +25,9 @@ struct BufferFactory {
     return new VertexBuffer(_vkBackend, vertices);
   }
 
-  StagedBuffer *CreateStagingBuffer(VkDeviceSize size, uint8_t *data) {
-    return new StagedBuffer(_vkBackend, size, data);
+  std::shared_ptr<StagedBuffer> CreateStagingBuffer(VkDeviceSize size,
+                                                    uint8_t *data) {
+    return std::make_shared<StagedBuffer>(_vkBackend, size, data);
   }
 
   UniformBuffer *CreateUniformBuffer(VkDeviceSize bufferSize) {

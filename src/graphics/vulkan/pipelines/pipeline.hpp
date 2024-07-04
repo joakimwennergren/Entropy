@@ -3,11 +3,10 @@
 #include <array>
 #include <utility>
 
+#include <data/vertex.hpp>
 #include <factories/vulkan/descriptorset_factory.hpp>
 #include <factories/vulkan/descriptorsetlayout_factory.hpp>
 #include <filesystem/filesystem.hpp>
-#include <graphics/data/pushcontants.hpp>
-#include <graphics/data/vertex.hpp>
 #include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
 #include <graphics/vulkan/descriptorsetlayouts/descriptorsetlayout.hpp>
 #include <graphics/vulkan/descriptorsets/descriptorset.hpp>
@@ -26,6 +25,7 @@ using namespace Entropy::Graphics::Vulkan::Descriptorsets;
 using namespace Entropy::Graphics::Vulkan::DescriptorPools;
 using namespace Entropy::Graphics::Vulkan::Devices;
 using namespace Entropy::Factories::Vulkan;
+using namespace Entropy::Data;
 
 namespace Entropy {
 namespace Graphics {

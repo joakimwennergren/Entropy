@@ -1,11 +1,12 @@
 #pragma once
 
-#include <graphics/data/vertex.hpp>
+#include <data/vertex.hpp>
 #include <graphics/vulkan/buffers/buffer.hpp>
 #include <graphics/vulkan/vulkan_backend.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Buffers;
 using namespace Entropy::Graphics::Vulkan;
+using namespace Entropy::Data;
 
 namespace Entropy {
 namespace Graphics {

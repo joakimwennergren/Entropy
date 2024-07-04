@@ -4,11 +4,11 @@
 #include <android/asset_manager.h>
 #endif
 
+#include <data/vertex.hpp>
 #include <filesystem/filesystem.hpp>
-#include <graphics/data/vertex.hpp>
-#include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
 #include <graphics/vulkan/buffers/indexbuffer.hpp>
 #include <graphics/vulkan/buffers/vertexbuffer.hpp>
+#include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
 #include <graphics/vulkan/textures/texture.hpp>
 #include <scripting/script.hpp>
 
@@ -16,6 +16,7 @@ using namespace Entropy::Graphics::Vulkan::Textures;
 using namespace Entropy::Graphics::Vulkan::Buffers;
 using namespace Entropy::Scripting;
 using namespace Entropy::Graphics::Vulkan::DescriptorPools;
+using namespace Entropy::Data;
 
 namespace Entropy {
 namespace Graphics {
@@ -29,8 +30,7 @@ public:
 
   Sprite(std::string path);
 #ifdef BUILD_FOR_ANDROID
-  Sprite(std::string path,
-         AAssetManager *assetmanager);
+  Sprite(std::string path, AAssetManager *assetmanager);
 #endif
   Sprite(unsigned char *pixels, int width, int height);
 

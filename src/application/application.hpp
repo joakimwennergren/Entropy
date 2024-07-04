@@ -8,7 +8,6 @@
 #include <kangaru/kangaru.hpp>
 
 #include <graphics/vulkan/devices/logical_device.hpp>
-#include <graphics/renderers/renderer.hpp>
 #include <timing/timer.hpp>
 
 #include <ecs/components/renderable.hpp>
@@ -16,16 +15,15 @@
 // new includes
 #include <ecs/world.hpp>
 #include <filesystem/filesystem.hpp>
-#include <graphics/cameras/flying_camera.hpp>
+#include <graphics/vulkan/buffers/buffer.hpp>
+#include <graphics/vulkan/buffers/vertexbuffer.hpp>
+#include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
 #include <graphics/vulkan/commandpools/commandpool.hpp>
 #include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
 #include <graphics/vulkan/descriptorsetlayouts/descriptorsetlayout.hpp>
 #include <graphics/vulkan/descriptorsets/descriptorset.hpp>
 #include <graphics/vulkan/devices/physical_device.hpp>
 #include <graphics/vulkan/imageviews/imageview.hpp>
-#include <graphics/vulkan/buffers/buffer.hpp>
-#include <graphics/vulkan/buffers/vertexbuffer.hpp>
-#include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
 #include <graphics/vulkan/instances/vk_instance.hpp>
 #include <graphics/vulkan/memory/allocator.hpp>
 #include <graphics/vulkan/surfaces/surface.hpp>
@@ -52,7 +50,6 @@ using namespace Entropy::Graphics::Vulkan::Descriptorsets;
 using namespace Entropy::Scripting;
 using namespace Entropy::Physics;
 using namespace Entropy::Graphics::Vulkan::Textures;
-using namespace Entropy::Graphics::Renderers;
 using namespace Entropy;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
 using namespace Entropy::Input;
@@ -67,7 +64,6 @@ using namespace std::chrono_literals;
 
 #include <GLFW/glfw3.h>
 
-using namespace Entropy::Graphics::Renderers;
 using namespace Entropy::Timing;
 
 void framebufferResizeCallback(GLFWwindow *window, int width, int height);
@@ -95,14 +91,11 @@ public:
   void Run();
 
   // @todo this shouldn't be public
-  inline std::shared_ptr<Renderer> GetRenderer() { return this->_renderer; };
   std::shared_ptr<Keyboard> _keyboard;
-  std::shared_ptr<Cam> _camera;
   bool firstMouse;
   float lastX = 0.0;
   float lastY = 0.0;
   // @todo look over if this should be protected..
-  std::shared_ptr<Renderer> _renderer;
   std::shared_ptr<Mouse> mouse;
   bool isResizing = false;
   std::unique_ptr<Entropy::Timing::Timer> _timer;
@@ -131,7 +124,6 @@ protected:
   std::shared_ptr<Lua> lua;
   std::shared_ptr<Physics2D> physics2d;
   std::shared_ptr<RenderPass> renderpass;
-  std::shared_ptr<Synchronizer> synchronizer;
   std::shared_ptr<Physics3D> physics3d;
   std::shared_ptr<World> world;
   sol::protected_function luaOnRender;

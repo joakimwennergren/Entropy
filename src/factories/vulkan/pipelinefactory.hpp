@@ -7,6 +7,7 @@
 
 using namespace Entropy::Graphics::Vulkan;
 using namespace Entropy::Graphics::Vulkan::Buffers;
+using namespace Entropy::Graphics::Vulkan::Pipelines;
 
 namespace Entropy {
 namespace Factories {

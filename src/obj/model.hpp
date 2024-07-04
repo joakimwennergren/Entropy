@@ -4,7 +4,7 @@
 #include "graphics/vulkan/vulkan_backend.hpp"
 #include <tiny_obj_loader.h>
 
-#include <graphics/data/vertex.hpp>
+#include <data/vertex.hpp>
 #include <graphics/vulkan/buffers/indexbuffer.hpp>
 #include <graphics/vulkan/buffers/vertexbuffer.hpp>
 #include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
@@ -13,6 +13,7 @@
 using namespace Entropy::Graphics::Vulkan::Buffers;
 using namespace Entropy::Graphics::Vulkan::DescriptorPools;
 using namespace Entropy::Graphics::Vulkan::Textures;
+using namespace Entropy::Data;
 
 namespace Entropy {
 namespace OBJ {

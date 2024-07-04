@@ -1,6 +1,6 @@
 #include "vulkan_renderer.hpp"
 
-using namespace Entropy::Graphics::Renderers;
+using namespace Entropy::Graphics::Vulkan::Renderers;
 
 void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
                             bool needResize) {
@@ -8,8 +8,7 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
   _camera->setPerspective(60.0f, (float)width / (float)height, 0.1f, 100000.0f);
 
   if (needResize) {
-    delete _stagingBuffer;
-    _stagingBuffer =
+    stagingBuffer =
         _bufferFactory.CreateStagingBuffer(width * height * 4, nullptr);
 
     // Synchronizer
@@ -52,7 +51,7 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
 
   ubodyn.proj = _camera->matrices.perspective * _camera->matrices.view * model;
 
-  uint32_t offset = dynamicAlignment * 0;
+  uint32_t offset = _dynamicAlignment * 0;
   memcpy((char *)_dynamicUBO->GetMappedMemory() + offset, &ubodyn,
          sizeof(UboDataDynamic));
 
@@ -81,13 +80,7 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
       _commandBuffers[_currentFrame].Get(), VK_PIPELINE_BIND_POINT_GRAPHICS,
       _staticPipeline->GetPipelineLayout(), 0, 1, &ds0, 1, &offset);
 
-  // vkCmdBindDescriptorSets(_commandBuffers[_currentFrame].GetCommandBuffer(),
-  //                         VK_PIPELINE_BIND_POINT_GRAPHICS,
-  //                         _staticPipeline->GetPipelineLayout(), 1, 1,
-  //                         &_model->ds, 0, nullptr);
-
-  // // Bind vertex & index buffers
-  // // Bind descriptor sets
+  // Bind vertex & index buffers
   VkBuffer vertexBuffers[] = {_model->vertexBuffer->GetVulkanBuffer()};
   VkDeviceSize offsets[] = {0};
   vkCmdBindVertexBuffers(_commandBuffers[_currentFrame].Get(), 0, 1,
@@ -167,7 +160,7 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
   vkCmdCopyImageToBuffer(_commandBuffers[_currentFrame].Get(),
                          _renderPass._swapChainTextures[0]._swapChainImage,
                          VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                         _stagingBuffer->GetVulkanBuffer(), 1, &region);
+                         stagingBuffer->GetVulkanBuffer(), 1, &region);
 
   _commandBuffers[_currentFrame].EndRecording();
 
@@ -187,5 +180,5 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
 
   vkDeviceWaitIdle(_backend.logicalDevice.Get());
 
-  z += 0.5;
+  z += 4.0;
 }

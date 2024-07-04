@@ -1,14 +1,15 @@
 #pragma once
 
+#include <data/vertex.hpp>
 #include <filesystem/filesystem.hpp>
-#include <graphics/data/vertex.hpp>
-#include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
 #include <graphics/vulkan/buffers/indexbuffer.hpp>
 #include <graphics/vulkan/buffers/vertexbuffer.hpp>
+#include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
 #include <graphics/vulkan/textures/texture.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Textures;
 using namespace Entropy::Graphics::Vulkan::DescriptorPools;
+using namespace Entropy::Data;
 
 namespace Entropy {
 namespace Graphics {

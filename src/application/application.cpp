@@ -15,7 +15,6 @@ using namespace Entropy;
 
 Application::Application() {
 
-
   /*
 
 // Seed random
@@ -171,9 +170,9 @@ void Application::Run() {
   _timer->Start();
   _lastTick = (float)_timer->GetTick();
 
-  _camera->Position = glm::vec3(-43.0f, -24.0f, -40.0f);
-  _camera->Pitch = 22.69f;
-  _camera->Yaw = 44.20f;
+  // _camera->Position = glm::vec3(-43.0f, -24.0f, -40.0f);
+  // _camera->Pitch = 22.69f;
+  // _camera->Yaw = 44.20f;
 
   while (!glfwWindowShouldClose(_window)) {
 
@@ -196,8 +195,8 @@ void Application::Run() {
 #endif
 
     this->OnRender(_deltaTime);
-    //this->_renderer->Render(width * xscale, height * yscale, xscale, yscale);
-    // On render
+    // this->_renderer->Render(width * xscale, height * yscale, xscale, yscale);
+    //  On render
 
     // Increment current frame
 
@@ -295,7 +294,7 @@ void cursor_position_callback(GLFWwindow *window, double xposIn,
   app->lastX = xpos;
   app->lastY = ypos;
 
-  app->_camera->ProcessMouseMovement(xoffset, yoffset);
+  // app->_camera->ProcessMouseMovement(xoffset, yoffset);
 }
 
 void framebufferResizeCallback(GLFWwindow *window, int width, int height) {
@@ -303,10 +302,10 @@ void framebufferResizeCallback(GLFWwindow *window, int width, int height) {
 
   GLFWmonitor *primary = glfwGetPrimaryMonitor();
 
-  //app->GetRenderer()->Render(width * app->xscale, height * app->yscale,
-  //                           app->xscale, app->yscale);
-  // app->_renderer->_camera->setPerspective(
-  //     app->_camera->Zoom, (float)width / (float)height, 1.0f, 100000.0f);
+  // app->GetRenderer()->Render(width * app->xscale, height * app->yscale,
+  //                            app->xscale, app->yscale);
+  //  app->_renderer->_camera->setPerspective(
+  //      app->_camera->Zoom, (float)width / (float)height, 1.0f, 100000.0f);
   app->OnRender(0.0);
 }
 
@@ -331,7 +330,7 @@ void mouse_button_callback(GLFWwindow *window, int button, int action,
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
   auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
-  app->_camera->ProcessMouseScroll((float)yoffset);
+  // app->_camera->ProcessMouseScroll((float)yoffset);
 }
 
 void window_iconify_callback(GLFWwindow *window, int iconified) {

@@ -1,63 +1,31 @@
 #pragma once
 
-#include "factories/vulkan/bufferfactory.hpp"
-#include "obj/model.hpp"
-#include <graphics/vulkan/vulkan_backend.hpp>
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
-#include <flecs/flecs.h>
-
-#include <graphics/data/pushcontants.hpp>
-#include <graphics/data/ubo.hpp>
-#include <graphics/data/vertex.hpp>
-#include <graphics/vulkan/buffers/indexbuffer.hpp>
+#include <cameras/perspective_camera.hpp>
+#include <data/ubo.hpp>
+#include <factories/vulkan/bufferfactory.hpp>
+#include <factories/vulkan/pipelinefactory.hpp>
+#include <graphics/vulkan/buffers/stagedbuffer.hpp>
 #include <graphics/vulkan/buffers/uniformbuffer.hpp>
 #include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
 #include <graphics/vulkan/pipelines/static_pipeline.hpp>
 #include <graphics/vulkan/renderpasses/renderpass.hpp>
-#include <graphics/vulkan/synchronization/synchronizer.hpp>
-// #include <graphics/cubemaps/cubemap.hpp>
-#include <gltf/model.hpp>
-#include <graphics/cameras/perspective_camera.hpp>
-#include <graphics/primitives/3d/plane.hpp>
-#include <graphics/vulkan/descriptorsets/descriptorset.hpp>
 #include <graphics/vulkan/swapchains/swapchain.hpp>
-
-#include <graphics/cameras/perspective_camera.hpp>
-
-#include <graphics/primitives/2d/quad.hpp>
-#include <graphics/primitives/2d/sprite.hpp>
-#include <graphics/vulkan/buffers/uniformbuffer.hpp>
-
-#include <graphics/cameras/flying_camera.hpp>
-
-#include <input/keyboard/keyboard.hpp>
-
-#include <graphics/data/ubo.hpp>
-#include <graphics/vulkan/buffers/stagedbuffer.hpp>
 #include <graphics/vulkan/synchronization/queuesync.hpp>
+#include <graphics/vulkan/synchronization/synchronizer.hpp>
+#include <graphics/vulkan/vulkan_backend.hpp>
+#include <obj/model.hpp>
 
-#include <tracy/Tracy.hpp>
-
-#include <ecs/components/color.hpp>
-#include <ecs/components/gizmo.hpp>
-#include <ecs/components/line.hpp>
-#include <ecs/components/model.hpp>
-#include <ecs/components/objmodel.hpp>
-#include <ecs/components/position.hpp>
-#include <ecs/components/renderable.hpp>
-#include <ecs/components/rotation.hpp>
-#include <ecs/components/scale.hpp>
-#include <ecs/components/tags/scripted.hpp>
-
+#include <flecs/flecs.h>
 #include <timing/timer.hpp>
+#include <tracy/Tracy.hpp>
 
 #ifdef BUILD_FOR_ANDROID
 #include <android/asset_manager.h>
 #endif
-#include <factories/vulkan/pipelinefactory.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Buffers;
 using namespace Entropy::Graphics::Vulkan::Textures;
@@ -67,20 +35,34 @@ using namespace Entropy::Graphics::Vulkan::CommandBuffers;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
 using namespace Entropy::Graphics::Vulkan::Descriptorsets;
 using namespace Entropy::Graphics::Vulkan::Swapchains;
-using namespace Entropy::Graphics::Primitives;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
-using namespace Entropy::GLTF;
-// using namespace Entropy::Graphics::CubeMaps;
-using namespace Entropy::Input;
-
 using namespace Entropy::Factories::Vulkan;
+using namespace Entropy::Data;
+
+using namespace Entropy::Cameras;
 
 namespace Entropy {
 namespace Graphics {
+namespace Vulkan {
 namespace Renderers {
 
+/**
+ * @brief Vulkan Renderer
+ * @author Joakim Wennergren
+ * @since Thu Jul 04 2024
+ */
 struct VulkanRenderer {
 
+  /**
+   * @brief Constructor for vulkan renderer
+   * @param vbe VulkanBackend
+   * @param queueSync QueueSync
+   * @param renderPass RenderPass
+   * @param pipelineFactory PipelineFactory
+   * @param bf BufferFactory
+   * @param cp CommandPool
+   * @param sc Swapchain
+   */
   VulkanRenderer(Vulkan::VulkanBackend vbe, QueueSync queueSync,
                  RenderPass renderPass, PipelineFactory pipelineFactory,
                  BufferFactory bf, CommandPool cp, Swapchain sc)
@@ -109,13 +91,14 @@ struct VulkanRenderer {
     VkPhysicalDeviceProperties properties;
     vkGetPhysicalDeviceProperties(_backend.physicalDevice.Get(), &properties);
     size_t minUboAlignment = properties.limits.minUniformBufferOffsetAlignment;
-    dynamicAlignment = sizeof(UboDataDynamic);
+    _dynamicAlignment = sizeof(UboDataDynamic);
 
     if (minUboAlignment > 0) {
-      dynamicAlignment =
-          (dynamicAlignment + minUboAlignment - 1) & ~(minUboAlignment - 1);
+      _dynamicAlignment =
+          (_dynamicAlignment + minUboAlignment - 1) & ~(minUboAlignment - 1);
     }
 
+    // Update descriptorsets
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++) {
       std::array<VkWriteDescriptorSet, 1> descriptorWrites{};
 
@@ -139,7 +122,7 @@ struct VulkanRenderer {
     }
 
     // StagingBuffer
-    _stagingBuffer = _bufferFactory.CreateStagingBuffer(800 * 800 * 4, nullptr);
+    stagingBuffer = _bufferFactory.CreateStagingBuffer(800 * 800 * 4, nullptr);
 
     // Camera
     _camera = std::make_shared<PerspectiveCamera>();
@@ -149,10 +132,13 @@ struct VulkanRenderer {
 
     // @todo temp!
     _model = std::make_shared<Entropy::OBJ::ObjModel>(_backend, _bufferFactory);
-    _model->loadFromFile("/Users/joakimwennergren/Desktop/Entropy-Editor/12140_Skull_v3_L2.obj",
-                         "/Users/joakimwennergren/Desktop/Entropy-Editor/Skull.png");
+    _model->loadFromFile("/Users/joakim/Desktop/GTKPoC/12140_Skull_v3_L2.obj",
+                         "/Users/joakim/Desktop/GTKPoC/Skull.png");
   }
 
+  /**
+   * @brief Destructor for Vulkan Renderer
+   */
   ~VulkanRenderer() {
     // delete _dynamicUBO;
     // delete _staticPipeline;
@@ -160,26 +146,37 @@ struct VulkanRenderer {
     // delete _synchronizer;
   }
 
+  /**
+   * @brief Render method
+   * @param width
+   * @param height
+   * @param xscale
+   * @param yscale
+   * @param needResize
+   * @return (void)
+   */
   void Render(int width, int height, float xscale, float yscale,
               bool needResize);
-  StagedBuffer *_stagingBuffer;
 
-protected:
+  std::shared_ptr<StagedBuffer> stagingBuffer;
 
-
+private:
   // @todo temp!
   float z = 0.0;
   std::shared_ptr<Entropy::OBJ::ObjModel> _model;
 
-private:
+  // @todo
   std::shared_ptr<PerspectiveCamera> _camera;
-
   uint32_t _currentFrame = 0;
-  size_t dynamicAlignment = 0;
+  size_t _dynamicAlignment = 0;
 
+  // Command Buffers
   std::vector<CommandBuffer> _commandBuffers;
+  // Dynamic UBO
   UniformBuffer *_dynamicUBO;
+  // Pipelines
   StaticPipeline *_staticPipeline;
+  // Synchronizer
   Synchronizer *_synchronizer;
 
   // Dependencies
@@ -192,5 +189,6 @@ private:
   Swapchain _swapChain;
 };
 } // namespace Renderers
+} // namespace Vulkan
 } // namespace Graphics
 } // namespace Entropy
