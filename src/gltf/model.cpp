@@ -335,7 +335,8 @@ Model::Model() {
   // VkSampler _textureSampler;
 
   // if (vkCreateSampler(serviceLocator->GetService<LogicalDevice>()->Get(),
-  //                     &samplerInfo, nullptr, &_textureSampler) != VK_SUCCESS) {
+  //                     &samplerInfo, nullptr, &_textureSampler) != VK_SUCCESS)
+  //                     {
   //   throw std::runtime_error("failed to create texture sampler!");
   // }
 
@@ -798,9 +799,9 @@ void Model::loadTextures(tinygltf::Model &gltfModel) {
     } else {
       textureSampler = textureSamplers[tex.sampler];
     }
-    Texture *texture = new Texture();
-    texture->CreateTextureFromGLTFImage(image);
-    textures.push_back(texture);
+    // Texture *texture = new Texture();
+    // texture->CreateTextureFromGLTFImage(image);
+    // textures.push_back(texture);
   }
 }
 
@@ -1339,7 +1340,8 @@ void Model::setupNodeDescriptorSet(Node *node, VkDescriptorSetLayout layout) {
     // descriptorSetAllocInfo.descriptorPool = descriptorPool->Get();
     // descriptorSetAllocInfo.pSetLayouts = &layout;
     // descriptorSetAllocInfo.descriptorSetCount = 1;
-    // if (vkAllocateDescriptorSets(logicalDevice->Get(), &descriptorSetAllocInfo,
+    // if (vkAllocateDescriptorSets(logicalDevice->Get(),
+    // &descriptorSetAllocInfo,
     //                              &node->mesh->uniformBuffer.descriptorSet) !=
     //     VK_SUCCESS) {
     //   std::cout << "FAILED TO ALLOCATE DESC SET" << std::endl;
@@ -1675,7 +1677,8 @@ void Model::SetupCubeMap(std::shared_ptr<Texture> texture) {
   allocInfo.descriptorSetCount = 1; // MAX_CONCURRENT_FRAMES_IN_FLIGHT;
   allocInfo.pSetLayouts = layouts.data();
 
-  // if (vkAllocateDescriptorSets(logicalDevice->Get(), &allocInfo, &_cubeMapDS) !=
+  // if (vkAllocateDescriptorSets(logicalDevice->Get(), &allocInfo, &_cubeMapDS)
+  // !=
   //     VK_SUCCESS) {
   //   throw std::runtime_error("failed to allocate descriptor sets!");
   // }

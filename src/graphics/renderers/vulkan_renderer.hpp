@@ -135,13 +135,41 @@ struct VulkanRenderer {
     }
 
     // StagingBuffer
-    stagingBuffer = _bufferFactory.CreateStagingBuffer(800 * 800 * 4, nullptr);
+    stagingBuffer = _bufferFactory.CreateStagingBuffer(
+        800 * 800 * 4, nullptr, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
 
     // Camera
     _camera = std::make_shared<PerspectiveCamera>();
     _camera->type = PerspectiveCamera::CameraType::firstperson;
-    _camera->setPosition(glm::vec3(0.0f, 0.0f, -500.0f));
+    _camera->setPosition(glm::vec3(0.0f, 0.0f, -100.0));
     _camera->setRotation(glm::vec3(0.0f));
+
+    VkPhysicalDeviceProperties properties{};
+    vkGetPhysicalDeviceProperties(_backend.physicalDevice.Get(), &properties);
+
+    VkSamplerCreateInfo samplerInfo{};
+    samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+    samplerInfo.magFilter = VK_FILTER_LINEAR;
+    samplerInfo.minFilter = VK_FILTER_LINEAR;
+
+    samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    samplerInfo.anisotropyEnable = VK_TRUE;
+    samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+    samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+    samplerInfo.unnormalizedCoordinates = VK_FALSE;
+    samplerInfo.compareEnable = VK_FALSE;
+    samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+    samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+    samplerInfo.mipLodBias = 0.0f;
+    samplerInfo.minLod = 0.0f;
+    samplerInfo.maxLod = 0.0f;
+
+    if (vkCreateSampler(_backend.logicalDevice.Get(), &samplerInfo, nullptr,
+                        &_sampler) != VK_SUCCESS) {
+      throw std::runtime_error("failed to create texture sampler!");
+    }
   }
 
   /**
@@ -165,8 +193,6 @@ struct VulkanRenderer {
    */
   void Render(int width, int height, float xscale, float yscale,
               bool needResize);
-
-  void DrawEntity(flecs::entity entity, uint32_t index, int width, int height);
 
   std::shared_ptr<StagedBuffer> stagingBuffer;
 
@@ -199,6 +225,7 @@ private:
   Swapchain _swapChain;
   World _world;
   Allocator _allocator;
+  VkSampler _sampler;
 };
 } // namespace Renderers
 } // namespace Vulkan

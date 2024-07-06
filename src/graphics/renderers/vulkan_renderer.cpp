@@ -5,17 +5,18 @@
 #include "ecs/components/position.hpp"
 #include "ecs/components/rotation.hpp"
 #include "ecs/components/scale.hpp"
+#include "vulkan/vulkan_core.h"
 
 using namespace Entropy::Graphics::Vulkan::Renderers;
 
 void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
                             bool needResize) {
 
-  _camera->setPerspective(60.0f, (float)width / (float)height, 0.1f, 100000.0f);
+  _camera->setPerspective(60.0f, (float)width / (float)height, 0.1f, 256.0f);
 
   if (needResize) {
-    stagingBuffer =
-        _bufferFactory.CreateStagingBuffer(width * height * 4, nullptr);
+    stagingBuffer = _bufferFactory.CreateStagingBuffer(
+        width * height * 4, nullptr, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
 
     // Synchronizer
     delete _synchronizer;
@@ -29,16 +30,47 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
   }
 
   // Submit command buffers
-  if (_queuSync.commandBuffers.size() > 0) {
-    spdlog::info("submitting cmdbuf");
-    VkSubmitInfo submitInfo{};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.commandBufferCount = _queuSync.commandBuffers.size();
-    submitInfo.pCommandBuffers = _queuSync.commandBuffers.data();
-    vkQueueSubmit(_backend.logicalDevice.GetGraphicQueue(), 1, &submitInfo,
-                  nullptr);
-    _queuSync.commandBuffers.clear();
-  }
+  // if (_queuSync.commandBuffers.size() > 0) {
+  //   spdlog::info("submitting cmdbuf");
+  //   VkSubmitInfo submitInfo{};
+  //   submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+  //   submitInfo.commandBufferCount = _queuSync.commandBuffers.size();
+  //   submitInfo.pCommandBuffers = _queuSync.commandBuffers.data();
+  //   vkQueueSubmit(_backend.logicalDevice.GetGraphicQueue(), 1, &submitInfo,
+  //                 nullptr);
+  //   _queuSync.commandBuffers.clear();
+  // }
+
+  if (_world.gameWorld->count<Entropy::Components::Renderable>() == 0)
+    return;
+
+  _world.gameWorld->each<Entropy::Components::Renderable>(
+      [this](flecs::entity e, Entropy::Components::Renderable r) {
+        if (e.has<Entropy::Components::OBJModel>()) {
+          auto model = e.get<Entropy::Components::OBJModel>();
+
+          std::array<VkWriteDescriptorSet, 1> descriptorWrites{};
+
+          VkDescriptorImageInfo imageInfo{};
+          imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+          imageInfo.imageView = model->model->texture->_imageView;
+          imageInfo.sampler = _sampler;
+
+          descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+          descriptorWrites[0].dstSet =
+              _staticPipeline->descriptorSets[0].Get()[0];
+          descriptorWrites[0].dstBinding = 2;
+          descriptorWrites[0].dstArrayElement = 0;
+          descriptorWrites[0].descriptorType =
+              VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+          descriptorWrites[0].descriptorCount = 1;
+          descriptorWrites[0].pImageInfo = &imageInfo;
+
+          vkUpdateDescriptorSets(_backend.logicalDevice.Get(),
+                                 static_cast<uint32_t>(descriptorWrites.size()),
+                                 descriptorWrites.data(), 0, nullptr);
+        }
+      });
 
   // Begin renderpass and commandbuffer recording
   _commandBuffers[_currentFrame].Record();

@@ -3,6 +3,8 @@
 //layout(set = 1, binding = 1) uniform sampler texSampler;
 //layout(set = 1, binding = 2) uniform texture2D _texture;
 
+layout(set = 0, binding = 2) uniform sampler2D Sampler2D[];
+
 layout (location = 1) in vec3 inNormal;
 layout (location = 2) in vec2 inUV0;
 layout (location = 3) in vec4 inColor0;
@@ -56,7 +58,7 @@ void main()
 
         // //vec4 sampled = texture(sampler2D(_texture, texSampler), inUV0);
 
-        outColor = inColor0 * inColor1;
+        outColor = texture(Sampler2D[0], inUV0);
 
 
 

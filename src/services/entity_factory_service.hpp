@@ -2,6 +2,7 @@
 #pragma once
 
 #include "services/buffer_factory_service.hpp"
+#include "services/texture_factory_service.hpp"
 #include "services/vulkan_backend_service.hpp"
 #include <factories/entityfactory.hpp>
 #include <kangaru/kangaru.hpp>
@@ -16,9 +17,10 @@ namespace Graphics {
 namespace Services {
 
 struct EntityFactoryService
-    : kgr::single_service<EntityFactory,
-                          kgr::dependency<WorldService, VulkanBackendService,
-                                          BufferFactoryService>> {};
+    : kgr::single_service<
+          EntityFactory,
+          kgr::dependency<WorldService, VulkanBackendService,
+                          BufferFactoryService, TextureFactoryService>> {};
 
 } // namespace Services
 } // namespace Graphics

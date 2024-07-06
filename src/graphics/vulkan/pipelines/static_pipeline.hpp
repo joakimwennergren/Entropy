@@ -2,6 +2,7 @@
 
 #include "filesystem/filesystem.hpp"
 #include "graphics/vulkan/pipelinecaches/pipelinecache.hpp"
+#include "vulkan/vulkan_core.h"
 #include <graphics/vulkan/pipelines/pipeline.hpp>
 
 namespace Entropy {
@@ -30,8 +31,23 @@ private:
     instanceLayoutBinding.binding = 0; // Binding for instance buffer
     instanceLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
     instanceLayoutBinding.descriptorCount = 1;
-    instanceLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    instanceLayoutBinding.stageFlags = VK_SHADER_STAGE_ALL;
     instanceLayoutBinding.pImmutableSamplers = nullptr;
+
+    VkDescriptorSetLayoutBinding uboLayoutBinding{};
+    uboLayoutBinding.binding = 1;
+    uboLayoutBinding.descriptorCount = 1;
+    uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    uboLayoutBinding.pImmutableSamplers = nullptr;
+    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_ALL;
+
+    VkDescriptorSetLayoutBinding samplerLayoutBinding{};
+    samplerLayoutBinding.binding = 2;
+    samplerLayoutBinding.descriptorCount = 1;
+    samplerLayoutBinding.descriptorType =
+        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    samplerLayoutBinding.pImmutableSamplers = nullptr;
+    samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
     // VkDescriptorSetLayoutBinding uboDynLayoutBinding{};
     // uboDynLayoutBinding.binding = 1;
@@ -41,53 +57,25 @@ private:
     // uboDynLayoutBinding.pImmutableSamplers = nullptr;
     // uboDynLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
-    VkDescriptorSetLayoutBinding uboLayoutBinding{};
-    uboLayoutBinding.binding = 1;
-    uboLayoutBinding.descriptorCount = 1;
-    uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    uboLayoutBinding.pImmutableSamplers = nullptr;
-    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    // VkDescriptorSetLayoutBinding samplerLayoutBinding{};
+    // samplerLayoutBinding.binding = 2;
+    // samplerLayoutBinding.descriptorCount = 1;
+    // samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
+    // samplerLayoutBinding.pImmutableSamplers = nullptr;
+    // samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-    VkDescriptorSetLayoutBinding samplerLayoutBinding{};
-    samplerLayoutBinding.binding = 2;
-    samplerLayoutBinding.descriptorCount = 1;
-    samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
-    samplerLayoutBinding.pImmutableSamplers = nullptr;
-    samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-    VkDescriptorSetLayoutBinding textureLayoutBinding{};
-    textureLayoutBinding.binding = 3;
-    textureLayoutBinding.descriptorCount = 1;
-    textureLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-    textureLayoutBinding.pImmutableSamplers = nullptr;
-    textureLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+    // VkDescriptorSetLayoutBinding textureLayoutBinding{};
+    // textureLayoutBinding.binding = 3;
+    // textureLayoutBinding.descriptorCount = 1;
+    // textureLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+    // textureLayoutBinding.pImmutableSamplers = nullptr;
+    // textureLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
     std::vector<VkDescriptorSetLayoutBinding> bindings = {
-        instanceLayoutBinding, uboLayoutBinding, samplerLayoutBinding,
-        textureLayoutBinding};
+        instanceLayoutBinding, uboLayoutBinding, samplerLayoutBinding};
 
     auto descriptorSetLayout0 =
         _descriptorSetLayoutFactory.CreateLayout(bindings);
-
-    VkDescriptorSetLayoutBinding samplerLayoutBinding1{};
-    samplerLayoutBinding1.binding = 1;
-    samplerLayoutBinding1.descriptorCount = 1;
-    samplerLayoutBinding1.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
-    samplerLayoutBinding1.pImmutableSamplers = nullptr;
-    samplerLayoutBinding1.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-    VkDescriptorSetLayoutBinding texturesLayoutBinding1{};
-    texturesLayoutBinding1.binding = 2;
-    texturesLayoutBinding1.descriptorCount = 1;
-    texturesLayoutBinding1.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-    texturesLayoutBinding1.pImmutableSamplers = nullptr;
-    texturesLayoutBinding1.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-    std::vector<VkDescriptorSetLayoutBinding> textureBinding = {
-        texturesLayoutBinding1, samplerLayoutBinding1};
-
-    // auto descriptorSetLayout1 =
-    //     _descriptorSetLayoutFactory.CreateLayout(textureBinding);
 
     dsLayouts[0] = descriptorSetLayout0.Get();
     // dsLayouts[1] = descriptorSetLayout1.Get();

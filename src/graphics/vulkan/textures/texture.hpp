@@ -1,5 +1,8 @@
 #pragma once
 
+#include "factories/vulkan/bufferfactory.hpp"
+#include "graphics/vulkan/commandpools/commandpool.hpp"
+#include "graphics/vulkan/vulkan_backend.hpp"
 #include <string>
 
 #include <spdlog/spdlog.h>
@@ -11,10 +14,10 @@
 #include "config.hpp"
 #include "tiny_gltf.h"
 
-#include <graphics/vulkan/imageviews/imageview.hpp>
 #include <graphics/vulkan/buffers/buffer.hpp>
 #include <graphics/vulkan/buffers/stagedbuffer.hpp>
 #include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
+#include <graphics/vulkan/imageviews/imageview.hpp>
 #include <graphics/vulkan/memory/allocator.hpp>
 #include <graphics/vulkan/synchronization/queuesync.hpp>
 #include <graphics/vulkan/utilities/utilities.hpp>
@@ -37,10 +40,13 @@ namespace Entropy {
 namespace Graphics {
 namespace Vulkan {
 namespace Textures {
-  
+
 class Texture {
 public:
-  Texture();
+  Texture(VulkanBackend vbe, QueueSync qs, Allocator allocator,
+          Factories::Vulkan::BufferFactory bf, CommandPool cp)
+      : _vulkanBackend{vbe}, _queueSync{qs}, _allocator{allocator},
+        _bufferFactory{bf}, _commandPool{cp} {}
   ~Texture();
 
   void CreateTextureImage(std::string path);
@@ -62,11 +68,10 @@ public:
 
   inline VkImageView GetImageView() { return this->_imageView; };
 
-private:
   void TransitionImageLayout(VkImage image, VkImageLayout oldLayout,
-                             VkImageLayout newLayout) const;
+                             VkImageLayout newLayout);
   void CopyBufferToImage(const VkBuffer buffer, const VkImage image,
-                         const uint32_t width, const uint32_t height) const;
+                         const uint32_t width, const uint32_t height);
   void CreateImage(const uint32_t width, const uint32_t height,
                    const VkFormat format, const VkImageTiling tiling,
                    const VkImageUsageFlags usage, VkImage &image);
@@ -75,9 +80,12 @@ private:
   VkImage _textureImage = VK_NULL_HANDLE;
   VkImageView _imageView = VK_NULL_HANDLE;
   VmaAllocation _allocation = VK_NULL_HANDLE;
-  std::shared_ptr<LogicalDevice> _logicalDevice;
-  std::shared_ptr<QueueSync> _queueSync;
-  std::shared_ptr<Allocator> _allocator;
+
+  VulkanBackend _vulkanBackend;
+  QueueSync _queueSync;
+  Allocator _allocator;
+  Factories::Vulkan::BufferFactory _bufferFactory;
+  CommandPool _commandPool;
 };
 } // namespace Textures
 } // namespace Vulkan

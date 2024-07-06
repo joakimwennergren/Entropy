@@ -5,6 +5,9 @@
 #include "../../graphics/vulkan/textures/swapchain_texture.hpp"
 #include "../../graphics/vulkan/textures/texture.hpp"
 #include "../../graphics/vulkan/vulkan_backend.hpp"
+#include "factories/vulkan/bufferfactory.hpp"
+#include "graphics/vulkan/commandpools/commandpool.hpp"
+#include "graphics/vulkan/textures/normal_texture.hpp"
 
 using namespace Entropy::Graphics::Vulkan;
 using namespace Entropy::Graphics::Vulkan::Textures;
@@ -15,8 +18,10 @@ namespace Vulkan {
 
 struct TextureFactory {
 
-  TextureFactory(VulkanBackend backend, QueueSync qs, Allocator a)
-      : _vkBackend{backend}, _queueSync{qs}, _allocator{a} {}
+  TextureFactory(VulkanBackend backend, QueueSync qs, Allocator a,
+                 BufferFactory bf, CommandPool cp)
+      : _vkBackend{backend}, _queueSync{qs}, _allocator{a}, _bufferFactory{bf},
+        _commandPool{cp} {}
 
   DepthBufferTexture *CreateDepthBufferTexture(unsigned int width,
                                                unsigned int height) {
@@ -29,11 +34,18 @@ struct TextureFactory {
     return SwapChainTexture(_vkBackend, _queueSync, _allocator, width, height);
   }
 
+  std::shared_ptr<NormalTexture> CreateNormalTexture(std::string path) {
+    return std::make_shared<NormalTexture>(_vkBackend, _queueSync, _allocator,
+                                           _bufferFactory, _commandPool, path);
+  }
+
 private:
   // Vulkan Dependency
   VulkanBackend _vkBackend;
   QueueSync _queueSync;
   Allocator _allocator;
+  BufferFactory _bufferFactory;
+  CommandPool _commandPool;
 };
 
 } // namespace Vulkan

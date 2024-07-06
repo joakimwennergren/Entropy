@@ -2,27 +2,29 @@
 
 using namespace Entropy::Scripting;
 
-flecs::entity Lua::GetAsync(std::shared_ptr<Entropy::GLTF::Model> model) {
-  // auto e = _serviceLocator->GetService<World>()->gameWorld.entity();
+// flecs::entity Lua::GetAsync(std::shared_ptr<Entropy::GLTF::Model> model) {
+//   // auto e = _serviceLocator->GetService<World>()->gameWorld.entity();
 
-  // auto id = AssetId().GetId();
-  // e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
-  // e.set<Scale>({glm::vec3(1.0, 1.0, 1.0)});
-  // e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 1.0});
-  // e.set<Entropy::Components::Model>({model});
-  // e.set<Entropy::Components::Renderable>({id, 0, true});
-  // e.set<Entropy::Components::Color>({glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}});
-  // model->getSceneDimensions();
-  // e.set<Entropy::Components::BoxCollisionShape3D>(
-  //     {glm::vec3{model->dimensions.max.x, model->dimensions.max.y / 2.0,
-  //                model->dimensions.max.z},
-  //      glm::vec3{0.0, 0.0 - (model->dimensions.max.y / 2.0), 0.0}});
-  // e.set<Entropy::Components::RigidBody3D>({});
-  // e.set<Entropy::Components::Scripted>({});
-  // e.get_mut<Entropy::Components::BoxCollisionShape3D>()->UpdateMotionState();
-  // e.get_mut<Entropy::Components::RigidBody3D>()->Initialize(_serviceLocator,
-  // e); return e;
-}
+//   // auto id = AssetId().GetId();
+//   // e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
+//   // e.set<Scale>({glm::vec3(1.0, 1.0, 1.0)});
+//   // e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 1.0});
+//   // e.set<Entropy::Components::Model>({model});
+//   // e.set<Entropy::Components::Renderable>({id, 0, true});
+//   // e.set<Entropy::Components::Color>({glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}});
+//   // model->getSceneDimensions();
+//   // e.set<Entropy::Components::BoxCollisionShape3D>(
+//   //     {glm::vec3{model->dimensions.max.x, model->dimensions.max.y / 2.0,
+//   //                model->dimensions.max.z},
+//   //      glm::vec3{0.0, 0.0 - (model->dimensions.max.y / 2.0), 0.0}});
+//   // e.set<Entropy::Components::RigidBody3D>({});
+//   // e.set<Entropy::Components::Scripted>({});
+//   //
+//   e.get_mut<Entropy::Components::BoxCollisionShape3D>()->UpdateMotionState();
+//   //
+//   e.get_mut<Entropy::Components::RigidBody3D>()->Initialize(_serviceLocator,
+//   // e); return e;
+// }
 
 // Lua::Lua() {
 //   // Get required depenencies

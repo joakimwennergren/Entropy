@@ -1,4 +1,6 @@
 #pragma once
+#include "ecs/components/objmodel.hpp"
+#include "factories/entityfactory.hpp"
 #define SOL_ALL_SAFETIES_ON 1
 #include <chrono>
 #include <future>
@@ -46,15 +48,23 @@ namespace Entropy {
 namespace Scripting {
 struct Lua {
 public:
-  class Awaitable {
-  public:
-    std::shared_ptr<Entropy::GLTF::Model> Get() { return fut.get(); };
-    std::future<std::shared_ptr<Entropy::GLTF::Model>> fut;
-  };
+  Lua(World world, Factories::EntityFactory ef)
+      : _world{world}, _entityFactory{ef} {
+    _lua = new sol::state();
+    _lua->open_libraries(sol::lib::base);
 
-  flecs::entity GetAsync(std::shared_ptr<Entropy::GLTF::Model> models);
+    _lua->set_function("create_obj_model",
+                       [&ef] { return ef.CreateOBJModel(""); });
 
-  Lua(World world) : _world{world} {}
+    _lua->set_function(
+        "translate_3d", [](flecs::entity entity, float x, float y, float z) {
+          if (!entity.is_alive())
+            return;
+
+          auto pos = entity.get_mut<Entropy::Components::Position>();
+          pos->pos = glm::vec3(x, y, z);
+        });
+  }
 
   // inline bool ExecuteScript(std::string script, std::string scriptFile,
   //                           sol::environment env) {
@@ -76,6 +86,7 @@ public:
   // }
 
   World _world;
+  Factories::EntityFactory _entityFactory;
   sol::state *_lua;
 
 private:

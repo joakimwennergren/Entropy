@@ -56,15 +56,21 @@ struct LogicalDevice {
     deviceFeatures.samplerAnisotropy = VK_TRUE;
     deviceFeatures.fillModeNonSolid = VK_TRUE;
 
+    // Enable all features: just pass the physical features 2 struct.
+    VkPhysicalDeviceFeatures2 physical_features2 = {
+        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2};
+    vkGetPhysicalDeviceFeatures2(_physicalDevice.Get(), &physical_features2);
+
     VkDeviceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
     createInfo.queueCreateInfoCount = 1;
     createInfo.pQueueCreateInfos = &queueCreateInfo;
-    createInfo.pEnabledFeatures = &deviceFeatures;
+    // createInfo.pEnabledFeatures = &deviceFeatures;
     createInfo.enabledExtensionCount =
         static_cast<uint32_t>(_physicalDevice.deviceExtensions.size());
     createInfo.ppEnabledExtensionNames =
         _physicalDevice.deviceExtensions.data();
+    createInfo.pNext = &physical_features2;
 
     vkCreateDevice(_physicalDevice.Get(), &createInfo, nullptr,
                    &_logicalDevice);

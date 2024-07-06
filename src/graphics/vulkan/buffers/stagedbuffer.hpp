@@ -1,5 +1,6 @@
 #pragma once
 
+#include "vulkan/vulkan_core.h"
 #include <graphics/vulkan/buffers/buffer.hpp>
 #include <graphics/vulkan/vulkan_backend.hpp>
 
@@ -19,13 +20,13 @@ struct StagedBuffer : public Buffer {
    * @param size size of the buffer
    * @param data Data to be put in the buffer
    */
-  StagedBuffer(Vulkan::VulkanBackend backend, VkDeviceSize size, uint8_t *data)
+  StagedBuffer(Vulkan::VulkanBackend backend, VkDeviceSize size, uint8_t *data,
+               VkBufferUsageFlags flags)
       : Buffer(backend) {
 
     // Create the buffer
-    CreateBuffer(
-        size,
-        /*VK_BUFFER_USAGE_TRANSFER_SRC_BIT*/ VK_BUFFER_USAGE_TRANSFER_DST_BIT);
+    CreateBuffer(size,
+                 /*VK_BUFFER_USAGE_TRANSFER_SRC_BIT*/ flags);
 
     // Map the memory
     vmaMapMemory(_vkBackend.allocator.Get(), _allocation, &_mappedMemory);

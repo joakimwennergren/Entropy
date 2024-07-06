@@ -8,8 +8,7 @@ using namespace Entropy::Graphics::Vulkan::Synchronization;
 namespace Entropy {
 namespace Graphics {
 namespace Services {
-struct QueueSyncService
-    : kgr::single_service<QueueSync> {};
+struct QueueSyncService : kgr::single_service<QueueSync> {};
 } // namespace Services
 } // namespace Graphics
 } // namespace Entropy

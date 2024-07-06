@@ -1,6 +1,8 @@
 #pragma once
 
 #include "factories/vulkan/bufferfactory.hpp"
+#include "factories/vulkan/texturefactory.hpp"
+#include "graphics/vulkan/textures/normal_texture.hpp"
 #include "graphics/vulkan/vulkan_backend.hpp"
 #include <tiny_obj_loader.h>
 
@@ -19,8 +21,9 @@ namespace Entropy {
 namespace OBJ {
 class ObjModel {
 public:
-  ObjModel(VulkanBackend vbe, Factories::Vulkan::BufferFactory bf)
-      : _vkBackend{vbe}, _bufferFactory{bf} {}
+  ObjModel(VulkanBackend vbe, Factories::Vulkan::BufferFactory bf,
+           Factories::Vulkan::TextureFactory tf)
+      : _vkBackend{vbe}, _bufferFactory{bf}, _textureFactory{tf} {}
 
   void loadFromFile(std::string file, std::string tex) {
     tinyobj::attrib_t attrib;
@@ -51,6 +54,8 @@ public:
     }
 
     vertexBuffer = _bufferFactory.CreateVertexBuffer(vertices);
+
+    texture = _textureFactory.CreateNormalTexture(tex);
 
     /*
 
@@ -164,10 +169,12 @@ public:
 
   std::vector<Vertex> vertices;
   VertexBuffer *vertexBuffer;
-  Texture *texture;
-  VkDescriptorSet ds;
+  std::shared_ptr<NormalTexture> texture;
+
+  // Vulkan Dependencies
   VulkanBackend _vkBackend;
   Factories::Vulkan::BufferFactory _bufferFactory;
+  Factories::Vulkan::TextureFactory _textureFactory;
 
 private:
 };
