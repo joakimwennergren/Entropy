@@ -10,11 +10,11 @@ layout (location = 6) in vec4 inColor0;
 
 struct ObjectData{
 	mat4 model;
+	vec4 color;
 };
 
 //all object matrices
 layout(std140,set = 0, binding = 0) readonly buffer ObjectBuffer{
-
 	ObjectData objects[];
 } objectBuffer;
 
@@ -34,7 +34,7 @@ void main()
 {	
 	// Colors
 	outColor0 = inColor0;
-	//outColor1 = uboInstance.color;
+	outColor1 = objectBuffer.objects[gl_BaseInstance].color;
 
 	// UV
 	outUV0 = inUV0;

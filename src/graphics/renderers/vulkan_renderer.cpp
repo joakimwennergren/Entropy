@@ -11,8 +11,6 @@ using namespace Entropy::Graphics::Vulkan::Renderers;
 void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
                             bool needResize) {
 
-  //_world.gameWorld->progress();
-
   _camera->setPerspective(60.0f, (float)width / (float)height, 0.1f, 100000.0f);
 
   if (needResize) {
@@ -52,10 +50,6 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
   ubodyn.perspective = _camera->matrices.perspective;
   ubodyn.view = _camera->matrices.view;
 
-  // ubodyn.color = color_component.get() == nullptr
-  //                    ? glm::vec4(1.0, 1.0, 1.0, 1.0)
-  //                    : color_component->color;
-
   memcpy(_dynamicUBO->GetMappedMemory(), &ubodyn, sizeof(ubodyn));
 
   _world.gameWorld->each<Entropy::Components::Renderable>(
@@ -90,6 +84,9 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
 
         InstanceData *objectSSBO = (InstanceData *)objectData;
         objectSSBO[r.id - 1].model = (translate * scaling * rotation);
+        objectSSBO[r.id - 1].color = color_component.get() == nullptr
+                                         ? glm::vec4(1.0, 1.0, 1.0, 1.0)
+                                         : color_component->color;
 
         vmaUnmapMemory(_allocator.Get(), _instanceDataBuffer->_allocation);
 

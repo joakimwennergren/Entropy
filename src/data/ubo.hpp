@@ -21,6 +21,7 @@ struct UboDataDynamic {
 
 struct InstanceData {
   glm::mat4 model;
+  glm::vec4 color;
 };
 
 } // namespace Data

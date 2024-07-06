@@ -99,16 +99,6 @@ struct VulkanRenderer {
     _instanceDataBuffer = _bufferFactory.CreateStorageBuffer(
         MAX_INSTANCE_COUNT * sizeof(InstanceData), nullptr);
 
-    VkPhysicalDeviceProperties properties;
-    vkGetPhysicalDeviceProperties(_backend.physicalDevice.Get(), &properties);
-    size_t minUboAlignment = properties.limits.minUniformBufferOffsetAlignment;
-    _dynamicAlignment = sizeof(UboDataDynamic);
-
-    if (minUboAlignment > 0) {
-      _dynamicAlignment =
-          (_dynamicAlignment + minUboAlignment - 1) & ~(minUboAlignment - 1);
-    }
-
     // Update descriptorsets
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++) {
       std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
@@ -187,7 +177,6 @@ private:
   // @todo
   std::shared_ptr<PerspectiveCamera> _camera;
   uint32_t _currentFrame = 0;
-  size_t _dynamicAlignment = 0;
 
   // Command Buffers
   std::vector<CommandBuffer> _commandBuffers;

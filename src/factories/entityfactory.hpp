@@ -11,8 +11,8 @@ namespace Factories {
 
 struct EntityFactory {
 
-  EntityFactory(Lua lua, World world, VulkanBackend vbe, BufferFactory bf)
-      : _lua{lua}, _world{world}, _backend{vbe}, _bufferFactory{bf} {}
+  EntityFactory(World world, VulkanBackend vbe, BufferFactory bf)
+      : _world{world}, _backend{vbe}, _bufferFactory{bf} {}
 
   flecs::entity CreateOBJModel(std::string filePath) {
     auto model = std::make_shared<OBJ::ObjModel>(_backend, _bufferFactory);
@@ -30,7 +30,6 @@ struct EntityFactory {
   }
 
 private:
-  Lua _lua;
   World _world;
   VulkanBackend _backend;
   BufferFactory _bufferFactory;

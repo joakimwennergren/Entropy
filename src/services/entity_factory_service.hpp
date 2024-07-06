@@ -16,10 +16,9 @@ namespace Graphics {
 namespace Services {
 
 struct EntityFactoryService
-    : kgr::single_service<
-          EntityFactory,
-          kgr::dependency<ScriptingService, WorldService, VulkanBackendService,
-                          BufferFactoryService>> {};
+    : kgr::single_service<EntityFactory,
+                          kgr::dependency<WorldService, VulkanBackendService,
+                                          BufferFactoryService>> {};
 
 } // namespace Services
 } // namespace Graphics
