@@ -16,8 +16,8 @@ struct StorageBuffer : public Buffer {
 
     CreateBuffer(bufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 
-    // vkMapMemory(logicalDevice->Get(), _bufferMemory, 0, bufferSize, 0,
-    // &_mappedMemory);
+    vmaMapMemory(_vkBackend.allocator.Get(), _allocation, &_mappedMemory);
+    vmaUnmapMemory(_vkBackend.allocator.Get(), _allocation);
   }
 
 private:

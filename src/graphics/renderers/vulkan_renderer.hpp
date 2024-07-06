@@ -1,5 +1,7 @@
 #pragma once
 
+#include "config.hpp"
+#include "graphics/vulkan/memory/allocator.hpp"
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -10,6 +12,7 @@
 #include <factories/vulkan/bufferfactory.hpp>
 #include <factories/vulkan/pipelinefactory.hpp>
 #include <graphics/vulkan/buffers/stagedbuffer.hpp>
+#include <graphics/vulkan/buffers/storagebuffer.hpp>
 #include <graphics/vulkan/buffers/uniformbuffer.hpp>
 #include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
 #include <graphics/vulkan/pipelines/static_pipeline.hpp>
@@ -69,11 +72,12 @@ struct VulkanRenderer {
    */
   VulkanRenderer(Vulkan::VulkanBackend vbe, QueueSync queueSync,
                  RenderPass renderPass, PipelineFactory pipelineFactory,
-                 BufferFactory bf, CommandPool cp, Swapchain sc, World world)
+                 BufferFactory bf, CommandPool cp, Swapchain sc, World world,
+                 Allocator allocator)
 
       : _backend{vbe}, _queuSync{queueSync}, _renderPass{renderPass},
         _pipelineFactory{pipelineFactory}, _bufferFactory{bf}, _commandPool{cp},
-        _swapChain{sc}, _world{world} {
+        _swapChain{sc}, _world{world}, _allocator{allocator} {
 
     // Static Pipeline creation
     _staticPipeline = _pipelineFactory.CreateStaticPipeline();
@@ -92,6 +96,9 @@ struct VulkanRenderer {
     _dynamicUBO =
         _bufferFactory.CreateUniformBuffer(sizeof(UboDataDynamic) * 10000);
 
+    _instanceDataBuffer = _bufferFactory.CreateStorageBuffer(
+        MAX_INSTANCE_COUNT * sizeof(InstanceData), nullptr);
+
     VkPhysicalDeviceProperties properties;
     vkGetPhysicalDeviceProperties(_backend.physicalDevice.Get(), &properties);
     size_t minUboAlignment = properties.limits.minUniformBufferOffsetAlignment;
@@ -104,21 +111,33 @@ struct VulkanRenderer {
 
     // Update descriptorsets
     for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++) {
-      std::array<VkWriteDescriptorSet, 1> descriptorWrites{};
+      std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 
       VkDescriptorBufferInfo bufferInfo{};
       bufferInfo.buffer = _dynamicUBO->GetVulkanBuffer();
       bufferInfo.offset = 0;
       bufferInfo.range = sizeof(UboDataDynamic);
 
+      VkDescriptorBufferInfo objectBufferInfo;
+      objectBufferInfo.buffer = _instanceDataBuffer->GetVulkanBuffer();
+      objectBufferInfo.offset = 0;
+      objectBufferInfo.range = sizeof(InstanceData) * MAX_INSTANCE_COUNT;
+
       descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
       descriptorWrites[0].dstSet = _staticPipeline->descriptorSets[0].Get()[i];
       descriptorWrites[0].dstBinding = 1;
       descriptorWrites[0].dstArrayElement = 0;
-      descriptorWrites[0].descriptorType =
-          VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+      descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
       descriptorWrites[0].descriptorCount = 1;
       descriptorWrites[0].pBufferInfo = &bufferInfo;
+
+      descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+      descriptorWrites[1].dstSet = _staticPipeline->descriptorSets[0].Get()[i];
+      descriptorWrites[1].dstBinding = 0;
+      descriptorWrites[1].dstArrayElement = 0;
+      descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+      descriptorWrites[1].descriptorCount = 1;
+      descriptorWrites[1].pBufferInfo = &objectBufferInfo;
 
       vkUpdateDescriptorSets(_backend.logicalDevice.Get(),
                              static_cast<uint32_t>(descriptorWrites.size()),
@@ -133,11 +152,6 @@ struct VulkanRenderer {
     _camera->type = PerspectiveCamera::CameraType::firstperson;
     _camera->setPosition(glm::vec3(0.0f, 0.0f, -500.0f));
     _camera->setRotation(glm::vec3(0.0f));
-
-    // @todo temp!
-    _model = std::make_shared<Entropy::OBJ::ObjModel>(_backend, _bufferFactory);
-    _model->loadFromFile("/Users/joakim/Desktop/GTKPoC/12140_Skull_v3_L2.obj",
-                         "/Users/joakim/Desktop/GTKPoC/Skull.png");
   }
 
   /**
@@ -169,7 +183,6 @@ struct VulkanRenderer {
 private:
   // @todo temp!
   float z = 0.0;
-  std::shared_ptr<Entropy::OBJ::ObjModel> _model;
 
   // @todo
   std::shared_ptr<PerspectiveCamera> _camera;
@@ -180,6 +193,8 @@ private:
   std::vector<CommandBuffer> _commandBuffers;
   // Dynamic UBO
   UniformBuffer *_dynamicUBO;
+
+  std::shared_ptr<StorageBuffer> _instanceDataBuffer;
   // Pipelines
   StaticPipeline *_staticPipeline;
   // Synchronizer
@@ -194,6 +209,7 @@ private:
   CommandPool _commandPool;
   Swapchain _swapChain;
   World _world;
+  Allocator _allocator;
 };
 } // namespace Renderers
 } // namespace Vulkan

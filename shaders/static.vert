@@ -1,4 +1,4 @@
-#version 450
+#version 460
 
 layout (location = 0) in vec3 inPos;
 layout (location = 1) in vec3 inNormal;
@@ -8,10 +8,20 @@ layout (location = 4) in vec4 inJoint0;
 layout (location = 5) in vec4 inWeight0;
 layout (location = 6) in vec4 inColor0;
 
+struct ObjectData{
+	mat4 model;
+};
+
+//all object matrices
+layout(std140,set = 0, binding = 0) readonly buffer ObjectBuffer{
+
+	ObjectData objects[];
+} objectBuffer;
+
 layout (set = 0, binding = 1) uniform UboInstance 
 {
-	mat4 mvp;
-	vec4 color;
+	mat4 perspective;
+	mat4 view;
 
 } uboInstance;
 
@@ -24,7 +34,7 @@ void main()
 {	
 	// Colors
 	outColor0 = inColor0;
-	outColor1 = uboInstance.color;
+	//outColor1 = uboInstance.color;
 
 	// UV
 	outUV0 = inUV0;
@@ -32,5 +42,7 @@ void main()
 	// Normals
 	outNormal = inNormal;
 
-	gl_Position =  uboInstance.mvp * vec4(inPos, 1.0);
+	mat4 modelMatrix = objectBuffer.objects[gl_BaseInstance].model;
+
+	gl_Position =  uboInstance.perspective * uboInstance.view * modelMatrix * vec4(inPos, 1.0);
 }

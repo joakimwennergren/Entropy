@@ -1,6 +1,7 @@
 #pragma once
 
 #include "filesystem/filesystem.hpp"
+#include "graphics/vulkan/pipelinecaches/pipelinecache.hpp"
 #include <graphics/vulkan/pipelines/pipeline.hpp>
 
 namespace Entropy {
@@ -12,8 +13,8 @@ struct StaticPipeline : public Pipeline {
 
   StaticPipeline(VulkanBackend vbe, RenderPass rp, Swapchain sc,
                  DescriptorPool dp, DescriptorSetLayoutFactory dslf,
-                 DescriptorSetFactory dsf)
-      : Pipeline(vbe, rp, sc, dp, dslf, dsf) {
+                 DescriptorSetFactory dsf, Caches::PipelineCache pc)
+      : Pipeline(vbe, rp, sc, dp, dslf, dsf, pc) {
     auto dsLayouts = CreateDescriptorSets();
     Shader shader = Shader(vbe, GetShadersDir() + "static_vert.spv",
                            GetShadersDir() + "static_frag.spv");
@@ -25,20 +26,27 @@ private:
 
     std::vector<VkDescriptorSetLayout> dsLayouts(1);
 
-    // VkDescriptorSetLayoutBinding uboLayoutBinding{};
-    // uboLayoutBinding.binding = 0;
-    // uboLayoutBinding.descriptorCount = 1;
-    // uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    // uboLayoutBinding.pImmutableSamplers = nullptr;
-    // uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    VkDescriptorSetLayoutBinding instanceLayoutBinding = {};
+    instanceLayoutBinding.binding = 0; // Binding for instance buffer
+    instanceLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    instanceLayoutBinding.descriptorCount = 1;
+    instanceLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    instanceLayoutBinding.pImmutableSamplers = nullptr;
 
-    VkDescriptorSetLayoutBinding uboDynLayoutBinding{};
-    uboDynLayoutBinding.binding = 1;
-    uboDynLayoutBinding.descriptorCount = 1;
-    uboDynLayoutBinding.descriptorType =
-        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
-    uboDynLayoutBinding.pImmutableSamplers = nullptr;
-    uboDynLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    // VkDescriptorSetLayoutBinding uboDynLayoutBinding{};
+    // uboDynLayoutBinding.binding = 1;
+    // uboDynLayoutBinding.descriptorCount = 1;
+    // uboDynLayoutBinding.descriptorType =
+    //     VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+    // uboDynLayoutBinding.pImmutableSamplers = nullptr;
+    // uboDynLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+    VkDescriptorSetLayoutBinding uboLayoutBinding{};
+    uboLayoutBinding.binding = 1;
+    uboLayoutBinding.descriptorCount = 1;
+    uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    uboLayoutBinding.pImmutableSamplers = nullptr;
+    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
     VkDescriptorSetLayoutBinding samplerLayoutBinding{};
     samplerLayoutBinding.binding = 2;
@@ -55,7 +63,8 @@ private:
     textureLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
     std::vector<VkDescriptorSetLayoutBinding> bindings = {
-        uboDynLayoutBinding, samplerLayoutBinding, textureLayoutBinding};
+        instanceLayoutBinding, uboLayoutBinding, samplerLayoutBinding,
+        textureLayoutBinding};
 
     auto descriptorSetLayout0 =
         _descriptorSetLayoutFactory.CreateLayout(bindings);

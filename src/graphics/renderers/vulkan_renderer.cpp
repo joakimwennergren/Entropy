@@ -1,5 +1,7 @@
 #include "vulkan_renderer.hpp"
+#include "data/ubo.hpp"
 #include "ecs/components/color.hpp"
+#include "ecs/components/objmodel.hpp"
 #include "ecs/components/position.hpp"
 #include "ecs/components/rotation.hpp"
 #include "ecs/components/scale.hpp"
@@ -9,7 +11,7 @@ using namespace Entropy::Graphics::Vulkan::Renderers;
 void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
                             bool needResize) {
 
-  _world.gameWorld->progress();
+  //_world.gameWorld->progress();
 
   _camera->setPerspective(60.0f, (float)width / (float)height, 0.1f, 100000.0f);
 
@@ -45,6 +47,17 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
   _renderPass.Begin(_commandBuffers[_currentFrame], VK_SUBPASS_CONTENTS_INLINE,
                     width, height);
 
+  UboDataDynamic ubodyn{};
+
+  ubodyn.perspective = _camera->matrices.perspective;
+  ubodyn.view = _camera->matrices.view;
+
+  // ubodyn.color = color_component.get() == nullptr
+  //                    ? glm::vec4(1.0, 1.0, 1.0, 1.0)
+  //                    : color_component->color;
+
+  memcpy(_dynamicUBO->GetMappedMemory(), &ubodyn, sizeof(ubodyn));
+
   _world.gameWorld->each<Entropy::Components::Renderable>(
       [this, width, height](flecs::entity e,
                             Entropy::Components::Renderable r) {
@@ -71,18 +84,14 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
                                  rotation_component->orientation);
         }
 
-        UboDataDynamic ubodyn{};
+        void *objectData;
+        vmaMapMemory(_allocator.Get(), _instanceDataBuffer->_allocation,
+                     &objectData);
 
-        ubodyn.mvp = _camera->matrices.perspective * _camera->matrices.view *
-                     (translate * scaling * rotation);
+        InstanceData *objectSSBO = (InstanceData *)objectData;
+        objectSSBO[r.id - 1].model = (translate * scaling * rotation);
 
-        ubodyn.color = color_component.get() == nullptr
-                           ? glm::vec4(1.0, 1.0, 1.0, 1.0)
-                           : color_component->color;
-
-        uint32_t offset = _dynamicAlignment * r.id;
-        memcpy((char *)_dynamicUBO->GetMappedMemory() + offset, &ubodyn,
-               sizeof(UboDataDynamic));
+        vmaUnmapMemory(_allocator.Get(), _instanceDataBuffer->_allocation);
 
         VkRect2D scissor{};
         scissor.offset = {0, 0};
@@ -108,16 +117,20 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
         vkCmdBindDescriptorSets(_commandBuffers[_currentFrame].Get(),
                                 VK_PIPELINE_BIND_POINT_GRAPHICS,
                                 _staticPipeline->GetPipelineLayout(), 0, 1,
-                                &ds0, 1, &offset);
+                                &ds0, 0, nullptr);
 
-        // Bind vertex & index buffers
-        VkBuffer vertexBuffers[] = {_model->vertexBuffer->GetVulkanBuffer()};
-        VkDeviceSize offsets[] = {0};
-        vkCmdBindVertexBuffers(_commandBuffers[_currentFrame].Get(), 0, 1,
-                               vertexBuffers, offsets);
+        if (e.has<Entropy::Components::OBJModel>()) {
+          auto model = e.get<Entropy::Components::OBJModel>();
+          // Bind vertex & index buffers
+          VkBuffer vertexBuffers[] = {
+              model->model->vertexBuffer->GetVulkanBuffer()};
+          VkDeviceSize offsets[] = {0};
+          vkCmdBindVertexBuffers(_commandBuffers[_currentFrame].Get(), 0, 1,
+                                 vertexBuffers, offsets);
 
-        vkCmdDraw(_commandBuffers[_currentFrame].Get(), _model->vertices.size(),
-                  1, 0, 0);
+          vkCmdDraw(_commandBuffers[_currentFrame].Get(),
+                    model->model->vertices.size(), 1, 0, r.id - 1);
+        }
       });
 
   // End renderpass and commandbuffer recording

@@ -51,6 +51,9 @@ struct Buffer {
    */
   inline void *GetMappedMemory() { return this->_mappedMemory; };
 
+  // Allocation
+  VmaAllocation _allocation = VK_NULL_HANDLE;
+
 protected:
   /**
    * @brief Create a buffer
@@ -82,8 +85,7 @@ protected:
   VkBuffer _buffer = VK_NULL_HANDLE;
   // Buffer memory
   VkDeviceMemory _bufferMemory = VK_NULL_HANDLE;
-  // Allocation
-  VmaAllocation _allocation = VK_NULL_HANDLE;
+
   // Mapped memory
   void *_mappedMemory = nullptr;
 

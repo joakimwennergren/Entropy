@@ -15,6 +15,7 @@
 #include <graphics/vulkan/shaders/shader.hpp>
 #include <graphics/vulkan/swapchains/swapchain.hpp>
 
+#include "graphics/vulkan/pipelinecaches/pipelinecache.hpp"
 #include "spdlog/spdlog.h"
 
 using namespace Entropy::Filesystem;
@@ -34,10 +35,11 @@ namespace Pipelines {
 class Pipeline {
 public:
   Pipeline(VulkanBackend vbe, RenderPass rp, Swapchain sc, DescriptorPool dp,
-           DescriptorSetLayoutFactory dslf, DescriptorSetFactory dsf)
+           DescriptorSetLayoutFactory dslf, DescriptorSetFactory dsf,
+           Caches::PipelineCache pc)
       : _vulkanBackend{vbe}, _renderPass{rp}, _swapChain{sc},
         _descriptorPool{dp}, _descriptorSetLayoutFactory{dslf},
-        _descriptorSetFactory{dsf} {}
+        _descriptorSetFactory{dsf}, _pipelineCache{pc} {}
 
   ~Pipeline() {
     // vkDeviceWaitIdle(_logicalDevice->Get());
@@ -77,6 +79,7 @@ protected:
   DescriptorPool _descriptorPool;
   DescriptorSetLayoutFactory _descriptorSetLayoutFactory;
   DescriptorSetFactory _descriptorSetFactory;
+  Caches::PipelineCache _pipelineCache;
 };
 } // namespace Pipelines
 } // namespace Vulkan

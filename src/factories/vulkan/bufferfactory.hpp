@@ -1,9 +1,11 @@
 #pragma once
 #include "../../graphics/vulkan/buffers/indexbuffer.hpp"
 #include "../../graphics/vulkan/buffers/stagedbuffer.hpp"
+#include "../../graphics/vulkan/buffers/storagebuffer.hpp"
 #include "../../graphics/vulkan/buffers/uniformbuffer.hpp"
 #include "../../graphics/vulkan/buffers/vertexbuffer.hpp"
 #include "../../graphics/vulkan/vulkan_backend.hpp"
+#include "graphics/vulkan/buffers/storagebuffer.hpp"
 
 using namespace Entropy::Graphics::Vulkan;
 using namespace Entropy::Graphics::Vulkan::Buffers;
@@ -28,6 +30,11 @@ struct BufferFactory {
   std::shared_ptr<StagedBuffer> CreateStagingBuffer(VkDeviceSize size,
                                                     uint8_t *data) {
     return std::make_shared<StagedBuffer>(_vkBackend, size, data);
+  }
+
+  std::shared_ptr<StorageBuffer> CreateStorageBuffer(VkDeviceSize size,
+                                                     uint8_t *data) {
+    return std::make_shared<StorageBuffer>(_vkBackend, size, data);
   }
 
   UniformBuffer *CreateUniformBuffer(VkDeviceSize bufferSize) {

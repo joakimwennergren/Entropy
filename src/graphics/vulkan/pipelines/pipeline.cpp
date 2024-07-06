@@ -179,7 +179,7 @@ void Pipeline::Build(Shader shader,
   pipelineInfo.basePipelineIndex = -1;
 
   if (vkCreateGraphicsPipelines(_vulkanBackend.logicalDevice.Get(),
-                                VK_NULL_HANDLE, 1, &pipelineInfo, nullptr,
+                                _pipelineCache.Get(), 1, &pipelineInfo, nullptr,
                                 &_pipeline) != VK_SUCCESS) {
     spdlog::error("Failed to create pipeline!");
     return;

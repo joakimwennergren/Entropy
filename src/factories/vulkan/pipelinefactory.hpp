@@ -3,10 +3,12 @@
 #include "../../factories/vulkan/descriptorsetlayout_factory.hpp"
 #include "../../graphics/vulkan/descriptorpools/descriptorpool.hpp"
 #include "../../graphics/vulkan/vulkan_backend.hpp"
+#include <graphics/vulkan/pipelinecaches/pipelinecache.hpp>
 #include <graphics/vulkan/pipelines/static_pipeline.hpp>
 
 using namespace Entropy::Graphics::Vulkan;
 using namespace Entropy::Graphics::Vulkan::Buffers;
+using namespace Entropy::Graphics::Vulkan::Caches;
 using namespace Entropy::Graphics::Vulkan::Pipelines;
 
 namespace Entropy {
@@ -17,15 +19,16 @@ struct PipelineFactory {
 
   PipelineFactory(VulkanBackend backend, RenderPass renderPass,
                   Swapchain swapchain, DescriptorPool descriptorPool,
-                  DescriptorSetLayoutFactory dslf, DescriptorSetFactory dsf)
+                  DescriptorSetLayoutFactory dslf, DescriptorSetFactory dsf,
+                  PipelineCache pc)
       : _vkBackend{backend}, _renderPass{renderPass}, _swapChain{swapchain},
         _descriptorPool{descriptorPool}, _descriptorSetLayoutFactory{dslf},
-        _descriptorSetFactory{dsf} {}
+        _descriptorSetFactory{dsf}, _pipelineCache{pc} {}
 
   StaticPipeline *CreateStaticPipeline() {
     return new StaticPipeline(_vkBackend, _renderPass, _swapChain,
                               _descriptorPool, _descriptorSetLayoutFactory,
-                              _descriptorSetFactory);
+                              _descriptorSetFactory, _pipelineCache);
   }
 
 private:
@@ -35,6 +38,7 @@ private:
   DescriptorPool _descriptorPool;
   DescriptorSetLayoutFactory _descriptorSetLayoutFactory;
   DescriptorSetFactory _descriptorSetFactory;
+  PipelineCache _pipelineCache;
 };
 
 } // namespace Vulkan
