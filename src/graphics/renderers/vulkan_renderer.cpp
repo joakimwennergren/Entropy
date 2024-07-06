@@ -1,4 +1,8 @@
 #include "vulkan_renderer.hpp"
+#include "ecs/components/color.hpp"
+#include "ecs/components/position.hpp"
+#include "ecs/components/rotation.hpp"
+#include "ecs/components/scale.hpp"
 
 using namespace Entropy::Graphics::Vulkan::Renderers;
 
@@ -41,60 +45,80 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
   _renderPass.Begin(_commandBuffers[_currentFrame], VK_SUBPASS_CONTENTS_INLINE,
                     width, height);
 
-  //     _world->each<Entropy::Components::Renderable>(
-  //         [this](flecs::entity e, Entropy::Components::Renderable r) {
-  //           DrawEntity(e, r.id);
-  //         });
+  _world.gameWorld->each<Entropy::Components::Renderable>(
+      [this, width, height](flecs::entity e,
+                            Entropy::Components::Renderable r) {
+        auto position_component = e.get_ref<Entropy::Components::Position>();
+        auto scale_component = e.get_ref<Entropy::Components::Scale>();
+        auto color_component = e.get_ref<Entropy::Components::Color>();
+        auto rotation_component = e.get_ref<Entropy::Components::Rotation>();
 
-  UboDataDynamic ubodyn{};
+        auto translate = glm::mat4(1.0f);
+        auto rotation = glm::mat4(1.0f);
+        auto scaling = glm::mat4(1.0f);
 
-  auto model =
-      glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 160.0, 0.0)) *
-      glm::scale(glm::mat4(1.0f), glm::vec3{14.0, 14.0, 14.0}) *
-      glm::rotate(glm::mat4(1.0f), glm::radians(z), glm::vec3{0.0, 1.0, 0.0}) *
+        if (position_component.get() != nullptr) {
+          translate = glm::translate(glm::mat4(1.0f), position_component->pos);
+        }
 
-      glm::rotate(glm::mat4(1.0f), glm::radians(90.0f),
-                  glm::vec3{1.0, 0.0, 0.0});
+        if (scale_component.get() != nullptr) {
+          scaling = glm::scale(glm::mat4(1.0f), scale_component->scale);
+        }
 
-  ubodyn.proj = _camera->matrices.perspective * _camera->matrices.view * model;
+        if (rotation_component.get() != nullptr) {
+          rotation = glm::rotate(glm::mat4(1.0f),
+                                 glm::radians(rotation_component->angle),
+                                 rotation_component->orientation);
+        }
 
-  uint32_t offset = _dynamicAlignment * 0;
-  memcpy((char *)_dynamicUBO->GetMappedMemory() + offset, &ubodyn,
-         sizeof(UboDataDynamic));
+        UboDataDynamic ubodyn{};
 
-  VkRect2D scissor{};
-  scissor.offset = {0, 0};
-  scissor.extent = {(unsigned int)width, (unsigned int)height};
-  vkCmdSetScissor(_commandBuffers[_currentFrame].Get(), 0, 1, &scissor);
+        ubodyn.mvp = _camera->matrices.perspective * _camera->matrices.view *
+                     (translate * scaling * rotation);
 
-  // Set Viewport
-  VkViewport viewport{};
-  viewport.x = 0.0f;
-  viewport.y = 0.0f;
-  viewport.width = (float)width;
-  viewport.height = (float)height;
-  viewport.minDepth = 0.0f;
-  viewport.maxDepth = 1.0f;
-  vkCmdSetViewport(_commandBuffers[_currentFrame].Get(), 0, 1, &viewport);
+        ubodyn.color = color_component.get() == nullptr
+                           ? glm::vec4(1.0, 1.0, 1.0, 1.0)
+                           : color_component->color;
 
-  vkCmdBindPipeline(_commandBuffers[_currentFrame].Get(),
-                    VK_PIPELINE_BIND_POINT_GRAPHICS,
-                    _staticPipeline->GetPipeline());
+        uint32_t offset = _dynamicAlignment * r.id;
+        memcpy((char *)_dynamicUBO->GetMappedMemory() + offset, &ubodyn,
+               sizeof(UboDataDynamic));
 
-  auto ds0 = _staticPipeline->descriptorSets[0].Get()[_currentFrame];
+        VkRect2D scissor{};
+        scissor.offset = {0, 0};
+        scissor.extent = {(unsigned int)width, (unsigned int)height};
+        vkCmdSetScissor(_commandBuffers[_currentFrame].Get(), 0, 1, &scissor);
 
-  vkCmdBindDescriptorSets(
-      _commandBuffers[_currentFrame].Get(), VK_PIPELINE_BIND_POINT_GRAPHICS,
-      _staticPipeline->GetPipelineLayout(), 0, 1, &ds0, 1, &offset);
+        // Set Viewport
+        VkViewport viewport{};
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
+        viewport.width = (float)width;
+        viewport.height = (float)height;
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        vkCmdSetViewport(_commandBuffers[_currentFrame].Get(), 0, 1, &viewport);
 
-  // Bind vertex & index buffers
-  VkBuffer vertexBuffers[] = {_model->vertexBuffer->GetVulkanBuffer()};
-  VkDeviceSize offsets[] = {0};
-  vkCmdBindVertexBuffers(_commandBuffers[_currentFrame].Get(), 0, 1,
-                         vertexBuffers, offsets);
+        vkCmdBindPipeline(_commandBuffers[_currentFrame].Get(),
+                          VK_PIPELINE_BIND_POINT_GRAPHICS,
+                          _staticPipeline->GetPipeline());
 
-  vkCmdDraw(_commandBuffers[_currentFrame].Get(), _model->vertices.size(), 1, 0,
-            0);
+        auto ds0 = _staticPipeline->descriptorSets[0].Get()[_currentFrame];
+
+        vkCmdBindDescriptorSets(_commandBuffers[_currentFrame].Get(),
+                                VK_PIPELINE_BIND_POINT_GRAPHICS,
+                                _staticPipeline->GetPipelineLayout(), 0, 1,
+                                &ds0, 1, &offset);
+
+        // Bind vertex & index buffers
+        VkBuffer vertexBuffers[] = {_model->vertexBuffer->GetVulkanBuffer()};
+        VkDeviceSize offsets[] = {0};
+        vkCmdBindVertexBuffers(_commandBuffers[_currentFrame].Get(), 0, 1,
+                               vertexBuffers, offsets);
+
+        vkCmdDraw(_commandBuffers[_currentFrame].Get(), _model->vertices.size(),
+                  1, 0, 0);
+      });
 
   // End renderpass and commandbuffer recording
   _renderPass.End(_commandBuffers[_currentFrame]);

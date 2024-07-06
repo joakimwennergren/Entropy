@@ -20,6 +20,8 @@
 #include <graphics/vulkan/vulkan_backend.hpp>
 #include <obj/model.hpp>
 
+#include <ecs/components/renderable.hpp>
+
 #include <flecs/flecs.h>
 #include <timing/timer.hpp>
 #include <tracy/Tracy.hpp>
@@ -159,6 +161,8 @@ struct VulkanRenderer {
    */
   void Render(int width, int height, float xscale, float yscale,
               bool needResize);
+
+  void DrawEntity(flecs::entity entity, uint32_t index, int width, int height);
 
   std::shared_ptr<StagedBuffer> stagingBuffer;
 

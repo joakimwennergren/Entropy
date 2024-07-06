@@ -44,7 +44,7 @@ using namespace std::chrono_literals;
 
 namespace Entropy {
 namespace Scripting {
-class Lua {
+struct Lua {
 public:
   class Awaitable {
   public:
@@ -54,30 +54,29 @@ public:
 
   flecs::entity GetAsync(std::shared_ptr<Entropy::GLTF::Model> models);
 
-  Lua();
-  inline bool ExecuteScript(std::string script, std::string scriptFile,
-                            sol::environment env) {
-    if (script.length() > 0) {
-      _lua.script(script, env);
-    }
-    if (scriptFile.length() > 0) {
-      _lua.script_file(scriptFile, env);
-    }
+  Lua(World world) : _world{world} {}
 
-    return true;
-  };
+  // inline bool ExecuteScript(std::string script, std::string scriptFile,
+  //                           sol::environment env) {
+  //   if (script.length() > 0) {
+  //     _lua.script(script, env);
+  //   }
+  //   if (scriptFile.length() > 0) {
+  //     _lua.script_file(scriptFile, env);
+  //   }
 
-  inline void my_panic(sol::optional<std::string> maybe_msg) {
-    if (maybe_msg) {
-      const std::string &msg = maybe_msg.value();
-      spdlog::error(msg);
-    }
-  }
+  //   return true;
+  // };
 
-  sol::state _lua;
-  std::vector<std::shared_future<Entropy::GLTF::Model *>> futures;
-  std::vector<flecs::entity> loadedModels;
-  std::shared_ptr<World> _world;
+  // inline void my_panic(sol::optional<std::string> maybe_msg) {
+  //   if (maybe_msg) {
+  //     const std::string &msg = maybe_msg.value();
+  //     spdlog::error(msg);
+  //   }
+  // }
+
+  World _world;
+  sol::state *_lua;
 
 private:
 };
