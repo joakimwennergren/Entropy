@@ -1,27 +1,30 @@
 #include "vulkan_renderer.hpp"
 #include "data/ubo.hpp"
 #include "ecs/components/color.hpp"
+#include "ecs/components/hasTexture.hpp"
 #include "ecs/components/objmodel.hpp"
 #include "ecs/components/position.hpp"
 #include "ecs/components/rotation.hpp"
 #include "ecs/components/scale.hpp"
+#include "ecs/components/sprite.hpp"
 #include "vulkan/vulkan_core.h"
 
 using namespace Entropy::Graphics::Vulkan::Renderers;
 
 void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
-                            bool needResize) {
+                            bool &needResize) {
 
   _camera->setPerspective(60.0f, (float)width / (float)height, 0.1f, 256.0f);
 
   if (needResize) {
+    spdlog::info("RESIZING!!");
     stagingBuffer = _bufferFactory.CreateStagingBuffer(
         width * height * 4, nullptr, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
 
     // Synchronizer
-    delete _synchronizer;
-    _synchronizer = new Synchronizer(_backend.logicalDevice,
-                                     MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+    // delete _synchronizer;
+    // _synchronizer = new Synchronizer(_backend.logicalDevice,
+    //                                  MAX_CONCURRENT_FRAMES_IN_FLIGHT);
     _swapChain.RecreateSwapChain(width, height);
     _renderPass.RecreateDepthBuffer(width, height);
     _renderPass.RecreateFrameBuffers(width, height);
@@ -46,21 +49,24 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
 
   _world.gameWorld->each<Entropy::Components::Renderable>(
       [this](flecs::entity e, Entropy::Components::Renderable r) {
-        if (e.has<Entropy::Components::OBJModel>()) {
-          auto model = e.get<Entropy::Components::OBJModel>();
+        if (e.has<Entropy::Components::HasTexture>()) {
+
+          auto texture = e.get<Entropy::Components::HasTexture>();
 
           std::array<VkWriteDescriptorSet, 1> descriptorWrites{};
 
           VkDescriptorImageInfo imageInfo{};
           imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-          imageInfo.imageView = model->model->texture->_imageView;
+          imageInfo.imageView = texture->texture->_imageView;
           imageInfo.sampler = _sampler;
 
           descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
           descriptorWrites[0].dstSet =
               _staticPipeline->descriptorSets[0].Get()[0];
           descriptorWrites[0].dstBinding = 2;
-          descriptorWrites[0].dstArrayElement = 0;
+          descriptorWrites[0].dstArrayElement =
+              e.get_ref<Entropy::Components::HasTexture>()->texture->textureId -
+              1;
           descriptorWrites[0].descriptorType =
               VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
           descriptorWrites[0].descriptorCount = 1;
@@ -91,6 +97,7 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
         auto scale_component = e.get_ref<Entropy::Components::Scale>();
         auto color_component = e.get_ref<Entropy::Components::Color>();
         auto rotation_component = e.get_ref<Entropy::Components::Rotation>();
+        auto texture_component = e.get_ref<Entropy::Components::HasTexture>();
 
         auto translate = glm::mat4(1.0f);
         auto rotation = glm::mat4(1.0f);
@@ -119,6 +126,11 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
         objectSSBO[r.id - 1].color = color_component.get() == nullptr
                                          ? glm::vec4(1.0, 1.0, 1.0, 1.0)
                                          : color_component->color;
+
+        if (texture_component.get() != nullptr) {
+          objectSSBO[r.id - 1].textureId =
+              texture_component->texture->textureId - 1;
+        }
 
         vmaUnmapMemory(_allocator.Get(), _instanceDataBuffer->_allocation);
 
@@ -160,6 +172,23 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
           vkCmdDraw(_commandBuffers[_currentFrame].Get(),
                     model->model->vertices.size(), 1, 0, r.id - 1);
         }
+
+        if (e.has<Entropy::Components::SpriteComponent>()) {
+          auto sprite = e.get<Entropy::Components::SpriteComponent>();
+          // Bind vertex & index buffers
+          VkBuffer vertexBuffers[] = {
+              sprite->sprite->vertexBuffer->GetVulkanBuffer()};
+          VkDeviceSize offsets[] = {0};
+          vkCmdBindVertexBuffers(_commandBuffers[_currentFrame].Get(), 0, 1,
+                                 vertexBuffers, offsets);
+
+          vkCmdBindIndexBuffer(_commandBuffers[_currentFrame].Get(),
+                               sprite->sprite->indexBuffer->GetVulkanBuffer(),
+                               0, VK_INDEX_TYPE_UINT16);
+          // Draw current renderable
+          vkCmdDrawIndexed(_commandBuffers[_currentFrame].Get(),
+                           sprite->sprite->indices.size(), 1, 0, 0, r.id - 1);
+        }
       });
 
   // End renderpass and commandbuffer recording
@@ -177,7 +206,7 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
       .newLayout = newLayout,
       .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
       .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-      .image = _renderPass._swapChainTextures[0]._swapChainImage,
+      .image = _renderPass._swapChainTextures[0]->_textureImage,
       .subresourceRange =
           {
               .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
@@ -231,7 +260,7 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
                       static_cast<uint32_t>(height), 1},
   };
   vkCmdCopyImageToBuffer(_commandBuffers[_currentFrame].Get(),
-                         _renderPass._swapChainTextures[0]._swapChainImage,
+                         _renderPass._swapChainTextures[0]->_textureImage,
                          VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
                          stagingBuffer->GetVulkanBuffer(), 1, &region);
 
@@ -252,6 +281,4 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
   }
 
   vkDeviceWaitIdle(_backend.logicalDevice.Get());
-
-  z += 4.0;
 }

@@ -1,30 +1,27 @@
 #pragma once
 
-#include "factories/vulkan/bufferfactory.hpp"
-#include "graphics/vulkan/commandpools/commandpool.hpp"
-#include "graphics/vulkan/vulkan_backend.hpp"
-#include <string>
-
-#include <spdlog/spdlog.h>
-
 #include <ft2build.h>
 #include <stb_image.h>
 #include FT_FREETYPE_H
 
-#include "config.hpp"
-#include "tiny_gltf.h"
+#include <spdlog/spdlog.h>
+#include <string>
 
+#include "tiny_gltf.h"
+#include <config.hpp>
+
+#include <assets/textureid.hpp>
+#include <factories/vulkan/bufferfactory.hpp>
 #include <graphics/vulkan/buffers/buffer.hpp>
 #include <graphics/vulkan/buffers/stagedbuffer.hpp>
 #include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
+#include <graphics/vulkan/commandpools/commandpool.hpp>
 #include <graphics/vulkan/imageviews/imageview.hpp>
 #include <graphics/vulkan/memory/allocator.hpp>
 #include <graphics/vulkan/synchronization/queuesync.hpp>
 #include <graphics/vulkan/textures/texture.hpp>
 #include <graphics/vulkan/utilities/utilities.hpp>
-
-// #include <ktx.h>
-// #include <ktxvulkan.h>
+#include <graphics/vulkan/vulkan_backend.hpp>
 
 #ifdef BUILD_FOR_ANDROID
 #include <android/asset_manager.h>
@@ -43,8 +40,8 @@ namespace Graphics {
 namespace Vulkan {
 namespace Textures {
 
-class NormalTexture : public Texture {
-public:
+struct NormalTexture : public Texture {
+
   NormalTexture(VulkanBackend vbe, QueueSync qs, Allocator allocator,
                 Factories::Vulkan::BufferFactory bf, CommandPool cp,
                 std::string path)
@@ -54,8 +51,10 @@ public:
 
     // Load the image pixels
     int texWidth, texHeight, texChannels;
+
     stbi_uc *pixels = stbi_load(path.c_str(), &texWidth, &texHeight,
                                 &texChannels, STBI_rgb_alpha);
+
     VkDeviceSize imageSize = texWidth * texHeight * 4;
 
     assert(pixels != nullptr);
@@ -72,10 +71,13 @@ public:
     CreateImage(texWidth, texHeight, colorFormat, VK_IMAGE_TILING_OPTIMAL,
                 VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
                 _textureImage);
+
     TransitionImageLayout(_textureImage, VK_IMAGE_LAYOUT_UNDEFINED,
                           VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
     CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(texWidth),
                       static_cast<uint32_t>(texHeight));
+
     TransitionImageLayout(_textureImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                           VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 

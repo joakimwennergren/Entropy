@@ -14,6 +14,7 @@
 #include "config.hpp"
 #include "tiny_gltf.h"
 
+#include <assets/textureid.hpp>
 #include <graphics/vulkan/buffers/buffer.hpp>
 #include <graphics/vulkan/buffers/stagedbuffer.hpp>
 #include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
@@ -46,8 +47,15 @@ public:
   Texture(VulkanBackend vbe, QueueSync qs, Allocator allocator,
           Factories::Vulkan::BufferFactory bf, CommandPool cp)
       : _vulkanBackend{vbe}, _queueSync{qs}, _allocator{allocator},
-        _bufferFactory{bf}, _commandPool{cp} {}
-  ~Texture();
+        _bufferFactory{bf}, _commandPool{cp} {
+    textureId = TextureId().GetId();
+  }
+
+  ~Texture() {
+    spdlog::error("Deleting texture!");
+    vkDestroyImageView(_vulkanBackend.logicalDevice.Get(), _imageView, nullptr);
+    vkDestroyImage(_vulkanBackend.logicalDevice.Get(), _textureImage, nullptr);
+  }
 
   void CreateTextureImage(std::string path);
 
@@ -75,7 +83,10 @@ public:
   void CreateImage(const uint32_t width, const uint32_t height,
                    const VkFormat format, const VkImageTiling tiling,
                    const VkImageUsageFlags usage, VkImage &image);
+
   VkFormat GetColorFormat();
+
+  unsigned int textureId;
 
   VkImage _textureImage = VK_NULL_HANDLE;
   VkImageView _imageView = VK_NULL_HANDLE;

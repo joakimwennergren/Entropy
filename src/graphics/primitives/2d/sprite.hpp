@@ -1,5 +1,8 @@
 #pragma once
 
+#include "factories/vulkan/bufferfactory.hpp"
+#include "factories/vulkan/texturefactory.hpp"
+#include "graphics/vulkan/textures/normal_texture.hpp"
 #ifdef BUILD_FOR_ANDROID
 #include <android/asset_manager.h>
 #endif
@@ -21,27 +24,56 @@ using namespace Entropy::Data;
 namespace Entropy {
 namespace Graphics {
 namespace Primitives {
-class Sprite {
+
+struct Sprite {
 public:
-  Sprite();
-  ~Sprite();
+  Sprite(Factories::Vulkan::BufferFactory bufferFactory,
+         Factories::Vulkan::TextureFactory textureFactory, std::string path) {
+    texture = textureFactory.CreateNormalTexture(path);
+    vertexBuffer = bufferFactory.CreateVertexBuffer(vertices);
+    indexBuffer = bufferFactory.CreateIndexBuffer(indices);
+  }
 
-  Sprite(FT_Bitmap bitmap);
+  // Sprite(FT_Bitmap bitmap);
 
-  Sprite(std::string path);
+  // Sprite(std::string path);
 #ifdef BUILD_FOR_ANDROID
   Sprite(std::string path, AAssetManager *assetmanager);
 #endif
-  Sprite(unsigned char *pixels, int width, int height);
+  // Sprite(unsigned char *pixels, int width, int height);
 
-  VkDescriptorSet _descriptorSet = VK_NULL_HANDLE;
-  VkDescriptorSetLayout _descriptorSetLayout = VK_NULL_HANDLE;
-  std::unique_ptr<VertexBuffer> vertexBuffer;
-  std::unique_ptr<IndexBuffer<uint16_t>> indexBuffer;
-
-private:
-  VkSampler _textureSampler;
-  void UpdateDescriptorSets();
+  std::vector<uint16_t> indices = {0, 1, 2, 2, 3, 0};
+  std::vector<Vertex> vertices = {{{-1.0f, -1.0f, 0.0f},
+                                   {1.0f, 1.0f, 1.0f},
+                                   {1.0f, 0.0f},
+                                   {0.0, 0.0},
+                                   {0.0, 0.0, 0.0, 0.0},
+                                   {0.0, 0.0, 0.0, 0.0},
+                                   {0.0, 1.0, 0.0, 0.0}},
+                                  {{1.0f, -1.0f, 0.0f},
+                                   {1.0f, 1.0f, 1.0f},
+                                   {0.0f, 0.0f},
+                                   {0.0, 0.0},
+                                   {0.0, 0.0, 0.0, 0.0},
+                                   {0.0, 0.0, 0.0, 0.0},
+                                   {0.0, 1.0, 0.0, 0.0}},
+                                  {{1.0f, 1.0f, 0.0f},
+                                   {1.0f, 1.0f, 1.0f},
+                                   {0.0f, 1.0f},
+                                   {0.0, 0.0},
+                                   {0.0, 0.0, 0.0, 0.0},
+                                   {0.0, 0.0, 0.0, 0.0},
+                                   {0.0, 1.0, 0.0, 0.0}},
+                                  {{-1.0f, 1.0f, 0.0f},
+                                   {1.0f, 1.0f, 1.0f},
+                                   {1.0f, 1.0f},
+                                   {0.0, 0.0},
+                                   {0.0, 0.0, 0.0, 0.0},
+                                   {0.0, 0.0, 0.0, 0.0},
+                                   {0.0, 1.0, 0.0, 0.0}}};
+  std::shared_ptr<NormalTexture> texture;
+  std::shared_ptr<VertexBuffer> vertexBuffer;
+  std::shared_ptr<IndexBuffer<uint16_t>> indexBuffer;
 };
 } // namespace Primitives
 } // namespace Graphics

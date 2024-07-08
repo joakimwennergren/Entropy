@@ -7,6 +7,7 @@
 #include <graphics/vulkan/imageviews/imageview.hpp>
 #include <graphics/vulkan/memory/allocator.hpp>
 #include <graphics/vulkan/swapchains/swapchain.hpp>
+#include <graphics/vulkan/textures/texture.hpp>
 #include <vulkan/vulkan.hpp>
 
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;
@@ -14,16 +15,20 @@ using namespace Entropy::Graphics::Vulkan::Swapchains;
 using namespace Entropy::Graphics::Vulkan::Devices;
 using namespace Entropy::Graphics::Vulkan::ImageViews;
 using namespace Entropy::Graphics::Vulkan::Memory;
+using namespace Entropy::Graphics::Vulkan::Textures;
 
 namespace Entropy {
 namespace Graphics {
 namespace Vulkan {
 namespace Textures {
 
-struct DepthBufferTexture {
-  DepthBufferTexture(VulkanBackend backend, QueueSync qs, Allocator a,
-                     unsigned int width, unsigned int height) {
-    VkFormat depthFormat = FindDepthFormat(backend);
+struct DepthBufferTexture : public Texture {
+  DepthBufferTexture(VulkanBackend vbe, QueueSync qs, Allocator allocator,
+                     Factories::Vulkan::BufferFactory bf, CommandPool cp,
+                     unsigned int width, unsigned int height)
+      : Texture(vbe, qs, allocator, bf, cp) {
+
+    VkFormat depthFormat = FindDepthFormat(vbe);
 
     VmaAllocationCreateInfo allocCreateInfo = {};
     allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO;
@@ -44,16 +49,13 @@ struct DepthBufferTexture {
     imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
     imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-    VkResult res = vmaCreateImage(a.Get(), &imageInfo, &allocCreateInfo,
-                                  &_depthImage, &_allocation, nullptr);
+    VkResult res = vmaCreateImage(allocator.Get(), &imageInfo, &allocCreateInfo,
+                                  &_textureImage, &_allocation, nullptr);
 
-    _depthImageView =
-        ImageView(backend, _depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT)
+    _imageView =
+        ImageView(vbe, _textureImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT)
             .Get();
   };
-
-  VkImage _depthImage = VK_NULL_HANDLE;
-  VkImageView _depthImageView = VK_NULL_HANDLE;
 
 private:
   VkFormat findSupportedFormat(VulkanBackend backend,

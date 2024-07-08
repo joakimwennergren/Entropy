@@ -7,6 +7,7 @@
 #include <graphics/vulkan/imageviews/imageview.hpp>
 #include <graphics/vulkan/memory/allocator.hpp>
 #include <graphics/vulkan/swapchains/swapchain.hpp>
+#include <graphics/vulkan/textures/texture.hpp>
 #include <graphics/vulkan/utilities/utilities.hpp>
 #include <vulkan/vulkan.hpp>
 
@@ -21,9 +22,11 @@ namespace Graphics {
 namespace Vulkan {
 namespace Textures {
 
-struct SwapChainTexture {
-  SwapChainTexture(VulkanBackend backend, QueueSync qs, Allocator a,
-                   unsigned int width, unsigned int height) {
+struct SwapChainTexture : public Texture {
+  SwapChainTexture(VulkanBackend vbe, QueueSync qs, Allocator allocator,
+                   Factories::Vulkan::BufferFactory bf, CommandPool cp,
+                   unsigned int width, unsigned int height)
+      : Texture(vbe, qs, allocator, bf, cp) {
     VkImageCreateInfo imageInfo{};
     imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
     imageInfo.imageType = VK_IMAGE_TYPE_2D;
@@ -44,16 +47,13 @@ struct SwapChainTexture {
     allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO;
     allocCreateInfo.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
 
-    VkResult res = vmaCreateImage(a.Get(), &imageInfo, &allocCreateInfo,
-                                  &_swapChainImage, &_allocation, nullptr);
+    VkResult res = vmaCreateImage(allocator.Get(), &imageInfo, &allocCreateInfo,
+                                  &_textureImage, &_allocation, nullptr);
 
-    _swapChainImageView =
-        ImageView(backend, _swapChainImage, textureFormat).Get();
+    _imageView = ImageView(vbe, _textureImage, textureFormat).Get();
   };
 
-  VkFormat textureFormat = VK_FORMAT_B8G8R8A8_SRGB;
-  VkImageView _swapChainImageView = VK_NULL_HANDLE;
-  VkImage _swapChainImage = VK_NULL_HANDLE;
+  VkFormat textureFormat = VK_FORMAT_R8G8B8A8_SRGB;
 
 private:
   VmaAllocation _allocation = VK_NULL_HANDLE;

@@ -20,12 +20,13 @@ struct BufferFactory {
   BufferFactory(VulkanBackend backend) : _vkBackend{backend} {}
 
   template <typename T>
-  IndexBuffer<T> *CreateIndexBuffer(std::vector<T> indices) {
-    return new IndexBuffer<T>(_vkBackend, indices);
+  std::shared_ptr<IndexBuffer<T>> CreateIndexBuffer(std::vector<T> indices) {
+    return std::make_shared<IndexBuffer<T>>(_vkBackend, indices);
   }
 
-  VertexBuffer *CreateVertexBuffer(std::vector<Vertex> vertices) {
-    return new VertexBuffer(_vkBackend, vertices);
+  std::shared_ptr<VertexBuffer>
+  CreateVertexBuffer(std::vector<Vertex> vertices) {
+    return std::make_shared<VertexBuffer>(_vkBackend, vertices);
   }
 
   std::shared_ptr<StagedBuffer> CreateStagingBuffer(VkDeviceSize size,

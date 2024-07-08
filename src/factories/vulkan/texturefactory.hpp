@@ -23,15 +23,18 @@ struct TextureFactory {
       : _vkBackend{backend}, _queueSync{qs}, _allocator{a}, _bufferFactory{bf},
         _commandPool{cp} {}
 
-  DepthBufferTexture *CreateDepthBufferTexture(unsigned int width,
-                                               unsigned int height) {
-    return new DepthBufferTexture(_vkBackend, _queueSync, _allocator, width,
-                                  height);
+  std::shared_ptr<DepthBufferTexture>
+  CreateDepthBufferTexture(unsigned int width, unsigned int height) {
+    return std::make_shared<DepthBufferTexture>(_vkBackend, _queueSync,
+                                                _allocator, _bufferFactory,
+                                                _commandPool, width, height);
   }
 
-  SwapChainTexture CreateSwapChainTexture(unsigned int width,
-                                          unsigned int height) {
-    return SwapChainTexture(_vkBackend, _queueSync, _allocator, width, height);
+  std::shared_ptr<SwapChainTexture>
+  CreateSwapChainTexture(unsigned int width, unsigned int height) {
+    return std::make_shared<SwapChainTexture>(_vkBackend, _queueSync,
+                                              _allocator, _bufferFactory,
+                                              _commandPool, width, height);
   }
 
   std::shared_ptr<NormalTexture> CreateNormalTexture(std::string path) {

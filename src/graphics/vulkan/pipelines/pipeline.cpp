@@ -88,7 +88,7 @@ void Pipeline::Build(Shader shader,
   rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
   rasterizer.depthClampEnable = VK_FALSE;
   rasterizer.rasterizerDiscardEnable = VK_FALSE;
-  rasterizer.polygonMode = VK_POLYGON_MODE_FILL; // VK_POLYGON_MODE_LINE;
+  rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
   rasterizer.lineWidth = 1.0f;
   rasterizer.cullMode = VK_CULL_MODE_NONE;
   rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
@@ -138,7 +138,7 @@ void Pipeline::Build(Shader shader,
   pipelineLayoutInfo.pSetLayouts = dsLayouts.data();
   pipelineLayoutInfo.pPushConstantRanges = nullptr; //&push_constant;
   pipelineLayoutInfo.pushConstantRangeCount = 0;
-  glm::vec2 depthBounds = {0.0, 1.0};
+  glm::vec2 depthBounds = {0.0, 0.0};
 
   if (vkCreatePipelineLayout(_vulkanBackend.logicalDevice.Get(),
                              &pipelineLayoutInfo, nullptr,
@@ -154,8 +154,8 @@ void Pipeline::Build(Shader shader,
   depthStencil.depthWriteEnable = VK_TRUE;
   depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
   depthStencil.depthBoundsTestEnable = VK_FALSE;
-  depthStencil.minDepthBounds = depthBounds.x; // Optional
-  depthStencil.maxDepthBounds = depthBounds.y; // Optional
+  depthStencil.minDepthBounds = 0.0f; // Optional
+  depthStencil.maxDepthBounds = 1.0f; // Optional
   depthStencil.stencilTestEnable = VK_FALSE;
   depthStencil.front = {}; // Optional
   depthStencil.back = {};  // Optional

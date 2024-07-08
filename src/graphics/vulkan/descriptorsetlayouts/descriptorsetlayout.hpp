@@ -1,35 +1,33 @@
 #pragma once
 
 #include <config.hpp>
-#include <iostream>
-#include <set>
-#include <string>
-#include <vector>
+#include <graphics/vulkan/devices/logical_device.hpp>
+#include <graphics/vulkan/vulkan_backend.hpp>
 #include <vulkan/vulkan.hpp>
 
-#include <graphics/vulkan/devices/logical_device.hpp>
-
-using namespace Entropy::Graphics::Vulkan::QueueFamilies;
 using namespace Entropy::Graphics::Vulkan::Devices;
 
 namespace Entropy {
 namespace Graphics {
 namespace Vulkan {
 namespace DescriptorsetLayouts {
-class DescriptorsetLayout {
-public:
+struct DescriptorsetLayout {
+
   DescriptorsetLayout(
       VulkanBackend backend,
       std::vector<VkDescriptorSetLayoutBinding> layoutBindings) {
 
-    VkDescriptorBindingFlags flags =
-        VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT |
-        VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT;
+    std::vector<VkDescriptorBindingFlagsEXT> bindingFlags = {
+        VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT_EXT, // For binding 0
+        VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT_EXT, // For binding 1
+        VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT_EXT  // For binding 2,
+    };
 
-    VkDescriptorSetLayoutBindingFlagsCreateInfo bindingFlags = {};
-    bindingFlags.pBindingFlags = &flags;
-    bindingFlags.sType =
-        VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO;
+    VkDescriptorSetLayoutBindingFlagsCreateInfoEXT bindingFlagsInfo = {};
+    bindingFlagsInfo.sType =
+        VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO_EXT;
+    bindingFlagsInfo.bindingCount = 3;
+    bindingFlagsInfo.pBindingFlags = bindingFlags.data();
 
     VkDescriptorSetLayoutCreateInfo layoutInfo{};
     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -37,7 +35,7 @@ public:
     layoutInfo.pBindings = layoutBindings.data();
     layoutInfo.flags =
         VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT;
-    layoutInfo.pNext = &bindingFlags;
+    layoutInfo.pNext = &bindingFlagsInfo;
 
     if (vkCreateDescriptorSetLayout(backend.logicalDevice.Get(), &layoutInfo,
                                     nullptr,
@@ -48,7 +46,7 @@ public:
   inline VkDescriptorSetLayout Get() { return _descriptorSetLayout; };
 
 private:
-  VkDescriptorSetLayout _descriptorSetLayout;
+  VkDescriptorSetLayout _descriptorSetLayout = VK_NULL_HANDLE;
 };
 } // namespace DescriptorsetLayouts
 } // namespace Vulkan

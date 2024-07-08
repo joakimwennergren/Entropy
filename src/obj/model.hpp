@@ -168,7 +168,7 @@ public:
   }
 
   std::vector<Vertex> vertices;
-  VertexBuffer *vertexBuffer;
+  std::shared_ptr<VertexBuffer> vertexBuffer;
   std::shared_ptr<NormalTexture> texture;
 
   // Vulkan Dependencies

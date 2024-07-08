@@ -37,7 +37,6 @@
 #include <tracy/Tracy.hpp>
 
 using namespace Entropy::Graphics::Primitives;
-// using namespace Entropy::Input;
 using namespace Entropy::Components;
 using namespace Entropy::GLTF;
 using namespace Entropy::ECS;
@@ -56,6 +55,10 @@ public:
     _lua->set_function("create_obj_model",
                        [&ef] { return ef.CreateOBJModel(""); });
 
+    _lua->set_function("create_sprite", [&ef](std::string path) {
+      return ef.CreateSprite(path);
+    });
+
     _lua->set_function(
         "translate_3d", [](flecs::entity entity, float x, float y, float z) {
           if (!entity.is_alive())
@@ -64,6 +67,41 @@ public:
           auto pos = entity.get_mut<Entropy::Components::Position>();
           pos->pos = glm::vec3(x, y, z);
         });
+
+    _lua->set_function("rotate_3d", [](flecs::entity entity, float x, float y,
+                                       float z, float angle) {
+      if (!entity.is_alive())
+        return;
+
+      auto rot = entity.get_mut<Entropy::Components::Rotation>();
+      rot->orientation = glm::vec3(x, y, z);
+      rot->angle = angle;
+    });
+
+    _lua->set_function("scale_3d",
+                       [](flecs::entity entity, float x, float y, float z) {
+                         if (!entity.is_alive())
+                           return;
+
+                         auto s = entity.get_mut<Entropy::Components::Scale>();
+                         s->scale = glm::vec3(x, y, z);
+                       });
+
+    _lua->set_function("set_color", [](flecs::entity entity, float r, float g,
+                                       float b, float a) {
+      if (!entity.is_alive())
+        return;
+
+      auto col = entity.get_mut<Entropy::Components::Color>();
+      col->color = glm::vec4(r, g, b, a);
+    });
+
+    _lua->set_function("delete", [](flecs::entity entity) {
+      if (!entity.is_alive())
+        return;
+
+      entity.destruct();
+    });
   }
 
   // inline bool ExecuteScript(std::string script, std::string scriptFile,
@@ -85,9 +123,12 @@ public:
   //   }
   // }
 
+  // Lua state
+  sol::state *_lua;
+
+  // Dependencies
   World _world;
   Factories::EntityFactory _entityFactory;
-  sol::state *_lua;
 
 private:
 };

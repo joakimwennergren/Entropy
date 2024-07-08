@@ -30,7 +30,7 @@ struct SwapChainSupportDetails {
 struct Swapchain {
 
   Swapchain(VulkanBackend vbe) : _backend{vbe} {
-    swapChainImageFormat = VK_FORMAT_B8G8R8A8_SRGB;
+    swapChainImageFormat = VK_FORMAT_R8G8B8A8_SRGB;
     swapChainExtent =
         VkExtent2D{static_cast<uint32_t>(800), static_cast<uint32_t>(800)};
   }
@@ -42,7 +42,7 @@ struct Swapchain {
   // void CreateSwapChain(VkSwapchainKHR prev);
   // void RecreateSwapChain();
   void RecreateSwapChain(int width, int height) {
-    swapChainImageFormat = VK_FORMAT_B8G8R8A8_SRGB;
+    swapChainImageFormat = VK_FORMAT_R8G8B8A8_SRGB;
     swapChainExtent =
         VkExtent2D{static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
   }

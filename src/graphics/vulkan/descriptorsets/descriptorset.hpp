@@ -21,24 +21,25 @@ namespace Entropy {
 namespace Graphics {
 namespace Vulkan {
 namespace Descriptorsets {
-class Descriptorset  {
+class Descriptorset {
 public:
-  Descriptorset(VulkanBackend backend, DescriptorPool dp, DescriptorsetLayout layout)
-  {
-      std::vector<VkDescriptorSetLayout> layouts(MAX_CONCURRENT_FRAMES_IN_FLIGHT, layout.Get());
+  Descriptorset(VulkanBackend backend, DescriptorPool dp,
+                DescriptorsetLayout layout) {
+    std::vector<VkDescriptorSetLayout> layouts(MAX_CONCURRENT_FRAMES_IN_FLIGHT,
+                                               layout.Get());
 
-      VkDescriptorSetAllocateInfo allocInfo{};
-      allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-      allocInfo.descriptorPool = dp.Get();
-      allocInfo.descriptorSetCount = MAX_CONCURRENT_FRAMES_IN_FLIGHT;
-      allocInfo.pSetLayouts = layouts.data();
+    VkDescriptorSetAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocInfo.descriptorPool = dp.Get();
+    allocInfo.descriptorSetCount = MAX_CONCURRENT_FRAMES_IN_FLIGHT;
+    allocInfo.pSetLayouts = layouts.data();
 
-      _descriptorSets.resize(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+    _descriptorSets.resize(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
 
-      if (vkAllocateDescriptorSets(backend.logicalDevice.Get(), &allocInfo, _descriptorSets.data()) != VK_SUCCESS)
-      {
-          spdlog::error("Failed to allocate descriptor sets");
-      }
+    if (vkAllocateDescriptorSets(backend.logicalDevice.Get(), &allocInfo,
+                                 _descriptorSets.data()) != VK_SUCCESS) {
+      spdlog::error("Failed to allocate descriptor sets");
+    }
   }
 
   inline std::vector<VkDescriptorSet> Get() { return _descriptorSets; };
@@ -47,6 +48,6 @@ private:
   std::vector<VkDescriptorSet> _descriptorSets;
 };
 } // namespace Descriptorsets
+} // namespace Vulkan
 } // namespace Graphics
 } // namespace Entropy
-}

@@ -24,6 +24,7 @@
 #include <obj/model.hpp>
 
 #include <ecs/components/renderable.hpp>
+#include <ecs/components/sprite.hpp>
 
 #include <flecs/flecs.h>
 #include <timing/timer.hpp>
@@ -192,14 +193,11 @@ struct VulkanRenderer {
    * @return (void)
    */
   void Render(int width, int height, float xscale, float yscale,
-              bool needResize);
+              bool &needResize);
 
   std::shared_ptr<StagedBuffer> stagingBuffer;
 
 private:
-  // @todo temp!
-  float z = 0.0;
-
   // @todo
   std::shared_ptr<PerspectiveCamera> _camera;
   uint32_t _currentFrame = 0;

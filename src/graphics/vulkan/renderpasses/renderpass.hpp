@@ -100,29 +100,32 @@ struct RenderPass {
   void End(CommandBuffer commandBuffer) const;
 
   void RecreateFrameBuffers(int width, int height) {
+
     for (auto framebuffer : _frameBuffers) {
       vkDestroyFramebuffer(_vkBackend.logicalDevice.Get(), framebuffer,
                            nullptr);
     }
-    this->CreateFramebuffers(width, height);
+
+    CreateFramebuffers(width, height);
   }
   void RecreateDepthBuffer(int width, int height) {
 
     if (_depthBufferTexture != VK_NULL_HANDLE) {
-      delete _depthBufferTexture;
+      spdlog::error("resetings depth texture");
+      _depthBufferTexture.reset();
     }
 
     _depthBufferTexture =
         _textureFactory.CreateDepthBufferTexture(width, height);
   }
 
-  inline VkRenderPass Get() const { return this->_renderPass; };
+  inline VkRenderPass Get() const { return _renderPass; };
 
   std::vector<VkFramebuffer> _frameBuffers;
-  std::vector<SwapChainTexture> _swapChainTextures;
+  std::vector<std::shared_ptr<SwapChainTexture>> _swapChainTextures;
 
 private:
-  DepthBufferTexture *_depthBufferTexture = nullptr;
+  std::shared_ptr<DepthBufferTexture> _depthBufferTexture = nullptr;
   VkRenderPass _renderPass = VK_NULL_HANDLE;
 
   VulkanBackend _vkBackend;
@@ -151,8 +154,7 @@ private:
 
     for (size_t i = 0; i < _swapChainTextures.size(); i++) {
       std::array<VkImageView, 2> attachments = {
-          _swapChainTextures[i]._swapChainImageView,
-          _depthBufferTexture->_depthImageView};
+          _swapChainTextures[i]->_imageView, _depthBufferTexture->_imageView};
 
       VkFramebufferCreateInfo framebufferInfo{};
       framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;

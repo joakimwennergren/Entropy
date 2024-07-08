@@ -5,14 +5,6 @@
 
 using namespace Entropy::Graphics::Vulkan::Textures;
 
-/**
- * @brief Destroy the image texture
- */
-Texture::~Texture() {
-  // vkDestroyImageView(_logicalDevice->Get(), _imageView, nullptr);
-  // vkDestroyImage(_logicalDevice->Get(), _textureImage, nullptr);
-}
-
 void Texture::CreateTextureFromGLTFImage(tinygltf::Image &gltfimage){
 
     /*
@@ -382,13 +374,16 @@ void Texture::CreateImage(const uint32_t width, const uint32_t height,
  * @return VkFormat the color format
  */
 VkFormat Texture::GetColorFormat() {
-#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
-  return VK_FORMAT_R8G8B8A8_UNORM;
-#elif defined(BUILD_FOR_WINDOWS)
-  return VK_FORMAT_R8G8B8A8_UNORM;
-#else
-  return VK_FORMAT_B8G8R8A8_SRGB;
-#endif
+
+  return VK_FORMAT_R8G8B8A8_SRGB;
+
+  // #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
+  //   return VK_FORMAT_R8G8B8A8_UNORM;
+  // #elif defined(BUILD_FOR_WINDOWS)
+  //   return VK_FORMAT_R8G8B8A8_UNORM;
+  // #else
+  //   return VK_FORMAT_B8G8R8A8_SRGB;
+  // #endif
 }
 
 /*

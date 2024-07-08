@@ -1,6 +1,6 @@
 #pragma once
-
 #include "vulkan/vulkan_core.h"
+#include <cstdlib>
 #include <iostream>
 #include <vulkan/vulkan.hpp>
 

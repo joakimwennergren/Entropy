@@ -2,6 +2,7 @@
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <cameras/camera.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -14,7 +15,7 @@ namespace Cameras {
  * @author Joakim Wennergren
  * @since Thu Jul 04 2024
  */
-class PerspectiveCamera {
+class PerspectiveCamera : public Camera {
 private:
   float fov;
   float znear, zfar;

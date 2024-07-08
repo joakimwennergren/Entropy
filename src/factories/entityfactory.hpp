@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ecs/components/hasTexture.hpp"
 #include "ecs/components/objmodel.hpp"
 #include "factories/vulkan/bufferfactory.hpp"
 #include "factories/vulkan/texturefactory.hpp"
@@ -7,6 +8,7 @@
 #include "obj/model.hpp"
 #include <assets/assetid.hpp>
 #include <ecs/world.hpp>
+#include <graphics/primitives/2d/sprite.hpp>
 
 #include <ecs/components/boxcollisionshape3d.hpp>
 #include <ecs/components/color.hpp>
@@ -18,6 +20,7 @@
 #include <ecs/components/rigidbody3d.hpp>
 #include <ecs/components/rotation.hpp>
 #include <ecs/components/scale.hpp>
+#include <ecs/components/sprite.hpp>
 #include <ecs/components/tags/scripted.hpp>
 #include <ecs/components/trianglemeshcollisionshape3d.hpp>
 
@@ -42,10 +45,26 @@ struct EntityFactory {
     auto id = AssetId().GetId();
     e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
     e.set<Scale>({glm::vec3(1.0, 1.0, 1.0)});
-    e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 1.0});
+    e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
     e.set<Entropy::Components::OBJModel>({model});
     e.set<Entropy::Components::Renderable>({id, 0, true});
     e.set<Entropy::Components::Color>({glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}});
+    e.set<Entropy::Components::HasTexture>({model->texture});
+    return e;
+  }
+
+  flecs::entity CreateSprite(std::string path) {
+    auto sprite = std::make_shared<Entropy::Graphics::Primitives::Sprite>(
+        _bufferFactory, _textureFactory, path);
+    auto e = _world.gameWorld->entity();
+    auto id = AssetId().GetId();
+    e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
+    e.set<Scale>({glm::vec3(10.0, 10.0, 10.0)});
+    e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
+    e.set<Entropy::Components::SpriteComponent>({sprite});
+    e.set<Entropy::Components::Renderable>({id, 0, true});
+    e.set<Entropy::Components::Color>({glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}});
+    e.set<Entropy::Components::HasTexture>({sprite->texture});
     return e;
   }
 

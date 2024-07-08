@@ -3,6 +3,9 @@
 using namespace Entropy::Graphics::Vulkan::Instances;
 
 VulkanInstance::VulkanInstance() {
+
+  setenv("MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS", "1", 1);
+
   VkApplicationInfo appInfo{};
   appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
   appInfo.pApplicationName = "Entropy Application";
@@ -30,6 +33,8 @@ VulkanInstance::VulkanInstance() {
   for (const auto &extension : extensionProps) {
     extensions.push_back(extension.extensionName);
   }
+
+  extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
 
 #ifdef BUILD_FOR_MACOS
   extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
