@@ -1,15 +1,19 @@
 #pragma once
 
-namespace Entropy
-{
-    namespace Components
-    {
-        struct Renderable
-        {
-            uint32_t id = 0;
-            int type = 0;
-            bool visible = true;
-            bool shouldBeDeleted = false;
-        };
-    }
-}
+#include "graphics/vulkan/buffers/indexbuffer.hpp"
+#include "graphics/vulkan/buffers/vertexbuffer.hpp"
+#include <stdint.h>
+
+namespace Entropy {
+namespace Components {
+struct Renderable {
+  uint32_t id = 0;
+  bool visible = true;
+  std::shared_ptr<Graphics::Vulkan::Buffers::VertexBuffer> vertexBuffer =
+      nullptr;
+  std::shared_ptr<IndexBuffer<uint16_t>> indexBuffer = nullptr;
+  std::vector<uint16_t> indices = {};
+  std::vector<Vertex> vertices = {};
+};
+} // namespace Components
+} // namespace Entropy

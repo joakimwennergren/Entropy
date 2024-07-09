@@ -96,7 +96,6 @@ public:
   float lastX = 0.0;
   float lastY = 0.0;
   // @todo look over if this should be protected..
-  std::shared_ptr<Mouse> mouse;
   bool isResizing = false;
   std::unique_ptr<Entropy::Timing::Timer> _timer;
   float mouse_x;
@@ -152,12 +151,6 @@ extern "C" void say_hello();
 
 class EntropyApplication : public UI::ApplicationDelegate {
 public:
-  std::shared_ptr<Keyboard> _keyboard;
-  std::shared_ptr<Cam> _camera;
-  bool firstMouse;
-  float lastX = 0.0;
-  float lastY = 0.0;
-
   std::shared_ptr<ServiceLocator> serviceLocator;
   std::shared_ptr<Physics2D> physics2d;
   sol::protected_function luaOnRender;
@@ -262,36 +255,12 @@ public:
 
     CA::MetalLayer *layer = _pMtkView->currentDrawable()->layer();
 
-    // Create items for vulkan
-    _vkInstance = std::make_shared<VulkanInstance>("Entropy tests");
-    auto windowSurface = std::make_shared<WindowSurface>(vkInstance, layer);
-    auto physicalDevice =
-        std::make_shared<PhysicalDevice>(vkInstance, windowSurface);
-    auto logicalDevice =
-        std::make_shared<LogicalDevice>(physicalDevice, windowSurface);
-    auto swapChain = std::make_shared<Swapchain>(
-        physicalDevice->Get(), logicalDevice->Get(), windowSurface, extent);
-    auto commandPool = std::make_shared<CommandPool>(
-        logicalDevice, physicalDevice, windowSurface);
-    auto descriptorPool = std::make_shared<DescriptorPool>(logicalDevice);
+    kgr::container vulkanContainer;
+    auto renderer = vulkanContainer.service<VulkanRenderService>();
+    auto world = vulkanContainer.service<WorldService>();
+    auto entityFactory = vulkanContainer.service<EntityFactoryService>();
 
-    // Add services to service locator
-    serviceLocator = std::make_shared<ServiceLocator>();
-
-    _keyboard = std::make_shared<Keyboard>(serviceLocator);
-    _camera = std::make_shared<Cam>(glm::vec3(0.0f, 0.0f, 3.0f));
-    serviceLocator->AddService(_camera);
-    serviceLocator->AddService(_keyboard);
-    serviceLocator->AddService(physicalDevice);
-    serviceLocator->AddService(logicalDevice);
-    serviceLocator->AddService(descriptorPool);
-    serviceLocator->AddService(swapChain);
-    serviceLocator->AddService(commandPool);
-    physics2d = std::make_shared<Physics2D>(serviceLocator);
-    serviceLocator->AddService(physics2d);
-
-    _renderer = std::make_shared<Renderer>(serviceLocator);
-    _pViewDelegate->_renderer = _renderer;
+    _pViewDelegate->_renderer = &renderer;
     _pViewDelegate->frame = frame;
     _pViewDelegate->app = this;
 

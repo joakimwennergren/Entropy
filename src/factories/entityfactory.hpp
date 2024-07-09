@@ -47,7 +47,11 @@ struct EntityFactory {
     e.set<Scale>({glm::vec3(1.0, 1.0, 1.0)});
     e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
     e.set<Entropy::Components::OBJModel>({model});
-    e.set<Entropy::Components::Renderable>({id, 0, true});
+    auto renderable = Entropy::Components::Renderable();
+    renderable.id = id;
+    renderable.vertexBuffer = model->vertexBuffer;
+    renderable.vertices = model->vertices;
+    e.set(renderable);
     e.set<Entropy::Components::Color>({glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}});
     e.set<Entropy::Components::HasTexture>({model->texture});
     return e;
@@ -62,7 +66,8 @@ struct EntityFactory {
     e.set<Scale>({glm::vec3(10.0, 10.0, 10.0)});
     e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
     e.set<Entropy::Components::SpriteComponent>({sprite});
-    e.set<Entropy::Components::Renderable>({id, 0, true});
+    e.set<Entropy::Components::Renderable>(
+        {id, true, sprite->vertexBuffer, sprite->indexBuffer, sprite->indices});
     e.set<Entropy::Components::Color>({glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}});
     e.set<Entropy::Components::HasTexture>({sprite->texture});
     return e;

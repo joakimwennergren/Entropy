@@ -4,6 +4,7 @@
 #include "ecs/components/hasTexture.hpp"
 #include "ecs/components/objmodel.hpp"
 #include "ecs/components/position.hpp"
+#include "ecs/components/renderable.hpp"
 #include "ecs/components/rotation.hpp"
 #include "ecs/components/scale.hpp"
 #include "ecs/components/sprite.hpp"
@@ -98,6 +99,7 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
         auto color_component = e.get_ref<Entropy::Components::Color>();
         auto rotation_component = e.get_ref<Entropy::Components::Rotation>();
         auto texture_component = e.get_ref<Entropy::Components::HasTexture>();
+        auto render_component = e.get_ref<Entropy::Components::Renderable>();
 
         auto translate = glm::mat4(1.0f);
         auto rotation = glm::mat4(1.0f);
@@ -160,34 +162,37 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
                                 _staticPipeline->GetPipelineLayout(), 0, 1,
                                 &ds0, 0, nullptr);
 
-        if (e.has<Entropy::Components::OBJModel>()) {
-          auto model = e.get<Entropy::Components::OBJModel>();
+        if (render_component.get() != nullptr &&
+            e.get<Entropy::Components::Renderable>()->indexBuffer == nullptr) {
+
+          auto renderable = e.get<Entropy::Components::Renderable>();
           // Bind vertex & index buffers
           VkBuffer vertexBuffers[] = {
-              model->model->vertexBuffer->GetVulkanBuffer()};
+              renderable->vertexBuffer->GetVulkanBuffer()};
           VkDeviceSize offsets[] = {0};
           vkCmdBindVertexBuffers(_commandBuffers[_currentFrame].Get(), 0, 1,
                                  vertexBuffers, offsets);
 
           vkCmdDraw(_commandBuffers[_currentFrame].Get(),
-                    model->model->vertices.size(), 1, 0, r.id - 1);
+                    renderable->vertices.size(), 1, 0, r.id - 1);
         }
 
-        if (e.has<Entropy::Components::SpriteComponent>()) {
-          auto sprite = e.get<Entropy::Components::SpriteComponent>();
+        if (render_component.get() != nullptr &&
+            e.get<Entropy::Components::Renderable>()->indexBuffer != nullptr) {
+          auto renderable = e.get<Entropy::Components::Renderable>();
           // Bind vertex & index buffers
           VkBuffer vertexBuffers[] = {
-              sprite->sprite->vertexBuffer->GetVulkanBuffer()};
+              renderable->vertexBuffer->GetVulkanBuffer()};
           VkDeviceSize offsets[] = {0};
           vkCmdBindVertexBuffers(_commandBuffers[_currentFrame].Get(), 0, 1,
                                  vertexBuffers, offsets);
 
           vkCmdBindIndexBuffer(_commandBuffers[_currentFrame].Get(),
-                               sprite->sprite->indexBuffer->GetVulkanBuffer(),
-                               0, VK_INDEX_TYPE_UINT16);
+                               renderable->indexBuffer->GetVulkanBuffer(), 0,
+                               VK_INDEX_TYPE_UINT16);
           // Draw current renderable
           vkCmdDrawIndexed(_commandBuffers[_currentFrame].Get(),
-                           sprite->sprite->indices.size(), 1, 0, 0, r.id - 1);
+                           renderable->indices.size(), 1, 0, 0, r.id - 1);
         }
       });
 

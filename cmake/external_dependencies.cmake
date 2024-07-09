@@ -1,4 +1,5 @@
 # External Dependencies
+
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 add_compile_definitions(HAVE_FCNTL_H=1)
 
@@ -123,6 +124,7 @@ add_subdirectory(external/myers-diff)
 set(TINYGLTF_INSTALL OFF)
 set(TINYGLTF_BUILD_LOADER_EXAMPLE  OFF)
 add_subdirectory(external/tinygltf)
+
 if(ANDROID)
   target_compile_definitions(tinygltf PRIVATE TINYGLTF_ANDROID_LOAD_FROM_ASSETS)
 endif()
