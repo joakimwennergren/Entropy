@@ -25,7 +25,7 @@ struct StaticPipeline : public Pipeline {
 private:
   std::vector<VkDescriptorSetLayout> CreateDescriptorSets() {
 
-    std::vector<VkDescriptorSetLayout> dsLayouts(1);
+    std::vector<VkDescriptorSetLayout> dsLayouts(2);
 
     VkDescriptorSetLayoutBinding instanceLayoutBinding = {};
     instanceLayoutBinding.binding = 0; // Binding for instance buffer
@@ -43,12 +43,11 @@ private:
 
     VkDescriptorSetLayoutBinding samplerLayoutBinding{};
     samplerLayoutBinding.binding = 2;
-    samplerLayoutBinding.descriptorCount = 1024;
+    samplerLayoutBinding.descriptorCount = 1;
     samplerLayoutBinding.descriptorType =
         VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     samplerLayoutBinding.pImmutableSamplers = nullptr;
     samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
     // VkDescriptorSetLayoutBinding uboDynLayoutBinding{};
     // uboDynLayoutBinding.binding = 1;
     // uboDynLayoutBinding.descriptorCount = 1;
@@ -71,20 +70,32 @@ private:
     // textureLayoutBinding.pImmutableSamplers = nullptr;
     // textureLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-    std::vector<VkDescriptorSetLayoutBinding> bindings = {
-        instanceLayoutBinding, uboLayoutBinding, samplerLayoutBinding};
+    std::vector<VkDescriptorSetLayoutBinding> bindings = {instanceLayoutBinding,
+                                                          uboLayoutBinding};
+
+    std::vector<VkDescriptorSetLayoutBinding> bindings2 = {
+        samplerLayoutBinding};
+
+    std::vector<VkDescriptorBindingFlagsEXT> bindingFlags0 = {};
+
+    std::vector<VkDescriptorBindingFlagsEXT> bindingFlags1 = {
+        // VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT_EXT, // For binding 0
+    };
 
     auto descriptorSetLayout0 =
-        _descriptorSetLayoutFactory.CreateLayout(bindings);
+        _descriptorSetLayoutFactory.CreateLayout(bindings, bindingFlags0);
+
+    auto descriptorSetLayout1 =
+        _descriptorSetLayoutFactory.CreateLayout(bindings2, bindingFlags1);
 
     dsLayouts[0] = descriptorSetLayout0.Get();
-    // dsLayouts[1] = descriptorSetLayout1.Get();
+    dsLayouts[1] = descriptorSetLayout1.Get();
 
     descriptorSets.push_back(
         _descriptorSetFactory.CreateDescriptorSet(descriptorSetLayout0));
 
-    // descriptorSets.push_back(
-    //     _descriptorSetFactory.CreateDescriptorSet(descriptorSetLayout1));
+    descriptorSets.push_back(
+        _descriptorSetFactory.CreateDescriptorSet(descriptorSetLayout1));
 
     return dsLayouts;
   }

@@ -40,8 +40,8 @@ struct BufferFactory {
     return std::make_shared<StorageBuffer>(_vkBackend, size, data);
   }
 
-  UniformBuffer *CreateUniformBuffer(VkDeviceSize bufferSize) {
-    return new UniformBuffer(_vkBackend, bufferSize);
+  std::shared_ptr<UniformBuffer> CreateUniformBuffer(VkDeviceSize bufferSize) {
+    return std::make_shared<UniformBuffer>(_vkBackend, bufferSize);
   }
 
   // Vulkan Dependency

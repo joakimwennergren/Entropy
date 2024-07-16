@@ -56,31 +56,7 @@ WindowSurface::WindowSurface(std::shared_ptr<VulkanInstance> instance,
 #endif
 
 #ifdef BUILD_FOR_IOS
-WindowSurface::WindowSurface(std::shared_ptr<VulkanInstance> instance,
-                             CA::MetalLayer *layer) {
-  if (instance == nullptr) {
-    return;
-  }
 
-  _instance = instance;
-
-  if (layer == nullptr) {
-    return;
-  }
-
-  VkIOSSurfaceCreateInfoMVK createInfo{};
-  createInfo.sType = VK_STRUCTURE_TYPE_IOS_SURFACE_CREATE_INFO_MVK;
-  createInfo.pNext = nullptr;
-  createInfo.flags = 0;
-  createInfo.pView = layer;
-
-  if (vkCreateIOSSurfaceMVK(instance->Get(), &createInfo, nullptr, &_surface) !=
-      VK_SUCCESS) {
-    std::cout << "Failed to create a window surface for platform 'iOS'"
-              << std::endl;
-    exit(EXIT_FAILURE);
-  }
-}
 #endif
 
 WindowSurface::~WindowSurface() {

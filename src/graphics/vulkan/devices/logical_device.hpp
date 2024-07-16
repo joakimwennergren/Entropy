@@ -60,10 +60,10 @@ struct LogicalDevice {
     VkPhysicalDeviceDescriptorIndexingFeaturesEXT indexingFeatures = {};
     indexingFeatures.sType =
         VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT;
-    indexingFeatures.runtimeDescriptorArray = VK_TRUE;
-    indexingFeatures.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
+    // indexingFeatures.runtimeDescriptorArray = VK_TRUE;
+    // indexingFeatures.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
     indexingFeatures.descriptorBindingPartiallyBound = VK_TRUE;
-    indexingFeatures.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
+    // indexingFeatures.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
 
     VkDeviceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;

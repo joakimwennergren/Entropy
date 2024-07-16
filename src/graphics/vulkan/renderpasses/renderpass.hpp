@@ -27,10 +27,10 @@ namespace RenderPasses {
 struct RenderPass {
 
   RenderPass(VulkanBackend backend, Swapchain swapChain, TextureFactory tf)
-      : _vkBackend{backend}, _swapChain{swapChain}, _textureFactory{tf} {
+      : _vkBackend{backend}, _textureFactory{tf}, _swapChain{swapChain} {
 
-    RecreateDepthBuffer(_swapChain.swapChainExtent.width,
-                        _swapChain.swapChainExtent.height);
+    RecreateDepthBuffer(swapChain.swapChainExtent.width,
+                        swapChain.swapChainExtent.height);
 
     VkAttachmentDescription depthAttachment{};
     depthAttachment.format = FindDepthFormat();
@@ -49,7 +49,7 @@ struct RenderPass {
         VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
     VkAttachmentDescription colorAttachment{};
-    colorAttachment.format = _swapChain.swapChainImageFormat;
+    colorAttachment.format = VK_FORMAT_B8G8R8A8_UNORM;
     colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
     colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
     colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -91,22 +91,21 @@ struct RenderPass {
       spdlog::error("Couldn't create renderpass");
       return;
     }
-
-    this->CreateFramebuffers(_swapChain.swapChainExtent.width,
-                             _swapChain.swapChainExtent.height);
   }
   void Begin(CommandBuffer commandBuffer, uint32_t imageIndex, int width,
              int height) const;
   void End(CommandBuffer commandBuffer) const;
 
-  void RecreateFrameBuffers(int width, int height) {
+  void RecreateFrameBuffers(int width, int height, bool app) {
 
     for (auto framebuffer : _frameBuffers) {
       vkDestroyFramebuffer(_vkBackend.logicalDevice.Get(), framebuffer,
                            nullptr);
     }
-
-    CreateFramebuffers(width, height);
+    if (app)
+      CreateFramebuffers(_swapChain, width, height);
+    else
+      CreateFramebuffers(width, height);
   }
   void RecreateDepthBuffer(int width, int height) {
 
@@ -124,37 +123,52 @@ struct RenderPass {
   std::vector<VkFramebuffer> _frameBuffers;
   std::vector<std::shared_ptr<SwapChainTexture>> _swapChainTextures;
 
-private:
-  std::shared_ptr<DepthBufferTexture> _depthBufferTexture = nullptr;
-  VkRenderPass _renderPass = VK_NULL_HANDLE;
-
-  VulkanBackend _vkBackend;
-  Swapchain _swapChain;
-  TextureFactory _textureFactory;
-
-  VkFormat findSupportedFormat(const std::vector<VkFormat> &candidates,
-                               VkImageTiling tiling,
-                               VkFormatFeatureFlags features);
-  VkFormat FindDepthFormat();
-
-  void CreateImage(uint32_t width, uint32_t height, VkFormat format,
-                   VkImageTiling tiling, VkImageUsageFlags usage);
-
   void CreateFramebuffers(int width, int height) {
 
     _swapChainTextures.clear();
     _frameBuffers.clear();
 
-    auto swapChainTexture =
-        _textureFactory.CreateSwapChainTexture(width, height);
-
-    _swapChainTextures.push_back(swapChainTexture);
+    _swapChainTextures.push_back(
+        _textureFactory.CreateSwapChainTexture(width, height));
 
     _frameBuffers.resize(1);
 
-    for (size_t i = 0; i < _swapChainTextures.size(); i++) {
+    std::array<VkImageView, 2> attachments = {_swapChainTextures[0]->_imageView,
+                                              _depthBufferTexture->_imageView};
+
+    VkFramebufferCreateInfo framebufferInfo{};
+    framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+    framebufferInfo.renderPass = _renderPass;
+    framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+    framebufferInfo.pAttachments = attachments.data();
+    framebufferInfo.width = width;
+    framebufferInfo.height = height;
+    framebufferInfo.layers = 1;
+
+    VkResult res =
+        vkCreateFramebuffer(_vkBackend.logicalDevice.Get(), &framebufferInfo,
+                            nullptr, &_frameBuffers[0]);
+  }
+
+  void CreateFramebuffers(Swapchain swapChain, int width, int height) {
+
+    //_swapChainTextures.clear();
+    _frameBuffers.clear();
+
+    // auto swapChainTexture =
+    //     _textureFactory.CreateSwapChainTexture(width, height);
+
+    // auto swapChainTexture2 =
+    //     _textureFactory.CreateSwapChainTexture(width, height);
+
+    // _swapChainTextures.push_back(swapChainTexture);
+    // _swapChainTextures.push_back(swapChainTexture2);
+
+    _frameBuffers.resize(3);
+
+    for (size_t i = 0; i < swapChain._swapChainImageViews.size(); i++) {
       std::array<VkImageView, 2> attachments = {
-          _swapChainTextures[i]->_imageView, _depthBufferTexture->_imageView};
+          swapChain._swapChainImageViews[i], _depthBufferTexture->_imageView};
 
       VkFramebufferCreateInfo framebufferInfo{};
       framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -166,13 +180,28 @@ private:
       framebufferInfo.height = height;
       framebufferInfo.layers = 1;
 
-      if (vkCreateFramebuffer(_vkBackend.logicalDevice.Get(), &framebufferInfo,
-                              nullptr, &_frameBuffers[i]) != VK_SUCCESS) {
-        spdlog::error("Could not create framebuffers");
-        return;
-      }
+      VkResult res =
+          vkCreateFramebuffer(_vkBackend.logicalDevice.Get(), &framebufferInfo,
+                              nullptr, &_frameBuffers[i]);
     }
   }
+  Swapchain _swapChain;
+
+private:
+  std::shared_ptr<DepthBufferTexture> _depthBufferTexture = nullptr;
+  VkRenderPass _renderPass = VK_NULL_HANDLE;
+
+  VulkanBackend _vkBackend;
+
+  TextureFactory _textureFactory;
+
+  VkFormat findSupportedFormat(const std::vector<VkFormat> &candidates,
+                               VkImageTiling tiling,
+                               VkFormatFeatureFlags features);
+  VkFormat FindDepthFormat();
+
+  void CreateImage(uint32_t width, uint32_t height, VkFormat format,
+                   VkImageTiling tiling, VkImageUsageFlags usage);
 };
 
 } // namespace RenderPasses

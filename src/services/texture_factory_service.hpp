@@ -3,6 +3,7 @@
 
 #include "services/buffer_factory_service.hpp"
 #include "services/command_pool_service.hpp"
+#include "services/descriptor_pool_service.hpp"
 #include <factories/vulkan/texturefactory.hpp>
 #include <kangaru/kangaru.hpp>
 #include <services/allocator_service.hpp>
@@ -19,7 +20,7 @@ struct TextureFactoryService
           TextureFactory,
           kgr::dependency<VulkanBackendService, QueueSyncService,
                           AllocatorService, BufferFactoryService,
-                          CommandPoolService>> {};
+                          CommandPoolService, DescriptorPoolService>> {};
 
 } // namespace Services
 } // namespace Graphics

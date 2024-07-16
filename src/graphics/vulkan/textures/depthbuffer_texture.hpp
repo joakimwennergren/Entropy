@@ -25,8 +25,8 @@ namespace Textures {
 struct DepthBufferTexture : public Texture {
   DepthBufferTexture(VulkanBackend vbe, QueueSync qs, Allocator allocator,
                      Factories::Vulkan::BufferFactory bf, CommandPool cp,
-                     unsigned int width, unsigned int height)
-      : Texture(vbe, qs, allocator, bf, cp) {
+                     DescriptorPool dp, unsigned int width, unsigned int height)
+      : Texture(vbe, qs, allocator, bf, cp, dp) {
 
     VkFormat depthFormat = FindDepthFormat(vbe);
 

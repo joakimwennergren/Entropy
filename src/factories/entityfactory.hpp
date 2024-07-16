@@ -4,6 +4,7 @@
 #include "ecs/components/objmodel.hpp"
 #include "factories/vulkan/bufferfactory.hpp"
 #include "factories/vulkan/texturefactory.hpp"
+#include "filesystem/filesystem.hpp"
 #include "graphics/vulkan/vulkan_backend.hpp"
 #include "obj/model.hpp"
 #include <assets/assetid.hpp>
@@ -39,12 +40,13 @@ struct EntityFactory {
   flecs::entity CreateOBJModel(std::string filePath) {
     auto model = std::make_shared<OBJ::ObjModel>(_backend, _bufferFactory,
                                                  _textureFactory);
-    model->loadFromFile("/Users/joakim/Desktop/GTKPoC/12140_Skull_v3_L2.obj",
-                        "/Users/joakim/Desktop/models/Skull.png");
+    model->loadFromFile(
+        "/Users/joakim/Desktop/Entropy-Editor/12140_Skull_v3_L2.obj",
+        "/Users/joakim/Desktop/models/Skull.png");
     auto e = _world.gameWorld->entity();
     auto id = AssetId().GetId();
     e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
-    e.set<Scale>({glm::vec3(1.0, 1.0, 1.0)});
+    e.set<Scale>({glm::vec3(25.0, 25.0, 25.0)});
     e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
     e.set<Entropy::Components::OBJModel>({model});
     auto renderable = Entropy::Components::Renderable();
@@ -52,18 +54,18 @@ struct EntityFactory {
     renderable.vertexBuffer = model->vertexBuffer;
     renderable.vertices = model->vertices;
     e.set(renderable);
-    e.set<Entropy::Components::Color>({glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}});
+    e.set<Entropy::Components::Color>({glm::vec4{1.0f, 0.0f, 1.0f, 1.0f}});
     e.set<Entropy::Components::HasTexture>({model->texture});
     return e;
   }
 
   flecs::entity CreateSprite(std::string path) {
     auto sprite = std::make_shared<Entropy::Graphics::Primitives::Sprite>(
-        _bufferFactory, _textureFactory, path);
+        _bufferFactory, _textureFactory, GetSpritesDir() + path);
     auto e = _world.gameWorld->entity();
     auto id = AssetId().GetId();
     e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
-    e.set<Scale>({glm::vec3(10.0, 10.0, 10.0)});
+    e.set<Scale>({glm::vec3(25.0, 25.0, 25.0)});
     e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
     e.set<Entropy::Components::SpriteComponent>({sprite});
     e.set<Entropy::Components::Renderable>(

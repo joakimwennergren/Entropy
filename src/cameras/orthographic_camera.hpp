@@ -15,7 +15,7 @@ namespace Cameras {
  * @author Joakim Wennergren
  * @since Thu Jul 04 2024
  */
-class PerspectiveCamera : public Camera {
+class OrthographicCamera : public Camera {
 private:
   float fov;
   float znear, zfar;
@@ -86,13 +86,17 @@ public:
 
   float getFarClip() { return zfar; }
 
-  void setPerspective(float fov, float aspect, float znear, float zfar) {
+  void setPerspective(float fov, int width, int height, float znear,
+                      float zfar) {
     glm::mat4 currentMatrix = matrices.perspective;
     this->fov = fov;
     this->znear = znear;
     this->zfar = zfar;
-    matrices.perspective =
-        glm::perspective(glm::radians(fov), aspect, znear, zfar);
+    matrices.perspective = glm::ortho(0.0f, static_cast<float>(width), 0.0f,
+                                      static_cast<float>(height), 0.1f, 100.0f);
+    matrices.view =
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f),
+                    glm::vec3(0.0f, 1.0f, 0.0f));
     if (flipY) {
       matrices.perspective[1][1] *= -1.0f;
     }

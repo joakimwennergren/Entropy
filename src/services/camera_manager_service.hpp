@@ -1,12 +1,12 @@
 
 #pragma once
 
+#include "cameras/camera_manager.hpp"
 #include "graphics/renderers/vulkan_renderer.hpp"
 #include "graphics/vulkan/devices/logical_device.hpp"
 #include "kangaru/service.hpp"
 #include "services/allocator_service.hpp"
 #include "services/buffer_factory_service.hpp"
-#include "services/camera_manager_service.hpp"
 #include "services/command_pool_service.hpp"
 #include "services/logical_device_service.hpp"
 #include "services/physical_device_service.hpp"
@@ -28,13 +28,7 @@ namespace Entropy {
 namespace Graphics {
 namespace Services {
 
-struct VulkanRenderService
-    : kgr::service<VulkanRenderer,
-                   kgr::dependency<VulkanBackendService, QueueSyncService,
-                                   RenderPassService, PipelineFactoryService,
-                                   BufferFactoryService, CommandPoolService,
-                                   SwapchainService, WorldService,
-                                   AllocatorService, CameraManagerService>> {};
+struct CameraManagerService : kgr::single_service<CameraManager> {};
 
 } // namespace Services
 } // namespace Graphics

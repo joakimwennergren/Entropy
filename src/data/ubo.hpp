@@ -22,8 +22,6 @@ struct UboDataDynamic {
 struct InstanceData {
   glm::mat4 model;
   glm::vec4 color;
-  unsigned int textureId;
-  float _pad[3];
 };
 
 } // namespace Data

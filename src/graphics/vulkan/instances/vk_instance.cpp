@@ -4,8 +4,6 @@ using namespace Entropy::Graphics::Vulkan::Instances;
 
 VulkanInstance::VulkanInstance() {
 
-  setenv("MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS", "1", 1);
-
   VkApplicationInfo appInfo{};
   appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
   appInfo.pApplicationName = "Entropy Application";

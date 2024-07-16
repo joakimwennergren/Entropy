@@ -18,6 +18,7 @@
 #include <graphics/vulkan/buffers/buffer.hpp>
 #include <graphics/vulkan/buffers/stagedbuffer.hpp>
 #include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
+#include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
 #include <graphics/vulkan/imageviews/imageview.hpp>
 #include <graphics/vulkan/memory/allocator.hpp>
 #include <graphics/vulkan/synchronization/queuesync.hpp>
@@ -36,6 +37,7 @@ using namespace Entropy::Graphics::Vulkan::CommandBuffers;
 using namespace Entropy::Graphics::Vulkan::ImageViews;
 using namespace Entropy::Graphics::Vulkan::Memory;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
+using namespace Entropy::Graphics::Vulkan::DescriptorPools;
 
 namespace Entropy {
 namespace Graphics {
@@ -45,9 +47,10 @@ namespace Textures {
 class Texture {
 public:
   Texture(VulkanBackend vbe, QueueSync qs, Allocator allocator,
-          Factories::Vulkan::BufferFactory bf, CommandPool cp)
+          Factories::Vulkan::BufferFactory bf, CommandPool cp,
+          DescriptorPool dp)
       : _vulkanBackend{vbe}, _queueSync{qs}, _allocator{allocator},
-        _bufferFactory{bf}, _commandPool{cp} {
+        _bufferFactory{bf}, _commandPool{cp}, _descriptorPool{dp} {
     textureId = TextureId().GetId();
   }
 
@@ -97,6 +100,7 @@ public:
   Allocator _allocator;
   Factories::Vulkan::BufferFactory _bufferFactory;
   CommandPool _commandPool;
+  DescriptorPool _descriptorPool;
 };
 } // namespace Textures
 } // namespace Vulkan

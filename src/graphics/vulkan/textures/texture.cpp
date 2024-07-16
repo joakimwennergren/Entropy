@@ -1,7 +1,4 @@
-
-
 #include "texture.hpp"
-#include "vulkan/vulkan_core.h"
 
 using namespace Entropy::Graphics::Vulkan::Textures;
 
@@ -375,7 +372,7 @@ void Texture::CreateImage(const uint32_t width, const uint32_t height,
  */
 VkFormat Texture::GetColorFormat() {
 
-  return VK_FORMAT_R8G8B8A8_SRGB;
+  return VK_FORMAT_B8G8R8A8_UNORM;
 
   // #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
   //   return VK_FORMAT_R8G8B8A8_UNORM;

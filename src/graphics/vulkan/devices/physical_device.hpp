@@ -1,5 +1,6 @@
 #pragma once
 
+#include "vulkan/vulkan_core.h"
 #include <config.hpp>
 #include <graphics/vulkan/instances/vk_instance.hpp>
 #include <spdlog/spdlog.h>
@@ -44,13 +45,13 @@ struct PhysicalDevice {
   std::vector<const char *> deviceExtensions = {
       VK_KHR_SWAPCHAIN_EXTENSION_NAME,
       VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME,
-      VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME, "VK_EXT_descriptor_indexing",
       "VK_KHR_portability_subset"};
 #endif
 
 #ifdef BUILD_FOR_IOS
   std::vector<const char *> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-                                                "VK_KHR_portability_subset"};
+                                                "VK_KHR_portability_subset",
+                                                "VK_EXT_metal_objects"};
 #endif
 
 #ifdef BUILD_FOR_WINDOWS

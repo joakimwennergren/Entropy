@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include "services/camera_manager_service.hpp"
 #include <kangaru/kangaru.hpp>
 #include <scripting/lua.hpp>
 #include <services/world_service.hpp>

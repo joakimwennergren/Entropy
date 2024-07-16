@@ -25,8 +25,8 @@ namespace Textures {
 struct SwapChainTexture : public Texture {
   SwapChainTexture(VulkanBackend vbe, QueueSync qs, Allocator allocator,
                    Factories::Vulkan::BufferFactory bf, CommandPool cp,
-                   unsigned int width, unsigned int height)
-      : Texture(vbe, qs, allocator, bf, cp) {
+                   DescriptorPool dp, unsigned int width, unsigned int height)
+      : Texture(vbe, qs, allocator, bf, cp, dp) {
     VkImageCreateInfo imageInfo{};
     imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
     imageInfo.imageType = VK_IMAGE_TYPE_2D;
@@ -53,7 +53,7 @@ struct SwapChainTexture : public Texture {
     _imageView = ImageView(vbe, _textureImage, textureFormat).Get();
   };
 
-  VkFormat textureFormat = VK_FORMAT_R8G8B8A8_SRGB;
+  VkFormat textureFormat = VK_FORMAT_B8G8R8A8_UNORM;
 
 private:
   VmaAllocation _allocation = VK_NULL_HANDLE;

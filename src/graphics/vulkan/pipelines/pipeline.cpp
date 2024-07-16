@@ -1,4 +1,6 @@
 #include "pipeline.hpp"
+#include "data/pushcontants.hpp"
+#include "vulkan/vulkan_core.h"
 
 using namespace Entropy::Graphics::Vulkan::Pipelines;
 
@@ -132,12 +134,21 @@ void Pipeline::Build(Shader shader,
   colorBlending.blendConstants[2] = 0.0f; // Optional
   colorBlending.blendConstants[3] = 0.0f; // Optional
 
+  // setup push constants
+  VkPushConstantRange push_constant;
+  // this push constant range starts at the beginning
+  push_constant.offset = 0;
+  // this push constant range takes up the size of a MeshPushConstants struct
+  push_constant.size = sizeof(PushConstBlock);
+  // this push constant range is accessible only in the vertex shader
+  push_constant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
   VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
   pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
   pipelineLayoutInfo.setLayoutCount = dsLayouts.size();
   pipelineLayoutInfo.pSetLayouts = dsLayouts.data();
-  pipelineLayoutInfo.pPushConstantRanges = nullptr; //&push_constant;
-  pipelineLayoutInfo.pushConstantRangeCount = 0;
+  pipelineLayoutInfo.pPushConstantRanges = &push_constant; //&push_constant;
+  pipelineLayoutInfo.pushConstantRangeCount = 1;
   glm::vec2 depthBounds = {0.0, 0.0};
 
   if (vkCreatePipelineLayout(_vulkanBackend.logicalDevice.Get(),
@@ -152,7 +163,7 @@ void Pipeline::Build(Shader shader,
       VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
   depthStencil.depthTestEnable = VK_TRUE;
   depthStencil.depthWriteEnable = VK_TRUE;
-  depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
+  depthStencil.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
   depthStencil.depthBoundsTestEnable = VK_FALSE;
   depthStencil.minDepthBounds = 0.0f; // Optional
   depthStencil.maxDepthBounds = 1.0f; // Optional

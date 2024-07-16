@@ -1,11 +1,9 @@
 #version 450
 
-#extension GL_EXT_nonuniform_qualifier : enable
-
 //layout(set = 1, binding = 1) uniform sampler texSampler;
 //layout(set = 1, binding = 2) uniform texture2D _texture;
 
-layout(set = 0, binding = 2) uniform sampler2D Sampler2D[];
+layout(set = 1, binding = 2) uniform sampler2D Sampler2D;
 
 layout (location = 1) in vec3 inNormal;
 layout (location = 2) in vec2 inUV0;
@@ -61,7 +59,7 @@ void main()
 
         // //vec4 sampled = texture(sampler2D(_texture, texSampler), inUV0);
 
-        outColor = inColor1 * texture(Sampler2D[inTextureId], inUV0);
+        outColor = inColor1 * texture(Sampler2D, inUV0);
 
 
 

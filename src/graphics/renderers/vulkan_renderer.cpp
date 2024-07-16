@@ -1,4 +1,5 @@
 #include "vulkan_renderer.hpp"
+#include "data/pushcontants.hpp"
 #include "data/ubo.hpp"
 #include "ecs/components/color.hpp"
 #include "ecs/components/hasTexture.hpp"
@@ -8,12 +9,32 @@
 #include "ecs/components/rotation.hpp"
 #include "ecs/components/scale.hpp"
 #include "ecs/components/sprite.hpp"
-#include "vulkan/vulkan_core.h"
+#include "glm/gtx/string_cast.hpp"
 
 using namespace Entropy::Graphics::Vulkan::Renderers;
 
 void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
-                            bool &needResize) {
+                            bool &needResize, bool app) {
+
+  if (_renderPass._frameBuffers[0] == nullptr) {
+    spdlog::error("NO FRAMEBUFFERS YET");
+    return;
+  }
+
+  if (app) {
+    auto currentFence = _synchronizer->GetFences()[_currentFrame];
+
+    vkWaitForFences(_backend.logicalDevice.Get(), 1, &currentFence, VK_TRUE,
+                    UINT64_MAX);
+
+    // Reset fences
+    vkResetFences(_backend.logicalDevice.Get(), 1, &currentFence);
+
+    auto acquire_result = vkAcquireNextImageKHR(
+        _backend.logicalDevice.Get(), _swapChain.Get(), UINT64_MAX,
+        _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE,
+        &imageIndex);
+  }
 
   _camera->setPerspective(60.0f, (float)width / (float)height, 0.1f, 256.0f);
 
@@ -28,7 +49,7 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
     //                                  MAX_CONCURRENT_FRAMES_IN_FLIGHT);
     _swapChain.RecreateSwapChain(width, height);
     _renderPass.RecreateDepthBuffer(width, height);
-    _renderPass.RecreateFrameBuffers(width, height);
+    _renderPass.RecreateFrameBuffers(width, height, app);
 
     needResize = false;
   }
@@ -48,242 +69,136 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
   if (_world.gameWorld->count<Entropy::Components::Renderable>() == 0)
     return;
 
-  _world.gameWorld->each<Entropy::Components::Renderable>(
-      [this](flecs::entity e, Entropy::Components::Renderable r) {
-        if (e.has<Entropy::Components::HasTexture>()) {
-
-          auto texture = e.get<Entropy::Components::HasTexture>();
-
-          std::array<VkWriteDescriptorSet, 1> descriptorWrites{};
-
-          VkDescriptorImageInfo imageInfo{};
-          imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-          imageInfo.imageView = texture->texture->_imageView;
-          imageInfo.sampler = _sampler;
-
-          descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-          descriptorWrites[0].dstSet =
-              _staticPipeline->descriptorSets[0].Get()[0];
-          descriptorWrites[0].dstBinding = 2;
-          descriptorWrites[0].dstArrayElement =
-              e.get_ref<Entropy::Components::HasTexture>()->texture->textureId -
-              1;
-          descriptorWrites[0].descriptorType =
-              VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-          descriptorWrites[0].descriptorCount = 1;
-          descriptorWrites[0].pImageInfo = &imageInfo;
-
-          vkUpdateDescriptorSets(_backend.logicalDevice.Get(),
-                                 static_cast<uint32_t>(descriptorWrites.size()),
-                                 descriptorWrites.data(), 0, nullptr);
-        }
-      });
-
   // Begin renderpass and commandbuffer recording
   _commandBuffers[_currentFrame].Record();
-  _renderPass.Begin(_commandBuffers[_currentFrame], VK_SUBPASS_CONTENTS_INLINE,
-                    width, height);
+  _renderPass.Begin(_commandBuffers[_currentFrame],
+                    app ? imageIndex : VK_SUBPASS_CONTENTS_INLINE, width,
+                    height);
 
   UboDataDynamic ubodyn{};
-
   ubodyn.perspective = _camera->matrices.perspective;
   ubodyn.view = _camera->matrices.view;
+  memcpy(_UBO->GetMappedMemory(), &ubodyn, sizeof(ubodyn));
 
-  memcpy(_dynamicUBO->GetMappedMemory(), &ubodyn, sizeof(ubodyn));
+  _sortQuery.each([this, width, height](flecs::entity e,
+                                        Entropy::Components::Renderable r) {
+    auto position_component = e.get_ref<Entropy::Components::Position>();
+    auto scale_component = e.get_ref<Entropy::Components::Scale>();
+    auto color_component = e.get_ref<Entropy::Components::Color>();
+    auto rotation_component = e.get_ref<Entropy::Components::Rotation>();
+    auto texture_component = e.get_ref<Entropy::Components::HasTexture>();
+    auto render_component = e.get_ref<Entropy::Components::Renderable>();
 
-  _world.gameWorld->each<Entropy::Components::Renderable>(
-      [this, width, height](flecs::entity e,
-                            Entropy::Components::Renderable r) {
-        auto position_component = e.get_ref<Entropy::Components::Position>();
-        auto scale_component = e.get_ref<Entropy::Components::Scale>();
-        auto color_component = e.get_ref<Entropy::Components::Color>();
-        auto rotation_component = e.get_ref<Entropy::Components::Rotation>();
-        auto texture_component = e.get_ref<Entropy::Components::HasTexture>();
-        auto render_component = e.get_ref<Entropy::Components::Renderable>();
+    auto translate = glm::mat4(1.0f);
+    auto rotation = glm::mat4(1.0f);
+    auto scaling = glm::mat4(1.0f);
 
-        auto translate = glm::mat4(1.0f);
-        auto rotation = glm::mat4(1.0f);
-        auto scaling = glm::mat4(1.0f);
+    if (position_component.get() != nullptr) {
+      translate = glm::translate(glm::mat4(1.0f), position_component->pos);
+    }
 
-        if (position_component.get() != nullptr) {
-          translate = glm::translate(glm::mat4(1.0f), position_component->pos);
-        }
+    if (scale_component.get() != nullptr) {
+      scaling = glm::scale(glm::mat4(1.0f), scale_component->scale);
+    }
 
-        if (scale_component.get() != nullptr) {
-          scaling = glm::scale(glm::mat4(1.0f), scale_component->scale);
-        }
+    if (rotation_component.get() != nullptr) {
+      rotation =
+          glm::rotate(glm::mat4(1.0f), glm::radians(rotation_component->angle),
+                      rotation_component->orientation);
+    }
 
-        if (rotation_component.get() != nullptr) {
-          rotation = glm::rotate(glm::mat4(1.0f),
-                                 glm::radians(rotation_component->angle),
-                                 rotation_component->orientation);
-        }
+    void *objectData;
+    vmaMapMemory(_allocator.Get(), _instanceDataBuffer->_allocation,
+                 &objectData);
 
-        void *objectData;
-        vmaMapMemory(_allocator.Get(), _instanceDataBuffer->_allocation,
-                     &objectData);
+    InstanceData *objectSSBO = (InstanceData *)objectData;
+    objectSSBO[r.id - 1].model = (translate * scaling * rotation);
+    objectSSBO[r.id - 1].color = color_component.get() == nullptr
+                                     ? glm::vec4(1.0, 1.0, 1.0, 1.0)
+                                     : color_component->color;
 
-        InstanceData *objectSSBO = (InstanceData *)objectData;
-        objectSSBO[r.id - 1].model = (translate * scaling * rotation);
-        objectSSBO[r.id - 1].color = color_component.get() == nullptr
-                                         ? glm::vec4(1.0, 1.0, 1.0, 1.0)
-                                         : color_component->color;
+    vmaUnmapMemory(_allocator.Get(), _instanceDataBuffer->_allocation);
 
-        if (texture_component.get() != nullptr) {
-          objectSSBO[r.id - 1].textureId =
-              texture_component->texture->textureId - 1;
-        }
+    VkRect2D scissor{};
+    scissor.offset = {0, 0};
+    scissor.extent = {(unsigned int)width, (unsigned int)height};
+    vkCmdSetScissor(_commandBuffers[_currentFrame].Get(), 0, 1, &scissor);
 
-        vmaUnmapMemory(_allocator.Get(), _instanceDataBuffer->_allocation);
+    // Set Viewport
+    VkViewport viewport{};
+    viewport.x = 0.0f;
+    viewport.y = 0.0f;
+    viewport.width = (float)width;
+    viewport.height = (float)height;
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 1.0f;
+    vkCmdSetViewport(_commandBuffers[_currentFrame].Get(), 0, 1, &viewport);
 
-        VkRect2D scissor{};
-        scissor.offset = {0, 0};
-        scissor.extent = {(unsigned int)width, (unsigned int)height};
-        vkCmdSetScissor(_commandBuffers[_currentFrame].Get(), 0, 1, &scissor);
+    vkCmdBindPipeline(_commandBuffers[_currentFrame].Get(),
+                      VK_PIPELINE_BIND_POINT_GRAPHICS,
+                      _staticPipeline->GetPipeline());
 
-        // Set Viewport
-        VkViewport viewport{};
-        viewport.x = 0.0f;
-        viewport.y = 0.0f;
-        viewport.width = (float)width;
-        viewport.height = (float)height;
-        viewport.minDepth = 0.0f;
-        viewport.maxDepth = 1.0f;
-        vkCmdSetViewport(_commandBuffers[_currentFrame].Get(), 0, 1, &viewport);
+    auto ds0 = _staticPipeline->descriptorSets[0].Get()[_currentFrame];
 
-        vkCmdBindPipeline(_commandBuffers[_currentFrame].Get(),
-                          VK_PIPELINE_BIND_POINT_GRAPHICS,
-                          _staticPipeline->GetPipeline());
+    vkCmdBindDescriptorSets(
+        _commandBuffers[_currentFrame].Get(), VK_PIPELINE_BIND_POINT_GRAPHICS,
+        _staticPipeline->GetPipelineLayout(), 0, 1, &ds0, 0, nullptr);
 
-        auto ds0 = _staticPipeline->descriptorSets[0].Get()[_currentFrame];
+    if (e.has<Entropy::Components::HasTexture>()) {
 
-        vkCmdBindDescriptorSets(_commandBuffers[_currentFrame].Get(),
-                                VK_PIPELINE_BIND_POINT_GRAPHICS,
-                                _staticPipeline->GetPipelineLayout(), 0, 1,
-                                &ds0, 0, nullptr);
+      auto texture = e.get<Entropy::Components::HasTexture>();
 
-        if (render_component.get() != nullptr &&
-            e.get<Entropy::Components::Renderable>()->indexBuffer == nullptr) {
+      vkCmdBindDescriptorSets(_commandBuffers[_currentFrame].Get(),
+                              VK_PIPELINE_BIND_POINT_GRAPHICS,
+                              _staticPipeline->GetPipelineLayout(), 1, 1,
+                              &texture->texture->_descriptorSet, 0, nullptr);
+    }
 
-          auto renderable = e.get<Entropy::Components::Renderable>();
-          // Bind vertex & index buffers
-          VkBuffer vertexBuffers[] = {
-              renderable->vertexBuffer->GetVulkanBuffer()};
-          VkDeviceSize offsets[] = {0};
-          vkCmdBindVertexBuffers(_commandBuffers[_currentFrame].Get(), 0, 1,
-                                 vertexBuffers, offsets);
+    PushConstBlock constants;
+    constants.instanceIndex = r.id - 1;
 
-          vkCmdDraw(_commandBuffers[_currentFrame].Get(),
-                    renderable->vertices.size(), 1, 0, r.id - 1);
-        }
+    // upload the matrix to the GPU via push constants
+    vkCmdPushConstants(_commandBuffers[_currentFrame].Get(),
+                       _staticPipeline->GetPipelineLayout(),
+                       VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstBlock),
+                       &constants);
 
-        if (render_component.get() != nullptr &&
-            e.get<Entropy::Components::Renderable>()->indexBuffer != nullptr) {
-          auto renderable = e.get<Entropy::Components::Renderable>();
-          // Bind vertex & index buffers
-          VkBuffer vertexBuffers[] = {
-              renderable->vertexBuffer->GetVulkanBuffer()};
-          VkDeviceSize offsets[] = {0};
-          vkCmdBindVertexBuffers(_commandBuffers[_currentFrame].Get(), 0, 1,
-                                 vertexBuffers, offsets);
+    if (render_component.get() != nullptr &&
+        e.get<Entropy::Components::Renderable>()->indexBuffer == nullptr) {
+      auto renderable = e.get<Entropy::Components::Renderable>();
+      // Bind vertex & index buffers
+      VkBuffer vertexBuffers[] = {renderable->vertexBuffer->GetVulkanBuffer()};
+      VkDeviceSize offsets[] = {0};
+      vkCmdBindVertexBuffers(_commandBuffers[_currentFrame].Get(), 0, 1,
+                             vertexBuffers, offsets);
 
-          vkCmdBindIndexBuffer(_commandBuffers[_currentFrame].Get(),
-                               renderable->indexBuffer->GetVulkanBuffer(), 0,
-                               VK_INDEX_TYPE_UINT16);
-          // Draw current renderable
-          vkCmdDrawIndexed(_commandBuffers[_currentFrame].Get(),
-                           renderable->indices.size(), 1, 0, 0, r.id - 1);
-        }
-      });
+      vkCmdDraw(_commandBuffers[_currentFrame].Get(),
+                renderable->vertices.size(), 1, 0, 0);
+    }
 
-  // End renderpass and commandbuffer recording
-  _renderPass.End(_commandBuffers[_currentFrame]);
+    if (render_component.get() != nullptr &&
+        e.get<Entropy::Components::Renderable>()->indexBuffer != nullptr) {
+      auto renderable = e.get<Entropy::Components::Renderable>();
+      // Bind vertex & index buffers
+      VkBuffer vertexBuffers[] = {renderable->vertexBuffer->GetVulkanBuffer()};
+      VkDeviceSize offsets[] = {0};
+      vkCmdBindVertexBuffers(_commandBuffers[_currentFrame].Get(), 0, 1,
+                             vertexBuffers, offsets);
 
-  VkImageLayout oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-  VkImageLayout newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+      vkCmdBindIndexBuffer(_commandBuffers[_currentFrame].Get(),
+                           renderable->indexBuffer->GetVulkanBuffer(), 0,
+                           VK_INDEX_TYPE_UINT16);
+      // Draw current renderable
+      vkCmdDrawIndexed(_commandBuffers[_currentFrame].Get(),
+                       renderable->indices.size(), 1, 0, 0, 0);
+    }
+  });
 
-  /* Synchronize image access. */
-  VkImageMemoryBarrier barrier{
-      .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-      .srcAccessMask = VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
-      .dstAccessMask = VK_ACCESS_2_TRANSFER_READ_BIT,
-      .oldLayout = oldLayout,
-      .newLayout = newLayout,
-      .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-      .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-      .image = _renderPass._swapChainTextures[0]->_textureImage,
-      .subresourceRange =
-          {
-              .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-              .baseMipLevel = 0,
-              .levelCount = 1,
-              .baseArrayLayer = 0,
-              .layerCount = 1,
-          },
-  };
-
-  VkPipelineStageFlags sourceStage;
-  VkPipelineStageFlags destinationStage;
-
-  if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED &&
-      newLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) {
-    barrier.srcAccessMask = 0;
-    barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-
-    sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-    destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-  } else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
-             newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
-    barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-    barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-    sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-    destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+  if (app) {
+    PresentForApplication();
   } else {
-    throw std::invalid_argument("unsupported layout transition!");
+    PresentForEditor(width, height);
   }
 
-  vkCmdPipelineBarrier(_commandBuffers[_currentFrame].Get(), sourceStage,
-                       destinationStage, 0, 0, nullptr, 0, nullptr, 1,
-                       &barrier);
-
-  /* Copy framebuffer content to staging buffer. */
-  VkBufferImageCopy region{
-      .bufferOffset = 0,
-      .bufferRowLength = 0,
-      .bufferImageHeight = 0,
-
-      .imageSubresource =
-          {
-              .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-              .mipLevel = 0,
-              .baseArrayLayer = 0,
-              .layerCount = 1,
-          },
-      .imageOffset = {0, 0, 0},
-      .imageExtent = {static_cast<uint32_t>(width),
-                      static_cast<uint32_t>(height), 1},
-  };
-  vkCmdCopyImageToBuffer(_commandBuffers[_currentFrame].Get(),
-                         _renderPass._swapChainTextures[0]->_textureImage,
-                         VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                         stagingBuffer->GetVulkanBuffer(), 1, &region);
-
-  _commandBuffers[_currentFrame].EndRecording();
-
-  auto cmdBuf = _commandBuffers[_currentFrame].Get();
-  VkSubmitInfo submitInfo{
-      .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-      .waitSemaphoreCount = 0,
-      .commandBufferCount = 1,
-      .pCommandBuffers = &cmdBuf,
-      .signalSemaphoreCount = 0,
-  };
-
-  if (vkQueueSubmit(_backend.logicalDevice.GetGraphicQueue(), 1, &submitInfo,
-                    nullptr) != VK_SUCCESS) {
-    exit(EXIT_FAILURE);
-  }
-
-  vkDeviceWaitIdle(_backend.logicalDevice.Get());
+  _currentFrame = (_currentFrame + 1) % MAX_CONCURRENT_FRAMES_IN_FLIGHT - 1;
 }

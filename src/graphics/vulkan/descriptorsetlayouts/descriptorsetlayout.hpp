@@ -13,20 +13,14 @@ namespace Vulkan {
 namespace DescriptorsetLayouts {
 struct DescriptorsetLayout {
 
-  DescriptorsetLayout(
-      VulkanBackend backend,
-      std::vector<VkDescriptorSetLayoutBinding> layoutBindings) {
-
-    std::vector<VkDescriptorBindingFlagsEXT> bindingFlags = {
-        VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT_EXT, // For binding 0
-        VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT_EXT, // For binding 1
-        VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT_EXT  // For binding 2,
-    };
+  DescriptorsetLayout(VulkanBackend backend,
+                      std::vector<VkDescriptorSetLayoutBinding> layoutBindings,
+                      std::vector<VkDescriptorBindingFlagsEXT> bindingFlags) {
 
     VkDescriptorSetLayoutBindingFlagsCreateInfoEXT bindingFlagsInfo = {};
     bindingFlagsInfo.sType =
         VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO_EXT;
-    bindingFlagsInfo.bindingCount = 3;
+    bindingFlagsInfo.bindingCount = bindingFlags.size();
     bindingFlagsInfo.pBindingFlags = bindingFlags.data();
 
     VkDescriptorSetLayoutCreateInfo layoutInfo{};

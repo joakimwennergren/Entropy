@@ -1,11 +1,16 @@
 #pragma once
+#include "animation/easing/easing.hpp"
+#include "cameras/camera_manager.hpp"
 #include "ecs/components/objmodel.hpp"
 #include "factories/entityfactory.hpp"
+#include "filesystem/filesystem.hpp"
 #define SOL_ALL_SAFETIES_ON 1
 #include <chrono>
 #include <future>
 #include <iostream>
 #include <thread>
+
+#include "types.hpp"
 
 #include <spdlog/spdlog.h>
 
@@ -19,6 +24,9 @@
 #include <graphics/primitives/2d/sprite.hpp>
 #include <graphics/text/font.hpp>
 #include <graphics/text/label.hpp>
+
+#include <cameras/ortho_camera.hpp>
+#include <filesystem/filesystem.hpp>
 
 #include <ecs/components/boxcollisionshape3d.hpp>
 #include <ecs/components/color.hpp>
@@ -40,6 +48,8 @@ using namespace Entropy::Graphics::Primitives;
 using namespace Entropy::Components;
 using namespace Entropy::GLTF;
 using namespace Entropy::ECS;
+using namespace Entropy::Animation;
+using namespace Entropy::Filesystem;
 
 using namespace std::chrono_literals;
 
@@ -47,10 +57,14 @@ namespace Entropy {
 namespace Scripting {
 struct Lua {
 public:
-  Lua(World world, Factories::EntityFactory ef)
+  Lua(World world, Factories::EntityFactory ef,
+      Cameras::CameraManager cameraManager)
       : _world{world}, _entityFactory{ef} {
     _lua = new sol::state();
-    _lua->open_libraries(sol::lib::base);
+    _lua->open_libraries(sol::lib::base, sol::lib::table);
+
+    _lua->new_usertype<Vector3>("Vector3", "x", &Vector3::x, "y", &Vector3::y,
+                                "z", &Vector3::z);
 
     _lua->set_function("create_obj_model",
                        [&ef] { return ef.CreateOBJModel(""); });
@@ -102,6 +116,62 @@ public:
 
       entity.destruct();
     });
+
+    _lua->set_function("clone", [](flecs::entity entity) -> flecs::entity {
+      return entity.clone();
+    });
+
+    _lua->set_function("set_zindex", [](flecs::entity entity, int zIndex) {
+      if (!entity.is_alive())
+        return;
+
+      auto s = entity.get_mut<Entropy::Components::Renderable>();
+      s->zIndex = zIndex;
+    });
+
+    _lua->set_function("get_position", [](flecs::entity entity) -> Vector3 * {
+      if (!entity.is_alive())
+        return new Vector3();
+
+      auto s = entity.get_mut<Entropy::Components::Position>();
+      auto vec = new Vector3();
+      vec->x = s->pos.x;
+      vec->y = s->pos.y;
+      vec->z = s->pos.z;
+      return vec;
+    });
+
+    _lua->set_function("get_scale", [](flecs::entity entity) -> Vector3 * {
+      if (!entity.is_alive())
+        return new Vector3();
+
+      auto s = entity.get_mut<Entropy::Components::Scale>();
+      auto vec = new Vector3();
+      vec->x = s->scale.x;
+      vec->y = s->scale.y;
+      vec->z = s->scale.z;
+      return vec;
+    });
+
+    _lua->set_function("easeInOutCubic", [](float time) {
+      return Animation::EasingFunctions::easeInBounce(time);
+    });
+
+    _lua->set_function("random_float", [](float min, float max) -> float {
+      return min + static_cast<float>(rand()) /
+                       (static_cast<float>(RAND_MAX / (max - min)));
+    });
+
+    _lua->set_function("include", [this](std::string path) {
+      _lua->do_file(GetProjectBasePath() + path);
+    });
+
+    // _lua->set_function("set_ortho_camera_position", [this](float x, float y)
+    // {
+    //   //auto orthoCamera = dynamic_cast<Cameras::OrthoGraphicCamera *>(
+    //   //    _cameraManager.currentCamera);
+    //   // orthoCamera->setPosition(glm::vec3{x, y, 0.0});
+    // });
   }
 
   // inline bool ExecuteScript(std::string script, std::string scriptFile,
@@ -129,6 +199,23 @@ public:
   // Dependencies
   World _world;
   Factories::EntityFactory _entityFactory;
+  Cameras::CameraManager _cameraManager;
+  int setLuaPath(lua_State *L, const char *path) {
+    lua_getglobal(L, "package");
+    lua_getfield(L, -1,
+                 "path"); // get field "path" from table at top of stack (-1)
+    std::string cur_path =
+        lua_tostring(L, -1); // grab path string from top of stack
+    cur_path.append(";");    // do your path magic here
+    cur_path.append(path);
+    lua_pop(L,
+            1); // get rid of the string on the stack we just pushed on line 5
+    lua_pushstring(L, cur_path.c_str()); // push the new one
+    lua_setfield(L, -2, "path"); // set the field "path" in table at -2 with
+                                 // value at top of stack
+    lua_pop(L, 1);               // get rid of package table from top of stack
+    return 0;                    // all done!
+  }
 
 private:
 };

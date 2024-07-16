@@ -1,5 +1,6 @@
 #pragma once
 
+#include "graphics/renderers/vulkan_renderer.hpp"
 #include <config.hpp>
 #include <memory>
 #include <thread>
@@ -12,11 +13,13 @@
 
 #include <ecs/components/renderable.hpp>
 
+#include <services/entity_factory_service.hpp>
+#include <services/vulkan_render_service.hpp>
+#include <services/world_service.hpp>
+
 // new includes
 #include <ecs/world.hpp>
 #include <filesystem/filesystem.hpp>
-#include <graphics/vulkan/buffers/buffer.hpp>
-#include <graphics/vulkan/buffers/vertexbuffer.hpp>
 #include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
 #include <graphics/vulkan/commandpools/commandpool.hpp>
 #include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
@@ -53,9 +56,9 @@ using namespace Entropy::Graphics::Vulkan::Textures;
 using namespace Entropy;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
 using namespace Entropy::Input;
-using namespace Entropy::Graphics::Vulkan::Buffers;
 using namespace Entropy::Graphics::Vulkan::Memory;
 using namespace Entropy::ECS;
+using namespace Entropy::Graphics::Services;
 
 using namespace std::chrono_literals;
 
@@ -137,217 +140,210 @@ private:
 
 #ifdef BUILD_FOR_IOS
 
-#include <Metal/Metal.hpp>
-#include <MetalFX/MetalFX.hpp>
-#include <MetalKit/MetalKit.hpp>
-#include <UIKit/UIKit.hpp>
+// #include <Metal/Metal.hpp>
+// #include <MetalFX/MetalFX.hpp>
+// #include <MetalKit/MetalKit.hpp>
+// #include <UIKit/UIKit.hpp>
 
-using namespace std::chrono;
+// extern "C" UI::ViewController *get_native_bounds(UI::View *view,
+//                                                  UI::Screen *screen);
+// extern "C" CGPoint touch();
+// extern "C" void say_hello();
 
-extern "C" UI::ViewController *get_native_bounds(UI::View *view,
-                                                 UI::Screen *screen);
-extern "C" CGPoint touch();
-extern "C" void say_hello();
+// class EntropyApplication : public UI::ApplicationDelegate {
+// public:
+//   class MTKViewDelegate : public MTK::ViewDelegate {
+//   public:
+//     MTKViewDelegate(EntropyApplication *app) : MTK::ViewDelegate() {
+//       this->app = app;
+//     }
 
-class EntropyApplication : public UI::ApplicationDelegate {
-public:
-  std::shared_ptr<ServiceLocator> serviceLocator;
-  std::shared_ptr<Physics2D> physics2d;
-  sol::protected_function luaOnRender;
-  std::shared_ptr<Renderer> _renderer;
+//     virtual ~MTKViewDelegate() override {}
+//     EntropyApplication *app;
+//     Renderers::VulkanRenderer *renderer;
+//     CGRect frame;
 
-  class MTKViewDelegate : public MTK::ViewDelegate {
-  public:
-    MTKViewDelegate(EntropyApplication *app) : MTK::ViewDelegate() {
-      this->app = app;
-    }
+//   private:
+//     /**
+//      * @brief
+//      *
+//      * @param pView
+//      */
+//     inline virtual void drawInMTKView(MTK::View *pView) override {
+//       /*
+//       auto tick_time = (float)GetTimeAsDouble();
 
-    virtual ~MTKViewDelegate() override {}
-    EntropyApplication *app;
-    std::shared_ptr<Renderer> _renderer;
-    CGRect frame;
+//       deltaTime = tick_time - lastTick;
 
-  private:
-    /**
-     * @brief
-     *
-     * @param pView
-     */
-    inline virtual void drawInMTKView(MTK::View *pView) override {
-      /*
-      auto tick_time = (float)GetTimeAsDouble();
+//       lastTick = tick_time;
 
-      deltaTime = tick_time - lastTick;
+//       app->OnRender(deltaTime);
 
-      lastTick = tick_time;
+//       auto ratio = (app->frame.size.width) / (app->frame.size.height);
 
-      app->OnRender(deltaTime);
+//       app->screen.width = app->frame.size.width * 3.0;
+//       app->screen.height = app->frame.size.height * 3.3;
+//        */
+//       bool shouldResize = false;
+//       renderer->Render(frame.size.width, frame.size.height, 1.0, 1.0,
+//                        shouldResize);
+//     }
 
-      auto ratio = (app->frame.size.width) / (app->frame.size.height);
+//     float lastTick = 0.0;
+//     float deltaTime = 0.0;
+//   };
 
-      app->screen.width = app->frame.size.width * 3.0;
-      app->screen.height = app->frame.size.height * 3.3;
-       */
+//   /**
+//    * @brief Construct a new Application object
+//    *
+//    */
+//   EntropyApplication() {
+//     this->_autoreleasePool = NS::AutoreleasePool::alloc()->init();
+//   }
 
-      _renderer->Render(frame.size.width, frame.size.height);
-      app->OnRender(0.0);
-    }
+//   /**
+//    * @brief Destroy the Application object
+//    *
+//    */
+//   ~EntropyApplication() {
+//     _pMtkView->release();
+//     _pWindow->release();
+//     _pViewController->release();
+//     _pDevice->release();
+//     delete _pViewDelegate;
+//     this->_autoreleasePool->release();
+//   }
 
-    float lastTick = 0.0;
-    float deltaTime = 0.0;
-  };
+//   inline bool applicationDidFinishLaunching(UI::Application *pApp,
+//                                             NS::Value *options) override {
 
-  /**
-   * @brief Construct a new Application object
-   *
-   */
-  EntropyApplication() {
-    say_hello();
-    this->_autoreleasePool = NS::AutoreleasePool::alloc()->init();
-  }
+//     spdlog::error("Do we even get here?");
+//     frame = UI::Screen::mainScreen()->bounds();
 
-  /**
-   * @brief Destroy the Application object
-   *
-   */
-  ~EntropyApplication() {
-    _pMtkView->release();
-    _pWindow->release();
-    _pViewController->release();
-    _pDevice->release();
-    delete _pViewDelegate;
-    this->_autoreleasePool->release();
-  }
+//     VkExtent2D extent = {(uint32_t)frame.size.width,
+//                          (uint32_t)frame.size.height};
 
-  inline bool applicationDidFinishLaunching(UI::Application *pApp,
-                                            NS::Value *options) override {
-    frame = UI::Screen::mainScreen()->bounds();
+//     //_pViewController = UI::ViewController::alloc()->init(nil, nil);
 
-    VkExtent2D extent = {(uint32_t)frame.size.width,
-                         (uint32_t)frame.size.height};
+//     _pWindow = UI::Window::alloc()->init(frame);
 
-    //_pViewController = UI::ViewController::alloc()->init(nil, nil);
+//     _pDevice = MTL::CreateSystemDefaultDevice();
 
-    _pWindow = UI::Window::alloc()->init(frame);
+//     _pMtkView = MTK::View::alloc()->init(frame, _pDevice);
 
-    _pDevice = MTL::CreateSystemDefaultDevice();
+//     _pViewController =
+//         get_native_bounds((UI::View *)_pMtkView, UI::Screen::mainScreen());
 
-    _pMtkView = MTK::View::alloc()->init(frame, _pDevice);
+//     _pMtkView->setColorPixelFormat(
+//         MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
+//     _pMtkView->setClearColor(MTL::ClearColor::Make(1.0, 1.0, 1.0, 1.0));
 
-    _pViewController =
-        get_native_bounds((UI::View *)_pMtkView, UI::Screen::mainScreen());
+//     _pViewDelegate = new MTKViewDelegate(this);
+//     _pMtkView->setDelegate(_pViewDelegate);
 
-    _pMtkView->setColorPixelFormat(
-        MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
-    _pMtkView->setClearColor(MTL::ClearColor::Make(1.0, 1.0, 1.0, 1.0));
+//     UI::View *mtkView = (UI::View *)_pMtkView;
+//     mtkView->setAutoresizingMask(UI::ViewAutoresizingFlexibleWidth |
+//                                  UI::ViewAutoresizingFlexibleHeight);
 
-    _pViewDelegate = new MTKViewDelegate(this);
-    _pMtkView->setDelegate(_pViewDelegate);
+//     _pViewController->view()->addSubview(mtkView);
+//     _pWindow->setRootViewController(_pViewController);
 
-    UI::View *mtkView = (UI::View *)_pMtkView;
-    mtkView->setAutoresizingMask(UI::ViewAutoresizingFlexibleWidth |
-                                 UI::ViewAutoresizingFlexibleHeight);
+//     _pWindow->makeKeyAndVisible();
 
-    _pViewController->view()->addSubview(mtkView);
-    _pWindow->setRootViewController(_pViewController);
+//     CA::MetalLayer *layer = _pMtkView->currentDrawable()->layer();
 
-    _pWindow->makeKeyAndVisible();
+//     kgr::container vulkanContainer;
 
-    CA::MetalLayer *layer = _pMtkView->currentDrawable()->layer();
+//     auto renderer = vulkanContainer.service<VulkanRenderService>();
+//     auto entityFactory = vulkanContainer.service<EntityFactoryService>();
 
-    kgr::container vulkanContainer;
-    auto renderer = vulkanContainer.service<VulkanRenderService>();
-    auto world = vulkanContainer.service<WorldService>();
-    auto entityFactory = vulkanContainer.service<EntityFactoryService>();
+//     _pViewDelegate->renderer = &renderer;
+//     _pViewDelegate->frame = frame;
+//     _pViewDelegate->app = this;
 
-    _pViewDelegate->_renderer = &renderer;
-    _pViewDelegate->frame = frame;
-    _pViewDelegate->app = this;
+//     OnInit();
 
-    OnInit();
+//     return true;
+//   }
 
-    return true;
-  }
+//   /**
+//    * @brief
+//    *
+//    * @param pApp
+//    * @param options
+//    * @return true
+//    * @return false
+//    */
+//   /*
+//   inline bool applicationDidFinishLaunching(UI::Application *pApp, NS::Value
+//   *options) override
+//   {
+//       frame = UI::Screen::mainScreen()->bounds();
 
-  /**
-   * @brief
-   *
-   * @param pApp
-   * @param options
-   * @return true
-   * @return false
-   */
-  /*
-  inline bool applicationDidFinishLaunching(UI::Application *pApp, NS::Value
-  *options) override
-  {
-      frame = UI::Screen::mainScreen()->bounds();
+//       //_pViewController = UI::ViewController::alloc()->init(nil, nil);
 
-      //_pViewController = UI::ViewController::alloc()->init(nil, nil);
+//       _pWindow = UI::Window::alloc()->init(frame);
 
-      _pWindow = UI::Window::alloc()->init(frame);
+//       _pDevice = MTL::CreateSystemDefaultDevice();
 
-      _pDevice = MTL::CreateSystemDefaultDevice();
+//       _pMtkView = MTK::View::alloc()->init(frame, _pDevice);
 
-      _pMtkView = MTK::View::alloc()->init(frame, _pDevice);
+//       _pViewController = get_native_bounds((UI::View *)_pMtkView,
+//   UI::Screen::mainScreen());
 
-      _pViewController = get_native_bounds((UI::View *)_pMtkView,
-  UI::Screen::mainScreen());
+//       _pMtkView->setColorPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
+//       _pMtkView->setClearColor(MTL::ClearColor::Make(1.0, 1.0, 1.0, 1.0));
 
-      _pMtkView->setColorPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
-      _pMtkView->setClearColor(MTL::ClearColor::Make(1.0, 1.0, 1.0, 1.0));
+//       _pViewDelegate = new MTKViewDelegate(this);
+//       _pMtkView->setDelegate(_pViewDelegate);
 
-      _pViewDelegate = new MTKViewDelegate(this);
-      _pMtkView->setDelegate(_pViewDelegate);
+//       UI::View *mtkView = (UI::View *)_pMtkView;
+//       mtkView->setAutoresizingMask(UI::ViewAutoresizingFlexibleWidth |
+//   UI::ViewAutoresizingFlexibleHeight);
 
-      UI::View *mtkView = (UI::View *)_pMtkView;
-      mtkView->setAutoresizingMask(UI::ViewAutoresizingFlexibleWidth |
-  UI::ViewAutoresizingFlexibleHeight);
+//       _pViewController->view()->addSubview(mtkView);
+//       _pWindow->setRootViewController(_pViewController);
 
-      _pViewController->view()->addSubview(mtkView);
-      _pWindow->setRootViewController(_pViewController);
+//       _pWindow->makeKeyAndVisible();
 
-      _pWindow->makeKeyAndVisible();
+//       OnInit();
 
+//       return true;
+//   }
 
-      OnInit();
+// */
+//   virtual void OnInit() = 0;
 
-      return true;
-  }
+//   virtual void OnRender(float deltaTime) = 0;
 
-*/
-  virtual void OnInit() = 0;
+//   /**
+//    * @brief
+//    *
+//    * @param pApp
+//    */
+//   /*
+//   inline void applicationWillTerminate(UI::Application *pApp) override
+//   {
+//   }
+//   */
 
-  virtual void OnRender(float deltaTime) = 0;
+// public:
+//   /**
+//    * @brief
+//    *
+//    */
+//   inline void Run() { UI::ApplicationMain(0, 0, this); }
 
-  /**
-   * @brief
-   *
-   * @param pApp
-   */
-  /*
-  inline void applicationWillTerminate(UI::Application *pApp) override
-  {
-  }
-  */
+//   CGRect frame;
 
-public:
-  /**
-   * @brief
-   *
-   */
-  inline void Run() { UI::ApplicationMain(0, 0, this); }
-
-  CGRect frame;
-
-protected:
-private:
-  UI::Window *_pWindow = nullptr;
-  MTK::View *_pMtkView = nullptr;
-  MTL::Device *_pDevice = nullptr;
-  MTKViewDelegate *_pViewDelegate = nullptr;
-  NS::AutoreleasePool *_autoreleasePool = nullptr;
-  UI::ViewController *_pViewController = nullptr;
-};
+// protected:
+// private:
+//   UI::Window *_pWindow = nullptr;
+//   MTK::View *_pMtkView = nullptr;
+//   MTL::Device *_pDevice = nullptr;
+//   MTKViewDelegate *_pViewDelegate = nullptr;
+//   NS::AutoreleasePool *_autoreleasePool = nullptr;
+//   UI::ViewController *_pViewController = nullptr;
+// };
 
 #endif

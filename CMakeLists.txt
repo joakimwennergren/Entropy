@@ -7,7 +7,7 @@
 # Game Engine version 1.0
 
 # Set minimum cmake version
-cmake_minimum_required(VERSION 3.22.1)
+cmake_minimum_required(VERSION 3.30.0)
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
 # Declare project
@@ -21,6 +21,7 @@ set(PROJECT_BASEPATH ${PROJECT_SOURCE_DIR})
 
 # Include dependencies
 include(cmake/external_dependencies.cmake)
+
 
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
@@ -50,6 +51,20 @@ target_include_directories(${PROJECT_NAME}
         external/bullet3/src
 )
 
+#target_link_libraries(${PROJECT_NAME}
+#"-framework foundation"
+#"-framework metal"
+#"-framework metalkit"
+#"-framework uikit"
+#"-framework iosurface"
+#"-framework coregraphics"
+#"-framework quartzcore"
+#"-framework coreaudio"
+#"-framework audiotoolbox"
+#"-framework avfoundation"
+#"-framework coretext"
+#)
+
 # Link common dependencies
 target_link_libraries(${PROJECT_NAME}
     sol2
@@ -72,8 +87,8 @@ target_link_libraries(${PROJECT_NAME}
 # Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk)
 target_link_libraries(${PROJECT_NAME}
     ${Vulkan_LIBRARIES}
-    glfw
-    efsw
+    #glfw
+    #efsw
     TracyClient
     GPUOpen::VulkanMemoryAllocator
     flecs::flecs_static

@@ -45,13 +45,13 @@ struct DescriptorPool {
     poolSizes[1].descriptorCount = STORAGE_COUNT;
 
     poolSizes[2].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    poolSizes[2].descriptorCount = SAMPLER_COUNT;
+    poolSizes[2].descriptorCount = 100000;
 
     VkDescriptorPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
     poolInfo.pPoolSizes = poolSizes.data();
-    poolInfo.maxSets = 100;
+    poolInfo.maxSets = 10000;
     poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT |
                      VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;
 

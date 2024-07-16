@@ -20,7 +20,6 @@
 
 #ifdef BUILD_FOR_IOS
 #define VK_USE_PLATFORM_IOS_MVK
-#include <MetalKit/MetalKit.hpp>
 #include <vulkan/vulkan.hpp>
 #endif
 
@@ -30,6 +29,7 @@
 #endif
 
 #include <graphics/vulkan/instances/vk_instance.hpp>
+#include <graphics/vulkan/vulkan_backend.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Instances;
 
@@ -37,6 +37,7 @@ namespace Entropy {
 namespace Graphics {
 namespace Vulkan {
 namespace Surfaces {
+
 class WindowSurface {
 public:
 #ifdef BUILD_FOR_MACOS
@@ -48,8 +49,7 @@ public:
   GLFWwindow *window;
 #endif
 #ifdef BUILD_FOR_IOS
-  WindowSurface(std::shared_ptr<VulkanInstance> instance,
-                CA::MetalLayer *layer);
+
 #endif
   ~WindowSurface();
 

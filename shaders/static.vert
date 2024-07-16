@@ -1,4 +1,4 @@
-#version 460
+#version 450
 
 layout (location = 0) in vec3 inPos;
 layout (location = 1) in vec3 inNormal;
@@ -8,10 +8,15 @@ layout (location = 4) in vec4 inJoint0;
 layout (location = 5) in vec4 inWeight0;
 layout (location = 6) in vec4 inColor0;
 
+//push constants block
+layout( push_constant ) uniform constants
+{
+	uint instanceIndex;
+} PushConstants;
+
 struct ObjectData{
 	mat4 model;
 	vec4 color;
-	uint textureId;
 };
 
 //all object matrices
@@ -34,9 +39,12 @@ layout (location = 5) out uint outTextureId;
 
 void main() 
 {	
+
+	uint instanceIndex = PushConstants.instanceIndex;
+
 	// Colors
 	outColor0 = inColor0;
-	outColor1 = objectBuffer.objects[gl_BaseInstance].color;
+	outColor1 = objectBuffer.objects[instanceIndex].color;
 
 	// UV
 	outUV0 = inUV0;
@@ -44,10 +52,7 @@ void main()
 	// Normals
 	outNormal = inNormal;
 
-	// Textures
-	outTextureId = objectBuffer.objects[gl_BaseInstance].textureId;
-
-	mat4 modelMatrix = objectBuffer.objects[gl_BaseInstance].model;
+	mat4 modelMatrix = objectBuffer.objects[instanceIndex].model;
 
 	gl_Position =  uboInstance.perspective * uboInstance.view * modelMatrix * vec4(inPos, 1.0);
 }

@@ -14,6 +14,7 @@ struct Renderable {
   std::shared_ptr<IndexBuffer<uint16_t>> indexBuffer = nullptr;
   std::vector<uint16_t> indices = {};
   std::vector<Vertex> vertices = {};
+  int zIndex = 0;
 };
 } // namespace Components
 } // namespace Entropy

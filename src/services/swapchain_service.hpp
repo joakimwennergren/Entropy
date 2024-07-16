@@ -2,9 +2,9 @@
 #pragma once
 
 #include <graphics/vulkan/swapchains/swapchain.hpp>
-#include <services/vulkan_backend_service.hpp>
-#include <services/texture_factory_service.hpp>
 #include <kangaru/kangaru.hpp>
+#include <services/texture_factory_service.hpp>
+#include <services/vulkan_backend_service.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Swapchains;
 

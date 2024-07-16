@@ -4,15 +4,6 @@
 using namespace Entropy::Graphics::Vulkan::Swapchains;
 
 // Swapchain::Swapchain(VkPhysicalDevice physicalDevice, VkDevice logicalDevice,
-//                      std::shared_ptr<WindowSurface> surface, VkExtent2D frame) {
-//   _logicalDevice = logicalDevice;
-//   _surface = surface;
-//   _physicalDevice = physicalDevice;
-//   _frame = frame;
-//   CreateSwapChain(nullptr);
-// }
-
-// Swapchain::Swapchain(VkPhysicalDevice physicalDevice, VkDevice logicalDevice,
 //                      VkExtent2D frame, int width, int height) {
 //   _logicalDevice = logicalDevice;
 //   _physicalDevice = physicalDevice;
@@ -54,12 +45,14 @@ using namespace Entropy::Graphics::Vulkan::Swapchains;
 //     throw std::runtime_error("failed to allocate image memory!");
 //   }
 
-//   vkBindImageMemory(_logicalDevice, swapChainImages[0], _renderImageMemory, 0);
+//   vkBindImageMemory(_logicalDevice, swapChainImages[0], _renderImageMemory,
+//   0);
 
 //   swapChainImageFormat = VK_FORMAT_B8G8R8A8_SRGB;
 //   swapChainImageViews.resize(swapChainImages.size());
 //   swapChainExtent =
-//       VkExtent2D{static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
+//       VkExtent2D{static_cast<uint32_t>(width),
+//       static_cast<uint32_t>(height)};
 
 //   for (uint32_t i = 0; i < swapChainImages.size(); i++) {
 //     auto imageView =
@@ -79,7 +72,8 @@ using namespace Entropy::Graphics::Vulkan::Swapchains;
 //       ChooseSwapSurfaceFormat(swapChainSupport.formats);
 //   VkPresentModeKHR presentMode =
 //       ChooseSwapPresentMode(swapChainSupport.presentModes);
-//   VkExtent2D extent = ChooseSwapExtent(swapChainSupport.capabilities, _frame);
+//   VkExtent2D extent = ChooseSwapExtent(swapChainSupport.capabilities,
+//   _frame);
 
 //   uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
 
@@ -117,13 +111,15 @@ using namespace Entropy::Graphics::Vulkan::Swapchains;
 //   createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 // #else
 //   createInfo.compositeAlpha =
-//       VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR; // VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+//       VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR; //
+//       VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 // #endif
 //   createInfo.presentMode = presentMode;
 //   createInfo.clipped = VK_TRUE;
 //   createInfo.oldSwapchain = prev == nullptr ? VK_NULL_HANDLE : prev;
 
-//   if (vkCreateSwapchainKHR(_logicalDevice, &createInfo, nullptr, &_swapChain) !=
+//   if (vkCreateSwapchainKHR(_logicalDevice, &createInfo, nullptr, &_swapChain)
+//   !=
 //       VK_SUCCESS) {
 //     exit(EXIT_FAILURE);
 //   }
@@ -191,12 +187,14 @@ using namespace Entropy::Graphics::Vulkan::Swapchains;
 //     throw std::runtime_error("failed to allocate image memory!");
 //   }
 
-//   vkBindImageMemory(_logicalDevice, swapChainImages[0], _renderImageMemory, 0);
+//   vkBindImageMemory(_logicalDevice, swapChainImages[0], _renderImageMemory,
+//   0);
 
 //   swapChainImageFormat = VK_FORMAT_B8G8R8A8_SRGB;
 //   swapChainImageViews.resize(swapChainImages.size());
 //   swapChainExtent =
-//       VkExtent2D{static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
+//       VkExtent2D{static_cast<uint32_t>(width),
+//       static_cast<uint32_t>(height)};
 
 //   for (uint32_t i = 0; i < swapChainImages.size(); i++) {
 //     auto imageView =
@@ -224,7 +222,8 @@ using namespace Entropy::Graphics::Vulkan::Swapchains;
 //                                             &details.capabilities);
 
 //   uint32_t formatCount;
-//   vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
+//   vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount,
+//   nullptr);
 
 //   if (formatCount != 0) {
 //     details.formats.resize(formatCount);
@@ -233,7 +232,8 @@ using namespace Entropy::Graphics::Vulkan::Swapchains;
 //   }
 
 //   uint32_t presentModeCount;
-//   vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount,
+//   vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface,
+//   &presentModeCount,
 //                                             nullptr);
 
 //   if (presentModeCount != 0) {

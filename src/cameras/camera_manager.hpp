@@ -10,7 +10,7 @@ struct CameraManager {
   CameraManager() {}
 
   std::vector<std::shared_ptr<Camera>> cameras;
-  std::shared_ptr<Camera> currentCamera;
+  Camera *currentCamera;
 };
 
 } // namespace Cameras
