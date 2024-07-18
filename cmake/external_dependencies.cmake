@@ -53,23 +53,23 @@ set(CURL_USE_OPENSSL OFF)
 # Graphics API
 
 # Vulkan
-find_package(Vulkan REQUIRED)
+#find_package(Vulkan REQUIRED)
 
 #set(KTX_FEATURE_TESTS OFF)
 #add_subdirectory(external/KTX-Software)
 
 # Windowing on desktop
 if(WIN32 OR UNIX OR APPLE)
-  add_subdirectory(external/glfw)
+  #add_subdirectory(external/glfw)
 endif()
 
 # Lua SOL 2
 add_subdirectory(external/sol2)
 
 # 2D Physics
-#set(BOX2D_BUILD_UNIT_TESTS OFF)
-#set(BOX2D_BUILD_TESTBED OFF)
-#add_subdirectory(external/box2d)
+set(BOX2D_BUILD_UNIT_TESTS OFF)
+set(BOX2D_BUILD_TESTBED OFF)
+add_subdirectory(external/box2d)
 
 # Text rendering
 set(FT_WITH_BZIP2 OFF)
@@ -117,7 +117,7 @@ set(_LUA_LIB_SRC
 )
 
 add_library(lua OBJECT ${_LUA_LIB_SRC})
-#add_compile_definitions(lua PRIVATE LUA_USE_IOS)
+add_compile_definitions(lua PRIVATE LUA_USE_IOS)
 
 add_subdirectory(external/myers-diff)
 

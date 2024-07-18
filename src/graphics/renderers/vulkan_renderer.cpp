@@ -1,6 +1,7 @@
 #include "vulkan_renderer.hpp"
 #include "data/pushcontants.hpp"
 #include "data/ubo.hpp"
+#include "ecs/components/animated_sprite.hpp"
 #include "ecs/components/color.hpp"
 #include "ecs/components/hasTexture.hpp"
 #include "ecs/components/objmodel.hpp"
@@ -35,8 +36,10 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
         _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE,
         &imageIndex);
   }
+  auto orthoCamera =
+      dynamic_cast<Cameras::OrthographicCamera *>(_cameraManager.currentCamera);
 
-  _camera->setPerspective(60.0f, (float)width / (float)height, 0.1f, 256.0f);
+  orthoCamera->setPerspective(60.0f, (float)width, (float)height, 0.1f, 256.0f);
 
   if (needResize) {
     spdlog::info("RESIZING!!");
@@ -76,12 +79,12 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
                     height);
 
   UboDataDynamic ubodyn{};
-  ubodyn.perspective = _camera->matrices.perspective;
-  ubodyn.view = _camera->matrices.view;
+  ubodyn.perspective = orthoCamera->matrices.perspective;
+  ubodyn.view = orthoCamera->matrices.view;
   memcpy(_UBO->GetMappedMemory(), &ubodyn, sizeof(ubodyn));
 
   _sortQuery.each([this, width, height](flecs::entity e,
-                                        Entropy::Components::Renderable r) {
+                                        Entropy::Components::Position p) {
     auto position_component = e.get_ref<Entropy::Components::Position>();
     auto scale_component = e.get_ref<Entropy::Components::Scale>();
     auto color_component = e.get_ref<Entropy::Components::Color>();
@@ -112,10 +115,11 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
                  &objectData);
 
     InstanceData *objectSSBO = (InstanceData *)objectData;
-    objectSSBO[r.id - 1].model = (translate * scaling * rotation);
-    objectSSBO[r.id - 1].color = color_component.get() == nullptr
-                                     ? glm::vec4(1.0, 1.0, 1.0, 1.0)
-                                     : color_component->color;
+    objectSSBO[render_component->id - 1].model =
+        (translate * scaling * rotation);
+    objectSSBO[render_component->id - 1].color =
+        color_component.get() == nullptr ? glm::vec4(1.0, 1.0, 1.0, 1.0)
+                                         : color_component->color;
 
     vmaUnmapMemory(_allocator.Get(), _instanceDataBuffer->_allocation);
 
@@ -154,8 +158,26 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
                               &texture->texture->_descriptorSet, 0, nullptr);
     }
 
+    if (e.has<Entropy::Components::HasAnimatedSprite>()) {
+
+      auto textures = e.get<Entropy::Components::HasAnimatedSprite>();
+      static int textureId;
+
+      spdlog::info(timer->GetTick());
+
+      if (timer->GetTick() >= 120.0) {
+        textureId = (textureId + 1) % textures->textures.size();
+        timer->Reset();
+      }
+
+      vkCmdBindDescriptorSets(
+          _commandBuffers[_currentFrame].Get(), VK_PIPELINE_BIND_POINT_GRAPHICS,
+          _staticPipeline->GetPipelineLayout(), 1, 1,
+          &textures->textures[textureId]->_descriptorSet, 0, nullptr);
+    }
+
     PushConstBlock constants;
-    constants.instanceIndex = r.id - 1;
+    constants.instanceIndex = render_component->id - 1;
 
     // upload the matrix to the GPU via push constants
     vkCmdPushConstants(_commandBuffers[_currentFrame].Get(),

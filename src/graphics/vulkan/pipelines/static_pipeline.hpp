@@ -79,7 +79,7 @@ private:
     std::vector<VkDescriptorBindingFlagsEXT> bindingFlags0 = {};
 
     std::vector<VkDescriptorBindingFlagsEXT> bindingFlags1 = {
-        // VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT_EXT, // For binding 0
+        VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT_EXT, // For binding 0
     };
 
     auto descriptorSetLayout0 =

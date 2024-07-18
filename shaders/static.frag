@@ -58,8 +58,10 @@ void main()
 
 
         // //vec4 sampled = texture(sampler2D(_texture, texSampler), inUV0);
+        
 
-        outColor = inColor1 * texture(Sampler2D, inUV0);
+        outColor = inColor1 * texture(Sampler2D, inUV0);  
+        
 
 
 

@@ -80,6 +80,8 @@ public:
     bool down = false;
   } keys;
 
+  const float PPM = 100.0f; // Pixels Per Meter
+
   bool moving() { return keys.left || keys.right || keys.up || keys.down; }
 
   float getNearClip() { return znear; }
@@ -88,21 +90,21 @@ public:
 
   void setPerspective(float fov, int width, int height, float znear,
                       float zfar) {
-    glm::mat4 currentMatrix = matrices.perspective;
-    this->fov = fov;
-    this->znear = znear;
-    this->zfar = zfar;
-    matrices.perspective = glm::ortho(0.0f, static_cast<float>(width), 0.0f,
-                                      static_cast<float>(height), 0.1f, 100.0f);
-    matrices.view =
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f),
-                    glm::vec3(0.0f, 1.0f, 0.0f));
-    if (flipY) {
-      matrices.perspective[1][1] *= -1.0f;
-    }
-    if (matrices.view != currentMatrix) {
-      updated = true;
-    }
+
+    float aspect = (float)width * 10 / height * 10;
+
+    // Vulkan-trick because GLM was written for OpenGL, and Vulkan uses
+    // a right-handed coordinate system instead. Without this correction,
+    // geometry will be y-inverted in screen space, and the coordinate space
+    // will be left-handed. Described at:
+    // https://matthewwellings.com/blog/the-new-vulkan-coordinate-system/
+    glm::mat4 correction(
+        glm::vec4(1.0f, 0.0f, 0.0f, 0.0f), glm::vec4(0.0f, -1.0f, 0.0f, 0.0f),
+        glm::vec4(0.0f, 0.0f, 0.5f, 0.0f), glm::vec4(0.0f, 0.0f, 0.5f, 1.0f));
+    matrices.perspective = glm::ortho(0.0f, (float)width / PPM,
+                                      (float)height / PPM, 0.0f, znear, zfar);
+    // matrices.perspective =
+    //     correction * glm::ortho(-1.0f, 1.0f, -aspect, aspect, znear, zfar);
   };
 
   void updateAspectRatio(float aspect) {
@@ -119,7 +121,7 @@ public:
 
   void setPosition(glm::vec3 position) {
     this->position = position;
-    updateViewMatrix();
+    this->matrices.view = glm::translate(matrices.view, position);
   }
 
   void setRotation(glm::vec3 rotation) {

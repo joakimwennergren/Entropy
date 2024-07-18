@@ -86,14 +86,15 @@ public:
 
   float getFarClip() { return zfar; }
 
-  void setPerspective(float fov, float aspect, float znear, float zfar) {
+  void setPerspective(float fov, float aspect, int dumy, float znear,
+                      float zfar) {
     glm::mat4 currentMatrix = matrices.perspective;
     this->fov = fov;
     this->znear = znear;
     this->zfar = zfar;
     matrices.perspective =
         glm::perspective(glm::radians(fov), aspect, znear, zfar);
-    if (flipY) {
+    if (true) {
       matrices.perspective[1][1] *= -1.0f;
     }
     if (matrices.view != currentMatrix) {

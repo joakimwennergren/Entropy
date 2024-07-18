@@ -2,14 +2,15 @@
 
 #include "cameras/camera_manager.hpp"
 #include "cameras/ortho_camera.hpp"
+#include "cameras/orthographic_camera.hpp"
 #include "config.hpp"
 #include "ecs/components/position.hpp"
 #include "graphics/vulkan/memory/allocator.hpp"
+#include "graphics/vulkan/textures/normal_texture.hpp"
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <cameras/perspective_camera.hpp>
 #include <data/ubo.hpp>
 #include <ecs/world.hpp>
 #include <factories/vulkan/bufferfactory.hpp>
@@ -142,16 +143,13 @@ struct VulkanRenderer {
     stagingBuffer = _bufferFactory.CreateStagingBuffer(
         800 * 800 * 4, nullptr, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
 
-    // Camera
-    _camera = std::make_shared<PerspectiveCamera>();
-    _camera->type = PerspectiveCamera::CameraType::firstperson;
-    _camera->setPosition(glm::vec3(0.0f, 0.0f, -200.0));
-    _camera->setRotation(glm::vec3(0.0f));
-
     // Create a query for the Position component with a custom sorting function
-    _sortQuery = world.gameWorld->query_builder<Components::Renderable>()
-                     .order_by<Components::Renderable>(compare_zIndex)
+    _sortQuery = world.gameWorld->query_builder<Components::Position>()
+                     .order_by<Components::Position>(compare_zIndex)
                      .build();
+
+    timer = new Timing::Timer(1.0);
+    timer->Start();
   }
 
   /**
@@ -177,11 +175,10 @@ struct VulkanRenderer {
               bool &needResize, bool app);
 
   // Comparison function for sorting based on z index
-  static int compare_zIndex(flecs::entity_t e1,
-                            const Components::Renderable *p1,
+  static int compare_zIndex(flecs::entity_t e1, const Components::Position *p1,
                             flecs::entity_t e2,
-                            const Components::Renderable *p2) {
-    return (p1->zIndex > p2->zIndex) - (p1->zIndex < p2->zIndex);
+                            const Components::Position *p2) {
+    return (p1->pos.z > p2->pos.z) - (p1->pos.z < p2->pos.z);
   }
 
   void PresentForEditor(int width, int height) {
@@ -334,12 +331,13 @@ struct VulkanRenderer {
   CameraManager _cameraManager;
 
 private:
-  flecs::query<Components::Renderable> _sortQuery;
+  flecs::query<Components::Position> _sortQuery;
 
-  // @todo
-  std::shared_ptr<PerspectiveCamera> _camera;
+  Timing::Timer *timer;
+
   uint32_t _currentFrame = 0;
   uint32_t imageIndex;
+  int x = 0.0;
 
   // Command Buffers
   std::vector<CommandBuffer> _commandBuffers;

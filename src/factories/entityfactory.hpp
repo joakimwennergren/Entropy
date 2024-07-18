@@ -1,10 +1,14 @@
 #pragma once
 
+#include "data/vertex.hpp"
+#include "ecs/components/animated_sprite.hpp"
 #include "ecs/components/hasTexture.hpp"
 #include "ecs/components/objmodel.hpp"
 #include "factories/vulkan/bufferfactory.hpp"
 #include "factories/vulkan/texturefactory.hpp"
 #include "filesystem/filesystem.hpp"
+#include "graphics/primitives/2d/animated_sprite.hpp"
+#include "graphics/primitives/2d/quad.hpp"
 #include "graphics/vulkan/vulkan_backend.hpp"
 #include "obj/model.hpp"
 #include <assets/assetid.hpp>
@@ -72,6 +76,37 @@ struct EntityFactory {
         {id, true, sprite->vertexBuffer, sprite->indexBuffer, sprite->indices});
     e.set<Entropy::Components::Color>({glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}});
     e.set<Entropy::Components::HasTexture>({sprite->texture});
+    return e;
+  }
+
+  flecs::entity CreateAnimatedSprite(std::vector<std::string> paths) {
+    auto sprite =
+        std::make_shared<Entropy::Graphics::Primitives::AnimatedSprite>(
+            _bufferFactory, _textureFactory, paths);
+    auto e = _world.gameWorld->entity();
+    auto id = AssetId().GetId();
+    e.set<Position>({glm::vec3(0.0, 0.0, 5.0)});
+    e.set<Scale>({glm::vec3(0.2, 1.0, 1.0)});
+    e.set<Rotation>({glm::vec3(0.0, 0.0, 1.0), 180.0});
+    e.set<Entropy::Components::HasAnimatedSprite>({sprite->textures});
+    e.set<Entropy::Components::Renderable>(
+        {id, true, sprite->vertexBuffer, sprite->indexBuffer, sprite->indices});
+    e.set<Entropy::Components::Color>({glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}});
+    return e;
+  }
+
+  flecs::entity CreateQuad(std::vector<Vertex> vertices) {
+    auto quad = std::make_shared<Entropy::Graphics::Primitives::Quad>(
+        _bufferFactory, _textureFactory, vertices);
+    auto e = _world.gameWorld->entity();
+    auto id = AssetId().GetId();
+    e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
+    e.set<Scale>({glm::vec3(1.0, 1.0, 1.0)});
+    e.set<Rotation>({glm::vec3(0.0, 0.0, 1.0), 0.0});
+    e.set<Entropy::Components::Renderable>(
+        {id, true, quad->vertexBuffer, quad->indexBuffer, quad->indices});
+    e.set<Entropy::Components::HasTexture>({quad->texture});
+    e.set<Entropy::Components::Color>({glm::vec4{1.0f, 0.0f, 0.0f, 1.0f}});
     return e;
   }
 

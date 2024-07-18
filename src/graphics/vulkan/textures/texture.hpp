@@ -55,7 +55,7 @@ public:
   }
 
   ~Texture() {
-    spdlog::error("Deleting texture!");
+    vkDeviceWaitIdle(_vulkanBackend.logicalDevice.Get());
     vkDestroyImageView(_vulkanBackend.logicalDevice.Get(), _imageView, nullptr);
     vkDestroyImage(_vulkanBackend.logicalDevice.Get(), _textureImage, nullptr);
   }

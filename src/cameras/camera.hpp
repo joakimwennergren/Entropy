@@ -12,7 +12,9 @@
 namespace Entropy {
 namespace Cameras {
 
-struct Camera {};
+struct Camera {
+  virtual void Test() = 0;
+};
 
 } // namespace Cameras
 } // namespace Entropy

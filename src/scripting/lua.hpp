@@ -1,9 +1,11 @@
 #pragma once
 #include "animation/easing/easing.hpp"
+#include "box2d/b2_math.h"
 #include "cameras/camera_manager.hpp"
 #include "ecs/components/objmodel.hpp"
 #include "factories/entityfactory.hpp"
 #include "filesystem/filesystem.hpp"
+#include "physics/2d/physics2d.hpp"
 #define SOL_ALL_SAFETIES_ON 1
 #include <chrono>
 #include <future>
@@ -25,7 +27,7 @@
 #include <graphics/text/font.hpp>
 #include <graphics/text/label.hpp>
 
-#include <cameras/ortho_camera.hpp>
+#include <cameras/orthographic_camera.hpp>
 #include <filesystem/filesystem.hpp>
 
 #include <ecs/components/boxcollisionshape3d.hpp>
@@ -56,15 +58,20 @@ using namespace std::chrono_literals;
 namespace Entropy {
 namespace Scripting {
 struct Lua {
+  const float PPM = 100.0f; // Pixels Per Meter
 public:
   Lua(World world, Factories::EntityFactory ef,
-      Cameras::CameraManager cameraManager)
-      : _world{world}, _entityFactory{ef} {
+      Cameras::CameraManager cameraManager, Physics::Physics2D physics2d)
+      : _world{world}, _entityFactory{ef}, _physics2d{physics2d} {
     _lua = new sol::state();
     _lua->open_libraries(sol::lib::base, sol::lib::table);
 
     _lua->new_usertype<Vector3>("Vector3", "x", &Vector3::x, "y", &Vector3::y,
                                 "z", &Vector3::z);
+
+    _lua->new_usertype<b2Vec2>("b2vec2", "x", &b2Vec2::x, "y", &b2Vec2::y);
+    _lua->new_usertype<b2Body>("b2Body", "GetPosition", &b2Body::GetPosition,
+                               "GetAngle", &b2Body::GetAngle);
 
     _lua->set_function("create_obj_model",
                        [&ef] { return ef.CreateOBJModel(""); });
@@ -73,14 +80,14 @@ public:
       return ef.CreateSprite(path);
     });
 
-    _lua->set_function(
-        "translate_3d", [](flecs::entity entity, float x, float y, float z) {
-          if (!entity.is_alive())
-            return;
+    _lua->set_function("translate_3d", [this](flecs::entity entity, float x,
+                                              float y, float z) {
+      if (!entity.is_alive())
+        return;
 
-          auto pos = entity.get_mut<Entropy::Components::Position>();
-          pos->pos = glm::vec3(x, y, z);
-        });
+      auto pos = entity.get_mut<Entropy::Components::Position>();
+      pos->pos = glm::vec3(x / PPM, y / PPM, z);
+    });
 
     _lua->set_function("rotate_3d", [](flecs::entity entity, float x, float y,
                                        float z, float angle) {
@@ -93,12 +100,12 @@ public:
     });
 
     _lua->set_function("scale_3d",
-                       [](flecs::entity entity, float x, float y, float z) {
+                       [this](flecs::entity entity, float x, float y, float z) {
                          if (!entity.is_alive())
                            return;
 
                          auto s = entity.get_mut<Entropy::Components::Scale>();
-                         s->scale = glm::vec3(x, y, z);
+                         s->scale = glm::vec3(x / PPM, y / PPM, z / PPM);
                        });
 
     _lua->set_function("set_color", [](flecs::entity entity, float r, float g,
@@ -166,12 +173,23 @@ public:
       _lua->do_file(GetProjectBasePath() + path);
     });
 
-    // _lua->set_function("set_ortho_camera_position", [this](float x, float y)
-    // {
-    //   //auto orthoCamera = dynamic_cast<Cameras::OrthoGraphicCamera *>(
-    //   //    _cameraManager.currentCamera);
-    //   // orthoCamera->setPosition(glm::vec3{x, y, 0.0});
-    // });
+    _lua->set_function("set_ortho_camera_position", [this](float x, float y) {
+      auto orthoCamera = dynamic_cast<Cameras::OrthographicCamera *>(
+          _cameraManager.currentCamera);
+      orthoCamera->setPosition(glm::vec3{x, y, 0.0});
+    });
+
+    _lua->set_function(
+        "create_dynamic_body", [this](float x, float y, float w, float h) {
+          auto dynBody = _physics2d.CreateDynamicBody(x, y, w, h);
+          return dynBody;
+        });
+
+    _lua->set_function("create_static_body",
+                       [this](float x, float y, float w, float h) {
+                         auto dynBody = _physics2d.CreateGround(x, y, w, h);
+                         return dynBody;
+                       });
   }
 
   // inline bool ExecuteScript(std::string script, std::string scriptFile,
@@ -200,6 +218,7 @@ public:
   World _world;
   Factories::EntityFactory _entityFactory;
   Cameras::CameraManager _cameraManager;
+  Physics::Physics2D _physics2d;
   int setLuaPath(lua_State *L, const char *path) {
     lua_getglobal(L, "package");
     lua_getfield(L, -1,
