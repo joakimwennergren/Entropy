@@ -5,6 +5,7 @@
 #include "cameras/orthographic_camera.hpp"
 #include "config.hpp"
 #include "ecs/components/position.hpp"
+#include "graphics/vulkan/buffers/indexbuffer.hpp"
 #include "graphics/vulkan/memory/allocator.hpp"
 #include "graphics/vulkan/textures/normal_texture.hpp"
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -150,6 +151,11 @@ struct VulkanRenderer {
 
     timer = new Timing::Timer(1.0);
     timer->Start();
+
+    _batchedVertices = _bufferFactory.CreateVertexBufferWithSize(
+        MAX_INSTANCE_COUNT * sizeof(Vertex));
+    _batchedIndices = _bufferFactory.CreateIndexBufferWithSize<uint16_t>(
+        MAX_INSTANCE_COUNT * sizeof(uint16_t));
   }
 
   /**
@@ -329,6 +335,11 @@ struct VulkanRenderer {
   Swapchain _swapChain;
   RenderPass _renderPass;
   CameraManager _cameraManager;
+
+  std::shared_ptr<VertexBuffer> _batchedVertices;
+  std::shared_ptr<IndexBuffer<uint16_t>> _batchedIndices;
+  std::vector<Vertex> _vertices;
+  std::vector<uint16_t> _indices;
 
 private:
   flecs::query<Components::Position> _sortQuery;

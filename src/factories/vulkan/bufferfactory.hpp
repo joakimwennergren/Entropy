@@ -24,9 +24,18 @@ struct BufferFactory {
     return std::make_shared<IndexBuffer<T>>(_vkBackend, indices);
   }
 
+  template <typename T>
+  std::shared_ptr<IndexBuffer<T>> CreateIndexBufferWithSize(size_t size) {
+    return std::make_shared<IndexBuffer<T>>(_vkBackend, size);
+  }
+
   std::shared_ptr<VertexBuffer>
   CreateVertexBuffer(std::vector<Vertex> vertices) {
     return std::make_shared<VertexBuffer>(_vkBackend, vertices);
+  }
+
+  std::shared_ptr<VertexBuffer> CreateVertexBufferWithSize(size_t size) {
+    return std::make_shared<VertexBuffer>(_vkBackend, size);
   }
 
   std::shared_ptr<StagedBuffer> CreateStagingBuffer(VkDeviceSize size,

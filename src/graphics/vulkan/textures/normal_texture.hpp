@@ -45,7 +45,6 @@ struct NormalTexture : public Texture {
 
   VkSampler _textureSampler;
   VkDescriptorSetLayout _descriptorSetLayout;
-  VkDescriptorSet _descriptorSet;
 
   NormalTexture(VulkanBackend vbe, QueueSync qs, Allocator allocator,
                 Factories::Vulkan::BufferFactory bf, CommandPool cp,

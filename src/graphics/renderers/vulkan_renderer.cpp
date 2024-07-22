@@ -83,6 +83,22 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
   ubodyn.view = orthoCamera->matrices.view;
   memcpy(_UBO->GetMappedMemory(), &ubodyn, sizeof(ubodyn));
 
+  // _world.gameWorld->each([this](flecs::entity e) {
+  //   auto render_component = e.get_ref<Entropy::Components::Renderable>();
+  //   for (auto vert : render_component->vertices) {
+  //     _vertices.push_back(vert);
+  //   }
+  //   for (auto id : render_component->indices) {
+  //     _indices.push_back(id);
+  //   }
+
+  //   memcpy(_batchedVertices->GetMappedMemory(), _vertices.data(),
+  //          _vertices.size() * sizeof(Vertex));
+
+  //   memcpy(_batchedIndices->GetMappedMemory(), _indices.data(),
+  //          _indices.size() * sizeof(uint16_t));
+  // });
+
   _sortQuery.each([this, width, height](flecs::entity e,
                                         Entropy::Components::Position p) {
     auto position_component = e.get_ref<Entropy::Components::Position>();
@@ -162,8 +178,6 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
 
       auto textures = e.get<Entropy::Components::HasAnimatedSprite>();
       static int textureId;
-
-      spdlog::info(timer->GetTick());
 
       if (timer->GetTick() >= 120.0) {
         textureId = (textureId + 1) % textures->textures.size();

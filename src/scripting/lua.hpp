@@ -64,7 +64,7 @@ public:
       Cameras::CameraManager cameraManager, Physics::Physics2D physics2d)
       : _world{world}, _entityFactory{ef}, _physics2d{physics2d} {
     _lua = new sol::state();
-    _lua->open_libraries(sol::lib::base, sol::lib::table);
+    _lua->open_libraries(sol::lib::base, sol::lib::table, sol::lib::math);
 
     _lua->new_usertype<Vector3>("Vector3", "x", &Vector3::x, "y", &Vector3::y,
                                 "z", &Vector3::z);
@@ -120,7 +120,7 @@ public:
     _lua->set_function("delete", [](flecs::entity entity) {
       if (!entity.is_alive())
         return;
-
+      spdlog::info("REMOVING ENTITY!!!");
       entity.destruct();
     });
 
@@ -169,6 +169,10 @@ public:
                        (static_cast<float>(RAND_MAX / (max - min)));
     });
 
+    _lua->set_function("random_int", [](int min, int max) -> int {
+      return rand() % (max - min + 1) + min;
+    });
+
     _lua->set_function("include", [this](std::string path) {
       _lua->do_file(GetProjectBasePath() + path);
     });
@@ -184,6 +188,40 @@ public:
           auto dynBody = _physics2d.CreateDynamicBody(x, y, w, h);
           return dynBody;
         });
+
+    _lua->set_function("create_vec2", [this](float x, float y) -> b2Vec2 * {
+      auto vec = new b2Vec2();
+      vec->x = x;
+      vec->y = y;
+      return vec;
+    });
+
+    _lua->set_function("create_sensor_body", [this](float x, float y, float w,
+                                                    float h, b2Vec2 *pos) {
+      auto dynBody = _physics2d.CreateSensorBody(x, y, w, h, pos);
+      return dynBody;
+    });
+
+    _lua->set_function("delete_dynamic_body", [this](b2Body *body) {
+      _physics2d.world->DestroyBody(body);
+    });
+
+    _lua->set_function("get_dynbody_user_data", [this](b2Body *body) {
+      if(body == nullptr)
+          return new b2Vec2();
+        
+      auto userdata = body->GetUserData();
+      if(userdata.pointer != 0)
+      {
+          auto pos = reinterpret_cast<b2Vec2 *>(userdata.pointer);
+          return pos;
+      }
+
+    });
+
+    _lua->set_function("get_dynbody_linear_velocity", [this](b2Body *body) {
+      return body->GetLinearVelocity();
+    });
 
     _lua->set_function("create_static_body",
                        [this](float x, float y, float w, float h) {

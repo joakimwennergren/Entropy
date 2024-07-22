@@ -37,6 +37,21 @@ struct VertexBuffer : public Buffer {
     memcpy(_mappedMemory, vertices.data(), bufferSize);
     vmaUnmapMemory(_vkBackend.allocator.Get(), _allocation);
   }
+
+  /**
+   * @brief Constructor for Vertex buffer
+   * @param backend VulkanBackend
+   * @param vertices Vertices to be put into buffer
+   */
+  VertexBuffer(Vulkan::VulkanBackend backend, size_t size) : Buffer(backend) {
+
+    assert(size != 0);
+
+    CreateBuffer(size, VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+                           VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+    vmaMapMemory(_vkBackend.allocator.Get(), _allocation, &_mappedMemory);
+    // vmaUnmapMemory(_vkBackend.allocator.Get(), _allocation);
+  }
 };
 
 } // namespace Buffers

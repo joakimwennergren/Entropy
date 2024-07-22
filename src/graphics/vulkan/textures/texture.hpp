@@ -3,6 +3,7 @@
 #include "factories/vulkan/bufferfactory.hpp"
 #include "graphics/vulkan/commandpools/commandpool.hpp"
 #include "graphics/vulkan/vulkan_backend.hpp"
+#include "vulkan/vulkan_core.h"
 #include <string>
 
 #include <spdlog/spdlog.h>
@@ -58,6 +59,8 @@ public:
     vkDeviceWaitIdle(_vulkanBackend.logicalDevice.Get());
     vkDestroyImageView(_vulkanBackend.logicalDevice.Get(), _imageView, nullptr);
     vkDestroyImage(_vulkanBackend.logicalDevice.Get(), _textureImage, nullptr);
+    vkFreeDescriptorSets(_vulkanBackend.logicalDevice.Get(),
+                         _descriptorPool.Get(), 1, &_descriptorSet);
   }
 
   void CreateTextureImage(std::string path);
@@ -101,6 +104,8 @@ public:
   Factories::Vulkan::BufferFactory _bufferFactory;
   CommandPool _commandPool;
   DescriptorPool _descriptorPool;
+
+  VkDescriptorSet _descriptorSet;
 };
 } // namespace Textures
 } // namespace Vulkan

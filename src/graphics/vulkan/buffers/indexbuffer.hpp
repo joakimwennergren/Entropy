@@ -30,6 +30,21 @@ template <class T> struct IndexBuffer : public Buffer {
     memcpy(_mappedMemory, indices.data(), bufferSize);
     vmaUnmapMemory(_vkBackend.allocator.Get(), _allocation);
   }
+
+  /**
+   * @brief Constructor for indexbuffer
+   * @param backend VulkanBackend
+   * @param indices T indices
+   */
+  IndexBuffer(VulkanBackend backend, size_t size) : Buffer(backend) {
+    assert(size != 0);
+
+    CreateBuffer(size, VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+                           VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+
+    vmaMapMemory(_vkBackend.allocator.Get(), _allocation, &_mappedMemory);
+    // vmaUnmapMemory(_vkBackend.allocator.Get(), _allocation);
+  }
 };
 } // namespace Buffers
 } // namespace Vulkan
