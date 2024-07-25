@@ -10,15 +10,20 @@
 
 using namespace Entropy::Graphics::Vulkan::Memory;
 
-namespace Entropy {
-namespace Graphics {
-namespace Services {
+namespace Entropy
+{
+    namespace Graphics
+    {
+        namespace Services
+        {
 
-struct AllocatorService
-    : kgr::single_service<Allocator, kgr::dependency<VulkanInstanceService,
-                                                     PhysicalDeviceService,
-                                                     LogicalDeviceService>> {};
+            struct AllocatorService
+                : kgr::service<Allocator, kgr::dependency<VulkanInstanceService,
+                                                          PhysicalDeviceService,
+                                                          LogicalDeviceService>>
+            {
+            };
 
-} // namespace Services
-} // namespace Graphics
+        } // namespace Services
+    } // namespace Graphics
 } // namespace Entropy

@@ -123,7 +123,6 @@ protected:
   std::shared_ptr<Allocator> _allocator;
   std::shared_ptr<DescriptorPool> _descriptorPool;
   std::shared_ptr<Swapchain> _swapChain;
-  std::shared_ptr<Lua> lua;
   std::shared_ptr<Physics2D> physics2d;
   std::shared_ptr<RenderPass> renderpass;
   std::shared_ptr<Physics3D> physics3d;

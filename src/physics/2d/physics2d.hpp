@@ -30,7 +30,7 @@ public:
       Vertex newVert;
       newVert.position.x = vertices[i].x;
       newVert.position.y = vertices[i].y;
-      newVert.color = glm::vec4{1.0, 1.0, 1.0, 1.0};
+      newVert.color = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
       _vertices.push_back(newVert);
     }
 
@@ -101,14 +101,14 @@ public:
     _debugDraw = new b2DebugDraw(_entityFactory, _entities);
     b2Vec2 gravity(0.0f, -5.0f);
     world = new b2World(gravity);
-    world->SetDebugDraw(_debugDraw);
-    uint32 flags = 0;
-    flags += b2Draw::e_shapeBit;
-    flags += b2Draw::e_jointBit;
-    flags += b2Draw::e_aabbBit;
-    flags += b2Draw::e_pairBit;
-    flags += b2Draw::e_centerOfMassBit;
-    _debugDraw->SetFlags(flags);
+    // world->SetDebugDraw(_debugDraw);
+    // uint32 flags = 0;
+    // flags += b2Draw::e_shapeBit;
+    // flags += b2Draw::e_jointBit;
+    // flags += b2Draw::e_aabbBit;
+    // flags += b2Draw::e_pairBit;
+    // flags += b2Draw::e_centerOfMassBit;
+    // _debugDraw->SetFlags(flags);
     auto listener = new MyContactListener();
     world->SetContactListener(listener);
   }

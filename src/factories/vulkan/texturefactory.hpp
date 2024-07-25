@@ -12,47 +12,55 @@
 using namespace Entropy::Graphics::Vulkan;
 using namespace Entropy::Graphics::Vulkan::Textures;
 
-namespace Entropy {
-namespace Factories {
-namespace Vulkan {
+namespace Entropy
+{
+  namespace Factories
+  {
+    namespace Vulkan
+    {
 
-struct TextureFactory {
+      struct TextureFactory
+      {
 
-  TextureFactory(VulkanBackend backend, QueueSync qs, Allocator a,
-                 BufferFactory bf, CommandPool cp, DescriptorPool dp)
-      : _vkBackend{backend}, _queueSync{qs}, _allocator{a}, _bufferFactory{bf},
-        _commandPool{cp}, _descriptorPool{dp} {}
+        TextureFactory(VulkanBackend backend, QueueSync qs, Allocator a,
+                       BufferFactory bf, CommandPool cp, DescriptorPool dp)
+            : _vkBackend{backend}, _queueSync{qs}, _allocator{a}, _bufferFactory{bf},
+              _commandPool{cp}, _descriptorPool{dp} {}
 
-  std::shared_ptr<DepthBufferTexture>
-  CreateDepthBufferTexture(unsigned int width, unsigned int height) {
-    return std::make_shared<DepthBufferTexture>(
-        _vkBackend, _queueSync, _allocator, _bufferFactory, _commandPool,
-        _descriptorPool, width, height);
-  }
+        std::shared_ptr<DepthBufferTexture>
+        CreateDepthBufferTexture(unsigned int width, unsigned int height)
+        {
+          return std::make_shared<DepthBufferTexture>(
+              _vkBackend, _queueSync, _allocator, _bufferFactory, _commandPool,
+              _descriptorPool, width, height);
+        }
 
-  std::shared_ptr<SwapChainTexture>
-  CreateSwapChainTexture(unsigned int width, unsigned int height) {
-    return std::make_shared<SwapChainTexture>(
-        _vkBackend, _queueSync, _allocator, _bufferFactory, _commandPool,
-        _descriptorPool, width, height);
-  }
+        std::shared_ptr<SwapChainTexture>
+        CreateSwapChainTexture(unsigned int width, unsigned int height)
+        {
+          return std::make_shared<SwapChainTexture>(
+              _vkBackend, _queueSync, _allocator, _bufferFactory, _commandPool,
+              _descriptorPool, width, height);
+        }
 
-  std::shared_ptr<NormalTexture> CreateNormalTexture(std::string path) {
-    return std::make_shared<NormalTexture>(_vkBackend, _queueSync, _allocator,
-                                           _bufferFactory, _commandPool,
-                                           _descriptorPool, path);
-  }
+        std::shared_ptr<NormalTexture> CreateNormalTexture(std::string path)
+        {
+          return std::make_shared<NormalTexture>(_vkBackend, _queueSync, _allocator,
+                                                 _bufferFactory, _commandPool,
+                                                 _descriptorPool, path);
+        }
+        Allocator _allocator;
 
-private:
-  // Vulkan Dependency
-  VulkanBackend _vkBackend;
-  QueueSync _queueSync;
-  Allocator _allocator;
-  BufferFactory _bufferFactory;
-  CommandPool _commandPool;
-  DescriptorPool _descriptorPool;
-};
+      private:
+        // Vulkan Dependency
+        VulkanBackend _vkBackend;
+        QueueSync _queueSync;
 
-} // namespace Vulkan
-} // namespace Factories
+        BufferFactory _bufferFactory;
+        CommandPool _commandPool;
+        DescriptorPool _descriptorPool;
+      };
+
+    } // namespace Vulkan
+  } // namespace Factories
 } // namespace Entropy

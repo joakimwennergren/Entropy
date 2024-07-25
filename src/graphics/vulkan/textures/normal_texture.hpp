@@ -11,7 +11,6 @@
 #include "tiny_gltf.h"
 #include <config.hpp>
 
-#include <assets/textureid.hpp>
 #include <factories/vulkan/bufferfactory.hpp>
 #include <graphics/vulkan/buffers/buffer.hpp>
 #include <graphics/vulkan/buffers/stagedbuffer.hpp>
@@ -36,147 +35,156 @@ using namespace Entropy::Graphics::Vulkan::ImageViews;
 using namespace Entropy::Graphics::Vulkan::Memory;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
 
-namespace Entropy {
-namespace Graphics {
-namespace Vulkan {
-namespace Textures {
+namespace Entropy
+{
+  namespace Graphics
+  {
+    namespace Vulkan
+    {
+      namespace Textures
+      {
 
-struct NormalTexture : public Texture {
+        struct NormalTexture : public Texture
+        {
 
-  VkSampler _textureSampler;
-  VkDescriptorSetLayout _descriptorSetLayout;
+          VkSampler _textureSampler;
+          VkDescriptorSetLayout _descriptorSetLayout;
 
-  NormalTexture(VulkanBackend vbe, QueueSync qs, Allocator allocator,
-                Factories::Vulkan::BufferFactory bf, CommandPool cp,
-                DescriptorPool dp, std::string path)
-      : Texture(vbe, qs, allocator, bf, cp, dp) {
+          NormalTexture(VulkanBackend vbe, QueueSync qs, Allocator allocator,
+                        Factories::Vulkan::BufferFactory bf, CommandPool cp,
+                        DescriptorPool dp, std::string path)
+              : Texture(vbe, qs, allocator, bf, cp, dp)
+          {
 
-    assert(path.length() != 0);
+            assert(path.length() != 0);
 
-    // Load the image pixels
-    int texWidth, texHeight, texChannels;
+            // Load the image pixels
+            int texWidth, texHeight, texChannels;
 
-    // stbi_set_flip_vertically_on_load(true);
+            // stbi_set_flip_vertically_on_load(true);
 
-    stbi_uc *pixels = stbi_load(path.c_str(), &texWidth, &texHeight,
-                                &texChannels, STBI_rgb_alpha);
+            stbi_uc *pixels = stbi_load(path.c_str(), &texWidth, &texHeight,
+                                        &texChannels, STBI_rgb_alpha);
 
-    VkDeviceSize imageSize = texWidth * texHeight * 4;
+            VkDeviceSize imageSize = texWidth * texHeight * 4;
 
-    assert(pixels != nullptr);
+            assert(pixels != nullptr);
 
-    auto buffer = bf.CreateStagingBuffer(imageSize, pixels,
-                                         VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-    // Create a buffer and free pixels
-    stbi_image_free(pixels);
-    auto buf = buffer->GetVulkanBuffer();
+            auto buffer = bf.CreateStagingBuffer(imageSize, pixels,
+                                                 VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+            // Create a buffer and free pixels
+            stbi_image_free(pixels);
+            auto buf = buffer->GetVulkanBuffer();
 
-    VkFormat colorFormat = GetColorFormat();
+            VkFormat colorFormat = GetColorFormat();
 
-    // Create, transition and copy the image
-    CreateImage(texWidth, texHeight, colorFormat, VK_IMAGE_TILING_OPTIMAL,
-                VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-                _textureImage);
+            // Create, transition and copy the image
+            CreateImage(texWidth, texHeight, colorFormat, VK_IMAGE_TILING_OPTIMAL,
+                        VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+                        _textureImage);
 
-    TransitionImageLayout(_textureImage, VK_IMAGE_LAYOUT_UNDEFINED,
-                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+            TransitionImageLayout(_textureImage, VK_IMAGE_LAYOUT_UNDEFINED,
+                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-    CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(texWidth),
-                      static_cast<uint32_t>(texHeight));
+            CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(texWidth),
+                              static_cast<uint32_t>(texHeight));
 
-    TransitionImageLayout(_textureImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+            TransitionImageLayout(_textureImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                  VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    // Create and set the image view
-    auto imageView = ImageView(vbe, _textureImage, colorFormat);
-    _imageView = imageView.Get();
+            // Create and set the image view
+            auto imageView = ImageView(vbe, _textureImage, colorFormat);
+            _imageView = imageView.Get();
 
-    // Get required depenencies
+            // Get required depenencies
 
-    VkPhysicalDeviceProperties properties{};
-    vkGetPhysicalDeviceProperties(_vulkanBackend.physicalDevice.Get(),
-                                  &properties);
+            VkPhysicalDeviceProperties properties{};
+            vkGetPhysicalDeviceProperties(_vulkanBackend.physicalDevice.Get(),
+                                          &properties);
 
-    VkSamplerCreateInfo samplerInfo{};
-    samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-    samplerInfo.magFilter = VK_FILTER_LINEAR;
-    samplerInfo.minFilter = VK_FILTER_LINEAR;
+            VkSamplerCreateInfo samplerInfo{};
+            samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+            samplerInfo.magFilter = VK_FILTER_LINEAR;
+            samplerInfo.minFilter = VK_FILTER_LINEAR;
 
-    samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-    samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-    samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-    samplerInfo.anisotropyEnable = VK_TRUE;
-    samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
-    samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
-    samplerInfo.unnormalizedCoordinates = VK_FALSE;
-    samplerInfo.compareEnable = VK_FALSE;
-    samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
-    samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-    samplerInfo.mipLodBias = 0.0f;
-    samplerInfo.minLod = 0.0f;
-    samplerInfo.maxLod = 0.0f;
+            samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+            samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+            samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+            samplerInfo.anisotropyEnable = VK_TRUE;
+            samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+            samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+            samplerInfo.unnormalizedCoordinates = VK_FALSE;
+            samplerInfo.compareEnable = VK_FALSE;
+            samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+            samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+            samplerInfo.mipLodBias = 0.0f;
+            samplerInfo.minLod = 0.0f;
+            samplerInfo.maxLod = 0.0f;
 
-    if (vkCreateSampler(_vulkanBackend.logicalDevice.Get(), &samplerInfo,
-                        nullptr, &_textureSampler) != VK_SUCCESS) {
-      throw std::runtime_error("failed to create texture sampler!");
-    }
+            if (vkCreateSampler(_vulkanBackend.logicalDevice.Get(), &samplerInfo,
+                                nullptr, &_textureSampler) != VK_SUCCESS)
+            {
+              throw std::runtime_error("failed to create texture sampler!");
+            }
 
-    VkDescriptorSetLayoutBinding samplerLayoutBinding{};
-    samplerLayoutBinding.binding = 2;
-    samplerLayoutBinding.descriptorCount = 1;
-    samplerLayoutBinding.descriptorType =
-        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    samplerLayoutBinding.pImmutableSamplers = nullptr;
-    samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+            VkDescriptorSetLayoutBinding samplerLayoutBinding{};
+            samplerLayoutBinding.binding = 2;
+            samplerLayoutBinding.descriptorCount = 1;
+            samplerLayoutBinding.descriptorType =
+                VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            samplerLayoutBinding.pImmutableSamplers = nullptr;
+            samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-    std::array<VkDescriptorSetLayoutBinding, 1> bindings = {
-        samplerLayoutBinding};
-    VkDescriptorSetLayoutCreateInfo layoutInfo{};
-    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-    layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
-    layoutInfo.pBindings = bindings.data();
+            std::array<VkDescriptorSetLayoutBinding, 1> bindings = {
+                samplerLayoutBinding};
+            VkDescriptorSetLayoutCreateInfo layoutInfo{};
+            layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+            layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+            layoutInfo.pBindings = bindings.data();
 
-    if (vkCreateDescriptorSetLayout(_vulkanBackend.logicalDevice.Get(),
-                                    &layoutInfo, nullptr,
-                                    &_descriptorSetLayout) != VK_SUCCESS) {
-      throw std::runtime_error("failed to create descriptor set layout!");
-    }
+            if (vkCreateDescriptorSetLayout(_vulkanBackend.logicalDevice.Get(),
+                                            &layoutInfo, nullptr,
+                                            &_descriptorSetLayout) != VK_SUCCESS)
+            {
+              throw std::runtime_error("failed to create descriptor set layout!");
+            }
 
-    std::vector<VkDescriptorSetLayout> layouts(1, _descriptorSetLayout);
+            std::vector<VkDescriptorSetLayout> layouts(1, _descriptorSetLayout);
 
-    VkDescriptorSetAllocateInfo allocInfo{};
-    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    allocInfo.descriptorPool = dp.Get();
-    allocInfo.descriptorSetCount = 1; // MAX_CONCURRENT_FRAMES_IN_FLIGHT;
-    allocInfo.pSetLayouts = layouts.data();
+            VkDescriptorSetAllocateInfo allocInfo{};
+            allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+            allocInfo.descriptorPool = dp.Get();
+            allocInfo.descriptorSetCount = 1; // MAX_CONCURRENT_FRAMES_IN_FLIGHT;
+            allocInfo.pSetLayouts = layouts.data();
 
-    if (vkAllocateDescriptorSets(_vulkanBackend.logicalDevice.Get(), &allocInfo,
-                                 &_descriptorSet) != VK_SUCCESS) {
-      throw std::runtime_error("failed to allocate descriptor sets!");
-    }
+            if (vkAllocateDescriptorSets(_vulkanBackend.logicalDevice.Get(), &allocInfo,
+                                         &_descriptorSet) != VK_SUCCESS)
+            {
+              throw std::runtime_error("failed to allocate descriptor sets!");
+            }
 
-    std::array<VkWriteDescriptorSet, 1> descriptorWrites{};
+            std::array<VkWriteDescriptorSet, 1> descriptorWrites{};
 
-    VkDescriptorImageInfo imageInfo{};
-    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    imageInfo.imageView = _imageView;
-    imageInfo.sampler = _textureSampler;
+            VkDescriptorImageInfo imageInfo{};
+            imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            imageInfo.imageView = _imageView;
+            imageInfo.sampler = _textureSampler;
 
-    descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    descriptorWrites[0].dstSet = _descriptorSet;
-    descriptorWrites[0].dstBinding = 2;
-    descriptorWrites[0].dstArrayElement = 0;
-    descriptorWrites[0].descriptorType =
-        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    descriptorWrites[0].descriptorCount = 1;
-    descriptorWrites[0].pImageInfo = &imageInfo;
+            descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrites[0].dstSet = _descriptorSet;
+            descriptorWrites[0].dstBinding = 2;
+            descriptorWrites[0].dstArrayElement = 0;
+            descriptorWrites[0].descriptorType =
+                VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            descriptorWrites[0].descriptorCount = 1;
+            descriptorWrites[0].pImageInfo = &imageInfo;
 
-    vkUpdateDescriptorSets(_vulkanBackend.logicalDevice.Get(),
-                           static_cast<uint32_t>(descriptorWrites.size()),
-                           descriptorWrites.data(), 0, nullptr);
-  }
-};
-} // namespace Textures
-} // namespace Vulkan
-} // namespace Graphics
+            vkUpdateDescriptorSets(_vulkanBackend.logicalDevice.Get(),
+                                   static_cast<uint32_t>(descriptorWrites.size()),
+                                   descriptorWrites.data(), 0, nullptr);
+          }
+        };
+      } // namespace Textures
+    } // namespace Vulkan
+  } // namespace Graphics
 } // namespace Entropy

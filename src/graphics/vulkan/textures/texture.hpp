@@ -15,7 +15,6 @@
 #include "config.hpp"
 #include "tiny_gltf.h"
 
-#include <assets/textureid.hpp>
 #include <graphics/vulkan/buffers/buffer.hpp>
 #include <graphics/vulkan/buffers/stagedbuffer.hpp>
 #include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
@@ -40,74 +39,81 @@ using namespace Entropy::Graphics::Vulkan::Memory;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
 using namespace Entropy::Graphics::Vulkan::DescriptorPools;
 
-namespace Entropy {
-namespace Graphics {
-namespace Vulkan {
-namespace Textures {
+namespace Entropy
+{
+  namespace Graphics
+  {
+    namespace Vulkan
+    {
+      namespace Textures
+      {
 
-class Texture {
-public:
-  Texture(VulkanBackend vbe, QueueSync qs, Allocator allocator,
-          Factories::Vulkan::BufferFactory bf, CommandPool cp,
-          DescriptorPool dp)
-      : _vulkanBackend{vbe}, _queueSync{qs}, _allocator{allocator},
-        _bufferFactory{bf}, _commandPool{cp}, _descriptorPool{dp} {
-    textureId = TextureId().GetId();
-  }
+        class Texture
+        {
+        public:
+          Texture(VulkanBackend vbe, QueueSync qs, Allocator allocator,
+                  Factories::Vulkan::BufferFactory bf, CommandPool cp,
+                  DescriptorPool dp)
+              : _vulkanBackend{vbe}, _queueSync{qs}, _allocator{allocator},
+                _bufferFactory{bf}, _commandPool{cp}, _descriptorPool{dp}
+          {
+          }
 
-  ~Texture() {
-    vkDeviceWaitIdle(_vulkanBackend.logicalDevice.Get());
-    vkDestroyImageView(_vulkanBackend.logicalDevice.Get(), _imageView, nullptr);
-    vkDestroyImage(_vulkanBackend.logicalDevice.Get(), _textureImage, nullptr);
-    vkFreeDescriptorSets(_vulkanBackend.logicalDevice.Get(),
-                         _descriptorPool.Get(), 1, &_descriptorSet);
-  }
+          ~Texture()
+          {
+            vkDeviceWaitIdle(_vulkanBackend.logicalDevice.Get());
+            vkDestroyImageView(_vulkanBackend.logicalDevice.Get(), _imageView, nullptr);
+            vkDestroyImage(_vulkanBackend.logicalDevice.Get(), _textureImage, nullptr);
+            // if(_descriptorSet != nullptr)
+            // {
+            //   vkFreeDescriptorSets(_vulkanBackend.logicalDevice.Get(),
+            //                      _descriptorPool.Get(), 1, &_descriptorSet);
+            // }
+          }
 
-  void CreateTextureImage(std::string path);
+          void CreateTextureImage(std::string path);
 
-  void CreateTextureImageFromPixels(unsigned char *pixels, int width,
-                                    int height);
+          void CreateTextureImageFromPixels(unsigned char *pixels, int width,
+                                            int height);
 
-  // void CreateTextureImageFromKtx(unsigned char *pixels, unsigned int width,
-  // unsigned int height, int size, int mips, VkFormat format, ktxTexture
-  // *ktxTexture);
+          // void CreateTextureImageFromKtx(unsigned char *pixels, unsigned int width,
+          // unsigned int height, int size, int mips, VkFormat format, ktxTexture
+          // *ktxTexture);
 
-  void CreateTextureImageFromBuffer(FT_Bitmap bitmap);
+          void CreateTextureImageFromBuffer(FT_Bitmap bitmap);
 
-  void CreateTextureFromGLTFImage(tinygltf::Image &gltfimage);
+          void CreateTextureFromGLTFImage(tinygltf::Image &gltfimage);
 
 #ifdef BUILD_FOR_ANDROID
-  void CreateTextureImage(std::string path, AAssetManager *assetManager);
+          void CreateTextureImage(std::string path, AAssetManager *assetManager);
 #endif
 
-  inline VkImageView GetImageView() { return this->_imageView; };
+          inline VkImageView GetImageView() { return this->_imageView; };
 
-  void TransitionImageLayout(VkImage image, VkImageLayout oldLayout,
-                             VkImageLayout newLayout);
-  void CopyBufferToImage(const VkBuffer buffer, const VkImage image,
-                         const uint32_t width, const uint32_t height);
-  void CreateImage(const uint32_t width, const uint32_t height,
-                   const VkFormat format, const VkImageTiling tiling,
-                   const VkImageUsageFlags usage, VkImage &image);
+          void TransitionImageLayout(VkImage image, VkImageLayout oldLayout,
+                                     VkImageLayout newLayout);
+          void CopyBufferToImage(const VkBuffer buffer, const VkImage image,
+                                 const uint32_t width, const uint32_t height);
+          void CreateImage(const uint32_t width, const uint32_t height,
+                           const VkFormat format, const VkImageTiling tiling,
+                           const VkImageUsageFlags usage, VkImage &image);
 
-  VkFormat GetColorFormat();
+          VkFormat GetColorFormat();
 
-  unsigned int textureId;
+          VkImage _textureImage = VK_NULL_HANDLE;
+          VkImageView _imageView = VK_NULL_HANDLE;
+          VmaAllocation _allocation = VK_NULL_HANDLE;
 
-  VkImage _textureImage = VK_NULL_HANDLE;
-  VkImageView _imageView = VK_NULL_HANDLE;
-  VmaAllocation _allocation = VK_NULL_HANDLE;
+          VulkanBackend _vulkanBackend;
+          QueueSync _queueSync;
+          Allocator _allocator;
+          Factories::Vulkan::BufferFactory _bufferFactory;
+          CommandPool _commandPool;
+          DescriptorPool _descriptorPool;
 
-  VulkanBackend _vulkanBackend;
-  QueueSync _queueSync;
-  Allocator _allocator;
-  Factories::Vulkan::BufferFactory _bufferFactory;
-  CommandPool _commandPool;
-  DescriptorPool _descriptorPool;
-
-  VkDescriptorSet _descriptorSet;
-};
-} // namespace Textures
-} // namespace Vulkan
-} // namespace Graphics
+          VkDescriptorSet _descriptorSet;
+        };
+      } // namespace Textures
+    } // namespace Vulkan
+  } // namespace Graphics
 } // namespace Entropy

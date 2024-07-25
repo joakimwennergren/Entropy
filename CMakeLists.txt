@@ -51,19 +51,19 @@ target_include_directories(${PROJECT_NAME}
         external/bullet3/src
 )
 
-target_link_libraries(${PROJECT_NAME}
-"-framework foundation"
-"-framework metal"
-"-framework metalkit"
-"-framework uikit"
-"-framework iosurface"
-"-framework coregraphics"
-"-framework quartzcore"
-"-framework coreaudio"
-"-framework audiotoolbox"
-"-framework avfoundation"
-"-framework coretext"
-)
+#target_link_libraries(${PROJECT_NAME}
+#"-framework foundation"
+#"-framework metal"
+#"-framework metalkit"
+#"-framework uikit"
+#"-framework iosurface"
+#"-framework coregraphics"
+#"-framework quartzcore"
+#"-framework coreaudio"
+#"-framework audiotoolbox"
+#"-framework avfoundation"
+#"-framework coretext"
+#)
 
 # Link common dependencies
 target_link_libraries(${PROJECT_NAME}
@@ -87,7 +87,7 @@ target_link_libraries(${PROJECT_NAME}
 # Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk)
 target_link_libraries(${PROJECT_NAME}
     ${Vulkan_LIBRARIES}
-    #glfw
+    glfw
     #efsw
     TracyClient
     GPUOpen::VulkanMemoryAllocator

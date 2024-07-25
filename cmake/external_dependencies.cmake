@@ -53,14 +53,14 @@ set(CURL_USE_OPENSSL OFF)
 # Graphics API
 
 # Vulkan
-#find_package(Vulkan REQUIRED)
+find_package(Vulkan REQUIRED)
 
 #set(KTX_FEATURE_TESTS OFF)
 #add_subdirectory(external/KTX-Software)
 
 # Windowing on desktop
 if(WIN32 OR UNIX OR APPLE)
-  #add_subdirectory(external/glfw)
+  add_subdirectory(external/glfw)
 endif()
 
 # Lua SOL 2

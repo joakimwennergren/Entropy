@@ -36,6 +36,8 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
         _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE,
         &imageIndex);
   }
+
+  
   auto orthoCamera =
       dynamic_cast<Cameras::OrthographicCamera *>(_cameraManager.currentCamera);
 
