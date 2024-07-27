@@ -1,19 +1,13 @@
 #include "application.hpp"
 #include "graphics/renderers/vulkan_renderer.hpp"
-#include "services/allocator_service.hpp"
-#include "services/logical_device_service.hpp"
-#include "services/physical_device_service.hpp"
-#include "services/vk_instance_service.hpp"
-#include "services/vulkan_backend_service.hpp"
-#include "services/vulkan_render_service.hpp"
-#include <graphics/vulkan/vulkan_backend.hpp>
 
 using namespace Entropy;
 
-#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) ||                    \
+#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) || \
     defined(BUILD_FOR_WINDOWS)
 
-Application::Application() {
+Application::Application()
+{
 
   /*
 
@@ -153,12 +147,14 @@ VkExtent2D frame = {(uint32_t)width, (uint32_t)height};
 //     }
 // }
 
-Application::~Application() {
+Application::~Application()
+{
   glfwDestroyWindow(_window);
   glfwTerminate();
 }
 
-void Application::Run() {
+void Application::Run()
+{
 
   // auto lua = serviceLocator->GetService<Lua>();
   // auto physics3d = serviceLocator->GetService<Physics3D>();
@@ -174,7 +170,8 @@ void Application::Run() {
   // _camera->Pitch = 22.69f;
   // _camera->Yaw = 44.20f;
 
-  while (!glfwWindowShouldClose(_window)) {
+  while (!glfwWindowShouldClose(_window))
+  {
 
     // spdlog::info("ms/frame = {}", _deltaTime);
 
@@ -187,9 +184,10 @@ void Application::Run() {
     glfwGetFramebufferSize(_window, &width, &height);
     int contentScaleWidth, contentScaleHeight;
 
-#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) ||                    \
+#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) || \
     defined(BUILD_FOR_WINDOWS)
-    while (isMinimized) {
+    while (isMinimized)
+    {
       glfwWaitEvents();
     }
 #endif
@@ -249,7 +247,8 @@ void Application::Run() {
 }
 
 void keyCallback(GLFWwindow *window, int key, int scancode, int action,
-                 int mods) {
+                 int mods)
+{
   /*
 ImGuiIO &io = ImGui::GetIO();
 if (action == GLFW_PRESS)
@@ -271,17 +270,20 @@ io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
 void character_callback(GLFWwindow *window, unsigned int codepoint) {}
 
 void cursor_position_callback(GLFWwindow *window, double xposIn,
-                              double yposIn) {
+                              double yposIn)
+{
   auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
 
-  if (app == nullptr) {
+  if (app == nullptr)
+  {
     return;
   }
 
   float xpos = static_cast<float>(xposIn);
   float ypos = static_cast<float>(yposIn);
 
-  if (app->firstMouse) {
+  if (app->firstMouse)
+  {
     app->lastX = xpos;
     app->lastY = ypos;
     app->firstMouse = false;
@@ -297,7 +299,8 @@ void cursor_position_callback(GLFWwindow *window, double xposIn,
   // app->_camera->ProcessMouseMovement(xoffset, yoffset);
 }
 
-void framebufferResizeCallback(GLFWwindow *window, int width, int height) {
+void framebufferResizeCallback(GLFWwindow *window, int width, int height)
+{
   auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
 
   GLFWmonitor *primary = glfwGetPrimaryMonitor();
@@ -310,7 +313,8 @@ void framebufferResizeCallback(GLFWwindow *window, int width, int height) {
 }
 
 void mouse_button_callback(GLFWwindow *window, int button, int action,
-                           int mods) {
+                           int mods)
+{
   /*
   auto &io = ImGui::GetIO();
   auto app = reinterpret_cast<Application
@@ -328,23 +332,29 @@ void mouse_button_callback(GLFWwindow *window, int button, int action,
     */
 }
 
-void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
+{
   auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
   // app->_camera->ProcessMouseScroll((float)yoffset);
 }
 
-void window_iconify_callback(GLFWwindow *window, int iconified) {
+void window_iconify_callback(GLFWwindow *window, int iconified)
+{
   auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
 
-  if (iconified) {
+  if (iconified)
+  {
     app->isMinimized = true;
-  } else {
+  }
+  else
+  {
     app->isMinimized = false;
   }
 }
 
 void window_content_scale_callback(GLFWwindow *window, float xscale,
-                                   float yscale) {
+                                   float yscale)
+{
   auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
 
   app->xscale = xscale;

@@ -2,74 +2,75 @@
 
 using namespace Entropy::Graphics::Vulkan::Textures;
 
-void Texture::CreateTextureFromGLTFImage(tinygltf::Image &gltfimage){
+void Texture::CreateTextureFromGLTFImage(tinygltf::Image &gltfimage) {
 
-    /*
+  /*
 
-    auto physicalDevice = _serviceLocator->GetService<PhysicalDevice>();
+  auto physicalDevice = _serviceLocator->GetService<PhysicalDevice>();
 
-    unsigned char *buffer = nullptr;
-    VkDeviceSize bufferSize = 0;
-    bool deleteBuffer = false;
-    if (gltfimage.component == 3) {
-      // Most devices don't support RGB only on Vulkan so convert if necessary
-      // TODO: Check actual format support and transform only if required
-      bufferSize = gltfimage.width * gltfimage.height * 4;
-      buffer = new unsigned char[bufferSize];
-      unsigned char *rgba = buffer;
-      unsigned char *rgb = &gltfimage.image[0];
-      for (int32_t i = 0; i < gltfimage.width * gltfimage.height; ++i) {
-        for (int32_t j = 0; j < 3; ++j) {
-          rgba[j] = rgb[j];
-        }
-        rgba += 4;
-        rgb += 3;
+  unsigned char *buffer = nullptr;
+  VkDeviceSize bufferSize = 0;
+  bool deleteBuffer = false;
+  if (gltfimage.component == 3) {
+    // Most devices don't support RGB only on Vulkan so convert if necessary
+    // TODO: Check actual format support and transform only if required
+    bufferSize = gltfimage.width * gltfimage.height * 4;
+    buffer = new unsigned char[bufferSize];
+    unsigned char *rgba = buffer;
+    unsigned char *rgb = &gltfimage.image[0];
+    for (int32_t i = 0; i < gltfimage.width * gltfimage.height; ++i) {
+      for (int32_t j = 0; j < 3; ++j) {
+        rgba[j] = rgb[j];
       }
-      deleteBuffer = true;
-    } else {
-      buffer = &gltfimage.image[0];
-      bufferSize = gltfimage.image.size();
+      rgba += 4;
+      rgb += 3;
     }
+    deleteBuffer = true;
+  } else {
+    buffer = &gltfimage.image[0];
+    bufferSize = gltfimage.image.size();
+  }
 
-    VkFormat format = VK_FORMAT_R8G8B8A8_UNORM;
+  VkFormat format = VK_FORMAT_R8G8B8A8_UNORM;
 
-    VkFormatProperties formatProperties;
+  VkFormatProperties formatProperties;
 
-    int width = gltfimage.width;
-    int height = gltfimage.height;
-    int mipLevels =
-        static_cast<uint32_t>(floor(log2(std::max(width, height))) + 1.0);
+  int width = gltfimage.width;
+  int height = gltfimage.height;
+  int mipLevels =
+      static_cast<uint32_t>(floor(log2(std::max(width, height))) + 1.0);
 
-    vkGetPhysicalDeviceFormatProperties(physicalDevice->Get(), format,
-                                        &formatProperties);
-    assert(formatProperties.optimalTilingFeatures &
-           VK_FORMAT_FEATURE_BLIT_SRC_BIT);
-    assert(formatProperties.optimalTilingFeatures &
-           VK_FORMAT_FEATURE_BLIT_DST_BIT);
+  vkGetPhysicalDeviceFormatProperties(physicalDevice->Get(), format,
+                                      &formatProperties);
+  assert(formatProperties.optimalTilingFeatures &
+         VK_FORMAT_FEATURE_BLIT_SRC_BIT);
+  assert(formatProperties.optimalTilingFeatures &
+         VK_FORMAT_FEATURE_BLIT_DST_BIT);
 
-    StagedBuffer stagedBuffer(bufferSize, buffer);
+  StagedBuffer stagedBuffer(bufferSize, buffer);
 
-    auto mem = stagedBuffer.GetBufferMemory();
-    auto buf = stagedBuffer.GetVulkanBuffer();
+  auto mem = stagedBuffer.GetBufferMemory();
+  auto buf = stagedBuffer.GetVulkanBuffer();
 
-    CreateImage(width, height, format, VK_IMAGE_TILING_OPTIMAL,
-                VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-                _textureImage);
+  CreateImage(width, height, format, VK_IMAGE_TILING_OPTIMAL,
+              VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+              _textureImage);
 
-    TransitionImageLayout(_textureImage, VK_IMAGE_LAYOUT_UNDEFINED,
-                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(width),
-                      static_cast<uint32_t>(height));
-    TransitionImageLayout(_textureImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+  TransitionImageLayout(_textureImage, VK_IMAGE_LAYOUT_UNDEFINED,
+                        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+  CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(width),
+                    static_cast<uint32_t>(height));
+  TransitionImageLayout(_textureImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    auto imageView = ImageView(_logicalDevice->Get(), _textureImage, format);
+  auto imageView = ImageView(_logicalDevice->Get(), _textureImage, format);
 
-    _imageView = imageView.Get();
-    */
+  _imageView = imageView.Get();
+  */
 };
 
-void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap) {
+void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap)
+{
   /*
   auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
 
@@ -101,7 +102,8 @@ void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap) {
 }
 
 void Texture::CreateTextureImageFromPixels(unsigned char *pixels, int width,
-                                           int height) {
+                                           int height)
+{
 
   /*
   #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
@@ -206,16 +208,17 @@ void Texture::CreateTextureImageFromPixels(unsigned char *pixels, int width,
  * @return (void)
  */
 void Texture::TransitionImageLayout(VkImage image, VkImageLayout oldLayout,
-                                    VkImageLayout newLayout) {
+                                    VkImageLayout newLayout)
+{
   // Assert on parameters
   assert(image != VK_NULL_HANDLE);
 
   // Create a new command buffer and start one-time recording
-  auto commandBuffer =
-      new CommandBuffer(_vulkanBackend, _queueSync, _commandPool,
-                        VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+  // auto commandBuffer =
+  //     new CommandBuffer(_vulkanBackend, _queueSync, _commandPool,
+  //                       VK_COMMAND_BUFFER_LEVEL_PRIMARY);
 
-  commandBuffer->RecordOnce();
+  // commandBuffer->RecordOnce();
 
   // Create pipeline barrier
   VkImageMemoryBarrier barrier{};
@@ -235,41 +238,46 @@ void Texture::TransitionImageLayout(VkImage image, VkImageLayout oldLayout,
   VkPipelineStageFlags destinationStage;
 
   if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED &&
-      newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+      newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+  {
     barrier.srcAccessMask = 0;
     barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 
     sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
     destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-  } else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
-             newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+  }
+  else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
+           newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+  {
     barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
     barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
     sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
     destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-  } else {
+  }
+  else
+  {
     spdlog::error("Unsupported image layout transition!");
   }
 
   // Set the pipeline barrier
-  vkCmdPipelineBarrier(commandBuffer->Get(), sourceStage, destinationStage, 0,
-                       0, nullptr, 0, nullptr, 1, &barrier);
+  // vkCmdPipelineBarrier(commandBuffer->Get(), sourceStage, destinationStage, 0,
+  //                      0, nullptr, 0, nullptr, 1, &barrier);
 
   // End one-time recording and add command buffer to queue
-  commandBuffer->EndRecordingOnce();
-  // _queueSync.commandBuffers.push_back(commandBuffer->Get());
+  // commandBuffer->EndRecordingOnce();
+  // // _queueSync.commandBuffers.push_back(commandBuffer->Get());
 
-  auto cmdBuf = commandBuffer->Get();
+  // auto cmdBuf = commandBuffer->Get();
 
-  VkSubmitInfo submitInfo{};
-  submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-  submitInfo.commandBufferCount = 1;
-  submitInfo.pCommandBuffers = &cmdBuf;
-  vkQueueSubmit(_vulkanBackend.logicalDevice.GetGraphicQueue(), 1, &submitInfo,
-                nullptr);
+  // VkSubmitInfo submitInfo{};
+  // submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+  // submitInfo.commandBufferCount = 1;
+  // submitInfo.pCommandBuffers = &cmdBuf;
+  // vkQueueSubmit(_vulkanBackend.logicalDevice.GetGraphicQueue(), 1, &submitInfo,
+  //               nullptr);
 
-  vkDeviceWaitIdle(_vulkanBackend.logicalDevice.Get());
+  // vkDeviceWaitIdle(_vulkanBackend.logicalDevice.Get());
 }
 
 /**
@@ -281,7 +289,8 @@ void Texture::TransitionImageLayout(VkImage image, VkImageLayout oldLayout,
  * @return (void)
  */
 void Texture::CopyBufferToImage(const VkBuffer buffer, const VkImage image,
-                                const uint32_t width, const uint32_t height) {
+                                const uint32_t width, const uint32_t height)
+{
   // Assert on parameters
   assert(buffer != VK_NULL_HANDLE);
   assert(image != VK_NULL_HANDLE);
@@ -289,10 +298,10 @@ void Texture::CopyBufferToImage(const VkBuffer buffer, const VkImage image,
   assert(height != 0);
 
   // Create a new command buffer and start one-time recording
-  auto commandBuffer =
-      new CommandBuffer(_vulkanBackend, _queueSync, _commandPool,
-                        VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-  commandBuffer->RecordOnce();
+  // auto commandBuffer =
+  //     new CommandBuffer(_vulkanBackend, _queueSync, _commandPool,
+  //                       VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+  // commandBuffer->RecordOnce();
 
   // Make the actual copy
   VkBufferImageCopy region{};
@@ -305,23 +314,23 @@ void Texture::CopyBufferToImage(const VkBuffer buffer, const VkImage image,
   region.imageSubresource.layerCount = 1;
   region.imageOffset = {0, 0, 0};
   region.imageExtent = {width, height, 1};
-  vkCmdCopyBufferToImage(commandBuffer->Get(), buffer, image,
-                         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+  // vkCmdCopyBufferToImage(commandBuffer->Get(), buffer, image,
+  //                        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
   // End one-time recording and add command buffer to queue
-  commandBuffer->EndRecordingOnce();
-  // _queueSync.commandBuffers.push_back(commandBuffer->Get());
+  // commandBuffer->EndRecordingOnce();
+  // // _queueSync.commandBuffers.push_back(commandBuffer->Get());
 
-  auto cmdBuf = commandBuffer->Get();
+  // auto cmdBuf = commandBuffer->Get();
 
-  VkSubmitInfo submitInfo{};
-  submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-  submitInfo.commandBufferCount = 1;
-  submitInfo.pCommandBuffers = &cmdBuf;
-  vkQueueSubmit(_vulkanBackend.logicalDevice.GetGraphicQueue(), 1, &submitInfo,
-                nullptr);
+  // VkSubmitInfo submitInfo{};
+  // submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+  // submitInfo.commandBufferCount = 1;
+  // submitInfo.pCommandBuffers = &cmdBuf;
+  // vkQueueSubmit(_vulkanBackend.logicalDevice.GetGraphicQueue(), 1, &submitInfo,
+  //               nullptr);
 
-  vkDeviceWaitIdle(_vulkanBackend.logicalDevice.Get());
+  // vkDeviceWaitIdle(_vulkanBackend.logicalDevice.Get());
 }
 
 /**
@@ -336,7 +345,8 @@ void Texture::CopyBufferToImage(const VkBuffer buffer, const VkImage image,
  */
 void Texture::CreateImage(const uint32_t width, const uint32_t height,
                           const VkFormat format, const VkImageTiling tiling,
-                          const VkImageUsageFlags usage, VkImage &image) {
+                          const VkImageUsageFlags usage, VkImage &image)
+{
   // Assert on parameters
   assert(width != 0);
   assert(height != 0);
@@ -362,15 +372,16 @@ void Texture::CreateImage(const uint32_t width, const uint32_t height,
   imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
   // Create the image
-  vmaCreateImage(_allocator.Get(), &imageInfo, &allocCreateInfo, &image,
-                 &_allocation, nullptr);
+  // vmaCreateImage(_allocator.Get(), &imageInfo, &allocCreateInfo, &image,
+  //                &_allocation, nullptr);
 }
 
 /**
  * @brief Get the supported color format for current platform
  * @return VkFormat the color format
  */
-VkFormat Texture::GetColorFormat() {
+VkFormat Texture::GetColorFormat()
+{
 
   return VK_FORMAT_B8G8R8A8_UNORM;
 

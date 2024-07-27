@@ -2,8 +2,6 @@
 
 #include "factories/vulkan/bufferfactory.hpp"
 #include "graphics/vulkan/commandpools/commandpool.hpp"
-#include "graphics/vulkan/vulkan_backend.hpp"
-#include "vulkan/vulkan_core.h"
 #include <string>
 
 #include <spdlog/spdlog.h>
@@ -51,19 +49,15 @@ namespace Entropy
         class Texture
         {
         public:
-          Texture(VulkanBackend vbe, QueueSync qs, Allocator allocator,
-                  Factories::Vulkan::BufferFactory bf, CommandPool cp,
-                  DescriptorPool dp)
-              : _vulkanBackend{vbe}, _queueSync{qs}, _allocator{allocator},
-                _bufferFactory{bf}, _commandPool{cp}, _descriptorPool{dp}
+          Texture()
           {
           }
 
           ~Texture()
           {
-            vkDeviceWaitIdle(_vulkanBackend.logicalDevice.Get());
-            vkDestroyImageView(_vulkanBackend.logicalDevice.Get(), _imageView, nullptr);
-            vkDestroyImage(_vulkanBackend.logicalDevice.Get(), _textureImage, nullptr);
+            // vkDeviceWaitIdle(_vulkanBackend.logicalDevice.Get());
+            // vkDestroyImageView(_vulkanBackend.logicalDevice.Get(), _imageView, nullptr);
+            // vkDestroyImage(_vulkanBackend.logicalDevice.Get(), _textureImage, nullptr);
             // if(_descriptorSet != nullptr)
             // {
             //   vkFreeDescriptorSets(_vulkanBackend.logicalDevice.Get(),
@@ -103,13 +97,6 @@ namespace Entropy
           VkImage _textureImage = VK_NULL_HANDLE;
           VkImageView _imageView = VK_NULL_HANDLE;
           VmaAllocation _allocation = VK_NULL_HANDLE;
-
-          VulkanBackend _vulkanBackend;
-          QueueSync _queueSync;
-          Allocator _allocator;
-          Factories::Vulkan::BufferFactory _bufferFactory;
-          CommandPool _commandPool;
-          DescriptorPool _descriptorPool;
 
           VkDescriptorSet _descriptorSet;
         };

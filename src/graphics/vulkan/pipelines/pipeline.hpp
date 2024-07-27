@@ -28,60 +28,52 @@ using namespace Entropy::Graphics::Vulkan::Devices;
 using namespace Entropy::Factories::Vulkan;
 using namespace Entropy::Data;
 
-namespace Entropy {
-namespace Graphics {
-namespace Vulkan {
-namespace Pipelines {
-class Pipeline {
-public:
-  Pipeline(VulkanBackend vbe, RenderPass rp, Swapchain sc, DescriptorPool dp,
-           DescriptorSetLayoutFactory dslf, DescriptorSetFactory dsf,
-           Caches::PipelineCache pc)
-      : _vulkanBackend{vbe}, _renderPass{rp}, _swapChain{sc},
-        _descriptorPool{dp}, _descriptorSetLayoutFactory{dslf},
-        _descriptorSetFactory{dsf}, _pipelineCache{pc} {}
+namespace Entropy
+{
+  namespace Graphics
+  {
+    namespace Vulkan
+    {
+      namespace Pipelines
+      {
+        class Pipeline
+        {
+        public:
+          Pipeline() {}
 
-  ~Pipeline() {
-    // vkDeviceWaitIdle(_logicalDevice->Get());
-    vkDestroyPipeline(_vulkanBackend.logicalDevice.Get(), _pipeline, nullptr);
-    vkDestroyPipelineLayout(_vulkanBackend.logicalDevice.Get(), _pipelineLayout,
-                            nullptr);
-  }
+          ~Pipeline()
+          {
+            // vkDeviceWaitIdle(_logicalDevice->Get());
+            // vkDestroyPipeline(_vulkanBackend.logicalDevice.Get(), _pipeline, nullptr);
+            // vkDestroyPipelineLayout(_vulkanBackend.logicalDevice.Get(), _pipelineLayout,
+            //                         nullptr);
+          }
 
-  void Build(Shader shader, std::vector<VkDescriptorSetLayout> dsLayouts);
+          void Build(Shader shader, std::vector<VkDescriptorSetLayout> dsLayouts);
 
-  // void Build(const std::string name, const std::string vertexShader,
-  //            const std::string fragmentShader,
-  //            std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite,
-  //            glm::vec2 depthBounds, VkPipelineLayoutCreateInfo
-  //            pipelinelayout, VkPolygonMode polygonMode);
+          // void Build(const std::string name, const std::string vertexShader,
+          //            const std::string fragmentShader,
+          //            std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite,
+          //            glm::vec2 depthBounds, VkPipelineLayoutCreateInfo
+          //            pipelinelayout, VkPolygonMode polygonMode);
 
-  // void Build(const std::string name, std::vector<char> vert_shader,
-  //            std::vector<char> frag_shader,
-  //            std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite,
-  //            glm::vec2 depthBounds, VkPipelineLayoutCreateInfo
-  //            pipelinelayout, VkPolygonMode polygonMode);
+          // void Build(const std::string name, std::vector<char> vert_shader,
+          //            std::vector<char> frag_shader,
+          //            std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite,
+          //            glm::vec2 depthBounds, VkPipelineLayoutCreateInfo
+          //            pipelinelayout, VkPolygonMode polygonMode);
 
-  inline VkPipeline GetPipeline() { return _pipeline; };
-  inline VkPipelineLayout GetPipelineLayout() { return _pipelineLayout; };
+          inline VkPipeline GetPipeline() { return _pipeline; };
+          inline VkPipelineLayout GetPipelineLayout() { return _pipelineLayout; };
 
-  std::vector<Descriptorset> descriptorSets;
+          std::vector<Descriptorset> descriptorSets;
 
-protected:
-  // PipelineLayout and pipeline
-  VkPipelineLayout _pipelineLayout = VK_NULL_HANDLE;
-  VkPipeline _pipeline = VK_NULL_HANDLE;
-
-  // Depedencies
-  VulkanBackend _vulkanBackend;
-  RenderPass _renderPass;
-  Swapchain _swapChain;
-  DescriptorPool _descriptorPool;
-  DescriptorSetLayoutFactory _descriptorSetLayoutFactory;
-  DescriptorSetFactory _descriptorSetFactory;
-  Caches::PipelineCache _pipelineCache;
-};
-} // namespace Pipelines
-} // namespace Vulkan
-} // namespace Graphics
+        protected:
+          // PipelineLayout and pipeline
+          VkPipelineLayout _pipelineLayout = VK_NULL_HANDLE;
+          VkPipeline _pipeline = VK_NULL_HANDLE;
+        };
+      } // namespace Pipelines
+    } // namespace Vulkan
+  } // namespace Graphics
 } // namespace Entropy

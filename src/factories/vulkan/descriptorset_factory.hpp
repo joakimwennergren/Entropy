@@ -4,25 +4,28 @@
 using namespace Entropy::Graphics::Vulkan;
 using namespace Entropy::Graphics::Vulkan::Descriptorsets;
 
-namespace Entropy {
-namespace Factories {
-namespace Vulkan {
-
-struct DescriptorSetFactory {
-
-  DescriptorSetFactory(VulkanBackend backend, DescriptorPool dp) : _vkBackend{backend}, _descriptorPool{dp} {
-  }
-
-  Descriptorset CreateDescriptorSet(DescriptorsetLayout layout)
+namespace Entropy
+{
+  namespace Factories
   {
-    return Descriptorset(_vkBackend, _descriptorPool, layout);
-  }
+    namespace Vulkan
+    {
 
-  private:
-    VulkanBackend _vkBackend;
-    DescriptorPool _descriptorPool;
-};
+      struct DescriptorSetFactory
+      {
 
-} // namespace Drawables
-} // namespace Vulkan
+        DescriptorSetFactory()
+        {
+        }
+
+        Descriptorset CreateDescriptorSet(DescriptorsetLayout layout)
+        {
+          return Descriptorset(layout);
+        }
+
+      private:
+      };
+
+    } // namespace Drawables
+  } // namespace Vulkan
 } // namespace Graphics

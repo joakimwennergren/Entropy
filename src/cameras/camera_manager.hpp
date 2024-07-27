@@ -1,17 +1,20 @@
 #pragma once
-
+#include <vector>
 #include <cameras/camera.hpp>
 
-namespace Entropy {
-namespace Cameras {
+namespace Entropy
+{
+  namespace Cameras
+  {
 
-struct CameraManager {
+    struct CameraManager
+    {
 
-  CameraManager() {}
+      CameraManager() {}
 
-  std::vector<std::shared_ptr<Camera>> cameras;
-  Camera *currentCamera;
-};
+      std::vector<std::shared_ptr<Camera>> cameras;
+      Camera *currentCamera;
+    };
 
-} // namespace Cameras
+  } // namespace Cameras
 } // namespace Entropy

@@ -31,12 +31,11 @@ namespace Entropy
         struct RenderPass
         {
 
-          RenderPass(VulkanBackend backend, Swapchain swapChain, TextureFactory tf)
-              : _vkBackend{backend}, _textureFactory{tf}, _swapChain{swapChain}
+          RenderPass()
           {
 
-            RecreateDepthBuffer(swapChain.swapChainExtent.width,
-                                swapChain.swapChainExtent.height);
+            // RecreateDepthBuffer(swapChain.swapChainExtent.width,
+            //                     swapChain.swapChainExtent.height);
 
             VkAttachmentDescription depthAttachment{};
             depthAttachment.format = FindDepthFormat();
@@ -92,12 +91,12 @@ namespace Entropy
             renderPassInfo.dependencyCount = 1;
             renderPassInfo.pDependencies = &dependency;
 
-            if (vkCreateRenderPass(_vkBackend.logicalDevice.Get(), &renderPassInfo,
-                                   nullptr, &_renderPass) != VK_SUCCESS)
-            {
-              spdlog::error("Couldn't create renderpass");
-              return;
-            }
+            // if (vkCreateRenderPass(_vkBackend.logicalDevice.Get(), &renderPassInfo,
+            //                        nullptr, &_renderPass) != VK_SUCCESS)
+            // {
+            //   spdlog::error("Couldn't create renderpass");
+            //   return;
+            // }
           }
           void Begin(CommandBuffer commandBuffer, uint32_t imageIndex, int width,
                      int height) const;
@@ -108,13 +107,12 @@ namespace Entropy
 
             for (auto framebuffer : _frameBuffers)
             {
-              vkDestroyFramebuffer(_vkBackend.logicalDevice.Get(), framebuffer,
-                                   nullptr);
+              // vkDestroyFramebuffer(_vkBackend.logicalDevice.Get(), framebuffer,
+              //                      nullptr);
             }
-            if (app)
-              CreateFramebuffers(_swapChain, width, height);
-            else
-              CreateFramebuffers(width, height);
+            // if (app)
+            //  CreateFramebuffers(_swapChain, width, height);
+            //  else CreateFramebuffers(width, height);
           }
           void RecreateDepthBuffer(int width, int height)
           {
@@ -157,9 +155,9 @@ namespace Entropy
             framebufferInfo.height = height;
             framebufferInfo.layers = 1;
 
-            VkResult res =
-                vkCreateFramebuffer(_vkBackend.logicalDevice.Get(), &framebufferInfo,
-                                    nullptr, &_frameBuffers[0]);
+            // VkResult res =
+            //     vkCreateFramebuffer(_vkBackend.logicalDevice.Get(), &framebufferInfo,
+            //                         nullptr, &_frameBuffers[0]);
           }
 
           void CreateFramebuffers(Swapchain swapChain, int width, int height)
@@ -194,13 +192,12 @@ namespace Entropy
               framebufferInfo.height = height;
               framebufferInfo.layers = 1;
 
-              VkResult res =
-                  vkCreateFramebuffer(_vkBackend.logicalDevice.Get(), &framebufferInfo,
-                                      nullptr, &_frameBuffers[i]);
+              // VkResult res =
+              //     vkCreateFramebuffer(_vkBackend.logicalDevice.Get(), &framebufferInfo,
+              //                         nullptr, &_frameBuffers[i]);
             }
           }
           Swapchain _swapChain;
-          VulkanBackend _vkBackend;
 
         private:
           std::shared_ptr<DepthBufferTexture> _depthBufferTexture = nullptr;

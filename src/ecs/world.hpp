@@ -1,13 +1,18 @@
 #pragma once
+
 #include <flecs/flecs.h>
+#include "iworld.hpp"
 
-namespace Entropy {
-namespace ECS {
-struct World {
+namespace Entropy
+{
+  namespace ECS
+  {
+    struct World : public ServiceBase<IWorld>
+    {
 
-  World() { gameWorld = new flecs::world(); }
-
-  flecs::world *gameWorld;
-};
-} // namespace ECS
+      World() { gameWorld = std::make_shared<flecs::world>(); }
+      inline std::shared_ptr<flecs::world> Get() override { return gameWorld; }
+      std::shared_ptr<flecs::world> gameWorld;
+    };
+  } // namespace ECS
 } // namespace Entropy

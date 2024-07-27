@@ -15,35 +15,38 @@
 using namespace Entropy::Graphics::Vulkan::Renderers;
 
 void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
-                            bool &needResize, bool app) {
+                            bool &needResize, bool app)
+{
 
-  if (_renderPass._frameBuffers[0] == nullptr) {
+  if (_renderPass._frameBuffers[0] == nullptr)
+  {
     spdlog::error("NO FRAMEBUFFERS YET");
     return;
   }
 
-  if (app) {
+  if (app)
+  {
     auto currentFence = _synchronizer->GetFences()[_currentFrame];
 
-    vkWaitForFences(_backend.logicalDevice.Get(), 1, &currentFence, VK_TRUE,
-                    UINT64_MAX);
+    // vkWaitForFences(_backend.logicalDevice.Get(), 1, &currentFence, VK_TRUE,
+    //                 UINT64_MAX);
 
     // Reset fences
-    vkResetFences(_backend.logicalDevice.Get(), 1, &currentFence);
+    // vkResetFences(_backend.logicalDevice.Get(), 1, &currentFence);
 
-    auto acquire_result = vkAcquireNextImageKHR(
-        _backend.logicalDevice.Get(), _swapChain.Get(), UINT64_MAX,
-        _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE,
-        &imageIndex);
+    // auto acquire_result = vkAcquireNextImageKHR(
+    //     _backend.logicalDevice.Get(), _swapChain.Get(), UINT64_MAX,
+    //     _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE,
+    //     &imageIndex);
   }
 
-  
   auto orthoCamera =
       dynamic_cast<Cameras::OrthographicCamera *>(_cameraManager.currentCamera);
 
   orthoCamera->setPerspective(60.0f, (float)width, (float)height, 0.1f, 256.0f);
 
-  if (needResize) {
+  if (needResize)
+  {
     spdlog::info("RESIZING!!");
     stagingBuffer = _bufferFactory.CreateStagingBuffer(
         width * height * 4, nullptr, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
@@ -71,8 +74,8 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
   //   _queuSync.commandBuffers.clear();
   // }
 
-  if (_world.gameWorld->count<Entropy::Components::Renderable>() == 0)
-    return;
+  // if (_world.gameWorld->count<Entropy::Components::Renderable>() == 0)
+  //   return;
 
   // Begin renderpass and commandbuffer recording
   _commandBuffers[_currentFrame].Record();
@@ -102,7 +105,8 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
   // });
 
   _sortQuery.each([this, width, height](flecs::entity e,
-                                        Entropy::Components::Position p) {
+                                        Entropy::Components::Position p)
+                  {
     auto position_component = e.get_ref<Entropy::Components::Position>();
     auto scale_component = e.get_ref<Entropy::Components::Scale>();
     auto color_component = e.get_ref<Entropy::Components::Color>();
@@ -229,12 +233,14 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
       // Draw current renderable
       vkCmdDrawIndexed(_commandBuffers[_currentFrame].Get(),
                        renderable->indices.size(), 1, 0, 0, 0);
-    }
-  });
+    } });
 
-  if (app) {
+  if (app)
+  {
     PresentForApplication();
-  } else {
+  }
+  else
+  {
     PresentForEditor(width, height);
   }
 

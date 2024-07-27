@@ -3,35 +3,42 @@
 #include <spdlog/spdlog.h>
 #include <vulkan/vulkan.hpp>
 
-#include <graphics/vulkan/vulkan_backend.hpp>
+#include <graphics/vulkan/devices/ilogical_device.hpp>
+#include "icommandpool.hpp"
 
-
-
-namespace Entropy {
-namespace Graphics {
-namespace Vulkan {
-namespace CommandPools {
-class CommandPool{
-public:
-  CommandPool(VulkanBackend vbe) : _vkBackend{vbe}
+namespace Entropy
+{
+  namespace Graphics
   {
-    VkCommandPoolCreateInfo poolInfo{};
-    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-    poolInfo.queueFamilyIndex = _vkBackend.logicalDevice.queueFamiliy;
+    namespace Vulkan
+    {
+      namespace CommandPools
+      {
+        class CommandPool : public ServiceBase<ICommandPool>
+        {
+        public:
+          CommandPool()
+          {
+            ServiceLocator *sl = ServiceLocator::GetInstance();
+            auto logicalDevice = sl->getService<ILogicalDevice>();
 
-    if (vkCreateCommandPool(_vkBackend.logicalDevice.Get(), &poolInfo, nullptr,
-                            &_commandPool) != VK_SUCCESS) {
-      spdlog::error("Failed to create command pool.");
-    }
-  }
-  inline VkCommandPool Get() { return _commandPool; };
+            VkCommandPoolCreateInfo poolInfo{};
+            poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+            poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+            poolInfo.queueFamilyIndex = logicalDevice->queueFamiliy;
 
-private:
-  VulkanBackend _vkBackend;
-  VkCommandPool _commandPool = VK_NULL_HANDLE;
-};
-} // namespace CommandPools
-} // namespace Graphics
-} // namespace Entropy
+            if (vkCreateCommandPool(logicalDevice->Get(), &poolInfo, nullptr,
+                                    &_commandPool) != VK_SUCCESS)
+            {
+              spdlog::error("Failed to create command pool.");
+            }
+          }
+          inline VkCommandPool Get() { return _commandPool; };
+
+        private:
+          VkCommandPool _commandPool = VK_NULL_HANDLE;
+        };
+      } // namespace CommandPools
+    } // namespace Graphics
+  } // namespace Entropy
 }

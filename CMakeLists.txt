@@ -100,7 +100,6 @@ target_link_libraries(${PROJECT_NAME}
 	BulletSoftBody
 	LinearMath
     tinyobjloader
-    kangaru
 )
 
 

@@ -25,7 +25,6 @@
 #include <graphics/vulkan/swapchains/swapchain.hpp>
 #include <graphics/vulkan/synchronization/queuesync.hpp>
 #include <graphics/vulkan/synchronization/synchronizer.hpp>
-#include <graphics/vulkan/vulkan_backend.hpp>
 #include <obj/model.hpp>
 
 #include <ecs/components/renderable.hpp>
@@ -81,32 +80,24 @@ namespace Entropy
            * @param cp CommandPool
            * @param sc Swapchain
            */
-          VulkanRenderer(Vulkan::VulkanBackend vbe, QueueSync queueSync,
-                         RenderPass renderPass, PipelineFactory pipelineFactory,
-                         BufferFactory bf, CommandPool cp, Swapchain sc, World world,
-                         Allocator allocator, CameraManager cm)
-
-              : _backend{vbe}, _queuSync{queueSync}, _renderPass{renderPass},
-                _pipelineFactory{pipelineFactory}, _bufferFactory{bf}, _commandPool{cp},
-                _swapChain{sc}, _world{world}, _allocator{allocator}, _cameraManager{
-                                                                          cm}
+          VulkanRenderer()
           {
 
             _renderPass.CreateFramebuffers(800, 800);
 
             // Static Pipeline creation
-            _staticPipeline = _pipelineFactory.CreateStaticPipeline();
+            //_staticPipeline = _pipelineFactory.CreateStaticPipeline();
 
             // Synchronizer
-            _synchronizer =
-                new Synchronizer(vbe.logicalDevice, MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+            // _synchronizer =
+            //     new Synchronizer(vbe.logicalDevice, MAX_CONCURRENT_FRAMES_IN_FLIGHT);
 
             // Command buffers
-            for (uint32_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
-            {
-              _commandBuffers.push_back(CommandBuffer(_backend, _queuSync, _commandPool,
-                                                      VK_COMMAND_BUFFER_LEVEL_PRIMARY));
-            }
+            // for (uint32_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
+            // {
+            //   _commandBuffers.push_back(CommandBuffer(_backend, _queuSync, _commandPool,
+            //                                           VK_COMMAND_BUFFER_LEVEL_PRIMARY));
+            // }
 
             // UBO
             _UBO = _bufferFactory.CreateUniformBuffer(sizeof(UboDataDynamic));
@@ -145,9 +136,9 @@ namespace Entropy
               descriptorWrites[1].descriptorCount = 1;
               descriptorWrites[1].pBufferInfo = &objectBufferInfo;
 
-              vkUpdateDescriptorSets(_backend.logicalDevice.Get(),
-                                     static_cast<uint32_t>(descriptorWrites.size()),
-                                     descriptorWrites.data(), 0, nullptr);
+              // vkUpdateDescriptorSets(_backend.logicalDevice.Get(),
+              //                        static_cast<uint32_t>(descriptorWrites.size()),
+              //                        descriptorWrites.data(), 0, nullptr);
             }
 
             // StagingBuffer
@@ -155,9 +146,9 @@ namespace Entropy
                 800 * 800 * 4, nullptr, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
 
             // Create a query for the Position component with a custom sorting function
-            _sortQuery = world.gameWorld->query_builder<Components::Position>()
-                             .order_by<Components::Position>(compare_zIndex)
-                             .build();
+            // _sortQuery = world.gameWorld->query_builder<Components::Position>()
+            //                  .order_by<Components::Position>(compare_zIndex)
+            //                  .build();
 
             timer = new Timing::Timer(1.0);
             timer->Start();
@@ -290,13 +281,13 @@ namespace Entropy
                 .signalSemaphoreCount = 0,
             };
 
-            if (vkQueueSubmit(_backend.logicalDevice.GetGraphicQueue(), 1, &submitInfo,
-                              nullptr) != VK_SUCCESS)
-            {
-              exit(EXIT_FAILURE);
-            }
+            // if (vkQueueSubmit(_backend.logicalDevice.GetGraphicQueue(), 1, &submitInfo,
+            //                   nullptr) != VK_SUCCESS)
+            // {
+            //   exit(EXIT_FAILURE);
+            // }
 
-            vkDeviceWaitIdle(_backend.logicalDevice.Get());
+            // vkDeviceWaitIdle(_backend.logicalDevice.Get());
           }
 
           void PresentForApplication()
@@ -328,12 +319,12 @@ namespace Entropy
             submitInfo.pSignalSemaphores = signalSemaphores;
 
             // Submit queue
-            if (vkQueueSubmit(_backend.logicalDevice.GetGraphicQueue(), 1, &submitInfo,
-                              _synchronizer->GetFences()[_currentFrame]) !=
-                VK_SUCCESS)
-            {
-              exit(EXIT_FAILURE);
-            }
+            // if (vkQueueSubmit(_backend.logicalDevice.GetGraphicQueue(), 1, &submitInfo,
+            //                   _synchronizer->GetFences()[_currentFrame]) !=
+            //     VK_SUCCESS)
+            // {
+            //   exit(EXIT_FAILURE);
+            // }
 
             // PresentInfo
             VkPresentInfoKHR presentInfo{};
@@ -348,11 +339,10 @@ namespace Entropy
             presentInfo.pImageIndices = &imageIndex;
 
             // Present
-            vkQueuePresentKHR(_backend.logicalDevice.GetGraphicQueue(), &presentInfo);
+            // vkQueuePresentKHR(_backend.logicalDevice.GetGraphicQueue(), &presentInfo);
           }
 
           std::shared_ptr<StagedBuffer> stagingBuffer;
-          Vulkan::VulkanBackend _backend;
           Swapchain _swapChain;
           RenderPass _renderPass;
           CameraManager _cameraManager;
@@ -385,16 +375,6 @@ namespace Entropy
           Synchronizer *_synchronizer;
 
           // Dependencies
-
-          QueueSync _queuSync;
-
-          PipelineFactory _pipelineFactory;
-
-          CommandPool _commandPool;
-
-          World _world;
-
-          VkSampler _sampler;
         };
       } // namespace Renderers
     } // namespace Vulkan

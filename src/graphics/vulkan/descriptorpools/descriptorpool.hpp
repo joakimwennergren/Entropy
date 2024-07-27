@@ -7,67 +7,83 @@
 #include <string>
 #include <vulkan/vulkan.hpp>
 
+#include <servicelocators/servicelocator.hpp>
+
+#include "idescriptorpool.hpp"
+
 #include <graphics/vulkan/devices/logical_device.hpp>
 #include <graphics/vulkan/queuefamilies/queuefamily.hpp>
 #include <graphics/vulkan/surfaces/surface.hpp>
-#include <graphics/vulkan/vulkan_backend.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Surfaces;
 using namespace Entropy::Graphics::Vulkan::QueueFamilies;
 using namespace Entropy::Graphics::Vulkan::Devices;
 using namespace Entropy::Graphics::Vulkan;
 
-namespace Entropy {
-namespace Graphics {
-namespace Vulkan {
-namespace DescriptorPools {
+namespace Entropy
+{
+  namespace Graphics
+  {
+    namespace Vulkan
+    {
+      namespace DescriptorPools
+      {
 
-// Select a binding for each descriptor type
-constexpr int STORAGE_BINDING = 0;
-constexpr int SAMPLER_BINDING = 1;
-constexpr int IMAGE_BINDING = 2;
-// Max count of each descriptor type
-// You can query the max values for these with
-// physicalDevice.getProperties().limits.maxDescriptrorSet*******
-constexpr int STORAGE_COUNT = 65536;
-constexpr int SAMPLER_COUNT = 65536;
-constexpr int IMAGE_COUNT = 65536;
+        // Select a binding for each descriptor type
+        constexpr int STORAGE_BINDING = 0;
+        constexpr int SAMPLER_BINDING = 1;
+        constexpr int IMAGE_BINDING = 2;
+        // Max count of each descriptor type
+        // You can query the max values for these with
+        // physicalDevice.getProperties().limits.maxDescriptrorSet*******
+        constexpr int STORAGE_COUNT = 65536;
+        constexpr int SAMPLER_COUNT = 65536;
+        constexpr int IMAGE_COUNT = 65536;
 
-struct DescriptorPool {
+        struct DescriptorPool : public ServiceBase<IDescriptorPool>
+        {
 
-  DescriptorPool(VulkanBackend vbe) : _backend{vbe} {
-    std::array<VkDescriptorPoolSize, 3> poolSizes{};
+          DescriptorPool()
+          {
 
-    poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    poolSizes[0].descriptorCount = STORAGE_COUNT;
+            ServiceLocator *sl = ServiceLocator::GetInstance();
+            auto logicalDevice = sl->getService<ILogicalDevice>();
 
-    poolSizes[1].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-    poolSizes[1].descriptorCount = STORAGE_COUNT;
+            std::array<VkDescriptorPoolSize, 3> poolSizes{};
 
-    poolSizes[2].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    poolSizes[2].descriptorCount = 100000;
+            poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            poolSizes[0].descriptorCount = STORAGE_COUNT;
 
-    VkDescriptorPoolCreateInfo poolInfo{};
-    poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
-    poolInfo.pPoolSizes = poolSizes.data();
-    poolInfo.maxSets = 10000;
-    poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT |
-                     VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;
+            poolSizes[1].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+            poolSizes[1].descriptorCount = STORAGE_COUNT;
 
-    if (vkCreateDescriptorPool(_backend.logicalDevice.Get(), &poolInfo, nullptr,
-                               &_descriptorPool) != VK_SUCCESS) {
-      exit(EXIT_FAILURE);
-    }
-  }
+            poolSizes[2].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            poolSizes[2].descriptorCount = 100000;
 
-  inline VkDescriptorPool Get() { return _descriptorPool; };
+            VkDescriptorPoolCreateInfo poolInfo{};
+            poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+            poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+            poolInfo.pPoolSizes = poolSizes.data();
+            poolInfo.maxSets = 10000;
+            poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT |
+                             VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;
 
-private:
-  VulkanBackend _backend;
-  VkDescriptorPool _descriptorPool;
-};
-} // namespace DescriptorPools
-} // namespace Vulkan
-} // namespace Graphics
+            if (vkCreateDescriptorPool(logicalDevice->Get(), &poolInfo, nullptr,
+                                       &_descriptorPool) != VK_SUCCESS)
+            {
+              exit(EXIT_FAILURE);
+            }
+          }
+
+          inline VkDescriptorPool Get()
+          {
+            return _descriptorPool;
+          };
+
+        private:
+          VkDescriptorPool _descriptorPool;
+        };
+      } // namespace DescriptorPools
+    } // namespace Vulkan
+  } // namespace Graphics
 } // namespace Entropy

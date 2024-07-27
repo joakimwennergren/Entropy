@@ -4,24 +4,28 @@
 using namespace Entropy::Graphics::Vulkan;
 using namespace Entropy::Graphics::Vulkan::DescriptorsetLayouts;
 
-namespace Entropy {
-namespace Factories {
-namespace Vulkan {
+namespace Entropy
+{
+  namespace Factories
+  {
+    namespace Vulkan
+    {
 
-struct DescriptorSetLayoutFactory {
+      struct DescriptorSetLayoutFactory
+      {
 
-  DescriptorSetLayoutFactory(VulkanBackend backend) : _vkBackend{backend} {}
+        DescriptorSetLayoutFactory() {}
 
-  DescriptorsetLayout
-  CreateLayout(std::vector<VkDescriptorSetLayoutBinding> layoutBindings,
-               std::vector<VkDescriptorBindingFlagsEXT> bindingFlags) {
-    return DescriptorsetLayout(_vkBackend, layoutBindings, bindingFlags);
-  }
+        DescriptorsetLayout
+        CreateLayout(std::vector<VkDescriptorSetLayoutBinding> layoutBindings,
+                     std::vector<VkDescriptorBindingFlagsEXT> bindingFlags)
+        {
+          return DescriptorsetLayout(layoutBindings, bindingFlags);
+        }
 
-private:
-  VulkanBackend _vkBackend;
-};
+      private:
+      };
 
-} // namespace Vulkan
-} // namespace Factories
+    } // namespace Vulkan
+  } // namespace Factories
 } // namespace Entropy
