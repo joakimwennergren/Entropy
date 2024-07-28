@@ -31,6 +31,7 @@ namespace Entropy
           {
             ServiceLocator *sl = ServiceLocator::GetInstance();
             auto allocator = sl->getService<IAllocator>();
+            _physicalDevice = sl->getService<IPhysicalDevice>();
 
             VkFormat depthFormat = FindDepthFormat();
 
@@ -71,8 +72,8 @@ namespace Entropy
             for (VkFormat format : candidates)
             {
               VkFormatProperties props;
-              // vkGetPhysicalDeviceFormatProperties(backend.physicalDevice.Get(), format,
-              //                                     &props);
+              vkGetPhysicalDeviceFormatProperties(_physicalDevice->Get(), format,
+                                                  &props);
 
               if (tiling == VK_IMAGE_TILING_LINEAR &&
                   (props.linearTilingFeatures & features) == features)
@@ -101,6 +102,8 @@ namespace Entropy
           }
 
           VmaAllocation _allocation = VK_NULL_HANDLE;
+
+          std::shared_ptr<IPhysicalDevice> _physicalDevice;
         };
 
       } // namespace Textures

@@ -81,25 +81,23 @@ namespace Entropy
           {
             ServiceLocator *sl = ServiceLocator::GetInstance();
 
-            _allocator = sl->getService<Allocator>();
-            _renderPass = sl->getService<RenderPass>();
-            _logicalDevice = sl->getService<LogicalDevice>();
-            _swapchain = sl->getService<Swapchain>();
-            _world = sl->getService<World>();
+            _allocator = sl->getService<IAllocator>();
+            _logicalDevice = sl->getService<ILogicalDevice>();
+            _swapchain = sl->getService<ISwapchain>();
+            _world = sl->getService<IWorld>();
 
-            //_renderPass.CreateFramebuffers(800, 800);
+            _renderPass = std::make_shared<RenderPass>();
+            _renderPass->CreateFramebuffers(800, 800);
 
             // Static Pipeline creation
-            //_staticPipeline = _pipelineFactory.CreateStaticPipeline();
+            _staticPipeline = std::make_unique<StaticPipeline>(_renderPass);
 
             _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
 
-            // Command buffers
-            // for (uint32_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
-            // {
-            //   _commandBuffers.push_back(CommandBuffer(_backend, _queuSync, _commandPool,
-            //                                           VK_COMMAND_BUFFER_LEVEL_PRIMARY));
-            // }
+            for (uint32_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
+            {
+              _commandBuffers.push_back(CommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY));
+            }
 
             // UBO
             _UBO = std::make_unique<UniformBuffer>(sizeof(UboDataDynamic));
@@ -138,18 +136,16 @@ namespace Entropy
               descriptorWrites[1].descriptorCount = 1;
               descriptorWrites[1].pBufferInfo = &objectBufferInfo;
 
-              // vkUpdateDescriptorSets(_backend.logicalDevice.Get(),
-              //                        static_cast<uint32_t>(descriptorWrites.size()),
-              //                        descriptorWrites.data(), 0, nullptr);
+              vkUpdateDescriptorSets(_logicalDevice->Get(),
+                                     static_cast<uint32_t>(descriptorWrites.size()),
+                                     descriptorWrites.data(), 0, nullptr);
             }
 
             // Create a query for the Position component with a custom sorting function
-            // _sortQuery = world.gameWorld->query_builder<Components::Position>()
-            //                  .order_by<Components::Position>(compare_zIndex)
-            //                  .build();
+            _sortQuery = _world->Get()->query_builder<Components::Position>().order_by<Components::Position>(compare_zIndex).build();
 
-            timer = new Timing::Timer(1.0);
-            timer->Start();
+            _timer = std::make_unique<Timing::Timer>(1.0);
+            _timer->Start();
 
             // _batchedVertices = _bufferFactory.CreateVertexBufferWithSize(
             //     MAX_INSTANCE_COUNT * sizeof(Vertex));
@@ -191,7 +187,7 @@ namespace Entropy
           void PresentForEditor(int width, int height)
           {
 
-            //_renderPass.End(_commandBuffers[_currentFrame]);
+            _renderPass->End(_commandBuffers[_currentFrame]);
 
             VkImageLayout oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
             VkImageLayout newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
@@ -205,7 +201,7 @@ namespace Entropy
                 .newLayout = newLayout,
                 .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
                 .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-                //.image = _renderPass._swapChainTextures[0]->_textureImage,
+                .image = _renderPass->_swapChainTextures[0]->_textureImage,
                 .subresourceRange =
                     {
                         .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
@@ -263,10 +259,10 @@ namespace Entropy
                 .imageExtent = {static_cast<uint32_t>(width),
                                 static_cast<uint32_t>(height), 1},
             };
-            // vkCmdCopyImageToBuffer(_commandBuffers[_currentFrame].Get(),
-            //                        _renderPass._swapChainTextures[0]->_textureImage,
-            //                        VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-            //                        stagingBuffer->GetVulkanBuffer(), 1, &region);
+            vkCmdCopyImageToBuffer(_commandBuffers[_currentFrame].Get(),
+                                   _renderPass->_swapChainTextures[0]->_textureImage,
+                                   VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                   stagingBuffer->GetVulkanBuffer(), 1, &region);
 
             _commandBuffers[_currentFrame].EndRecording();
 
@@ -279,13 +275,13 @@ namespace Entropy
                 .signalSemaphoreCount = 0,
             };
 
-            // if (vkQueueSubmit(_backend.logicalDevice.GetGraphicQueue(), 1, &submitInfo,
-            //                   nullptr) != VK_SUCCESS)
-            // {
-            //   exit(EXIT_FAILURE);
-            // }
+            if (vkQueueSubmit(_logicalDevice->GetGraphicQueue(), 1, &submitInfo,
+                              nullptr) != VK_SUCCESS)
+            {
+              exit(EXIT_FAILURE);
+            }
 
-            // vkDeviceWaitIdle(_backend.logicalDevice.Get());
+            vkDeviceWaitIdle(_logicalDevice->Get());
           }
 
           void PresentForApplication()
@@ -347,7 +343,7 @@ namespace Entropy
         private:
           flecs::query<Components::Position> _sortQuery;
 
-          Timing::Timer *timer;
+          std::unique_ptr<Timing::Timer> _timer;
 
           uint32_t _currentFrame = 0;
           uint32_t imageIndex;
@@ -359,13 +355,13 @@ namespace Entropy
 
           std::unique_ptr<StorageBuffer> _instanceDataBuffer;
           // Pipelines
-          StaticPipeline *_staticPipeline;
+          std::unique_ptr<StaticPipeline> _staticPipeline;
           // Synchronizer
           std::unique_ptr<Synchronizer> _synchronizer;
+          std::shared_ptr<RenderPass> _renderPass;
 
           // Dependencies
           std::shared_ptr<IAllocator> _allocator;
-          std::shared_ptr<IRenderPass> _renderPass;
           std::shared_ptr<ILogicalDevice> _logicalDevice;
           std::shared_ptr<ISwapchain> _swapchain;
           std::shared_ptr<IWorld> _world;

@@ -17,7 +17,7 @@ namespace Entropy
         struct StaticPipeline : public Pipeline
         {
 
-          StaticPipeline()
+          StaticPipeline(std::shared_ptr<RenderPass> renderPass) : Pipeline(renderPass)
           {
             auto dsLayouts = CreateDescriptorSets();
             Shader shader = Shader(GetShadersDir() + "static_vert.spv",

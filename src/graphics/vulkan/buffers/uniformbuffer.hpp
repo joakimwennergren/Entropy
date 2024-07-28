@@ -31,8 +31,8 @@ namespace Entropy
           {
             assert(bufferSize != 0);
             CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-            // vmaMapMemory(_vkBackend.allocator.Get(), _allocation, &_mappedMemory);
-            // vmaUnmapMemory(_vkBackend.allocator.Get(), _allocation);
+            vmaMapMemory(_allocator->Get(), _allocation, &_mappedMemory);
+            vmaUnmapMemory(_allocator->Get(), _allocation);
           }
         };
       } // namespace Buffers

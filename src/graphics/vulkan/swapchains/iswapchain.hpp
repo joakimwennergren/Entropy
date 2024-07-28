@@ -10,4 +10,6 @@ struct ISwapchain : public IService
     virtual void RecreateSwapChain(int width, int height) = 0;
     VkExtent2D swapChainExtent;
     VkFormat swapChainImageFormat;
+    std::vector<VkImage> _swapChainImages;
+    std::vector<VkImageView> _swapChainImageViews;
 };

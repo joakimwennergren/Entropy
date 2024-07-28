@@ -259,8 +259,7 @@ namespace Entropy
 
           inline VkSwapchainKHR Get() { return _swapChain; };
           // std::shared_ptr<WindowSurface> _surface;
-          std::vector<VkImage> _swapChainImages;
-          std::vector<VkImageView> _swapChainImageViews;
+
           VkSwapchainKHR _swapChain;
 
         private:

@@ -55,7 +55,7 @@ namespace Entropy
             ServiceLocator *sl = ServiceLocator::GetInstance();
             _physicalDevice = sl->getService<IPhysicalDevice>();
             _logicalDevice = sl->getService<ILogicalDevice>();
-            _descriptorPool = sl->getService<DescriptorPool>();
+            _descriptorPool = sl->getService<IDescriptorPool>();
           }
 
           ~Texture()

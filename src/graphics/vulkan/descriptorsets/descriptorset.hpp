@@ -32,6 +32,7 @@ namespace Entropy
           {
             ServiceLocator *sl = ServiceLocator::GetInstance();
             auto logicalDevice = sl->getService<ILogicalDevice>();
+            auto descriptorPool = sl->getService<IDescriptorPool>();
 
             assert(logicalDevice != nullptr);
 
@@ -40,7 +41,7 @@ namespace Entropy
 
             VkDescriptorSetAllocateInfo allocInfo{};
             allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-            // allocInfo.descriptorPool = dp.Get();
+            allocInfo.descriptorPool = descriptorPool->Get();
             allocInfo.descriptorSetCount = MAX_CONCURRENT_FRAMES_IN_FLIGHT;
             allocInfo.pSetLayouts = layouts.data();
 

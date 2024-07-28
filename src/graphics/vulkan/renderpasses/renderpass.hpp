@@ -10,7 +10,6 @@
 #include <vulkan/vulkan.hpp>
 
 #include "spdlog/spdlog.h"
-#include "irenderpass.hpp"
 
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;
 using namespace Entropy::Graphics::Vulkan::Swapchains;
@@ -27,14 +26,17 @@ namespace Entropy
       namespace RenderPasses
       {
 
-        struct RenderPass : public ServiceBase<IRenderPass>
+        struct RenderPass
         {
-
           RenderPass()
           {
+            ServiceLocator *sl = ServiceLocator::GetInstance();
+            _logicalDevice = sl->getService<ILogicalDevice>();
+            _physicalDevice = sl->getService<IPhysicalDevice>();
+            _swapchain = sl->getService<ISwapchain>();
 
-            // RecreateDepthBuffer(swapChain.swapChainExtent.width,
-            //                     swapChain.swapChainExtent.height);
+            RecreateDepthBuffer(_swapchain->swapChainExtent.width,
+                                _swapchain->swapChainExtent.height);
 
             VkAttachmentDescription depthAttachment{};
             depthAttachment.format = FindDepthFormat();
@@ -90,12 +92,12 @@ namespace Entropy
             renderPassInfo.dependencyCount = 1;
             renderPassInfo.pDependencies = &dependency;
 
-            // if (vkCreateRenderPass(_vkBackend.logicalDevice.Get(), &renderPassInfo,
-            //                        nullptr, &_renderPass) != VK_SUCCESS)
-            // {
-            //   spdlog::error("Couldn't create renderpass");
-            //   return;
-            // }
+            if (vkCreateRenderPass(_logicalDevice->Get(), &renderPassInfo,
+                                   nullptr, &_renderPass) != VK_SUCCESS)
+            {
+              spdlog::error("Couldn't create renderpass");
+              return;
+            }
           }
           void Begin(CommandBuffer commandBuffer, uint32_t imageIndex, int width,
                      int height);
@@ -103,15 +105,15 @@ namespace Entropy
 
           void RecreateFrameBuffers(int width, int height, bool app)
           {
-
             for (auto framebuffer : _frameBuffers)
             {
-              // vkDestroyFramebuffer(_vkBackend.logicalDevice.Get(), framebuffer,
-              //                      nullptr);
+              vkDestroyFramebuffer(_logicalDevice->Get(), framebuffer,
+                                   nullptr);
             }
-            // if (app)
-            //  CreateFramebuffers(_swapChain, width, height);
-            //  else CreateFramebuffers(width, height);
+            if (app)
+              CreateFramebuffers(_swapchain, width, height);
+            else
+              CreateFramebuffers(width, height);
           }
           void RecreateDepthBuffer(int width, int height)
           {
@@ -122,44 +124,41 @@ namespace Entropy
             //   _depthBufferTexture.reset();
             // }
 
-            // _depthBufferTexture =
-            //     _textureFactory.CreateDepthBufferTexture(width, height);
+            _depthBufferTexture = std::make_shared<DepthBufferTexture>(width, height);
           }
 
-          inline VkRenderPass Get() override { return _renderPass; };
+          inline VkRenderPass Get() { return _renderPass; };
 
           std::vector<VkFramebuffer> _frameBuffers;
           std::vector<std::shared_ptr<SwapChainTexture>> _swapChainTextures;
 
           void CreateFramebuffers(int width, int height)
           {
+            _swapChainTextures.clear();
+            _frameBuffers.clear();
+            _swapChainTextures.push_back(std::make_shared<SwapChainTexture>(width, height));
+            _frameBuffers.resize(1);
 
-            // _swapChainTextures.clear();
-            // _frameBuffers.clear();
+            std::array<VkImageView, 2> attachments = {_swapChainTextures[0]->_imageView,
+                                                      _depthBufferTexture->_imageView};
 
-            // _swapChainTextures.push_back(
-            //     _textureFactory.CreateSwapChainTexture(width, height));
+            VkFramebufferCreateInfo framebufferInfo{};
+            framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+            framebufferInfo.renderPass = _renderPass;
+            framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+            framebufferInfo.pAttachments = attachments.data();
+            framebufferInfo.width = width;
+            framebufferInfo.height = height;
+            framebufferInfo.layers = 1;
 
-            // _frameBuffers.resize(1);
+            VkResult res =
+                vkCreateFramebuffer(_logicalDevice->Get(), &framebufferInfo,
+                                    nullptr, &_frameBuffers[0]);
 
-            // std::array<VkImageView, 2> attachments = {_swapChainTextures[0]->_imageView,
-            //                                           _depthBufferTexture->_imageView};
-
-            // VkFramebufferCreateInfo framebufferInfo{};
-            // framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-            // framebufferInfo.renderPass = _renderPass;
-            // framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-            // framebufferInfo.pAttachments = attachments.data();
-            // framebufferInfo.width = width;
-            // framebufferInfo.height = height;
-            // framebufferInfo.layers = 1;
-
-            // VkResult res =
-            //     vkCreateFramebuffer(_vkBackend.logicalDevice.Get(), &framebufferInfo,
-            //                         nullptr, &_frameBuffers[0]);
+            spdlog::info(res);
           }
 
-          void CreateFramebuffers(Swapchain swapChain, int width, int height)
+          void CreateFramebuffers(std::shared_ptr<ISwapchain> swapChain, int width, int height)
           {
 
             //_swapChainTextures.clear();
@@ -176,10 +175,10 @@ namespace Entropy
 
             _frameBuffers.resize(3);
 
-            for (size_t i = 0; i < swapChain._swapChainImageViews.size(); i++)
+            for (size_t i = 0; i < swapChain->_swapChainImageViews.size(); i++)
             {
               std::array<VkImageView, 2> attachments = {
-                  swapChain._swapChainImageViews[i], _depthBufferTexture->_imageView};
+                  swapChain->_swapChainImageViews[i], _depthBufferTexture->_imageView};
 
               VkFramebufferCreateInfo framebufferInfo{};
               framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -191,9 +190,9 @@ namespace Entropy
               framebufferInfo.height = height;
               framebufferInfo.layers = 1;
 
-              // VkResult res =
-              //     vkCreateFramebuffer(_vkBackend.logicalDevice.Get(), &framebufferInfo,
-              //                         nullptr, &_frameBuffers[i]);
+              VkResult res =
+                  vkCreateFramebuffer(_logicalDevice->Get(), &framebufferInfo,
+                                      nullptr, &_frameBuffers[i]);
             }
           }
           Swapchain _swapChain;
@@ -209,6 +208,10 @@ namespace Entropy
 
           void CreateImage(uint32_t width, uint32_t height, VkFormat format,
                            VkImageTiling tiling, VkImageUsageFlags usage);
+
+          std::shared_ptr<ILogicalDevice> _logicalDevice;
+          std::shared_ptr<IPhysicalDevice> _physicalDevice;
+          std::shared_ptr<ISwapchain> _swapchain;
         };
 
       } // namespace RenderPasses

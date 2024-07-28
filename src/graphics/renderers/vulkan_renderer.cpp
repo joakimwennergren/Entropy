@@ -31,11 +31,6 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
         &imageIndex);
   }
 
-  auto orthoCamera =
-      dynamic_cast<Cameras::OrthographicCamera *>(_cameraManager.currentCamera);
-
-  orthoCamera->setPerspective(60.0f, (float)width, (float)height, 0.1f, 256.0f);
-
   if (needResize)
   {
     stagingBuffer = stagingBuffer = std::make_shared<StagedBuffer>(width * height * 4, nullptr, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
@@ -48,6 +43,9 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
 
   if (_world->Get()->count<Entropy::Components::Renderable>() == 0)
     return;
+
+  auto orthoCamera = static_cast<Cameras::OrthographicCamera *>(_cameraManager.currentCamera);
+  orthoCamera->setPerspective(60.0f, (float)width, (float)height, 0.1f, 256.0f);
 
   // Begin renderpass and commandbuffer recording
   _commandBuffers[_currentFrame].Record();
@@ -157,9 +155,9 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
       auto textures = e.get<Entropy::Components::HasAnimatedSprite>();
       static int textureId;
 
-      if (timer->GetTick() >= 120.0) {
+      if (_timer->GetTick() >= 120.0) {
         textureId = (textureId + 1) % textures->textures.size();
-        timer->Reset();
+        _timer->Reset();
       }
 
       vkCmdBindDescriptorSets(

@@ -35,7 +35,7 @@ public:
 /// Service Locator class.
 class ServiceLocator
 {
-private:
+public:
     std::map<std::type_index, std::shared_ptr<IService>> services;
     mutable std::mutex mutex;
 

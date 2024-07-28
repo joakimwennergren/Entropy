@@ -21,8 +21,8 @@ namespace Entropy
 
             CreateBuffer(bufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 
-            // vmaMapMemory(_vkBackend.allocator.Get(), _allocation, &_mappedMemory);
-            // vmaUnmapMemory(_vkBackend.allocator.Get(), _allocation);
+            vmaMapMemory(_allocator->Get(), _allocation, &_mappedMemory);
+            vmaUnmapMemory(_allocator->Get(), _allocation);
           }
 
         private:

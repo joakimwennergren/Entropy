@@ -35,13 +35,13 @@ namespace Entropy
         class Pipeline
         {
         public:
-          Pipeline()
+          Pipeline(std::shared_ptr<RenderPass> renderPass)
           {
             ServiceLocator *sl = ServiceLocator::GetInstance();
             _logicalDevice = sl->getService<ILogicalDevice>();
             _swapchain = sl->getService<ISwapchain>();
-            _renderPass = sl->getService<IRenderPass>();
             _pipelineCache = sl->getService<IPipelineCache>();
+            _renderPass = renderPass;
           }
 
           ~Pipeline()
@@ -77,7 +77,7 @@ namespace Entropy
           VkPipeline _pipeline = VK_NULL_HANDLE;
           std::shared_ptr<ILogicalDevice> _logicalDevice;
           std::shared_ptr<ISwapchain> _swapchain;
-          std::shared_ptr<IRenderPass> _renderPass;
+          std::shared_ptr<RenderPass> _renderPass;
           std::shared_ptr<IPipelineCache> _pipelineCache;
         };
       } // namespace Pipelines

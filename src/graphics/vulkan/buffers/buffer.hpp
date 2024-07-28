@@ -69,6 +69,9 @@ namespace Entropy
           inline void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage)
           {
 
+            ServiceLocator *sl = ServiceLocator::GetInstance();
+            _allocator = sl->getService<IAllocator>();
+
             assert(size != 0);
             assert(usage != 0);
 
@@ -81,11 +84,11 @@ namespace Entropy
             allocInfo.usage = VMA_MEMORY_USAGE_AUTO;
             allocInfo.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT;
 
-            // if (vmaCreateBuffer(_vkBackend.allocator.Get(), &bufferInfo, &allocInfo,
-            //                     &_buffer, &_allocation, nullptr) != VK_SUCCESS)
-            // {
-            //   spdlog::error("Error while creating buffer with size: {}", size);
-            // }
+            if (vmaCreateBuffer(_allocator->Get(), &bufferInfo, &allocInfo,
+                                &_buffer, &_allocation, nullptr) != VK_SUCCESS)
+            {
+              spdlog::error("Error while creating buffer with size: {}", size);
+            }
           }
 
           // Vulkan Buffer handle
@@ -94,6 +97,8 @@ namespace Entropy
           VkDeviceMemory _bufferMemory = VK_NULL_HANDLE;
           // Mapped memory
           void *_mappedMemory = nullptr;
+
+          std::shared_ptr<IAllocator> _allocator;
         };
 
       } // namespace Buffers

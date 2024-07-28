@@ -3,91 +3,6 @@
 
 using namespace Entropy::Graphics::Vulkan::RenderPasses;
 
-// RenderPass::RenderPass() {
-//  // Get required depenencies
-//  auto swapChain = serviceLocator->GetService<Swapchain>();
-//  auto logicalDevice = serviceLocator->GetService<LogicalDevice>();
-//  auto physicalDevice = serviceLocator->GetService<PhysicalDevice>();
-
-// // Store swapchain and logical device
-// _swapChain = swapChain;
-// _logicalDevice = logicalDevice;
-// _physicalDevice = physicalDevice;
-// _serviceLocator = serviceLocator;
-
-// RecreateDepthBuffer();
-
-// VkAttachmentDescription depthAttachment{};
-// depthAttachment.format = FindDepthFormat();
-// depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-// depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-// depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-// depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-// depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-// depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-// depthAttachment.finalLayout =
-//     VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-// VkAttachmentReference depthAttachmentRef{};
-// depthAttachmentRef.attachment = 1;
-// depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-// VkAttachmentDescription colorAttachment{};
-// // colorAttachment.format = swapChain->swapChainImageFormat;
-// colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-// colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-// colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-// colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-// colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-
-// VkSubpassDependency dependency{};
-// dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
-//                           VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-// dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
-//                           VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-// dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT |
-//                            VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-// dependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-
-// VkAttachmentReference colorAttachmentRef{};
-// colorAttachmentRef.attachment = 0;
-// colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-// VkSubpassDescription subpass{};
-// subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-// subpass.colorAttachmentCount = 1;
-// subpass.pColorAttachments = &colorAttachmentRef;
-// subpass.pDepthStencilAttachment = &depthAttachmentRef;
-
-// std::array<VkAttachmentDescription, 2> attachments = {colorAttachment,
-//                                                       depthAttachment};
-// VkRenderPassCreateInfo renderPassInfo{};
-// renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-// renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-// renderPassInfo.pAttachments = attachments.data();
-// renderPassInfo.subpassCount = 1;
-// renderPassInfo.pSubpasses = &subpass;
-// renderPassInfo.dependencyCount = 1;
-// renderPassInfo.pDependencies = &dependency;
-
-// // if (vkCreateRenderPass(logicalDevice->Get(), &renderPassInfo, nullptr,
-// //                        &_renderPass) != VK_SUCCESS) {
-// //   spdlog::error("Couln't create renderpass");
-// //   return;
-// // }
-
-// this->CreateFramebuffers();
-//}
-
-// RenderPass::~RenderPass() {
-
-//   for (auto framebuffer : this->_swapChainFramebuffers) {
-//     vkDestroyFramebuffer(_logicalDevice->Get(), framebuffer, nullptr);
-//   }
-
-//   vkDestroyRenderPass(_logicalDevice->Get(), _renderPass, nullptr);
-// }
-
 void RenderPass::Begin(CommandBuffer commandBuffer, uint32_t imageIndex,
                        int width, int height)
 {
@@ -174,8 +89,8 @@ RenderPass::findSupportedFormat(const std::vector<VkFormat> &candidates,
   for (VkFormat format : candidates)
   {
     VkFormatProperties props;
-    // vkGetPhysicalDeviceFormatProperties(_vkBackend.physicalDevice.Get(), format,
-    //                                     &props);
+    vkGetPhysicalDeviceFormatProperties(_physicalDevice->Get(), format,
+                                        &props);
 
     if (tiling == VK_IMAGE_TILING_LINEAR &&
         (props.linearTilingFeatures & features) == features)

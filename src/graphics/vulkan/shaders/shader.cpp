@@ -25,8 +25,8 @@ Shader::Shader(
 
   if (this->_vertCode.size() > 0 && this->_fragCode.size() > 0)
   {
-    // this->_shaderModuleVert = this->BuildShader(backend, this->_vertCode);
-    // this->_shaderModuleFrag = this->BuildShader(backend, this->_fragCode);
+    this->_shaderModuleVert = this->BuildShader(this->_vertCode);
+    this->_shaderModuleFrag = this->BuildShader(this->_fragCode);
   }
 }
 
@@ -61,6 +61,9 @@ VkShaderModule
 Shader::BuildShader(
     std::vector<char> code)
 {
+  ServiceLocator *sl = ServiceLocator::GetInstance();
+  auto logicalDevice = sl->getService<ILogicalDevice>();
+
   VkShaderModuleCreateInfo createInfo{};
   createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
   createInfo.codeSize = code.size();
@@ -68,11 +71,11 @@ Shader::BuildShader(
 
   VkShaderModule shaderModule;
 
-  // if (vkCreateShaderModule(backend.logicalDevice.Get(), &createInfo, nullptr,
-  //                          &shaderModule) != VK_SUCCESS)
-  // {
-  //   exit(EXIT_FAILURE);
-  // }
+  if (vkCreateShaderModule(logicalDevice->Get(), &createInfo, nullptr,
+                           &shaderModule) != VK_SUCCESS)
+  {
+    exit(EXIT_FAILURE);
+  }
 
   return shaderModule;
 }

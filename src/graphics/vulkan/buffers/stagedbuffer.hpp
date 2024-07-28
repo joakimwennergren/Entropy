@@ -33,7 +33,7 @@ namespace Entropy
                          /*VK_BUFFER_USAGE_TRANSFER_SRC_BIT*/ flags);
 
             // Map the memory
-            // vmaMapMemory(_vkBackend.allocator.Get(), _allocation, &_mappedMemory);
+            vmaMapMemory(_allocator->Get(), _allocation, &_mappedMemory);
 
             // Copy the data
             if (data != nullptr)
@@ -42,7 +42,7 @@ namespace Entropy
             }
 
             // Unmap memory
-            // vmaUnmapMemory(_vkBackend.allocator.Get(), _allocation);
+            vmaUnmapMemory(_allocator->Get(), _allocation);
           }
         };
 
