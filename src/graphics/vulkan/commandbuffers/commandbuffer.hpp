@@ -34,16 +34,22 @@ namespace Entropy
           CommandBuffer(VkCommandBufferLevel level)
           {
 
-            // VkCommandBufferAllocateInfo allocInfo{};
-            // allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-            // allocInfo.commandPool = _commandPool.Get();
-            // allocInfo.level = level;
-            // allocInfo.commandBufferCount = 1;
-            // if (vkAllocateCommandBuffers(_vkBackend.logicalDevice.Get(), &allocInfo,
-            //                              &_commandBuffer) != VK_SUCCESS)
-            // {
-            //   spdlog::warn("[CommandBuffer] Failed to allocate command buffer.");
-            // }
+            ServiceLocator *sl = ServiceLocator::GetInstance();
+            auto logicalDevice = sl->getService<ILogicalDevice>();
+            auto commandPool = sl->getService<ICommandPool>();
+
+            assert(logicalDevice != nullptr);
+
+            VkCommandBufferAllocateInfo allocInfo{};
+            allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+            allocInfo.commandPool = commandPool->Get();
+            allocInfo.level = level;
+            allocInfo.commandBufferCount = 1;
+            if (vkAllocateCommandBuffers(logicalDevice->Get(), &allocInfo,
+                                         &_commandBuffer) != VK_SUCCESS)
+            {
+              spdlog::warn("[CommandBuffer] Failed to allocate command buffer.");
+            }
           }
 
           /**

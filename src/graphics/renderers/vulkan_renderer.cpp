@@ -18,26 +18,17 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
                             bool &needResize, bool app)
 {
 
-  if (_renderPass._frameBuffers[0] == nullptr)
-  {
-    spdlog::error("NO FRAMEBUFFERS YET");
-    return;
-  }
-
   if (app)
   {
     auto currentFence = _synchronizer->GetFences()[_currentFrame];
 
-    // vkWaitForFences(_backend.logicalDevice.Get(), 1, &currentFence, VK_TRUE,
-    //                 UINT64_MAX);
+    vkWaitForFences(_logicalDevice->Get(), 1, &currentFence, VK_TRUE, UINT64_MAX);
+    vkResetFences(_logicalDevice->Get(), 1, &currentFence);
 
-    // Reset fences
-    // vkResetFences(_backend.logicalDevice.Get(), 1, &currentFence);
-
-    // auto acquire_result = vkAcquireNextImageKHR(
-    //     _backend.logicalDevice.Get(), _swapChain.Get(), UINT64_MAX,
-    //     _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE,
-    //     &imageIndex);
+    vkAcquireNextImageKHR(
+        _logicalDevice->Get(), _swapchain->Get(), UINT64_MAX,
+        _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE,
+        &imageIndex);
   }
 
   auto orthoCamera =
@@ -47,41 +38,22 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
 
   if (needResize)
   {
-    spdlog::info("RESIZING!!");
-    stagingBuffer = _bufferFactory.CreateStagingBuffer(
-        width * height * 4, nullptr, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
-
-    // Synchronizer
-    // delete _synchronizer;
-    // _synchronizer = new Synchronizer(_backend.logicalDevice,
-    //                                  MAX_CONCURRENT_FRAMES_IN_FLIGHT);
-    _swapChain.RecreateSwapChain(width, height);
-    _renderPass.RecreateDepthBuffer(width, height);
-    _renderPass.RecreateFrameBuffers(width, height, app);
-
+    stagingBuffer = stagingBuffer = std::make_shared<StagedBuffer>(width * height * 4, nullptr, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
+    _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+    _swapchain->RecreateSwapChain(width, height);
+    _renderPass->RecreateDepthBuffer(width, height);
+    _renderPass->RecreateFrameBuffers(width, height, app);
     needResize = false;
   }
 
-  // Submit command buffers
-  // if (_queuSync.commandBuffers.size() > 0) {
-  //   spdlog::info("submitting cmdbuf");
-  //   VkSubmitInfo submitInfo{};
-  //   submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-  //   submitInfo.commandBufferCount = _queuSync.commandBuffers.size();
-  //   submitInfo.pCommandBuffers = _queuSync.commandBuffers.data();
-  //   vkQueueSubmit(_backend.logicalDevice.GetGraphicQueue(), 1, &submitInfo,
-  //                 nullptr);
-  //   _queuSync.commandBuffers.clear();
-  // }
-
-  // if (_world.gameWorld->count<Entropy::Components::Renderable>() == 0)
-  //   return;
+  if (_world->Get()->count<Entropy::Components::Renderable>() == 0)
+    return;
 
   // Begin renderpass and commandbuffer recording
   _commandBuffers[_currentFrame].Record();
-  _renderPass.Begin(_commandBuffers[_currentFrame],
-                    app ? imageIndex : VK_SUBPASS_CONTENTS_INLINE, width,
-                    height);
+  _renderPass->Begin(_commandBuffers[_currentFrame],
+                     app ? imageIndex : VK_SUBPASS_CONTENTS_INLINE, width,
+                     height);
 
   UboDataDynamic ubodyn{};
   ubodyn.perspective = orthoCamera->matrices.perspective;
@@ -133,7 +105,7 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
     }
 
     void *objectData;
-    vmaMapMemory(_allocator.Get(), _instanceDataBuffer->_allocation,
+    vmaMapMemory(_allocator->Get(), _instanceDataBuffer->_allocation,
                  &objectData);
 
     InstanceData *objectSSBO = (InstanceData *)objectData;
@@ -143,7 +115,7 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
         color_component.get() == nullptr ? glm::vec4(1.0, 1.0, 1.0, 1.0)
                                          : color_component->color;
 
-    vmaUnmapMemory(_allocator.Get(), _instanceDataBuffer->_allocation);
+    vmaUnmapMemory(_allocator->Get(), _instanceDataBuffer->_allocation);
 
     VkRect2D scissor{};
     scissor.offset = {0, 0};

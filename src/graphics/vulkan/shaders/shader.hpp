@@ -1,11 +1,11 @@
 #pragma once
 
+#include <vulkan/vulkan.hpp>
 #include <fstream>
-#include <graphics/vulkan/devices/logical_device.hpp>
+#include <servicelocators/servicelocator.hpp>
+#include <graphics/vulkan/devices/ilogical_device.hpp>
 
-using namespace Entropy::Graphics::Vulkan::Devices;
-
-namespace Symbios
+namespace Entropy
 {
   namespace Graphics
   {
@@ -23,8 +23,7 @@ namespace Symbios
            * @param frag
            * @param context
            */
-          Shader(
-              const std::string vert, const std::string frag);
+          Shader(const std::string vert, const std::string frag);
 
           // Shader(std::shared_ptr<ServiceLocator> serviceLocator,
           //        const std::vector<char> vert, const std::vector<char> frag);
@@ -84,8 +83,7 @@ namespace Symbios
            * @param code
            * @return VkShaderModule
            */
-          VkShaderModule BuildShader(
-              std::vector<char> code);
+          VkShaderModule BuildShader(std::vector<char> code);
 
           /**
            * @brief
@@ -100,7 +98,6 @@ namespace Symbios
           std::vector<char> _fragCode;
           VkShaderModule _shaderModuleVert;
           VkShaderModule _shaderModuleFrag;
-          std::shared_ptr<LogicalDevice> _logicalDevice;
         };
       } // namespace Shaders
     } // namespace Vulkan

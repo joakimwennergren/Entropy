@@ -256,8 +256,7 @@ namespace Entropy
           //                                                      VkSurfaceKHR surface);
           // std::vector<VkImageView> swapChainImageViews;
           std::vector<VkImage> swapChainImages;
-          VkExtent2D swapChainExtent;
-          VkFormat swapChainImageFormat;
+
           inline VkSwapchainKHR Get() { return _swapChain; };
           // std::shared_ptr<WindowSurface> _surface;
           std::vector<VkImage> _swapChainImages;

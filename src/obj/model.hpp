@@ -1,7 +1,5 @@
 #pragma once
 
-#include "factories/vulkan/bufferfactory.hpp"
-#include "factories/vulkan/texturefactory.hpp"
 #include "graphics/vulkan/textures/normal_texture.hpp"
 #include <tiny_obj_loader.h>
 

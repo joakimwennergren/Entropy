@@ -89,7 +89,7 @@ using namespace Entropy::Graphics::Vulkan::RenderPasses;
 // }
 
 void RenderPass::Begin(CommandBuffer commandBuffer, uint32_t imageIndex,
-                       int width, int height) const
+                       int width, int height)
 {
 
   VkRenderPassBeginInfo renderPassInfo{};
@@ -112,7 +112,7 @@ void RenderPass::Begin(CommandBuffer commandBuffer, uint32_t imageIndex,
                        VK_SUBPASS_CONTENTS_INLINE);
 }
 
-void RenderPass::End(CommandBuffer commandBuffer) const
+void RenderPass::End(CommandBuffer commandBuffer)
 {
   vkCmdEndRenderPass(commandBuffer.Get());
 }

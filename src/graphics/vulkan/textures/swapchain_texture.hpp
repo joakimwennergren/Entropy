@@ -1,7 +1,6 @@
 #pragma once
 
 #include "spdlog/spdlog.h"
-#include <factories/vulkan/texturefactory.hpp>
 #include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
 #include <graphics/vulkan/devices/logical_device.hpp>
 #include <graphics/vulkan/imageviews/imageview.hpp>

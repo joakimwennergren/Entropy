@@ -81,7 +81,7 @@ VulkanInstance::VulkanInstance()
 
 VulkanInstance::~VulkanInstance()
 {
-  // DestroyDebugUtilsMessengerEXT(_instance, _debugMessenger, nullptr);
+  DestroyDebugUtilsMessengerEXT(_instance, _debugMessenger, nullptr);
 }
 
 VkResult VulkanInstance::CreateDebugUtilsMessengerEXT(

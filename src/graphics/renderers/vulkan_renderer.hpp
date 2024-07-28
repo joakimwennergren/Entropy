@@ -14,8 +14,6 @@
 
 #include <data/ubo.hpp>
 #include <ecs/world.hpp>
-#include <factories/vulkan/bufferfactory.hpp>
-#include <factories/vulkan/pipelinefactory.hpp>
 #include <graphics/vulkan/buffers/stagedbuffer.hpp>
 #include <graphics/vulkan/buffers/storagebuffer.hpp>
 #include <graphics/vulkan/buffers/uniformbuffer.hpp>
@@ -47,7 +45,6 @@ using namespace Entropy::Graphics::Vulkan::Synchronization;
 using namespace Entropy::Graphics::Vulkan::Descriptorsets;
 using namespace Entropy::Graphics::Vulkan::Swapchains;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
-using namespace Entropy::Factories::Vulkan;
 using namespace Entropy::Data;
 using namespace Entropy::ECS;
 
@@ -82,15 +79,20 @@ namespace Entropy
            */
           VulkanRenderer()
           {
+            ServiceLocator *sl = ServiceLocator::GetInstance();
 
-            _renderPass.CreateFramebuffers(800, 800);
+            _allocator = sl->getService<Allocator>();
+            _renderPass = sl->getService<RenderPass>();
+            _logicalDevice = sl->getService<LogicalDevice>();
+            _swapchain = sl->getService<Swapchain>();
+            _world = sl->getService<World>();
+
+            //_renderPass.CreateFramebuffers(800, 800);
 
             // Static Pipeline creation
             //_staticPipeline = _pipelineFactory.CreateStaticPipeline();
 
-            // Synchronizer
-            // _synchronizer =
-            //     new Synchronizer(vbe.logicalDevice, MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+            _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
 
             // Command buffers
             // for (uint32_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
@@ -100,10 +102,10 @@ namespace Entropy
             // }
 
             // UBO
-            _UBO = _bufferFactory.CreateUniformBuffer(sizeof(UboDataDynamic));
-
-            _instanceDataBuffer = _bufferFactory.CreateStorageBuffer(
-                MAX_INSTANCE_COUNT * sizeof(InstanceData), nullptr);
+            _UBO = std::make_unique<UniformBuffer>(sizeof(UboDataDynamic));
+            _instanceDataBuffer = std::make_unique<StorageBuffer>(MAX_INSTANCE_COUNT * sizeof(InstanceData), nullptr);
+            // StagingBuffer
+            stagingBuffer = std::make_shared<StagedBuffer>(800 * 800 * 4, nullptr, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
 
             // Update descriptorsets
             for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
@@ -141,10 +143,6 @@ namespace Entropy
               //                        descriptorWrites.data(), 0, nullptr);
             }
 
-            // StagingBuffer
-            stagingBuffer = _bufferFactory.CreateStagingBuffer(
-                800 * 800 * 4, nullptr, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
-
             // Create a query for the Position component with a custom sorting function
             // _sortQuery = world.gameWorld->query_builder<Components::Position>()
             //                  .order_by<Components::Position>(compare_zIndex)
@@ -153,10 +151,10 @@ namespace Entropy
             timer = new Timing::Timer(1.0);
             timer->Start();
 
-            _batchedVertices = _bufferFactory.CreateVertexBufferWithSize(
-                MAX_INSTANCE_COUNT * sizeof(Vertex));
-            _batchedIndices = _bufferFactory.CreateIndexBufferWithSize<uint16_t>(
-                MAX_INSTANCE_COUNT * sizeof(uint16_t));
+            // _batchedVertices = _bufferFactory.CreateVertexBufferWithSize(
+            //     MAX_INSTANCE_COUNT * sizeof(Vertex));
+            // _batchedIndices = _bufferFactory.CreateIndexBufferWithSize<uint16_t>(
+            //     MAX_INSTANCE_COUNT * sizeof(uint16_t));
           }
 
           /**
@@ -193,7 +191,7 @@ namespace Entropy
           void PresentForEditor(int width, int height)
           {
 
-            _renderPass.End(_commandBuffers[_currentFrame]);
+            //_renderPass.End(_commandBuffers[_currentFrame]);
 
             VkImageLayout oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
             VkImageLayout newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
@@ -207,7 +205,7 @@ namespace Entropy
                 .newLayout = newLayout,
                 .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
                 .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-                .image = _renderPass._swapChainTextures[0]->_textureImage,
+                //.image = _renderPass._swapChainTextures[0]->_textureImage,
                 .subresourceRange =
                     {
                         .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
@@ -265,10 +263,10 @@ namespace Entropy
                 .imageExtent = {static_cast<uint32_t>(width),
                                 static_cast<uint32_t>(height), 1},
             };
-            vkCmdCopyImageToBuffer(_commandBuffers[_currentFrame].Get(),
-                                   _renderPass._swapChainTextures[0]->_textureImage,
-                                   VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                                   stagingBuffer->GetVulkanBuffer(), 1, &region);
+            // vkCmdCopyImageToBuffer(_commandBuffers[_currentFrame].Get(),
+            //                        _renderPass._swapChainTextures[0]->_textureImage,
+            //                        VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+            //                        stagingBuffer->GetVulkanBuffer(), 1, &region);
 
             _commandBuffers[_currentFrame].EndRecording();
 
@@ -294,7 +292,7 @@ namespace Entropy
           {
             // End renderpass and commandbuffer recording
             //     // End renderpass and commandbuffer recording
-            _renderPass.End(_commandBuffers[_currentFrame]);
+            //_renderPass.End(_commandBuffers[_currentFrame]);
             _commandBuffers[_currentFrame].EndRecording();
 
             auto cmdBuffer = _commandBuffers[_currentFrame].Get();
@@ -344,15 +342,7 @@ namespace Entropy
 
           std::shared_ptr<StagedBuffer> stagingBuffer;
           Swapchain _swapChain;
-          RenderPass _renderPass;
           CameraManager _cameraManager;
-
-          std::shared_ptr<VertexBuffer> _batchedVertices;
-          std::shared_ptr<IndexBuffer<uint16_t>> _batchedIndices;
-          std::vector<Vertex> _vertices;
-          std::vector<uint16_t> _indices;
-          BufferFactory _bufferFactory;
-          Allocator _allocator;
 
         private:
           flecs::query<Components::Position> _sortQuery;
@@ -361,20 +351,24 @@ namespace Entropy
 
           uint32_t _currentFrame = 0;
           uint32_t imageIndex;
-          int x = 0.0;
 
           // Command Buffers
           std::vector<CommandBuffer> _commandBuffers;
           // Dynamic UBO
-          std::shared_ptr<UniformBuffer> _UBO;
+          std::unique_ptr<UniformBuffer> _UBO;
 
-          std::shared_ptr<StorageBuffer> _instanceDataBuffer;
+          std::unique_ptr<StorageBuffer> _instanceDataBuffer;
           // Pipelines
           StaticPipeline *_staticPipeline;
           // Synchronizer
-          Synchronizer *_synchronizer;
+          std::unique_ptr<Synchronizer> _synchronizer;
 
           // Dependencies
+          std::shared_ptr<IAllocator> _allocator;
+          std::shared_ptr<IRenderPass> _renderPass;
+          std::shared_ptr<ILogicalDevice> _logicalDevice;
+          std::shared_ptr<ISwapchain> _swapchain;
+          std::shared_ptr<IWorld> _world;
         };
       } // namespace Renderers
     } // namespace Vulkan

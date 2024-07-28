@@ -1,10 +1,6 @@
 #pragma once
 
-#include <config.hpp>
-#include <graphics/vulkan/devices/logical_device.hpp>
 #include <vulkan/vulkan.hpp>
-
-using namespace Entropy::Graphics::Vulkan::Devices;
 
 namespace Entropy
 {
@@ -22,6 +18,11 @@ namespace Entropy
               std::vector<VkDescriptorBindingFlagsEXT> bindingFlags)
           {
 
+            ServiceLocator *sl = ServiceLocator::GetInstance();
+            auto logicalDevice = sl->getService<ILogicalDevice>();
+
+            assert(logicalDevice != nullptr);
+
             VkDescriptorSetLayoutBindingFlagsCreateInfoEXT bindingFlagsInfo = {};
             bindingFlagsInfo.sType =
                 VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO_EXT;
@@ -36,13 +37,14 @@ namespace Entropy
                 VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT;
             layoutInfo.pNext = &bindingFlagsInfo;
 
-            // if (vkCreateDescriptorSetLayout(backend.logicalDevice.Get(), &layoutInfo,
-            //                                 nullptr,
-            //                                 &_descriptorSetLayout) != VK_SUCCESS)
-            // {
-            //   exit(EXIT_FAILURE);
-            // }
+            if (vkCreateDescriptorSetLayout(logicalDevice->Get(), &layoutInfo,
+                                            nullptr,
+                                            &_descriptorSetLayout) != VK_SUCCESS)
+            {
+              exit(EXIT_FAILURE);
+            }
           }
+
           inline VkDescriptorSetLayout Get() { return _descriptorSetLayout; };
 
         private:

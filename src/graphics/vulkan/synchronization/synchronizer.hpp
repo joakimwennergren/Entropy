@@ -22,6 +22,10 @@ namespace Entropy
         public:
           Synchronizer(unsigned int numObjects)
           {
+            ServiceLocator *sl = ServiceLocator::GetInstance();
+            _logicalDevice = sl->getService<ILogicalDevice>();
+
+            assert(logicalDevice != nullptr);
             assert(numObjects != 0);
 
             _imageSemaphores.resize(numObjects);
@@ -37,15 +41,15 @@ namespace Entropy
 
             for (size_t i = 0; i < _numObjects; i++)
             {
-              // if (vkCreateSemaphore(_logicalDevice.Get(), &semaphoreInfo, nullptr,
-              //                       &_imageSemaphores[i]) != VK_SUCCESS ||
-              //     vkCreateSemaphore(_logicalDevice.Get(), &semaphoreInfo, nullptr,
-              //                       &_renderFinishedSemaphores[i]) != VK_SUCCESS ||
-              //     vkCreateFence(_logicalDevice.Get(), &fenceInfo, nullptr,
-              //                   &_fences[i]) != VK_SUCCESS)
-              // {
-              //   spdlog::error("Could not create synchronizer objects.");
-              // }
+              if (vkCreateSemaphore(_logicalDevice->Get(), &semaphoreInfo, nullptr,
+                                    &_imageSemaphores[i]) != VK_SUCCESS ||
+                  vkCreateSemaphore(_logicalDevice->Get(), &semaphoreInfo, nullptr,
+                                    &_renderFinishedSemaphores[i]) != VK_SUCCESS ||
+                  vkCreateFence(_logicalDevice->Get(), &fenceInfo, nullptr,
+                                &_fences[i]) != VK_SUCCESS)
+              {
+                spdlog::error("Could not create synchronizer objects.");
+              }
             }
           }
 
@@ -53,10 +57,10 @@ namespace Entropy
           {
             for (size_t i = 0; i < _numObjects; i++)
             {
-              // vkDestroySemaphore(_logicalDevice.Get(), _imageSemaphores[i], nullptr);
-              // vkDestroySemaphore(_logicalDevice.Get(), _renderFinishedSemaphores[i],
-              //                    nullptr);
-              // vkDestroyFence(_logicalDevice.Get(), _fences[i], nullptr);
+              vkDestroySemaphore(_logicalDevice->Get(), _imageSemaphores[i], nullptr);
+              vkDestroySemaphore(_logicalDevice->Get(), _renderFinishedSemaphores[i],
+                                 nullptr);
+              vkDestroyFence(_logicalDevice->Get(), _fences[i], nullptr);
             }
           }
 
@@ -75,6 +79,7 @@ namespace Entropy
           std::vector<VkSemaphore> _renderFinishedSemaphores;
           std::vector<VkFence> _fences;
           unsigned int _numObjects;
+          std::shared_ptr<ILogicalDevice> _logicalDevice;
         };
       } // namespace Synchronization
     } // namespace Vulkan

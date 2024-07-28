@@ -1,6 +1,5 @@
 #pragma once
 
-#include <factories/vulkan/texturefactory.hpp>
 #include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
 #include <graphics/vulkan/devices/logical_device.hpp>
 #include <graphics/vulkan/imageviews/imageview.hpp>
@@ -11,13 +10,13 @@
 #include <vulkan/vulkan.hpp>
 
 #include "spdlog/spdlog.h"
+#include "irenderpass.hpp"
 
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;
 using namespace Entropy::Graphics::Vulkan::Swapchains;
 using namespace Entropy::Graphics::Vulkan::Devices;
 using namespace Entropy::Graphics::Vulkan::ImageViews;
 using namespace Entropy::Graphics::Vulkan::Memory;
-using namespace Entropy::Factories::Vulkan;
 
 namespace Entropy
 {
@@ -28,7 +27,7 @@ namespace Entropy
       namespace RenderPasses
       {
 
-        struct RenderPass
+        struct RenderPass : public ServiceBase<IRenderPass>
         {
 
           RenderPass()
@@ -99,8 +98,8 @@ namespace Entropy
             // }
           }
           void Begin(CommandBuffer commandBuffer, uint32_t imageIndex, int width,
-                     int height) const;
-          void End(CommandBuffer commandBuffer) const;
+                     int height);
+          void End(CommandBuffer commandBuffer);
 
           void RecreateFrameBuffers(int width, int height, bool app)
           {
@@ -117,17 +116,17 @@ namespace Entropy
           void RecreateDepthBuffer(int width, int height)
           {
 
-            if (_depthBufferTexture != VK_NULL_HANDLE)
-            {
-              spdlog::error("resetings depth texture");
-              _depthBufferTexture.reset();
-            }
+            // if (_depthBufferTexture != VK_NULL_HANDLE)
+            // {
+            //   spdlog::error("resetings depth texture");
+            //   _depthBufferTexture.reset();
+            // }
 
-            _depthBufferTexture =
-                _textureFactory.CreateDepthBufferTexture(width, height);
+            // _depthBufferTexture =
+            //     _textureFactory.CreateDepthBufferTexture(width, height);
           }
 
-          inline VkRenderPass Get() const { return _renderPass; };
+          inline VkRenderPass Get() override { return _renderPass; };
 
           std::vector<VkFramebuffer> _frameBuffers;
           std::vector<std::shared_ptr<SwapChainTexture>> _swapChainTextures;
@@ -135,25 +134,25 @@ namespace Entropy
           void CreateFramebuffers(int width, int height)
           {
 
-            _swapChainTextures.clear();
-            _frameBuffers.clear();
+            // _swapChainTextures.clear();
+            // _frameBuffers.clear();
 
-            _swapChainTextures.push_back(
-                _textureFactory.CreateSwapChainTexture(width, height));
+            // _swapChainTextures.push_back(
+            //     _textureFactory.CreateSwapChainTexture(width, height));
 
-            _frameBuffers.resize(1);
+            // _frameBuffers.resize(1);
 
-            std::array<VkImageView, 2> attachments = {_swapChainTextures[0]->_imageView,
-                                                      _depthBufferTexture->_imageView};
+            // std::array<VkImageView, 2> attachments = {_swapChainTextures[0]->_imageView,
+            //                                           _depthBufferTexture->_imageView};
 
-            VkFramebufferCreateInfo framebufferInfo{};
-            framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-            framebufferInfo.renderPass = _renderPass;
-            framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-            framebufferInfo.pAttachments = attachments.data();
-            framebufferInfo.width = width;
-            framebufferInfo.height = height;
-            framebufferInfo.layers = 1;
+            // VkFramebufferCreateInfo framebufferInfo{};
+            // framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+            // framebufferInfo.renderPass = _renderPass;
+            // framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+            // framebufferInfo.pAttachments = attachments.data();
+            // framebufferInfo.width = width;
+            // framebufferInfo.height = height;
+            // framebufferInfo.layers = 1;
 
             // VkResult res =
             //     vkCreateFramebuffer(_vkBackend.logicalDevice.Get(), &framebufferInfo,
@@ -202,8 +201,6 @@ namespace Entropy
         private:
           std::shared_ptr<DepthBufferTexture> _depthBufferTexture = nullptr;
           VkRenderPass _renderPass = VK_NULL_HANDLE;
-
-          TextureFactory _textureFactory;
 
           VkFormat findSupportedFormat(const std::vector<VkFormat> &candidates,
                                        VkImageTiling tiling,

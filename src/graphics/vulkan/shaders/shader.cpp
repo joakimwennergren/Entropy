@@ -1,6 +1,6 @@
 #include "shader.hpp"
 
-using namespace Symbios::Graphics::Vulkan::Shaders;
+using namespace Entropy::Graphics::Vulkan::Shaders;
 
 /*
 
@@ -79,6 +79,12 @@ Shader::BuildShader(
 
 VkShaderModule Shader::BuildShader(uint32_t *code, uint32_t size)
 {
+
+  ServiceLocator *sl = ServiceLocator::GetInstance();
+  auto logicalDevice = sl->getService<ILogicalDevice>();
+
+  assert(logicalDevice != nullptr);
+
   VkShaderModuleCreateInfo createInfo{};
   createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
   createInfo.codeSize = size;
@@ -86,7 +92,7 @@ VkShaderModule Shader::BuildShader(uint32_t *code, uint32_t size)
 
   VkShaderModule shaderModule;
 
-  if (vkCreateShaderModule(_logicalDevice->Get(), &createInfo, nullptr,
+  if (vkCreateShaderModule(logicalDevice->Get(), &createInfo, nullptr,
                            &shaderModule) != VK_SUCCESS)
   {
     exit(EXIT_FAILURE);

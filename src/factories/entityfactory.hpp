@@ -4,8 +4,6 @@
 #include "ecs/components/animated_sprite.hpp"
 #include "ecs/components/hasTexture.hpp"
 #include "ecs/components/objmodel.hpp"
-#include "factories/vulkan/bufferfactory.hpp"
-#include "factories/vulkan/texturefactory.hpp"
 #include "filesystem/filesystem.hpp"
 #include "graphics/primitives/2d/animated_sprite.hpp"
 #include "graphics/primitives/2d/quad.hpp"

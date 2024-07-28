@@ -1,7 +1,6 @@
 #pragma once
 
 #include "spdlog/spdlog.h"
-#include <factories/vulkan/texturefactory.hpp>
 #include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
 #include <graphics/vulkan/devices/logical_device.hpp>
 #include <graphics/vulkan/imageviews/imageview.hpp>
@@ -30,6 +29,8 @@ namespace Entropy
         {
           DepthBufferTexture(unsigned int width, unsigned int height)
           {
+            ServiceLocator *sl = ServiceLocator::GetInstance();
+            auto allocator = sl->getService<IAllocator>();
 
             VkFormat depthFormat = FindDepthFormat();
 
@@ -52,12 +53,12 @@ namespace Entropy
             imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
             imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-            // VkResult res = vmaCreateImage(allocator.Get(), &imageInfo, &allocCreateInfo,
-            //                               &_textureImage, &_allocation, nullptr);
+            VkResult res = vmaCreateImage(allocator->Get(), &imageInfo, &allocCreateInfo,
+                                          &_textureImage, &_allocation, nullptr);
 
-            // _imageView =
-            //     ImageView(vbe, _textureImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT)
-            //         .Get();
+            _imageView =
+                ImageView(_textureImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT)
+                    .Get();
           };
 
         private:

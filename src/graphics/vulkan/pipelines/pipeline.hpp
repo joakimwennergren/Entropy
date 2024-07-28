@@ -4,8 +4,6 @@
 #include <utility>
 
 #include <data/vertex.hpp>
-#include <factories/vulkan/descriptorset_factory.hpp>
-#include <factories/vulkan/descriptorsetlayout_factory.hpp>
 #include <filesystem/filesystem.hpp>
 #include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
 #include <graphics/vulkan/descriptorsetlayouts/descriptorsetlayout.hpp>
@@ -14,18 +12,16 @@
 #include <graphics/vulkan/renderpasses/renderpass.hpp>
 #include <graphics/vulkan/shaders/shader.hpp>
 #include <graphics/vulkan/swapchains/swapchain.hpp>
-
-#include "graphics/vulkan/pipelinecaches/pipelinecache.hpp"
+#include <graphics/vulkan/pipelinecaches/pipelinecache.hpp>
 #include "spdlog/spdlog.h"
 
 using namespace Entropy::Filesystem;
-using namespace Symbios::Graphics::Vulkan::Shaders;
+using namespace Entropy::Graphics::Vulkan::Shaders;
 using namespace Entropy::Graphics::Vulkan::RenderPasses;
 using namespace Entropy::Graphics::Vulkan::Swapchains;
 using namespace Entropy::Graphics::Vulkan::Descriptorsets;
 using namespace Entropy::Graphics::Vulkan::DescriptorPools;
 using namespace Entropy::Graphics::Vulkan::Devices;
-using namespace Entropy::Factories::Vulkan;
 using namespace Entropy::Data;
 
 namespace Entropy
@@ -39,7 +35,14 @@ namespace Entropy
         class Pipeline
         {
         public:
-          Pipeline() {}
+          Pipeline()
+          {
+            ServiceLocator *sl = ServiceLocator::GetInstance();
+            _logicalDevice = sl->getService<ILogicalDevice>();
+            _swapchain = sl->getService<ISwapchain>();
+            _renderPass = sl->getService<IRenderPass>();
+            _pipelineCache = sl->getService<IPipelineCache>();
+          }
 
           ~Pipeline()
           {
@@ -72,6 +75,10 @@ namespace Entropy
           // PipelineLayout and pipeline
           VkPipelineLayout _pipelineLayout = VK_NULL_HANDLE;
           VkPipeline _pipeline = VK_NULL_HANDLE;
+          std::shared_ptr<ILogicalDevice> _logicalDevice;
+          std::shared_ptr<ISwapchain> _swapchain;
+          std::shared_ptr<IRenderPass> _renderPass;
+          std::shared_ptr<IPipelineCache> _pipelineCache;
         };
       } // namespace Pipelines
     } // namespace Vulkan

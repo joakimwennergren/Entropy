@@ -1,6 +1,5 @@
 #pragma once
 
-#include "factories/vulkan/bufferfactory.hpp"
 #include "graphics/vulkan/commandpools/commandpool.hpp"
 #include <string>
 
@@ -11,7 +10,9 @@
 #include FT_FREETYPE_H
 
 #include "config.hpp"
-#include "tiny_gltf.h"
+
+#include <graphics/vulkan/devices/ilogical_device.hpp>
+#include <graphics/vulkan/devices/iphysical_device.hpp>
 
 #include <graphics/vulkan/buffers/buffer.hpp>
 #include <graphics/vulkan/buffers/stagedbuffer.hpp>
@@ -51,6 +52,10 @@ namespace Entropy
         public:
           Texture()
           {
+            ServiceLocator *sl = ServiceLocator::GetInstance();
+            _physicalDevice = sl->getService<IPhysicalDevice>();
+            _logicalDevice = sl->getService<ILogicalDevice>();
+            _descriptorPool = sl->getService<DescriptorPool>();
           }
 
           ~Texture()
@@ -76,8 +81,6 @@ namespace Entropy
 
           void CreateTextureImageFromBuffer(FT_Bitmap bitmap);
 
-          void CreateTextureFromGLTFImage(tinygltf::Image &gltfimage);
-
 #ifdef BUILD_FOR_ANDROID
           void CreateTextureImage(std::string path, AAssetManager *assetManager);
 #endif
@@ -99,6 +102,10 @@ namespace Entropy
           VmaAllocation _allocation = VK_NULL_HANDLE;
 
           VkDescriptorSet _descriptorSet;
+
+          std::shared_ptr<IPhysicalDevice> _physicalDevice;
+          std::shared_ptr<ILogicalDevice> _logicalDevice;
+          std::shared_ptr<IDescriptorPool> _descriptorPool;
         };
       } // namespace Textures
     } // namespace Vulkan

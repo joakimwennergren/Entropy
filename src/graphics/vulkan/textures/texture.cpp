@@ -2,72 +2,73 @@
 
 using namespace Entropy::Graphics::Vulkan::Textures;
 
-void Texture::CreateTextureFromGLTFImage(tinygltf::Image &gltfimage) {
+// void Texture::CreateTextureFromGLTFImage(tinygltf::Image &gltfimage)
+// {
 
-  /*
+/*
 
-  auto physicalDevice = _serviceLocator->GetService<PhysicalDevice>();
+auto physicalDevice = _serviceLocator->GetService<PhysicalDevice>();
 
-  unsigned char *buffer = nullptr;
-  VkDeviceSize bufferSize = 0;
-  bool deleteBuffer = false;
-  if (gltfimage.component == 3) {
-    // Most devices don't support RGB only on Vulkan so convert if necessary
-    // TODO: Check actual format support and transform only if required
-    bufferSize = gltfimage.width * gltfimage.height * 4;
-    buffer = new unsigned char[bufferSize];
-    unsigned char *rgba = buffer;
-    unsigned char *rgb = &gltfimage.image[0];
-    for (int32_t i = 0; i < gltfimage.width * gltfimage.height; ++i) {
-      for (int32_t j = 0; j < 3; ++j) {
-        rgba[j] = rgb[j];
-      }
-      rgba += 4;
-      rgb += 3;
+unsigned char *buffer = nullptr;
+VkDeviceSize bufferSize = 0;
+bool deleteBuffer = false;
+if (gltfimage.component == 3) {
+  // Most devices don't support RGB only on Vulkan so convert if necessary
+  // TODO: Check actual format support and transform only if required
+  bufferSize = gltfimage.width * gltfimage.height * 4;
+  buffer = new unsigned char[bufferSize];
+  unsigned char *rgba = buffer;
+  unsigned char *rgb = &gltfimage.image[0];
+  for (int32_t i = 0; i < gltfimage.width * gltfimage.height; ++i) {
+    for (int32_t j = 0; j < 3; ++j) {
+      rgba[j] = rgb[j];
     }
-    deleteBuffer = true;
-  } else {
-    buffer = &gltfimage.image[0];
-    bufferSize = gltfimage.image.size();
+    rgba += 4;
+    rgb += 3;
   }
+  deleteBuffer = true;
+} else {
+  buffer = &gltfimage.image[0];
+  bufferSize = gltfimage.image.size();
+}
 
-  VkFormat format = VK_FORMAT_R8G8B8A8_UNORM;
+VkFormat format = VK_FORMAT_R8G8B8A8_UNORM;
 
-  VkFormatProperties formatProperties;
+VkFormatProperties formatProperties;
 
-  int width = gltfimage.width;
-  int height = gltfimage.height;
-  int mipLevels =
-      static_cast<uint32_t>(floor(log2(std::max(width, height))) + 1.0);
+int width = gltfimage.width;
+int height = gltfimage.height;
+int mipLevels =
+    static_cast<uint32_t>(floor(log2(std::max(width, height))) + 1.0);
 
-  vkGetPhysicalDeviceFormatProperties(physicalDevice->Get(), format,
-                                      &formatProperties);
-  assert(formatProperties.optimalTilingFeatures &
-         VK_FORMAT_FEATURE_BLIT_SRC_BIT);
-  assert(formatProperties.optimalTilingFeatures &
-         VK_FORMAT_FEATURE_BLIT_DST_BIT);
+vkGetPhysicalDeviceFormatProperties(physicalDevice->Get(), format,
+                                    &formatProperties);
+assert(formatProperties.optimalTilingFeatures &
+       VK_FORMAT_FEATURE_BLIT_SRC_BIT);
+assert(formatProperties.optimalTilingFeatures &
+       VK_FORMAT_FEATURE_BLIT_DST_BIT);
 
-  StagedBuffer stagedBuffer(bufferSize, buffer);
+StagedBuffer stagedBuffer(bufferSize, buffer);
 
-  auto mem = stagedBuffer.GetBufferMemory();
-  auto buf = stagedBuffer.GetVulkanBuffer();
+auto mem = stagedBuffer.GetBufferMemory();
+auto buf = stagedBuffer.GetVulkanBuffer();
 
-  CreateImage(width, height, format, VK_IMAGE_TILING_OPTIMAL,
-              VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-              _textureImage);
+CreateImage(width, height, format, VK_IMAGE_TILING_OPTIMAL,
+            VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+            _textureImage);
 
-  TransitionImageLayout(_textureImage, VK_IMAGE_LAYOUT_UNDEFINED,
-                        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-  CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(width),
-                    static_cast<uint32_t>(height));
-  TransitionImageLayout(_textureImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+TransitionImageLayout(_textureImage, VK_IMAGE_LAYOUT_UNDEFINED,
+                      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+CopyBufferToImage(buf, _textureImage, static_cast<uint32_t>(width),
+                  static_cast<uint32_t>(height));
+TransitionImageLayout(_textureImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-  auto imageView = ImageView(_logicalDevice->Get(), _textureImage, format);
+auto imageView = ImageView(_logicalDevice->Get(), _textureImage, format);
 
-  _imageView = imageView.Get();
-  */
-};
+_imageView = imageView.Get();
+*/
+//};
 
 void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap)
 {

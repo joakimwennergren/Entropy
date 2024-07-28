@@ -28,9 +28,13 @@ namespace Entropy
         class Descriptorset
         {
         public:
-          Descriptorset(
-              DescriptorsetLayout layout)
+          Descriptorset(DescriptorsetLayout layout)
           {
+            ServiceLocator *sl = ServiceLocator::GetInstance();
+            auto logicalDevice = sl->getService<ILogicalDevice>();
+
+            assert(logicalDevice != nullptr);
+
             std::vector<VkDescriptorSetLayout> layouts(MAX_CONCURRENT_FRAMES_IN_FLIGHT,
                                                        layout.Get());
 
@@ -42,11 +46,11 @@ namespace Entropy
 
             _descriptorSets.resize(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
 
-            // if (vkAllocateDescriptorSets(backend.logicalDevice.Get(), &allocInfo,
-            //                              _descriptorSets.data()) != VK_SUCCESS)
-            // {
-            //   spdlog::error("Failed to allocate descriptor sets");
-            // }
+            if (vkAllocateDescriptorSets(logicalDevice->Get(), &allocInfo,
+                                         _descriptorSets.data()) != VK_SUCCESS)
+            {
+              spdlog::error("Failed to allocate descriptor sets");
+            }
           }
 
           inline std::vector<VkDescriptorSet> Get() { return _descriptorSets; };
