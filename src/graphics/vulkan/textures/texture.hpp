@@ -56,6 +56,7 @@ namespace Entropy
             _physicalDevice = sl->getService<IPhysicalDevice>();
             _logicalDevice = sl->getService<ILogicalDevice>();
             _descriptorPool = sl->getService<IDescriptorPool>();
+            _allocator = sl->getService<IAllocator>();
           }
 
           ~Texture()
@@ -106,6 +107,7 @@ namespace Entropy
           std::shared_ptr<IPhysicalDevice> _physicalDevice;
           std::shared_ptr<ILogicalDevice> _logicalDevice;
           std::shared_ptr<IDescriptorPool> _descriptorPool;
+          std::shared_ptr<IAllocator> _allocator;
         };
       } // namespace Textures
     } // namespace Vulkan

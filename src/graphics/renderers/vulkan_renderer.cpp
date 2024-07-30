@@ -44,7 +44,7 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
   if (_world->Get()->count<Entropy::Components::Renderable>() == 0)
     return;
 
-  auto orthoCamera = static_cast<Cameras::OrthographicCamera *>(_cameraManager.currentCamera);
+  auto orthoCamera = static_cast<Cameras::OrthographicCamera *>(_cameraManager->currentCamera);
   orthoCamera->setPerspective(60.0f, (float)width, (float)height, 0.1f, 256.0f);
 
   // Begin renderpass and commandbuffer recording
@@ -200,6 +200,7 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
       vkCmdBindIndexBuffer(_commandBuffers[_currentFrame].Get(),
                            renderable->indexBuffer->GetVulkanBuffer(), 0,
                            VK_INDEX_TYPE_UINT16);
+
       // Draw current renderable
       vkCmdDrawIndexed(_commandBuffers[_currentFrame].Get(),
                        renderable->indices.size(), 1, 0, 0, 0);

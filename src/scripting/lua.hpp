@@ -3,7 +3,6 @@
 #include "box2d/b2_math.h"
 #include "cameras/camera_manager.hpp"
 #include "ecs/components/objmodel.hpp"
-#include "factories/entityfactory.hpp"
 #include "filesystem/filesystem.hpp"
 #include "physics/2d/physics2d.hpp"
 #define SOL_ALL_SAFETIES_ON 1
@@ -11,8 +10,6 @@
 #include <future>
 #include <iostream>
 #include <thread>
-
-#include "types.hpp"
 
 #include <spdlog/spdlog.h>
 
@@ -41,10 +38,14 @@
 #include <ecs/components/rotation.hpp>
 #include <ecs/components/scale.hpp>
 #include <ecs/components/tags/scripted.hpp>
+#include <ecs/components/hasTexture.hpp>
+#include <ecs/components/sprite.hpp>
 #include <ecs/components/trianglemeshcollisionshape3d.hpp>
 
 #include <assets/assetid.hpp>
 #include <tracy/Tracy.hpp>
+
+#include "ilua.hpp"
 
 using namespace Entropy::Graphics::Primitives;
 using namespace Entropy::Components;
@@ -59,73 +60,92 @@ namespace Entropy
 {
   namespace Scripting
   {
-    struct Lua
+    struct Lua : public ServiceBase<ILua>
     {
+
+      inline sol::state *Get() override { return _lua; }
       const float PPM = 100.0f; // Pixels Per Meter
     public:
       Lua()
       {
-        //   _lua = new sol::state();
-        //   _lua->open_libraries(sol::lib::base, sol::lib::table, sol::lib::math);
+        ServiceLocator *sl = ServiceLocator::GetInstance();
+        _world = sl->getService<IWorld>();
+        _physics2d = sl->getService<IPhysics2D>();
 
-        //   _lua->new_usertype<Vector3>("Vector3", "x", &Vector3::x, "y", &Vector3::y,
-        //                               "z", &Vector3::z);
-
-        //   _lua->new_usertype<b2Vec2>("b2vec2", "x", &b2Vec2::x, "y", &b2Vec2::y);
-        //   _lua->new_usertype<b2Body>("b2Body", "GetPosition", &b2Body::GetPosition,
-        //                              "GetAngle", &b2Body::GetAngle);
+        _lua = new sol::state();
+        _lua->open_libraries(sol::lib::base, sol::lib::table, sol::lib::math);
+        _lua->new_usertype<b2Vec3>("b2vec3", "x", &b2Vec3::x, "y", &b2Vec3::y, "z", &b2Vec3::z);
+        _lua->new_usertype<b2Vec2>("b2vec2", "x", &b2Vec2::x, "y", &b2Vec2::y);
+        _lua->new_usertype<b2Body>("b2Body", "GetPosition", &b2Body::GetPosition,
+                                   "GetAngle", &b2Body::GetAngle);
 
         //   _lua->set_function("create_obj_model",
         //                      [&ef]
         //                      { return ef.CreateOBJModel(""); });
 
-        //   _lua->set_function("create_sprite", [&ef](std::string path)
-        //                      { return ef.CreateSprite(path); });
+        _lua->set_function("create_sprite", [this](std::string path)
+                           {
+                             auto sprite = std::make_shared<Entropy::Graphics::Primitives::Sprite>(GetSpritesDir() + path);
 
-        //   _lua->set_function("translate_3d", [this](flecs::entity entity, float x,
-        //                                             float y, float z)
-        //                      {
-        // if (!entity.is_alive())
-        //   return;
+                             auto e = _world->Get()->entity();
+                             auto id = AssetId().GetId();
+                             e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
+                             e.set<Scale>({glm::vec3(25.0, 25.0, 25.0)});
+                             e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
+                             e.set<Entropy::Components::SpriteComponent>({sprite});
+                             e.set<Entropy::Components::Renderable>(
+                                 {id, true, sprite->vertexBuffer,sprite->indexBuffer, sprite->indices});
+                             e.set<Entropy::Components::Color>({glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}});
+                             e.set<Entropy::Components::HasTexture>({sprite->texture}); 
+                             return e; });
 
-        // auto pos = entity.get_mut<Entropy::Components::Position>();
-        // pos->pos = glm::vec3(x / PPM, y / PPM, z); });
+        _lua->set_function("translate_3d", [this](flecs::entity entity, float x,
+                                                  float y, float z)
+                           {
+          if (!entity.is_alive())
+          {
+            return;
+          }
 
-        //   _lua->set_function("rotate_3d", [](flecs::entity entity, float x, float y,
-        //                                      float z, float angle)
-        //                      {
-        // if (!entity.is_alive())
-        //   return;
 
-        // auto rot = entity.get_mut<Entropy::Components::Rotation>();
-        // rot->orientation = glm::vec3(x, y, z);
-        // rot->angle = angle; });
+          auto pos = entity.get_mut<Entropy::Components::Position>();
+          pos->pos = glm::vec3(x / PPM, y / PPM, z); });
 
-        //   _lua->set_function("scale_3d",
-        //                      [this](flecs::entity entity, float x, float y, float z)
-        //                      {
-        //                        if (!entity.is_alive())
-        //                          return;
+        _lua->set_function("rotate_3d", [](flecs::entity entity, float x, float y,
+                                           float z, float angle)
+                           {
+          if (!entity.is_alive())
+            return;
 
-        //                        auto s = entity.get_mut<Entropy::Components::Scale>();
-        //                        s->scale = glm::vec3(x / PPM, y / PPM, z / PPM);
-        //                      });
+          auto rot = entity.get_mut<Entropy::Components::Rotation>();
+          rot->orientation = glm::vec3(x, y, z);
+          rot->angle = angle; });
 
-        //   _lua->set_function("set_color", [](flecs::entity entity, float r, float g,
-        //                                      float b, float a)
-        //                      {
-        // if (!entity.is_alive())
-        //   return;
+        _lua->set_function("scale_3d",
+                           [this](flecs::entity entity, float x, float y, float z)
+                           {
+                             if (!entity.is_alive())
+                               return;
 
-        // auto col = entity.get_mut<Entropy::Components::Color>();
-        // col->color = glm::vec4(r, g, b, a); });
+                             auto s = entity.get_mut<Entropy::Components::Scale>();
+                             s->scale = glm::vec3(x / PPM, y / PPM, z / PPM);
+                           });
 
-        //   _lua->set_function("delete", [](flecs::entity entity)
-        //                      {
-        // if (!entity.is_alive())
-        //   return;
-        // spdlog::info("REMOVING ENTITY!!!");
-        // entity.destruct(); });
+        _lua->set_function("set_color", [](flecs::entity entity, float r, float g,
+                                           float b, float a)
+                           {
+        if (!entity.is_alive())
+          return;
+
+        auto col = entity.get_mut<Entropy::Components::Color>();
+        col->color = glm::vec4(r, g, b, a); });
+
+        _lua->set_function("delete", [](flecs::entity entity)
+                           {
+        if (!entity.is_alive())
+          return;
+        spdlog::info("REMOVING ENTITY!!!");
+        entity.destruct(); });
 
         //   _lua->set_function("clone", [](flecs::entity entity) -> flecs::entity
         //                      { return entity.clone(); });
@@ -138,29 +158,29 @@ namespace Entropy
         // auto s = entity.get_mut<Entropy::Components::Renderable>();
         // s->zIndex = zIndex; });
 
-        //   _lua->set_function("get_position", [](flecs::entity entity) -> Vector3 *
-        //                      {
-        // if (!entity.is_alive())
-        //   return new Vector3();
+        _lua->set_function("get_position", [](flecs::entity entity) -> b2Vec3
+                           {
+        if (!entity.is_alive())
+          return b2Vec3();
 
-        // auto s = entity.get_mut<Entropy::Components::Position>();
-        // auto vec = new Vector3();
-        // vec->x = s->pos.x;
-        // vec->y = s->pos.y;
-        // vec->z = s->pos.z;
-        // return vec; });
+        auto s = entity.get_mut<Entropy::Components::Position>();
+        auto vec = b2Vec3();
+        vec.x = s->pos.x;
+        vec.y= s->pos.y;
+        vec.z = s->pos.z;
+        return vec; });
 
-        //   _lua->set_function("get_scale", [](flecs::entity entity) -> Vector3 *
-        //                      {
-        // if (!entity.is_alive())
-        //   return new Vector3();
+        _lua->set_function("get_scale", [](flecs::entity entity) -> b2Vec3 *
+                           {
+        if (!entity.is_alive())
+          return new b2Vec3();
 
-        // auto s = entity.get_mut<Entropy::Components::Scale>();
-        // auto vec = new Vector3();
-        // vec->x = s->scale.x;
-        // vec->y = s->scale.y;
-        // vec->z = s->scale.z;
-        // return vec; });
+        auto s = entity.get_mut<Entropy::Components::Scale>();
+        auto vec = new b2Vec3();
+        vec->x = s->scale.x;
+        vec->y = s->scale.y;
+        vec->z = s->scale.z;
+        return vec; });
 
         //   _lua->set_function("easeInOutCubic", [](float time)
         //                      { return Animation::EasingFunctions::easeInBounce(time); });
@@ -172,8 +192,8 @@ namespace Entropy
         //   _lua->set_function("random_int", [](int min, int max) -> int
         //                      { return rand() % (max - min + 1) + min; });
 
-        //   _lua->set_function("include", [this](std::string path)
-        //                      { _lua->do_file(GetProjectBasePath() + path); });
+        _lua->set_function("include", [this](std::string path)
+                           { _lua->do_file(GetProjectBasePath() + path); });
 
         //   _lua->set_function("set_ortho_camera_position", [this](float x, float y)
         //                      {
@@ -181,11 +201,11 @@ namespace Entropy
         //     _cameraManager.currentCamera);
         // orthoCamera->setPosition(glm::vec3{x, y, 0.0}); });
 
-        //   _lua->set_function(
-        //       "create_dynamic_body", [this](float x, float y, float w, float h)
-        //       {
-        //     auto dynBody = _physics2d.CreateDynamicBody(x, y, w, h);
-        //     return dynBody; });
+        _lua->set_function(
+            "create_dynamic_body", [this](float x, float y, float w, float h)
+            {
+            auto dynBody = _physics2d->CreateDynamicBody(x, y, w, h);
+            return dynBody; });
 
         //   _lua->set_function("create_vec2", [this](float x, float y) -> b2Vec2 *
         //                      {
@@ -200,8 +220,8 @@ namespace Entropy
         // auto dynBody = _physics2d.CreateSensorBody(x, y, w, h, pos);
         // return dynBody; });
 
-        //   _lua->set_function("delete_dynamic_body", [this](b2Body *body)
-        //                      { _physics2d.world->DestroyBody(body); });
+        _lua->set_function("delete_dynamic_body", [this](b2Body *body)
+                           { _physics2d->Get()->DestroyBody(body); });
 
         //   _lua->set_function("get_dynbody_user_data", [this](b2Body *body)
         //                      {
@@ -218,12 +238,12 @@ namespace Entropy
         //   _lua->set_function("get_dynbody_linear_velocity", [this](b2Body *body)
         //                      { return body->GetLinearVelocity(); });
 
-        //   _lua->set_function("create_static_body",
-        //                      [this](float x, float y, float w, float h)
-        //                      {
-        //                        auto dynBody = _physics2d.CreateGround(x, y, w, h);
-        //                        return dynBody;
-        //                      });
+        _lua->set_function("create_static_body",
+                           [this](float x, float y, float w, float h)
+                           {
+                             auto dynBody = _physics2d->CreateGround(x, y, w, h);
+                             return dynBody;
+                           });
       }
 
       // inline bool ExecuteScript(std::string script, std::string scriptFile,
@@ -249,6 +269,8 @@ namespace Entropy
       sol::state *_lua;
 
       // Dependencies
+      std::shared_ptr<IWorld> _world;
+      std::shared_ptr<IPhysics2D> _physics2d;
 
     private:
     };

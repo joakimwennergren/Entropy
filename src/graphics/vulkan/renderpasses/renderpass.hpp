@@ -35,6 +35,10 @@ namespace Entropy
             _physicalDevice = sl->getService<IPhysicalDevice>();
             _swapchain = sl->getService<ISwapchain>();
 
+            assert(_logicalDevice != nullptr);
+            assert(_physicalDevice != nullptr);
+            assert(_swapChain != nullptr);
+
             RecreateDepthBuffer(_swapchain->swapChainExtent.width,
                                 _swapchain->swapChainExtent.height);
 
@@ -99,8 +103,10 @@ namespace Entropy
               return;
             }
           }
+
           void Begin(CommandBuffer commandBuffer, uint32_t imageIndex, int width,
                      int height);
+
           void End(CommandBuffer commandBuffer);
 
           void RecreateFrameBuffers(int width, int height, bool app)

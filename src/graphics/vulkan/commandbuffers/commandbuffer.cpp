@@ -6,14 +6,16 @@ using namespace Entropy::Graphics::Vulkan::CommandBuffers;
  * @brief Start recording one-time command buffer
  * @return (void)
  */
-void CommandBuffer::RecordOnce() {
+void CommandBuffer::RecordOnce()
+{
   assert(_commandBuffer != VK_NULL_HANDLE);
 
   VkCommandBufferBeginInfo beginInfo{};
   beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
   beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-  if (vkBeginCommandBuffer(_commandBuffer, &beginInfo) != VK_SUCCESS) {
+  if (vkBeginCommandBuffer(_commandBuffer, &beginInfo) != VK_SUCCESS)
+  {
     spdlog::warn(
         "[CommandBuffer] Error while start recording one-time command buffer.");
   }
@@ -23,7 +25,8 @@ void CommandBuffer::RecordOnce() {
  * @brief Start recording command buffer
  * @return (void)
  */
-void CommandBuffer::Record() {
+void CommandBuffer::Record()
+{
   assert(_commandBuffer != VK_NULL_HANDLE);
 
   VkCommandBufferBeginInfo beginInfo{};
@@ -31,7 +34,8 @@ void CommandBuffer::Record() {
   beginInfo.flags = 0;                  // Optional
   beginInfo.pInheritanceInfo = nullptr; // Optional
 
-  if (vkBeginCommandBuffer(_commandBuffer, &beginInfo) != VK_SUCCESS) {
+  if (vkBeginCommandBuffer(_commandBuffer, &beginInfo) != VK_SUCCESS)
+  {
     spdlog::warn("[CommandBuffer] Error while start recording command buffer.");
   }
 }
@@ -62,10 +66,12 @@ void CommandBuffer::Record() {
  * @brief End recording command buffer
  * @return (void)
  */
-void CommandBuffer::EndRecording() {
+void CommandBuffer::EndRecording()
+{
   assert(_commandBuffer != VK_NULL_HANDLE);
 
-  if (vkEndCommandBuffer(_commandBuffer) != VK_SUCCESS) {
+  if (vkEndCommandBuffer(_commandBuffer) != VK_SUCCESS)
+  {
     spdlog::warn("[CommandBuffer] Error while end recording.");
   }
 }
@@ -74,10 +80,12 @@ void CommandBuffer::EndRecording() {
  * @brief End one-time recording
  * @return (void)
  */
-void CommandBuffer::EndRecordingOnce() {
+void CommandBuffer::EndRecordingOnce()
+{
   assert(_commandBuffer != VK_NULL_HANDLE);
 
-  if (vkEndCommandBuffer(_commandBuffer) != VK_SUCCESS) {
+  if (vkEndCommandBuffer(_commandBuffer) != VK_SUCCESS)
+  {
     spdlog::warn("[CommandBuffer] Error while end recording once.");
   }
 }

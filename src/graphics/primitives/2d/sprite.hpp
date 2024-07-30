@@ -31,9 +31,9 @@ namespace Entropy
       public:
         Sprite(std::string path)
         {
-          // texture = textureFactory.CreateNormalTexture(path);
-          // vertexBuffer = bufferFactory.CreateVertexBuffer(vertices);
-          // indexBuffer = bufferFactory.CreateIndexBuffer(indices);
+          texture = std::make_shared<NormalTexture>(path);
+          vertexBuffer = std::make_shared<VertexBuffer>(vertices);
+          indexBuffer = std::make_shared<IndexBuffer<uint16_t>>(indices);
         }
 
         // Sprite(FT_Bitmap bitmap);

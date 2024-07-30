@@ -214,12 +214,11 @@ void Texture::TransitionImageLayout(VkImage image, VkImageLayout oldLayout,
   // Assert on parameters
   assert(image != VK_NULL_HANDLE);
 
-  // Create a new command buffer and start one-time recording
-  // auto commandBuffer =
-  //     new CommandBuffer(_vulkanBackend, _queueSync, _commandPool,
-  //                       VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+  // Create a new command buffer and start one - time recording
+  auto commandBuffer =
+      new CommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
 
-  // commandBuffer->RecordOnce();
+  commandBuffer->RecordOnce();
 
   // Create pipeline barrier
   VkImageMemoryBarrier barrier{};
@@ -262,23 +261,23 @@ void Texture::TransitionImageLayout(VkImage image, VkImageLayout oldLayout,
   }
 
   // Set the pipeline barrier
-  // vkCmdPipelineBarrier(commandBuffer->Get(), sourceStage, destinationStage, 0,
-  //                      0, nullptr, 0, nullptr, 1, &barrier);
+  vkCmdPipelineBarrier(commandBuffer->Get(), sourceStage, destinationStage, 0,
+                       0, nullptr, 0, nullptr, 1, &barrier);
 
-  // End one-time recording and add command buffer to queue
-  // commandBuffer->EndRecordingOnce();
-  // // _queueSync.commandBuffers.push_back(commandBuffer->Get());
+  // End one - time recording and add command buffer to queue
+  commandBuffer->EndRecordingOnce();
+  // _queueSync.commandBuffers.push_back(commandBuffer->Get());
 
-  // auto cmdBuf = commandBuffer->Get();
+  auto cmdBuf = commandBuffer->Get();
 
-  // VkSubmitInfo submitInfo{};
-  // submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-  // submitInfo.commandBufferCount = 1;
-  // submitInfo.pCommandBuffers = &cmdBuf;
-  // vkQueueSubmit(_vulkanBackend.logicalDevice.GetGraphicQueue(), 1, &submitInfo,
-  //               nullptr);
+  VkSubmitInfo submitInfo{};
+  submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+  submitInfo.commandBufferCount = 1;
+  submitInfo.pCommandBuffers = &cmdBuf;
+  vkQueueSubmit(_logicalDevice->GetGraphicQueue(), 1, &submitInfo,
+                nullptr);
 
-  // vkDeviceWaitIdle(_vulkanBackend.logicalDevice.Get());
+  vkDeviceWaitIdle(_logicalDevice->Get());
 }
 
 /**
@@ -299,10 +298,10 @@ void Texture::CopyBufferToImage(const VkBuffer buffer, const VkImage image,
   assert(height != 0);
 
   // Create a new command buffer and start one-time recording
-  // auto commandBuffer =
-  //     new CommandBuffer(_vulkanBackend, _queueSync, _commandPool,
-  //                       VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-  // commandBuffer->RecordOnce();
+  auto commandBuffer =
+      new CommandBuffer(
+          VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+  commandBuffer->RecordOnce();
 
   // Make the actual copy
   VkBufferImageCopy region{};
@@ -315,23 +314,23 @@ void Texture::CopyBufferToImage(const VkBuffer buffer, const VkImage image,
   region.imageSubresource.layerCount = 1;
   region.imageOffset = {0, 0, 0};
   region.imageExtent = {width, height, 1};
-  // vkCmdCopyBufferToImage(commandBuffer->Get(), buffer, image,
-  //                        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+  vkCmdCopyBufferToImage(commandBuffer->Get(), buffer, image,
+                         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
-  // End one-time recording and add command buffer to queue
-  // commandBuffer->EndRecordingOnce();
-  // // _queueSync.commandBuffers.push_back(commandBuffer->Get());
+  // End one - time recording and add command buffer to queue
+  commandBuffer->EndRecordingOnce();
+  // _queueSync.commandBuffers.push_back(commandBuffer->Get());
 
-  // auto cmdBuf = commandBuffer->Get();
+  auto cmdBuf = commandBuffer->Get();
 
-  // VkSubmitInfo submitInfo{};
-  // submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-  // submitInfo.commandBufferCount = 1;
-  // submitInfo.pCommandBuffers = &cmdBuf;
-  // vkQueueSubmit(_vulkanBackend.logicalDevice.GetGraphicQueue(), 1, &submitInfo,
-  //               nullptr);
+  VkSubmitInfo submitInfo{};
+  submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+  submitInfo.commandBufferCount = 1;
+  submitInfo.pCommandBuffers = &cmdBuf;
+  vkQueueSubmit(_logicalDevice->GetGraphicQueue(), 1, &submitInfo,
+                nullptr);
 
-  // vkDeviceWaitIdle(_vulkanBackend.logicalDevice.Get());
+  vkDeviceWaitIdle(_logicalDevice->Get());
 }
 
 /**
@@ -373,8 +372,8 @@ void Texture::CreateImage(const uint32_t width, const uint32_t height,
   imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
   // Create the image
-  // vmaCreateImage(_allocator.Get(), &imageInfo, &allocCreateInfo, &image,
-  //                &_allocation, nullptr);
+  vmaCreateImage(_allocator->Get(), &imageInfo, &allocCreateInfo, &image,
+                 &_allocation, nullptr);
 }
 
 /**

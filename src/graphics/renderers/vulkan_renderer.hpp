@@ -85,6 +85,7 @@ namespace Entropy
             _logicalDevice = sl->getService<ILogicalDevice>();
             _swapchain = sl->getService<ISwapchain>();
             _world = sl->getService<IWorld>();
+            _cameraManager = sl->getService<ICameraManager>();
 
             _renderPass = std::make_shared<RenderPass>();
             _renderPass->CreateFramebuffers(800, 800);
@@ -99,10 +100,8 @@ namespace Entropy
               _commandBuffers.push_back(CommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY));
             }
 
-            // UBO
             _UBO = std::make_unique<UniformBuffer>(sizeof(UboDataDynamic));
             _instanceDataBuffer = std::make_unique<StorageBuffer>(MAX_INSTANCE_COUNT * sizeof(InstanceData), nullptr);
-            // StagingBuffer
             stagingBuffer = std::make_shared<StagedBuffer>(800 * 800 * 4, nullptr, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
 
             // Update descriptorsets
@@ -259,6 +258,7 @@ namespace Entropy
                 .imageExtent = {static_cast<uint32_t>(width),
                                 static_cast<uint32_t>(height), 1},
             };
+
             vkCmdCopyImageToBuffer(_commandBuffers[_currentFrame].Get(),
                                    _renderPass->_swapChainTextures[0]->_textureImage,
                                    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
@@ -338,7 +338,6 @@ namespace Entropy
 
           std::shared_ptr<StagedBuffer> stagingBuffer;
           Swapchain _swapChain;
-          CameraManager _cameraManager;
 
         private:
           flecs::query<Components::Position> _sortQuery;
@@ -365,6 +364,7 @@ namespace Entropy
           std::shared_ptr<ILogicalDevice> _logicalDevice;
           std::shared_ptr<ISwapchain> _swapchain;
           std::shared_ptr<IWorld> _world;
+          std::shared_ptr<ICameraManager> _cameraManager;
         };
       } // namespace Renderers
     } // namespace Vulkan
