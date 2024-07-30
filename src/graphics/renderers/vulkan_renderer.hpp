@@ -14,8 +14,6 @@
 
 #include <data/ubo.hpp>
 #include <ecs/world.hpp>
-#include <factories/vulkan/bufferfactory.hpp>
-#include <factories/vulkan/pipelinefactory.hpp>
 #include <graphics/vulkan/buffers/stagedbuffer.hpp>
 #include <graphics/vulkan/buffers/storagebuffer.hpp>
 #include <graphics/vulkan/buffers/uniformbuffer.hpp>
@@ -25,7 +23,6 @@
 #include <graphics/vulkan/swapchains/swapchain.hpp>
 #include <graphics/vulkan/synchronization/queuesync.hpp>
 #include <graphics/vulkan/synchronization/synchronizer.hpp>
-#include <graphics/vulkan/vulkan_backend.hpp>
 #include <obj/model.hpp>
 
 #include <ecs/components/renderable.hpp>
@@ -48,7 +45,6 @@ using namespace Entropy::Graphics::Vulkan::Synchronization;
 using namespace Entropy::Graphics::Vulkan::Descriptorsets;
 using namespace Entropy::Graphics::Vulkan::Swapchains;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
-using namespace Entropy::Factories::Vulkan;
 using namespace Entropy::Data;
 using namespace Entropy::ECS;
 
@@ -81,38 +77,32 @@ namespace Entropy
            * @param cp CommandPool
            * @param sc Swapchain
            */
-          VulkanRenderer(Vulkan::VulkanBackend vbe, QueueSync queueSync,
-                         RenderPass renderPass, PipelineFactory pipelineFactory,
-                         BufferFactory bf, CommandPool cp, Swapchain sc, World world,
-                         Allocator allocator, CameraManager cm)
-
-              : _backend{vbe}, _queuSync{queueSync}, _renderPass{renderPass},
-                _pipelineFactory{pipelineFactory}, _bufferFactory{bf}, _commandPool{cp},
-                _swapChain{sc}, _world{world}, _allocator{allocator}, _cameraManager{
-                                                                          cm}
+          VulkanRenderer()
           {
+            ServiceLocator *sl = ServiceLocator::GetInstance();
 
-            _renderPass.CreateFramebuffers(800, 800);
+            _allocator = sl->getService<IAllocator>();
+            _logicalDevice = sl->getService<ILogicalDevice>();
+            _swapchain = sl->getService<ISwapchain>();
+            _world = sl->getService<IWorld>();
+            _cameraManager = sl->getService<ICameraManager>();
+
+            _renderPass = std::make_shared<RenderPass>();
+            _renderPass->CreateFramebuffers(800, 800);
 
             // Static Pipeline creation
-            _staticPipeline = _pipelineFactory.CreateStaticPipeline();
+            _staticPipeline = std::make_unique<StaticPipeline>(_renderPass);
 
-            // Synchronizer
-            _synchronizer =
-                new Synchronizer(vbe.logicalDevice, MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+            _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
 
-            // Command buffers
             for (uint32_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
             {
-              _commandBuffers.push_back(CommandBuffer(_backend, _queuSync, _commandPool,
-                                                      VK_COMMAND_BUFFER_LEVEL_PRIMARY));
+              _commandBuffers.push_back(CommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY));
             }
 
-            // UBO
-            _UBO = _bufferFactory.CreateUniformBuffer(sizeof(UboDataDynamic));
-
-            _instanceDataBuffer = _bufferFactory.CreateStorageBuffer(
-                MAX_INSTANCE_COUNT * sizeof(InstanceData), nullptr);
+            _UBO = std::make_unique<UniformBuffer>(sizeof(UboDataDynamic));
+            _instanceDataBuffer = std::make_unique<StorageBuffer>(MAX_INSTANCE_COUNT * sizeof(InstanceData), nullptr);
+            stagingBuffer = std::make_shared<StagedBuffer>(800 * 800 * 4, nullptr, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
 
             // Update descriptorsets
             for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++)
@@ -145,27 +135,21 @@ namespace Entropy
               descriptorWrites[1].descriptorCount = 1;
               descriptorWrites[1].pBufferInfo = &objectBufferInfo;
 
-              vkUpdateDescriptorSets(_backend.logicalDevice.Get(),
+              vkUpdateDescriptorSets(_logicalDevice->Get(),
                                      static_cast<uint32_t>(descriptorWrites.size()),
                                      descriptorWrites.data(), 0, nullptr);
             }
 
-            // StagingBuffer
-            stagingBuffer = _bufferFactory.CreateStagingBuffer(
-                800 * 800 * 4, nullptr, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
-
             // Create a query for the Position component with a custom sorting function
-            _sortQuery = world.gameWorld->query_builder<Components::Position>()
-                             .order_by<Components::Position>(compare_zIndex)
-                             .build();
+            _sortQuery = _world->Get()->query_builder<Components::Position>().order_by<Components::Position>(compare_zIndex).build();
 
-            timer = new Timing::Timer(1.0);
-            timer->Start();
+            _timer = std::make_unique<Timing::Timer>(1.0);
+            _timer->Start();
 
-            _batchedVertices = _bufferFactory.CreateVertexBufferWithSize(
-                MAX_INSTANCE_COUNT * sizeof(Vertex));
-            _batchedIndices = _bufferFactory.CreateIndexBufferWithSize<uint16_t>(
-                MAX_INSTANCE_COUNT * sizeof(uint16_t));
+            // _batchedVertices = _bufferFactory.CreateVertexBufferWithSize(
+            //     MAX_INSTANCE_COUNT * sizeof(Vertex));
+            // _batchedIndices = _bufferFactory.CreateIndexBufferWithSize<uint16_t>(
+            //     MAX_INSTANCE_COUNT * sizeof(uint16_t));
           }
 
           /**
@@ -202,7 +186,7 @@ namespace Entropy
           void PresentForEditor(int width, int height)
           {
 
-            _renderPass.End(_commandBuffers[_currentFrame]);
+            _renderPass->End(_commandBuffers[_currentFrame]);
 
             VkImageLayout oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
             VkImageLayout newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
@@ -216,7 +200,7 @@ namespace Entropy
                 .newLayout = newLayout,
                 .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
                 .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-                .image = _renderPass._swapChainTextures[0]->_textureImage,
+                .image = _renderPass->_swapChainTextures[0]->_textureImage,
                 .subresourceRange =
                     {
                         .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
@@ -274,8 +258,9 @@ namespace Entropy
                 .imageExtent = {static_cast<uint32_t>(width),
                                 static_cast<uint32_t>(height), 1},
             };
+
             vkCmdCopyImageToBuffer(_commandBuffers[_currentFrame].Get(),
-                                   _renderPass._swapChainTextures[0]->_textureImage,
+                                   _renderPass->_swapChainTextures[0]->_textureImage,
                                    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
                                    stagingBuffer->GetVulkanBuffer(), 1, &region);
 
@@ -290,20 +275,20 @@ namespace Entropy
                 .signalSemaphoreCount = 0,
             };
 
-            if (vkQueueSubmit(_backend.logicalDevice.GetGraphicQueue(), 1, &submitInfo,
+            if (vkQueueSubmit(_logicalDevice->GetGraphicQueue(), 1, &submitInfo,
                               nullptr) != VK_SUCCESS)
             {
               exit(EXIT_FAILURE);
             }
 
-            vkDeviceWaitIdle(_backend.logicalDevice.Get());
+            vkDeviceWaitIdle(_logicalDevice->Get());
           }
 
           void PresentForApplication()
           {
             // End renderpass and commandbuffer recording
             //     // End renderpass and commandbuffer recording
-            _renderPass.End(_commandBuffers[_currentFrame]);
+            //_renderPass.End(_commandBuffers[_currentFrame]);
             _commandBuffers[_currentFrame].EndRecording();
 
             auto cmdBuffer = _commandBuffers[_currentFrame].Get();
@@ -328,12 +313,12 @@ namespace Entropy
             submitInfo.pSignalSemaphores = signalSemaphores;
 
             // Submit queue
-            if (vkQueueSubmit(_backend.logicalDevice.GetGraphicQueue(), 1, &submitInfo,
-                              _synchronizer->GetFences()[_currentFrame]) !=
-                VK_SUCCESS)
-            {
-              exit(EXIT_FAILURE);
-            }
+            // if (vkQueueSubmit(_backend.logicalDevice.GetGraphicQueue(), 1, &submitInfo,
+            //                   _synchronizer->GetFences()[_currentFrame]) !=
+            //     VK_SUCCESS)
+            // {
+            //   exit(EXIT_FAILURE);
+            // }
 
             // PresentInfo
             VkPresentInfoKHR presentInfo{};
@@ -348,53 +333,38 @@ namespace Entropy
             presentInfo.pImageIndices = &imageIndex;
 
             // Present
-            vkQueuePresentKHR(_backend.logicalDevice.GetGraphicQueue(), &presentInfo);
+            // vkQueuePresentKHR(_backend.logicalDevice.GetGraphicQueue(), &presentInfo);
           }
 
           std::shared_ptr<StagedBuffer> stagingBuffer;
-          Vulkan::VulkanBackend _backend;
           Swapchain _swapChain;
-          RenderPass _renderPass;
-          CameraManager _cameraManager;
-
-          std::shared_ptr<VertexBuffer> _batchedVertices;
-          std::shared_ptr<IndexBuffer<uint16_t>> _batchedIndices;
-          std::vector<Vertex> _vertices;
-          std::vector<uint16_t> _indices;
-          BufferFactory _bufferFactory;
-          Allocator _allocator;
 
         private:
           flecs::query<Components::Position> _sortQuery;
 
-          Timing::Timer *timer;
+          std::unique_ptr<Timing::Timer> _timer;
 
           uint32_t _currentFrame = 0;
           uint32_t imageIndex;
-          int x = 0.0;
 
           // Command Buffers
           std::vector<CommandBuffer> _commandBuffers;
           // Dynamic UBO
-          std::shared_ptr<UniformBuffer> _UBO;
+          std::unique_ptr<UniformBuffer> _UBO;
 
-          std::shared_ptr<StorageBuffer> _instanceDataBuffer;
+          std::unique_ptr<StorageBuffer> _instanceDataBuffer;
           // Pipelines
-          StaticPipeline *_staticPipeline;
+          std::unique_ptr<StaticPipeline> _staticPipeline;
           // Synchronizer
-          Synchronizer *_synchronizer;
+          std::unique_ptr<Synchronizer> _synchronizer;
+          std::shared_ptr<RenderPass> _renderPass;
 
           // Dependencies
-
-          QueueSync _queuSync;
-
-          PipelineFactory _pipelineFactory;
-
-          CommandPool _commandPool;
-
-          World _world;
-
-          VkSampler _sampler;
+          std::shared_ptr<IAllocator> _allocator;
+          std::shared_ptr<ILogicalDevice> _logicalDevice;
+          std::shared_ptr<ISwapchain> _swapchain;
+          std::shared_ptr<IWorld> _world;
+          std::shared_ptr<ICameraManager> _cameraManager;
         };
       } // namespace Renderers
     } // namespace Vulkan

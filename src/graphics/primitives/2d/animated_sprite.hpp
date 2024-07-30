@@ -1,7 +1,5 @@
 #pragma once
 
-#include "factories/vulkan/bufferfactory.hpp"
-#include "factories/vulkan/texturefactory.hpp"
 #include "graphics/vulkan/textures/normal_texture.hpp"
 #ifdef BUILD_FOR_ANDROID
 #include <android/asset_manager.h>
@@ -21,59 +19,63 @@ using namespace Entropy::Scripting;
 using namespace Entropy::Graphics::Vulkan::DescriptorPools;
 using namespace Entropy::Data;
 
-namespace Entropy {
-namespace Graphics {
-namespace Primitives {
+namespace Entropy
+{
+  namespace Graphics
+  {
+    namespace Primitives
+    {
 
-struct AnimatedSprite {
-public:
-  AnimatedSprite(Factories::Vulkan::BufferFactory bufferFactory,
-                 Factories::Vulkan::TextureFactory textureFactory,
-                 std::vector<std::string> paths) {
+      struct AnimatedSprite
+      {
+      public:
+        AnimatedSprite(std::vector<std::string> paths)
+        {
 
-    for (auto path : paths) {
-      textures.push_back(textureFactory.CreateNormalTexture(
-          Filesystem::GetSpritesDir() + path));
-    }
+          // for (auto path : paths)
+          // {
+          //   textures.push_back(textureFactory.CreateNormalTexture(
+          //       Filesystem::GetSpritesDir() + path));
+          // }
 
-    vertexBuffer = bufferFactory.CreateVertexBuffer(vertices);
-    indexBuffer = bufferFactory.CreateIndexBuffer(indices);
-  }
+          // vertexBuffer = bufferFactory.CreateVertexBuffer(vertices);
+          // indexBuffer = bufferFactory.CreateIndexBuffer(indices);
+        }
 
-  std::vector<uint16_t> indices = {0, 1, 2, 2, 3, 0};
-  std::vector<Vertex> vertices = {{{-1.0f, -1.0f, 0.0f},
-                                   {1.0f, 1.0f, 1.0f},
-                                   {1.0f, 0.0f},
-                                   {0.0, 0.0},
-                                   {0.0, 0.0, 0.0, 0.0},
-                                   {0.0, 0.0, 0.0, 0.0},
-                                   {0.0, 1.0, 0.0, 0.0}},
-                                  {{1.0f, -1.0f, 0.0f},
-                                   {1.0f, 1.0f, 1.0f},
-                                   {0.0f, 0.0f},
-                                   {0.0, 0.0},
-                                   {0.0, 0.0, 0.0, 0.0},
-                                   {0.0, 0.0, 0.0, 0.0},
-                                   {0.0, 1.0, 0.0, 0.0}},
-                                  {{1.0f, 1.0f, 0.0f},
-                                   {1.0f, 1.0f, 1.0f},
-                                   {0.0f, 1.0f},
-                                   {0.0, 0.0},
-                                   {0.0, 0.0, 0.0, 0.0},
-                                   {0.0, 0.0, 0.0, 0.0},
-                                   {0.0, 1.0, 0.0, 0.0}},
-                                  {{-1.0f, 1.0f, 0.0f},
-                                   {1.0f, 1.0f, 1.0f},
-                                   {1.0f, 1.0f},
-                                   {0.0, 0.0},
-                                   {0.0, 0.0, 0.0, 0.0},
-                                   {0.0, 0.0, 0.0, 0.0},
-                                   {0.0, 1.0, 0.0, 0.0}}};
+        std::vector<uint16_t> indices = {0, 1, 2, 2, 3, 0};
+        std::vector<Vertex> vertices = {{{-1.0f, -1.0f, 0.0f},
+                                         {1.0f, 1.0f, 1.0f},
+                                         {1.0f, 0.0f},
+                                         {0.0, 0.0},
+                                         {0.0, 0.0, 0.0, 0.0},
+                                         {0.0, 0.0, 0.0, 0.0},
+                                         {0.0, 1.0, 0.0, 0.0}},
+                                        {{1.0f, -1.0f, 0.0f},
+                                         {1.0f, 1.0f, 1.0f},
+                                         {0.0f, 0.0f},
+                                         {0.0, 0.0},
+                                         {0.0, 0.0, 0.0, 0.0},
+                                         {0.0, 0.0, 0.0, 0.0},
+                                         {0.0, 1.0, 0.0, 0.0}},
+                                        {{1.0f, 1.0f, 0.0f},
+                                         {1.0f, 1.0f, 1.0f},
+                                         {0.0f, 1.0f},
+                                         {0.0, 0.0},
+                                         {0.0, 0.0, 0.0, 0.0},
+                                         {0.0, 0.0, 0.0, 0.0},
+                                         {0.0, 1.0, 0.0, 0.0}},
+                                        {{-1.0f, 1.0f, 0.0f},
+                                         {1.0f, 1.0f, 1.0f},
+                                         {1.0f, 1.0f},
+                                         {0.0, 0.0},
+                                         {0.0, 0.0, 0.0, 0.0},
+                                         {0.0, 0.0, 0.0, 0.0},
+                                         {0.0, 1.0, 0.0, 0.0}}};
 
-  std::vector<std::shared_ptr<NormalTexture>> textures;
-  std::shared_ptr<VertexBuffer> vertexBuffer;
-  std::shared_ptr<IndexBuffer<uint16_t>> indexBuffer;
-};
-} // namespace Primitives
-} // namespace Graphics
+        std::vector<std::shared_ptr<NormalTexture>> textures;
+        std::shared_ptr<VertexBuffer> vertexBuffer;
+        std::shared_ptr<IndexBuffer<uint16_t>> indexBuffer;
+      };
+    } // namespace Primitives
+  } // namespace Graphics
 } // namespace Entropy

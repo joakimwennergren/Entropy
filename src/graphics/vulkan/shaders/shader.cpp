@@ -1,7 +1,6 @@
 #include "shader.hpp"
-#include "graphics/vulkan/vulkan_backend.hpp"
 
-using namespace Symbios::Graphics::Vulkan::Shaders;
+using namespace Entropy::Graphics::Vulkan::Shaders;
 
 /*
 
@@ -17,28 +16,33 @@ Shader::Shader(std::shared_ptr<ServiceLocator> serviceLocator,
 
 */
 
-Shader::Shader(Entropy::Graphics::Vulkan::VulkanBackend backend,
-               const std::string vert, const std::string frag) {
+Shader::Shader(
+    const std::string vert, const std::string frag)
+{
 
   this->_vertCode = this->ReadFile(vert);
   this->_fragCode = this->ReadFile(frag);
 
-  if (this->_vertCode.size() > 0 && this->_fragCode.size() > 0) {
-    this->_shaderModuleVert = this->BuildShader(backend, this->_vertCode);
-    this->_shaderModuleFrag = this->BuildShader(backend, this->_fragCode);
+  if (this->_vertCode.size() > 0 && this->_fragCode.size() > 0)
+  {
+    this->_shaderModuleVert = this->BuildShader(this->_vertCode);
+    this->_shaderModuleFrag = this->BuildShader(this->_fragCode);
   }
 }
 
-Shader::~Shader() {
+Shader::~Shader()
+{
   // vkDestroyShaderModule(_logicalDevice->Get(), this->_shaderModuleVert,
   // nullptr); vkDestroyShaderModule(_logicalDevice->Get(),
   // this->_shaderModuleFrag, nullptr);
 }
 
-std::vector<char> Shader::ReadFile(std::string filename) {
+std::vector<char> Shader::ReadFile(std::string filename)
+{
   std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
-  if (!file.is_open()) {
+  if (!file.is_open())
+  {
     exit(EXIT_FAILURE);
   }
 
@@ -54,8 +58,12 @@ std::vector<char> Shader::ReadFile(std::string filename) {
 }
 
 VkShaderModule
-Shader::BuildShader(Entropy::Graphics::Vulkan::VulkanBackend backend,
-                    std::vector<char> code) {
+Shader::BuildShader(
+    std::vector<char> code)
+{
+  ServiceLocator *sl = ServiceLocator::GetInstance();
+  auto logicalDevice = sl->getService<ILogicalDevice>();
+
   VkShaderModuleCreateInfo createInfo{};
   createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
   createInfo.codeSize = code.size();
@@ -63,15 +71,23 @@ Shader::BuildShader(Entropy::Graphics::Vulkan::VulkanBackend backend,
 
   VkShaderModule shaderModule;
 
-  if (vkCreateShaderModule(backend.logicalDevice.Get(), &createInfo, nullptr,
-                           &shaderModule) != VK_SUCCESS) {
+  if (vkCreateShaderModule(logicalDevice->Get(), &createInfo, nullptr,
+                           &shaderModule) != VK_SUCCESS)
+  {
     exit(EXIT_FAILURE);
   }
 
   return shaderModule;
 }
 
-VkShaderModule Shader::BuildShader(uint32_t *code, uint32_t size) {
+VkShaderModule Shader::BuildShader(uint32_t *code, uint32_t size)
+{
+
+  ServiceLocator *sl = ServiceLocator::GetInstance();
+  auto logicalDevice = sl->getService<ILogicalDevice>();
+
+  assert(logicalDevice != nullptr);
+
   VkShaderModuleCreateInfo createInfo{};
   createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
   createInfo.codeSize = size;
@@ -79,8 +95,9 @@ VkShaderModule Shader::BuildShader(uint32_t *code, uint32_t size) {
 
   VkShaderModule shaderModule;
 
-  if (vkCreateShaderModule(_logicalDevice->Get(), &createInfo, nullptr,
-                           &shaderModule) != VK_SUCCESS) {
+  if (vkCreateShaderModule(logicalDevice->Get(), &createInfo, nullptr,
+                           &shaderModule) != VK_SUCCESS)
+  {
     exit(EXIT_FAILURE);
   }
 

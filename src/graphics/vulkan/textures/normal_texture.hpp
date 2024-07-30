@@ -11,7 +11,6 @@
 #include "tiny_gltf.h"
 #include <config.hpp>
 
-#include <factories/vulkan/bufferfactory.hpp>
 #include <graphics/vulkan/buffers/buffer.hpp>
 #include <graphics/vulkan/buffers/stagedbuffer.hpp>
 #include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
@@ -21,7 +20,6 @@
 #include <graphics/vulkan/synchronization/queuesync.hpp>
 #include <graphics/vulkan/textures/texture.hpp>
 #include <graphics/vulkan/utilities/utilities.hpp>
-#include <graphics/vulkan/vulkan_backend.hpp>
 
 #ifdef BUILD_FOR_ANDROID
 #include <android/asset_manager.h>
@@ -50,10 +48,7 @@ namespace Entropy
           VkSampler _textureSampler;
           VkDescriptorSetLayout _descriptorSetLayout;
 
-          NormalTexture(VulkanBackend vbe, QueueSync qs, Allocator allocator,
-                        Factories::Vulkan::BufferFactory bf, CommandPool cp,
-                        DescriptorPool dp, std::string path)
-              : Texture(vbe, qs, allocator, bf, cp, dp)
+          NormalTexture(std::string path) : Texture()
           {
 
             assert(path.length() != 0);
@@ -61,7 +56,7 @@ namespace Entropy
             // Load the image pixels
             int texWidth, texHeight, texChannels;
 
-            // stbi_set_flip_vertically_on_load(true);
+            stbi_set_flip_vertically_on_load(true);
 
             stbi_uc *pixels = stbi_load(path.c_str(), &texWidth, &texHeight,
                                         &texChannels, STBI_rgb_alpha);
@@ -70,15 +65,15 @@ namespace Entropy
 
             assert(pixels != nullptr);
 
-            auto buffer = bf.CreateStagingBuffer(imageSize, pixels,
-                                                 VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+            auto buffer = StagedBuffer(imageSize, pixels,
+                                       VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
             // Create a buffer and free pixels
             stbi_image_free(pixels);
-            auto buf = buffer->GetVulkanBuffer();
+            auto buf = buffer.GetVulkanBuffer();
 
             VkFormat colorFormat = GetColorFormat();
 
-            // Create, transition and copy the image
+            // // Create, transition and copy the image
             CreateImage(texWidth, texHeight, colorFormat, VK_IMAGE_TILING_OPTIMAL,
                         VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
                         _textureImage);
@@ -92,14 +87,14 @@ namespace Entropy
             TransitionImageLayout(_textureImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                                   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-            // Create and set the image view
-            auto imageView = ImageView(vbe, _textureImage, colorFormat);
+            // // Create and set the image view
+            auto imageView = ImageView(_textureImage, colorFormat);
             _imageView = imageView.Get();
 
-            // Get required depenencies
+            // // Get required depenencies
 
             VkPhysicalDeviceProperties properties{};
-            vkGetPhysicalDeviceProperties(_vulkanBackend.physicalDevice.Get(),
+            vkGetPhysicalDeviceProperties(_physicalDevice->Get(),
                                           &properties);
 
             VkSamplerCreateInfo samplerInfo{};
@@ -121,7 +116,7 @@ namespace Entropy
             samplerInfo.minLod = 0.0f;
             samplerInfo.maxLod = 0.0f;
 
-            if (vkCreateSampler(_vulkanBackend.logicalDevice.Get(), &samplerInfo,
+            if (vkCreateSampler(_logicalDevice->Get(), &samplerInfo,
                                 nullptr, &_textureSampler) != VK_SUCCESS)
             {
               throw std::runtime_error("failed to create texture sampler!");
@@ -142,7 +137,7 @@ namespace Entropy
             layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
             layoutInfo.pBindings = bindings.data();
 
-            if (vkCreateDescriptorSetLayout(_vulkanBackend.logicalDevice.Get(),
+            if (vkCreateDescriptorSetLayout(_logicalDevice->Get(),
                                             &layoutInfo, nullptr,
                                             &_descriptorSetLayout) != VK_SUCCESS)
             {
@@ -153,11 +148,11 @@ namespace Entropy
 
             VkDescriptorSetAllocateInfo allocInfo{};
             allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-            allocInfo.descriptorPool = dp.Get();
-            allocInfo.descriptorSetCount = 1; // MAX_CONCURRENT_FRAMES_IN_FLIGHT;
+            allocInfo.descriptorPool = _descriptorPool->Get();
+            allocInfo.descriptorSetCount = 1;
             allocInfo.pSetLayouts = layouts.data();
 
-            if (vkAllocateDescriptorSets(_vulkanBackend.logicalDevice.Get(), &allocInfo,
+            if (vkAllocateDescriptorSets(_logicalDevice->Get(), &allocInfo,
                                          &_descriptorSet) != VK_SUCCESS)
             {
               throw std::runtime_error("failed to allocate descriptor sets!");
@@ -179,7 +174,7 @@ namespace Entropy
             descriptorWrites[0].descriptorCount = 1;
             descriptorWrites[0].pImageInfo = &imageInfo;
 
-            vkUpdateDescriptorSets(_vulkanBackend.logicalDevice.Get(),
+            vkUpdateDescriptorSets(_logicalDevice->Get(),
                                    static_cast<uint32_t>(descriptorWrites.size()),
                                    descriptorWrites.data(), 0, nullptr);
           }

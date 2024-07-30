@@ -162,8 +162,3 @@ set(INSTALL_CMAKE_FILES OFF)
 add_subdirectory(external/bullet3)
 
 add_subdirectory(external/tinyobjloader)
-
-set(KANGARU_INSTALL FALSE)
-set(KANGARU_EXPORT FALSE)
-set(KANGARU_REVERSE_DESTRUCTION TRUE)
-add_subdirectory(external/kangaru)

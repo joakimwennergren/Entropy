@@ -1,12 +1,13 @@
 #pragma once
 
-#include "graphics/vulkan/devices/logical_device.hpp"
-#include "graphics/vulkan/devices/physical_device.hpp"
-#include "graphics/vulkan/instances/vk_instance.hpp"
+#include <graphics/vulkan/instances/ivk_instance.hpp>
+#include <graphics/vulkan/devices/ilogical_device.hpp>
+#include <graphics/vulkan/devices/iphysical_device.hpp>
+
+#include "iallocator.hpp"
 #include "spdlog/spdlog.h"
 #include "vk_mem_alloc.h"
-
-using namespace Entropy::Graphics::Vulkan::Instances;
+#include <servicelocators/servicelocator.hpp>
 
 namespace Entropy
 {
@@ -16,13 +17,18 @@ namespace Entropy
     {
       namespace Memory
       {
-
-        struct Allocator
+        struct Allocator : public ServiceBase<IAllocator>
         {
-
-          Allocator(VulkanInstance i, PhysicalDevice pd, LogicalDevice ld)
-              : _instance{i}, _physicalDevice{pd}, _logicalDevice{ld}
+          Allocator()
           {
+            ServiceLocator *sl = ServiceLocator::GetInstance();
+            auto vulkanInstance = sl->getService<IVulkanInstance>();
+            auto physicalDevice = sl->getService<IPhysicalDevice>();
+            auto logicalDevice = sl->getService<ILogicalDevice>();
+
+            assert(vulkanInstance == nullptr);
+            assert(physicalDevice == nullptr);
+            assert(logicalDevice == nullptr);
 
             VmaVulkanFunctions vulkanFunctions = {};
             vulkanFunctions.vkGetInstanceProcAddr = &vkGetInstanceProcAddr;
@@ -31,9 +37,9 @@ namespace Entropy
             VmaAllocatorCreateInfo allocatorCreateInfo = {};
             allocatorCreateInfo.flags = VMA_ALLOCATOR_CREATE_EXT_MEMORY_BUDGET_BIT;
             allocatorCreateInfo.vulkanApiVersion = VK_API_VERSION_1_3;
-            allocatorCreateInfo.physicalDevice = _physicalDevice.Get();
-            allocatorCreateInfo.device = _logicalDevice.Get();
-            allocatorCreateInfo.instance = _instance.Get();
+            allocatorCreateInfo.physicalDevice = physicalDevice->Get();
+            allocatorCreateInfo.device = logicalDevice->Get();
+            allocatorCreateInfo.instance = vulkanInstance->Get();
             allocatorCreateInfo.pVulkanFunctions = &vulkanFunctions;
 
             if (vmaCreateAllocator(&allocatorCreateInfo, &_allocator) != VK_SUCCESS)
@@ -42,16 +48,12 @@ namespace Entropy
             }
           }
 
-          //~Allocator() { vmaDestroyAllocator(_allocator); }
+          ~Allocator() { vmaDestroyAllocator(_allocator); }
 
-          inline VmaAllocator Get() { return _allocator; };
-
-          VmaAllocator _allocator = VK_NULL_HANDLE;
+          inline VmaAllocator Get() { return _allocator; }
 
         private:
-          VulkanInstance _instance;
-          Devices::PhysicalDevice _physicalDevice;
-          Devices::LogicalDevice _logicalDevice;
+          VmaAllocator _allocator = VK_NULL_HANDLE;
         };
       } // namespace Memory
     } // namespace Vulkan

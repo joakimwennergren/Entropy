@@ -8,27 +8,32 @@
 
 #include <graphics/vulkan/queuefamilies/queuefamily.hpp>
 #include <graphics/vulkan/surfaces/surface.hpp>
-#include <graphics/vulkan/vulkan_backend.hpp>
+#include <graphics/vulkan/devices/ilogical_device.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Surfaces;
 using namespace Entropy::Graphics::Vulkan::QueueFamilies;
 
-namespace Entropy {
-namespace Graphics {
-namespace Vulkan {
-namespace ImageViews {
-class ImageView {
-public:
-  ImageView() = default;
-  ImageView(VulkanBackend vkBackend, VkImage image, VkFormat format);
-  ImageView(VulkanBackend vkBackend, VkImage depthImage, VkFormat format,
-            uint32_t flags);
-  inline VkImageView Get() { return _imageView; };
+namespace Entropy
+{
+  namespace Graphics
+  {
+    namespace Vulkan
+    {
+      namespace ImageViews
+      {
+        class ImageView
+        {
+        public:
+          ImageView() = default;
+          ImageView(VkImage image, VkFormat format);
+          ImageView(VkImage depthImage, VkFormat format,
+                    uint32_t flags);
+          inline VkImageView Get() { return _imageView; };
 
-private:
-  VkImageView _imageView;
-};
-} // namespace ImageViews
-} // namespace Vulkan
-} // namespace Graphics
+        private:
+          VkImageView _imageView;
+        };
+      } // namespace ImageViews
+    } // namespace Vulkan
+  } // namespace Graphics
 } // namespace Entropy

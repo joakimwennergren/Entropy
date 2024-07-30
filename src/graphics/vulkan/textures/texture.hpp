@@ -1,9 +1,6 @@
 #pragma once
 
-#include "factories/vulkan/bufferfactory.hpp"
 #include "graphics/vulkan/commandpools/commandpool.hpp"
-#include "graphics/vulkan/vulkan_backend.hpp"
-#include "vulkan/vulkan_core.h"
 #include <string>
 
 #include <spdlog/spdlog.h>
@@ -13,7 +10,9 @@
 #include FT_FREETYPE_H
 
 #include "config.hpp"
-#include "tiny_gltf.h"
+
+#include <graphics/vulkan/devices/ilogical_device.hpp>
+#include <graphics/vulkan/devices/iphysical_device.hpp>
 
 #include <graphics/vulkan/buffers/buffer.hpp>
 #include <graphics/vulkan/buffers/stagedbuffer.hpp>
@@ -51,19 +50,20 @@ namespace Entropy
         class Texture
         {
         public:
-          Texture(VulkanBackend vbe, QueueSync qs, Allocator allocator,
-                  Factories::Vulkan::BufferFactory bf, CommandPool cp,
-                  DescriptorPool dp)
-              : _vulkanBackend{vbe}, _queueSync{qs}, _allocator{allocator},
-                _bufferFactory{bf}, _commandPool{cp}, _descriptorPool{dp}
+          Texture()
           {
+            ServiceLocator *sl = ServiceLocator::GetInstance();
+            _physicalDevice = sl->getService<IPhysicalDevice>();
+            _logicalDevice = sl->getService<ILogicalDevice>();
+            _descriptorPool = sl->getService<IDescriptorPool>();
+            _allocator = sl->getService<IAllocator>();
           }
 
           ~Texture()
           {
-            vkDeviceWaitIdle(_vulkanBackend.logicalDevice.Get());
-            vkDestroyImageView(_vulkanBackend.logicalDevice.Get(), _imageView, nullptr);
-            vkDestroyImage(_vulkanBackend.logicalDevice.Get(), _textureImage, nullptr);
+            // vkDeviceWaitIdle(_vulkanBackend.logicalDevice.Get());
+            // vkDestroyImageView(_vulkanBackend.logicalDevice.Get(), _imageView, nullptr);
+            // vkDestroyImage(_vulkanBackend.logicalDevice.Get(), _textureImage, nullptr);
             // if(_descriptorSet != nullptr)
             // {
             //   vkFreeDescriptorSets(_vulkanBackend.logicalDevice.Get(),
@@ -81,8 +81,6 @@ namespace Entropy
           // *ktxTexture);
 
           void CreateTextureImageFromBuffer(FT_Bitmap bitmap);
-
-          void CreateTextureFromGLTFImage(tinygltf::Image &gltfimage);
 
 #ifdef BUILD_FOR_ANDROID
           void CreateTextureImage(std::string path, AAssetManager *assetManager);
@@ -104,14 +102,12 @@ namespace Entropy
           VkImageView _imageView = VK_NULL_HANDLE;
           VmaAllocation _allocation = VK_NULL_HANDLE;
 
-          VulkanBackend _vulkanBackend;
-          QueueSync _queueSync;
-          Allocator _allocator;
-          Factories::Vulkan::BufferFactory _bufferFactory;
-          CommandPool _commandPool;
-          DescriptorPool _descriptorPool;
-
           VkDescriptorSet _descriptorSet;
+
+          std::shared_ptr<IPhysicalDevice> _physicalDevice;
+          std::shared_ptr<ILogicalDevice> _logicalDevice;
+          std::shared_ptr<IDescriptorPool> _descriptorPool;
+          std::shared_ptr<IAllocator> _allocator;
         };
       } // namespace Textures
     } // namespace Vulkan

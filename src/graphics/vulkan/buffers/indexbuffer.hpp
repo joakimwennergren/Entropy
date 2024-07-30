@@ -1,52 +1,59 @@
 #pragma once
 
 #include <graphics/vulkan/buffers/buffer.hpp>
-#include <graphics/vulkan/vulkan_backend.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Buffers;
 using namespace Entropy::Graphics::Vulkan;
 
-namespace Entropy {
-namespace Graphics {
-namespace Vulkan {
-namespace Buffers {
+namespace Entropy
+{
+  namespace Graphics
+  {
+    namespace Vulkan
+    {
+      namespace Buffers
+      {
 
-template <class T> struct IndexBuffer : public Buffer {
-  /**
-   * @brief Constructor for indexbuffer
-   * @param backend VulkanBackend
-   * @param indices T indices
-   */
-  IndexBuffer(VulkanBackend backend, std::vector<T> indices) : Buffer(backend) {
+        template <class T>
+        struct IndexBuffer : public Buffer
+        {
+          /**
+           * @brief Constructor for indexbuffer
+           * @param backend VulkanBackend
+           * @param indices T indices
+           */
+          IndexBuffer(std::vector<T> indices) : Buffer()
+          {
 
-    VkDeviceSize bufferSize = sizeof(T) * indices.size();
+            VkDeviceSize bufferSize = sizeof(T) * indices.size();
 
-    assert(bufferSize != 0);
+            assert(bufferSize != 0);
 
-    CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT |
-                                 VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+            CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+                                         VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 
-    vmaMapMemory(_vkBackend.allocator.Get(), _allocation, &_mappedMemory);
-    memcpy(_mappedMemory, indices.data(), bufferSize);
-    vmaUnmapMemory(_vkBackend.allocator.Get(), _allocation);
-  }
+            vmaMapMemory(_allocator->Get(), _allocation, &_mappedMemory);
+            memcpy(_mappedMemory, indices.data(), bufferSize);
+            vmaUnmapMemory(_allocator->Get(), _allocation);
+          }
 
-  /**
-   * @brief Constructor for indexbuffer
-   * @param backend VulkanBackend
-   * @param indices T indices
-   */
-  IndexBuffer(VulkanBackend backend, size_t size) : Buffer(backend) {
-    assert(size != 0);
+          /**
+           * @brief Constructor for indexbuffer
+           * @param backend VulkanBackend
+           * @param indices T indices
+           */
+          IndexBuffer(size_t size) : Buffer()
+          {
+            assert(size != 0);
 
-    CreateBuffer(size, VK_BUFFER_USAGE_TRANSFER_DST_BIT |
-                           VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+            CreateBuffer(size, VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+                                   VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 
-    vmaMapMemory(_vkBackend.allocator.Get(), _allocation, &_mappedMemory);
-    // vmaUnmapMemory(_vkBackend.allocator.Get(), _allocation);
-  }
-};
-} // namespace Buffers
-} // namespace Vulkan
-} // namespace Graphics
+            vmaMapMemory(_allocator->Get(), _allocation, &_mappedMemory);
+            vmaUnmapMemory(_allocator->Get(), _allocation);
+          }
+        };
+      } // namespace Buffers
+    } // namespace Vulkan
+  } // namespace Graphics
 } // namespace Entropy

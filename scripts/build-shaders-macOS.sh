@@ -1,19 +1,4 @@
-/users/joakim/VulkanSDK/1.3.261.1/macOS/bin/glslc "/Users/joakim/Entropy-Engine/shaders/skinned.vert" -o "/Users/joakim/Entropy-Engine/shaders/compiled/skinned_vert.spv"
-/users/joakim/VulkanSDK/1.3.261.1/macOS/bin/glslc "/Users/joakim/Entropy-Engine/shaders/skinned.frag" -o "/Users/joakim/Entropy-Engine/shaders/compiled/skinned_frag.spv"
 
+/users/joakimwennergren/VulkanSDK/1.3.283.0/macOS/bin/glslc "/Users/joakimwennergren/Entropy-Engine/shaders/static.vert" -o "/Users/joakimwennergren/Entropy-Engine/shaders/compiled/static_vert.spv"
+/users/joakimwennergren/VulkanSDK/1.3.283.0/macOS/bin/glslc "/Users/joakimwennergren/Entropy-Engine/shaders/static.frag" -o "/Users/joakimwennergren/Entropy-Engine/shaders/compiled/static_frag.spv"
 
-/users/joakim/VulkanSDK/1.3.261.1/macOS/bin/glslc "/Users/joakim/Entropy-Engine/shaders/cubemap.vert" -o "/Users/joakim/Entropy-Engine/shaders/compiled/cubemap_vert.spv"
-/users/joakim/VulkanSDK/1.3.261.1/macOS/bin/glslc "/Users/joakim/Entropy-Engine/shaders/cubemap.frag" -o "/Users/joakim/Entropy-Engine/shaders/compiled/cubemap_frag.spv"
-
-
-/users/joakim/VulkanSDK/1.3.261.1/macOS/bin/glslc "/Users/joakim/Entropy-Engine/shaders/2d.vert" -o "/Users/joakim/Entropy-Engine/shaders/compiled/2d_vert.spv"
-/users/joakim/VulkanSDK/1.3.261.1/macOS/bin/glslc "/Users/joakim/Entropy-Engine/shaders/2d.frag" -o "/Users/joakim/Entropy-Engine/shaders/compiled/2d_frag.spv"
-
-/users/joakim/VulkanSDK/1.3.261.1/macOS/bin/glslc "/Users/joakim/Entropy-Engine/shaders/gizmo.vert" -o "/Users/joakim/Entropy-Engine/shaders/compiled/gizmo_vert.spv"
-/users/joakim/VulkanSDK/1.3.261.1/macOS/bin/glslc "/Users/joakim/Entropy-Engine/shaders/gizmo.frag" -o "/Users/joakim/Entropy-Engine/shaders/compiled/gizmo_frag.spv"
-
-/users/joakim/VulkanSDK/1.3.261.1/macOS/bin/glslc "/Users/joakim/Entropy-Engine/shaders/static.vert" -o "/Users/joakim/Entropy-Engine/shaders/compiled/static_vert.spv"
-/users/joakim/VulkanSDK/1.3.261.1/macOS/bin/glslc "/Users/joakim/Entropy-Engine/shaders/static.frag" -o "/Users/joakim/Entropy-Engine/shaders/compiled/static_frag.spv"
-
-/users/joakim/VulkanSDK/1.3.261.1/macOS/bin/glslc "/Users/joakim/Entropy-Engine/shaders/poc.vert" -o "/Users/joakim/Entropy-Engine/shaders/compiled/poc_vert.spv"
-/users/joakim/VulkanSDK/1.3.261.1/macOS/bin/glslc "/Users/joakim/Entropy-Engine/shaders/poc.frag" -o "/Users/joakim/Entropy-Engine/shaders/compiled/poc_frag.spv"

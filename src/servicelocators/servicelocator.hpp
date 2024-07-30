@@ -6,16 +6,19 @@
 #include <stdexcept>
 #include <typeindex>
 #include <type_traits>
+#include <iostream>
+
 /// Base class for all services.
 class IService
 {
 public:
     virtual ~IService() = default;
+
     /// Virtual function to get the base type index of the service.
-    /// Should be overridden in each service interface to return the typeid
-    /// of the base interface.
+    /// Should be overridden in each service interface to return the typeid of the base interface.
     virtual std::type_index getTypeIndex() const = 0;
 };
+
 /// Specific service base class.
 /// Inherit from this instead of IService directly for services with multiple implementations.
 template <typename T>
@@ -28,14 +31,47 @@ public:
         return std::type_index(typeid(T));
     }
 };
+
 /// Service Locator class.
 class ServiceLocator
 {
-private:
+public:
     std::map<std::type_index, std::shared_ptr<IService>> services;
     mutable std::mutex mutex;
 
+protected:
+    ServiceLocator()
+    {
+    }
+    static ServiceLocator *_instance;
+
 public:
+    /**
+     * Singletons should not be cloneable.
+     */
+    ServiceLocator(ServiceLocator &other) = delete;
+
+    /**
+     * Singletons should not be assignable.
+     */
+    void operator=(const ServiceLocator &) = delete;
+
+    /**
+     * Static methods should be defined outside the class.
+     */
+    static ServiceLocator *GetInstance()
+    {
+        /**
+         * This is a safer way to create an instance. instance = new Singleton is
+         * dangeruous in case two instance threads wants to access at the same time
+         */
+        if (_instance == nullptr)
+        {
+            _instance = new ServiceLocator();
+        }
+        return _instance;
+    }
+
     /// Registers a service with the service locator.
     /// @tparam T The service implementation type.
     /// @param service Shared pointer to the service instance.
@@ -51,6 +87,7 @@ public:
         }
         services[typeIndex] = service;
     }
+
     /// Unregisters a service from the service locator.
     /// @tparam T The base service type.
     template <typename T>
@@ -64,6 +101,7 @@ public:
         }
         services.erase(typeIndex);
     }
+
     /// Gets a service from the service locator.
     /// @tparam T The base service type.
     /// @return Shared pointer to the requested service instance.

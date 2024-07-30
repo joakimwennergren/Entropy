@@ -2,98 +2,106 @@
 
 #include <cassert>
 #include <graphics/vulkan/memory/allocator.hpp>
-#include <graphics/vulkan/vulkan_backend.hpp>
 #include <spdlog/spdlog.h>
 #include <vulkan/vulkan.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Memory;
 
-namespace Entropy {
-namespace Graphics {
-namespace Vulkan {
-namespace Buffers {
+namespace Entropy
+{
+  namespace Graphics
+  {
+    namespace Vulkan
+    {
+      namespace Buffers
+      {
 
-/**
- * @brief Buffer base class
- * @author Joakim Wennergren
- * @since Fri Jun 28 2024
- */
-struct Buffer {
+        /**
+         * @brief Buffer base class
+         * @author Joakim Wennergren
+         * @since Fri Jun 28 2024
+         */
+        struct Buffer
+        {
 
-  /**
-   * @brief Constructor for buffer
-   * @param backend VulkanBackend
-   */
-  Buffer(Vulkan::VulkanBackend backend) : _vkBackend{backend} {}
+          /**
+           * @brief Constructor for buffer
+           * @param backend VulkanBackend
+           */
+          Buffer() {};
 
-  /**
-   * @brief Buffer destructor, destroy the created buffer
-   */
-  ~Buffer() {
-    vmaDestroyBuffer(_vkBackend.allocator.Get(), _buffer, _allocation);
-  }
+          /**
+           * @brief Buffer destructor, destroy the created buffer
+           */
+          ~Buffer()
+          {
+            // vmaDestroyBuffer(_vkBackend.allocator.Get(), _buffer, _allocation);
+          }
 
-  /**
-   * @brief Get the basic vulka buffer
-   * @return VkBuffer the vulkan buffer
-   */
-  inline VkBuffer GetVulkanBuffer() { return this->_buffer; };
+          /**
+           * @brief Get the basic vulka buffer
+           * @return VkBuffer the vulkan buffer
+           */
+          inline VkBuffer GetVulkanBuffer() { return this->_buffer; };
 
-  /**
-   * @brief Get buffer memory
-   * @return VkDeviceMemory
-   */
-  inline VkDeviceMemory GetBufferMemory() { return this->_bufferMemory; };
+          /**
+           * @brief Get buffer memory
+           * @return VkDeviceMemory
+           */
+          inline VkDeviceMemory GetBufferMemory() { return this->_bufferMemory; };
 
-  /**
-   * @brief Get the mapped memory
-   * @return void* mapped memory
-   */
-  inline void *GetMappedMemory() { return this->_mappedMemory; };
+          /**
+           * @brief Get the mapped memory
+           * @return void* mapped memory
+           */
+          inline void *GetMappedMemory() { return this->_mappedMemory; };
 
-  // Allocation
-  VmaAllocation _allocation = VK_NULL_HANDLE;
+          // Allocation
+          VmaAllocation _allocation = VK_NULL_HANDLE;
 
-protected:
-  /**
-   * @brief Create a buffer
-   * @param size buffer size
-   * @param usage buffer usage flags
-   * @return (void)
-   */
-  inline void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage) {
+        protected:
+          /**
+           * @brief Create a buffer
+           * @param size buffer size
+           * @param usage buffer usage flags
+           * @return (void)
+           */
+          inline void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage)
+          {
 
-    assert(size != 0);
-    assert(usage != 0);
+            ServiceLocator *sl = ServiceLocator::GetInstance();
+            _allocator = sl->getService<IAllocator>();
 
-    VkBufferCreateInfo bufferInfo = {};
-    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    bufferInfo.size = size;
-    bufferInfo.usage = usage;
+            assert(size != 0);
+            assert(usage != 0);
 
-    VmaAllocationCreateInfo allocInfo = {};
-    allocInfo.usage = VMA_MEMORY_USAGE_AUTO;
-    allocInfo.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT;
+            VkBufferCreateInfo bufferInfo = {};
+            bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+            bufferInfo.size = size;
+            bufferInfo.usage = usage;
 
-    if (vmaCreateBuffer(_vkBackend.allocator.Get(), &bufferInfo, &allocInfo,
-                        &_buffer, &_allocation, nullptr) != VK_SUCCESS) {
-      spdlog::error("Error while creating buffer with size: {}", size);
-    }
-  }
+            VmaAllocationCreateInfo allocInfo = {};
+            allocInfo.usage = VMA_MEMORY_USAGE_AUTO;
+            allocInfo.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT;
 
-  // Vulkan Buffer handle
-  VkBuffer _buffer = VK_NULL_HANDLE;
-  // Buffer memory
-  VkDeviceMemory _bufferMemory = VK_NULL_HANDLE;
+            if (vmaCreateBuffer(_allocator->Get(), &bufferInfo, &allocInfo,
+                                &_buffer, &_allocation, nullptr) != VK_SUCCESS)
+            {
+              spdlog::error("Error while creating buffer with size: {}", size);
+            }
+          }
 
-  // Mapped memory
-  void *_mappedMemory = nullptr;
+          // Vulkan Buffer handle
+          VkBuffer _buffer = VK_NULL_HANDLE;
+          // Buffer memory
+          VkDeviceMemory _bufferMemory = VK_NULL_HANDLE;
+          // Mapped memory
+          void *_mappedMemory = nullptr;
 
-  // Depdendencies
-  Vulkan::VulkanBackend _vkBackend;
-};
+          std::shared_ptr<IAllocator> _allocator;
+        };
 
-} // namespace Buffers
-} // namespace Vulkan
-} // namespace Graphics
+      } // namespace Buffers
+    } // namespace Vulkan
+  } // namespace Graphics
 } // namespace Entropy

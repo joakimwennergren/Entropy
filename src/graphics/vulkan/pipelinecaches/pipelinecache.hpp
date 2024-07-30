@@ -1,32 +1,38 @@
 #pragma once
 
-#include "graphics/vulkan/devices/logical_device.hpp"
+#include "ipipelinecache.hpp"
 #include "spdlog/spdlog.h"
 
-namespace Entropy {
-namespace Graphics {
-namespace Vulkan {
-namespace Caches {
+namespace Entropy
+{
+  namespace Graphics
+  {
+    namespace Vulkan
+    {
+      namespace Caches
+      {
 
-struct PipelineCache {
+        struct PipelineCache : public ServiceBase<IPipelineCache>
+        {
 
-  PipelineCache(LogicalDevice ld) : _logicalDevice{ld} {
+          PipelineCache()
+          {
+            ServiceLocator *sl = ServiceLocator::GetInstance();
+            auto logicalDevice = sl->getService<ILogicalDevice>();
 
-    VkPipelineCacheCreateInfo pipelineCacheCreateInfo = {};
-    pipelineCacheCreateInfo.sType =
-        VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
-    vkCreatePipelineCache(_logicalDevice.Get(), &pipelineCacheCreateInfo,
-                          nullptr, &_pipelineCache);
-  }
+            VkPipelineCacheCreateInfo pipelineCacheCreateInfo = {};
+            pipelineCacheCreateInfo.sType =
+                VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
+            vkCreatePipelineCache(logicalDevice->Get(), &pipelineCacheCreateInfo,
+                                  nullptr, &_pipelineCache);
+          }
 
-  inline VkPipelineCache Get() { return _pipelineCache; };
+          inline VkPipelineCache Get() { return _pipelineCache; };
 
-private:
-  Devices::LogicalDevice _logicalDevice;
-
-  VkPipelineCache _pipelineCache = VK_NULL_HANDLE;
-};
-} // namespace Caches
-} // namespace Vulkan
-} // namespace Graphics
+        private:
+          VkPipelineCache _pipelineCache = VK_NULL_HANDLE;
+        };
+      } // namespace Caches
+    } // namespace Vulkan
+  } // namespace Graphics
 } // namespace Entropy
