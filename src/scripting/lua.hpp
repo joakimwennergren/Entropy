@@ -86,7 +86,6 @@ namespace Entropy
         _lua->set_function("create_sprite", [this](std::string path)
                            {
                              auto sprite = std::make_shared<Entropy::Graphics::Primitives::Sprite>(GetSpritesDir() + path);
-
                              auto e = _world->Get()->entity();
                              auto id = AssetId().GetId();
                              e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
@@ -94,10 +93,11 @@ namespace Entropy
                              e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
                              e.set<Entropy::Components::SpriteComponent>({sprite});
                              e.set<Entropy::Components::Renderable>(
-                                 {id, true, sprite->vertexBuffer,sprite->indexBuffer, sprite->indices});
+                                 {id, true, sprite->vertexBuffer, sprite->indexBuffer, sprite->indices});
                              e.set<Entropy::Components::Color>({glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}});
-                             e.set<Entropy::Components::HasTexture>({sprite->texture}); 
-                             return e; });
+                             e.set<Entropy::Components::HasTexture>({sprite->texture});
+                             return e;
+                           });
 
         _lua->set_function("translate_3d", [this](flecs::entity entity, float x,
                                                   float y, float z)

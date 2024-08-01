@@ -13,6 +13,9 @@
 #include <glm/glm.hpp>
 #include <flecs/flecs.h>
 #include <ecs/iworld.hpp>
+#include <data/vertex.hpp>
+
+using namespace Entropy::Data;
 
 class b2DebugDraw : public b2Draw
 {
@@ -39,7 +42,6 @@ public:
       newVert.color = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
       _vertices.push_back(newVert);
     }
-
     // entites.push_back(_entityFactory.CreateQuad(_vertices));
   }
 
@@ -154,7 +156,7 @@ namespace Entropy
 
         b2FixtureDef fixtureDef;
         fixtureDef.shape = &dynamicBox;
-        fixtureDef.density = 0.1f;
+        fixtureDef.density = 100.0f;
         fixtureDef.friction = 1.0f;
         fixtureDef.restitution = 0.0f;
         body->CreateFixture(&fixtureDef);
