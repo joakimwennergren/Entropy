@@ -35,7 +35,7 @@ namespace Entropy
            */
           ~Buffer()
           {
-            // vmaDestroyBuffer(_vkBackend.allocator.Get(), _buffer, _allocation);
+            vmaDestroyBuffer(_allocator->Get(), _buffer, _allocation);
           }
 
           /**

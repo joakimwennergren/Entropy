@@ -14,6 +14,17 @@
 #include <flecs/flecs.h>
 #include <ecs/iworld.hpp>
 #include <data/vertex.hpp>
+#include <ecs/components/hasTexture.hpp>
+#include <ecs/components/quad.hpp>
+#include <ecs/components/position.hpp>
+#include <ecs/components/renderable.hpp>
+#include <ecs/components/rigidbody3d.hpp>
+#include <ecs/components/rotation.hpp>
+#include <ecs/components/scale.hpp>
+#include <ecs/components/color.hpp>
+#include <graphics/primitives/2d/quad.hpp>
+
+#include <assets/assetid.hpp>
 
 using namespace Entropy::Data;
 
@@ -22,8 +33,8 @@ class b2DebugDraw : public b2Draw
 public:
   b2DebugDraw(std::vector<flecs::entity> &entities)
   {
-    // ServiceLocator *sl = ServiceLocator::GetInstance();
-    // _entityWorld = sl->getService<IWorld>();
+    ServiceLocator *sl = ServiceLocator::GetInstance();
+    _entityWorld = sl->getService<IWorld>();
     // std::vector<Vertex> _vertices(4);
     // _entityFactory.CreateQuad(_vertices);
   }
@@ -31,7 +42,6 @@ public:
   void DrawPolygon(const b2Vec2 *vertices, int32 vertexCount,
                    const b2Color &color)
   {
-
     std::vector<Vertex> _vertices;
 
     for (int i = 0; i < vertexCount; i++)
@@ -42,7 +52,19 @@ public:
       newVert.color = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
       _vertices.push_back(newVert);
     }
-    // entites.push_back(_entityFactory.CreateQuad(_vertices));
+
+    auto quad = std::make_shared<Entropy::Graphics::Primitives::Quad>(_vertices);
+    auto e = _entityWorld->Get()->entity();
+    auto id = AssetId().GetId();
+    e.set<Entropy::Components::Position>({glm::vec3(0.0, 0.0, 0.0)});
+    e.set<Entropy::Components::Scale>({glm::vec3(1.0, 1.0, 1.0)});
+    e.set<Entropy::Components::Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
+    e.set<Entropy::Components::QuadComponent>({quad});
+    e.set<Entropy::Components::Renderable>(
+        {id, true, quad->vertexBuffer, quad->indexBuffer, quad->indices});
+    e.set<Entropy::Components::Color>({glm::vec4{1.0f, 0.0f, 0.0f, 1.0f}});
+    e.set<Entropy::Components::HasTexture>({quad->texture});
+    entites.push_back(e);
   }
 
   void DrawSolidPolygon(const b2Vec2 *vertices, int32 vertexCount,
@@ -115,17 +137,17 @@ namespace Entropy
         ServiceLocator *sl = ServiceLocator::GetInstance();
         _entityWorld = sl->getService<IWorld>();
 
-        //_debugDraw = new b2DebugDraw(_entityFactory, _entities);
+        _debugDraw = new b2DebugDraw(_entities);
         b2Vec2 gravity(0.0f, -5.0f);
         world = new b2World(gravity);
-        // world->SetDebugDraw(_debugDraw);
-        // uint32 flags = 0;
-        // flags += b2Draw::e_shapeBit;
-        // flags += b2Draw::e_jointBit;
-        // flags += b2Draw::e_aabbBit;
-        // flags += b2Draw::e_pairBit;
-        // flags += b2Draw::e_centerOfMassBit;
-        // _debugDraw->SetFlags(flags);
+        world->SetDebugDraw(_debugDraw);
+        uint32 flags = 0;
+        flags += b2Draw::e_shapeBit;
+        flags += b2Draw::e_jointBit;
+        flags += b2Draw::e_aabbBit;
+        flags += b2Draw::e_pairBit;
+        flags += b2Draw::e_centerOfMassBit;
+        _debugDraw->SetFlags(flags);
         // auto listener = new MyContactListener();
         // world->SetContactListener(listener);
       }
@@ -134,13 +156,31 @@ namespace Entropy
 
       inline b2Body *CreateGround(float x, float y, float w, float h)
       {
-        b2BodyDef groundBodyDef;
-        groundBodyDef.position.Set(x, y);
-        b2PolygonShape groundBox;
-        groundBox.SetAsBox(w / PPM, h / PPM);
-        b2Body *groundBody = world->CreateBody(&groundBodyDef);
-        groundBody->CreateFixture(&groundBox, 0.0f);
-        return groundBody;
+        // b2BodyDef groundBodyDef;
+        // groundBodyDef.position.Set(x, y);
+        // b2PolygonShape groundBox;
+        // groundBox.SetAsBox(w / PPM, h / PPM);
+        // b2Body *groundBody = world->CreateBody(&groundBodyDef);
+        // groundBody->CreateFixture(&groundBox, 0.0f);
+        // return groundBody;
+
+        b2BodyDef bodyDef;
+        bodyDef.type = b2_dynamicBody;
+        bodyDef.position.Set(x, y);
+        bodyDef.type = b2_kinematicBody;
+
+        b2Body *body = world->CreateBody(&bodyDef);
+        b2PolygonShape dynamicBox;
+        dynamicBox.SetAsBox(w / PPM, h / PPM);
+
+        b2FixtureDef fixtureDef;
+        fixtureDef.shape = &dynamicBox;
+        fixtureDef.density = 1.0f;
+        fixtureDef.friction = 1.0f;
+        fixtureDef.restitution = 0.0f;
+        body->CreateFixture(&fixtureDef);
+
+        return body;
       }
 
       inline b2Body *CreateDynamicBody(float x, float y, float w, float h)
@@ -156,7 +196,7 @@ namespace Entropy
 
         b2FixtureDef fixtureDef;
         fixtureDef.shape = &dynamicBox;
-        fixtureDef.density = 100.0f;
+        fixtureDef.density = 1.0f;
         fixtureDef.friction = 1.0f;
         fixtureDef.restitution = 0.0f;
         body->CreateFixture(&fixtureDef);
@@ -184,6 +224,7 @@ namespace Entropy
         fixtureDef.density = 3.0f;
         fixtureDef.isSensor = true;
         fixtureDef.friction = 0.8f;
+
         fixtureDef.userData = userData;
         body->CreateFixture(&fixtureDef);
 

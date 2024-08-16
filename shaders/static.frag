@@ -9,9 +9,26 @@ layout (location = 1) in vec3 inNormal;
 layout (location = 2) in vec2 inUV0;
 layout (location = 3) in vec4 inColor0;
 layout (location = 4) in vec4 inColor1;
-layout (location = 5) flat in uint inTextureId;
+layout (location = 5) flat in int inType;
+layout (location = 6) in vec2 inResolution;
 
 layout(location = 0) out vec4 outColor;
+
+float grid_intensity = 0.9;
+
+// Thick lines 
+float grid(vec2 fragCoord, float space, float gridWidth)
+{
+    vec2 p  = fragCoord - vec2(.5);
+    vec2 size = vec2(gridWidth);
+    
+    vec2 a1 = mod(p - size, space);
+    vec2 a2 = mod(p + size, space);
+    vec2 a = a2 - a1;
+       
+    float g = min(a.x, a.y);
+    return clamp(g, 0., 1.0);
+}
 
 void main() 
 {
@@ -59,10 +76,24 @@ void main()
 
         // //vec4 sampled = texture(sampler2D(_texture, texSampler), inUV0);
         
+        if(inType == 1) {
+                // Normalized pixel coordinates (from 0 to 1)
+                vec2 uv = gl_FragCoord.xy/inResolution.xy;
 
-        outColor = inColor1 * texture(Sampler2D, inUV0);  
-        
-
-
-
+                // Pixel color
+                vec3 col = vec3(1,1,1);
+                
+                // Gradient across screen
+                vec2 p = gl_FragCoord.xy;           // Point
+                        vec2 c = inResolution.xy / 2.0;   // Center
+                col *= (1.0 - length(c - p)/inResolution.x*0.7);
+                        
+                // 2-size grid
+                col *= clamp(grid(gl_FragCoord.xy, 10., 0.5) *  grid(gl_FragCoord.xy, 50., 1.), grid_intensity, 1.0);
+                
+                // Output to screen
+                outColor = vec4(col,1.0);
+        } else {
+                outColor = inColor1 * texture(Sampler2D, inUV0); 
+        }
 }

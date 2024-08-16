@@ -10,6 +10,7 @@ namespace Entropy
     struct World : public ServiceBase<IWorld>
     {
       World() { gameWorld = new flecs::world(); }
+      ~World() { delete gameWorld; }
       inline flecs::world *Get() override { return gameWorld; }
       flecs::world *gameWorld;
     };

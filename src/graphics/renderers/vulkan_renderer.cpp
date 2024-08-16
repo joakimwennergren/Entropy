@@ -109,9 +109,13 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
     InstanceData *objectSSBO = (InstanceData *)objectData;
     objectSSBO[render_component->id - 1].model =
         (translate * scaling * rotation);
+
     objectSSBO[render_component->id - 1].color =
         color_component.get() == nullptr ? glm::vec4(1.0, 1.0, 1.0, 1.0)
                                          : color_component->color;
+
+    objectSSBO[render_component->id - 1].type = render_component->type;
+    objectSSBO[render_component->id - 1].resolution = glm::vec2{(float)width, (float)height};
 
     vmaUnmapMemory(_allocator->Get(), _instanceDataBuffer->_allocation);
 

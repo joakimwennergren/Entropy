@@ -17,6 +17,9 @@ layout( push_constant ) uniform constants
 struct ObjectData{
 	mat4 model;
 	vec4 color;
+	vec2 resolution;
+	int type;
+
 };
 
 //all object matrices
@@ -35,11 +38,11 @@ layout (location = 1) out vec3 outNormal;
 layout (location = 2) out vec2 outUV0;
 layout (location = 3) out vec4 outColor0;
 layout (location = 4) out vec4 outColor1;
-layout (location = 5) out uint outTextureId;
+layout (location = 5) out int outType;
+layout (location = 6) out vec2 outResolution;
 
 void main() 
 {	
-
 	uint instanceIndex = PushConstants.instanceIndex;
 
 	// Colors
@@ -51,6 +54,9 @@ void main()
 
 	// Normals
 	outNormal = inNormal;
+
+	outType = objectBuffer.objects[instanceIndex].type;
+	outResolution = objectBuffer.objects[instanceIndex].resolution;
 
 	mat4 modelMatrix = objectBuffer.objects[instanceIndex].model;
 

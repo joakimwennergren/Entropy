@@ -73,7 +73,7 @@ namespace Entropy
         _physics2d = sl->getService<IPhysics2D>();
 
         _lua = new sol::state();
-        _lua->open_libraries(sol::lib::base, sol::lib::table, sol::lib::math);
+        _lua->open_libraries(sol::lib::base, sol::lib::table, sol::lib::math, sol::lib::string, sol::lib::io);
         _lua->new_usertype<b2Vec3>("b2vec3", "x", &b2Vec3::x, "y", &b2Vec3::y, "z", &b2Vec3::z);
         _lua->new_usertype<b2Vec2>("b2vec2", "x", &b2Vec2::x, "y", &b2Vec2::y);
         _lua->new_usertype<b2Body>("b2Body", "GetPosition", &b2Body::GetPosition,
@@ -96,8 +96,28 @@ namespace Entropy
                                  {id, true, sprite->vertexBuffer, sprite->indexBuffer, sprite->indices});
                              e.set<Entropy::Components::Color>({glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}});
                              e.set<Entropy::Components::HasTexture>({sprite->texture});
-                             return e;
-                           });
+                             return e; });
+
+        _lua->set_function("create_quad", [this]()
+                           {
+                             auto quad = std::make_shared<Entropy::Graphics::Primitives::Quad>();
+                             auto e = _world->Get()->entity();
+                             auto id = AssetId().GetId();
+                             e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
+                             e.set<Scale>({glm::vec3(25.0, 25.0, 25.0)});
+                             e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
+                             e.set<Entropy::Components::QuadComponent>({quad});
+                             auto renderable = Entropy::Components::Renderable();
+                             renderable.id = id;
+                             renderable.visible = true;
+                             renderable.vertexBuffer = quad->vertexBuffer;
+                             renderable.indexBuffer = quad->indexBuffer;
+                             renderable.indices = quad->indices;
+                             renderable.type = 1;
+                             e.set<Entropy::Components::Renderable>(renderable);
+                             e.set<Entropy::Components::Color>({glm::vec4{1.0f, 0.0f, 1.0f, 1.0f}});
+                             e.set<Entropy::Components::HasTexture>({quad->texture});
+                             return e; });
 
         _lua->set_function("translate_3d", [this](flecs::entity entity, float x,
                                                   float y, float z)
@@ -235,8 +255,8 @@ namespace Entropy
         //                          return pos;
         //                        } });
 
-        //   _lua->set_function("get_dynbody_linear_velocity", [this](b2Body *body)
-        //                      { return body->GetLinearVelocity(); });
+        _lua->set_function("get_dynbody_linear_velocity", [this](b2Body *body)
+                           { return body->GetLinearVelocity(); });
 
         _lua->set_function("create_static_body",
                            [this](float x, float y, float w, float h)
