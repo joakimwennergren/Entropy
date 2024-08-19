@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 #include "graphics/vulkan/textures/normal_texture.hpp"
 #ifdef BUILD_FOR_ANDROID
 #include <android/asset_manager.h>
@@ -19,64 +21,36 @@ using namespace Entropy::Scripting;
 using namespace Entropy::Graphics::Vulkan::DescriptorPools;
 using namespace Entropy::Data;
 
-namespace Entropy
-{
-  namespace Graphics
-  {
-    namespace Primitives
-    {
+namespace Entropy {
+namespace Graphics {
+namespace Primitives {
 
-      struct Sprite
-      {
-      public:
-        Sprite(std::string path)
-        {
-          texture = std::make_shared<NormalTexture>(path);
-          vertexBuffer = std::make_shared<VertexBuffer>(vertices);
-          indexBuffer = std::make_shared<IndexBuffer<uint16_t>>(indices);
-        }
+struct Sprite {
+public:
+  Sprite(std::string path) {
+    texture = std::make_shared<NormalTexture>(path);
+    vertexBuffer = std::make_shared<VertexBuffer>(vertices);
+    indexBuffer = std::make_shared<IndexBuffer<uint16_t>>(indices);
+  }
 
-        // Sprite(FT_Bitmap bitmap);
+  // Sprite(FT_Bitmap bitmap);
 
-        // Sprite(std::string path);
+  // Sprite(std::string path);
 #ifdef BUILD_FOR_ANDROID
-        Sprite(std::string path, AAssetManager *assetmanager);
+  Sprite(std::string path, AAssetManager *assetmanager);
 #endif
-        // Sprite(unsigned char *pixels, int width, int height);
+  // Sprite(unsigned char *pixels, int width, int height);
 
-        std::vector<uint16_t> indices = {0, 1, 2, 2, 3, 0};
-        std::vector<Vertex> vertices = {{{-1.0f, -1.0f, 0.0f},
-                                         {1.0f, 1.0f, 1.0f},
-                                         {1.0f, 0.0f},
-                                         {0.0, 0.0},
-                                         {0.0, 0.0, 0.0, 0.0},
-                                         {0.0, 0.0, 0.0, 0.0},
-                                         {0.0, 1.0, 0.0, 0.0}},
-                                        {{1.0f, -1.0f, 0.0f},
-                                         {1.0f, 1.0f, 1.0f},
-                                         {0.0f, 0.0f},
-                                         {0.0, 0.0},
-                                         {0.0, 0.0, 0.0, 0.0},
-                                         {0.0, 0.0, 0.0, 0.0},
-                                         {0.0, 1.0, 0.0, 0.0}},
-                                        {{1.0f, 1.0f, 0.0f},
-                                         {1.0f, 1.0f, 1.0f},
-                                         {0.0f, 1.0f},
-                                         {0.0, 0.0},
-                                         {0.0, 0.0, 0.0, 0.0},
-                                         {0.0, 0.0, 0.0, 0.0},
-                                         {0.0, 1.0, 0.0, 0.0}},
-                                        {{-1.0f, 1.0f, 0.0f},
-                                         {1.0f, 1.0f, 1.0f},
-                                         {1.0f, 1.0f},
-                                         {0.0, 0.0},
-                                         {0.0, 0.0, 0.0, 0.0},
-                                         {0.0, 0.0, 0.0, 0.0},
-                                         {0.0, 1.0, 0.0, 0.0}}};
-        std::shared_ptr<NormalTexture> texture;
-        std::shared_ptr<VertexBuffer> vertexBuffer;
-        std::shared_ptr<IndexBuffer<uint16_t>> indexBuffer;
-      };
-    } // namespace Primitives
-  } // namespace Graphics
+  std::vector<uint16_t> indices = {0, 1, 2, 2, 3, 0};
+  std::vector<Vertex> vertices = {
+      {{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+      {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
+      {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
+      {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
+  std::shared_ptr<NormalTexture> texture;
+  std::shared_ptr<VertexBuffer> vertexBuffer;
+  std::shared_ptr<IndexBuffer<uint16_t>> indexBuffer;
+};
+} // namespace Primitives
+} // namespace Graphics
 } // namespace Entropy

@@ -50,59 +50,91 @@ target_include_directories(${PROJECT_NAME}
         external/imgui
         external/bullet3/src
 )
+if(IOS)
+    target_link_libraries(${PROJECT_NAME}
+    "-framework foundation"
+    "-framework metal"
+    "-framework metalkit"
+    "-framework uikit"
+    "-framework iosurface"
+    "-framework coregraphics"
+    "-framework quartzcore"
+    "-framework coreaudio"
+    "-framework audiotoolbox"
+    "-framework avfoundation"
+    "-framework coretext"
+    )
 
-#target_link_libraries(${PROJECT_NAME}
-#"-framework foundation"
-#"-framework metal"
-#"-framework metalkit"
-#"-framework uikit"
-#"-framework iosurface"
-#"-framework coregraphics"
-#"-framework quartzcore"
-#"-framework coreaudio"
-#"-framework audiotoolbox"
-#"-framework avfoundation"
-#"-framework coretext"
-#)
+    # Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk)
+    target_link_libraries(${PROJECT_NAME}
+        #${Vulkan_LIBRARIES}
+        #glfw
+        #efsw
+        TracyClient
+        GPUOpen::VulkanMemoryAllocator
+        flecs::flecs_static
+        BulletCollision
+        BulletDynamics
+        BulletDynamics
+        BulletCollision
+        BulletInverseDynamics
+        BulletSoftBody
+        LinearMath
+        tinyobjloader
+        sol2
+        lua
+        glm
+        freetype
+        eventpp
+        spdlog
+        box2d
+        eventpp
+        tinygltf
+    )
+endif()
+
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND APPLE)
+
+    target_link_libraries(${PROJECT_NAME}
+        ${Vulkan_LIBRARIES}
+        glfw
+        #efsw
+        TracyClient
+        GPUOpen::VulkanMemoryAllocator
+        flecs::flecs_static
+        BulletCollision
+        BulletDynamics
+        BulletDynamics
+        BulletCollision
+        BulletInverseDynamics
+        BulletSoftBody
+        LinearMath
+        tinyobjloader
+        sol2
+        lua
+        glm
+        freetype
+        eventpp
+        spdlog
+        box2d
+        eventpp
+        tinygltf
+    )
+endif()
+
+if(${CMAKE_OSX_SYSROOT} MATCHES "\/MacOSX.platform\/Developer\/SDKs")
+    message("BUILDIG FOR MACOS!!!")
+endif()
 
 # Link common dependencies
 target_link_libraries(${PROJECT_NAME}
-    sol2
-    lua
-    glm
     #asio::asio
     #libcurl_static
     #libcurl_shared  
     #OpenSSL::SSL
     #OpenSSL::Crypto
-    freetype
-    eventpp
-    spdlog
-    box2d
-    eventpp
-    tinygltf
     #ktx
 )
-
-# Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk)
-target_link_libraries(${PROJECT_NAME}
-    ${Vulkan_LIBRARIES}
-    glfw
-    #efsw
-    TracyClient
-    GPUOpen::VulkanMemoryAllocator
-    flecs::flecs_static
-	BulletCollision
-	BulletDynamics
-	BulletDynamics
-	BulletCollision
-	BulletInverseDynamics
-	BulletSoftBody
-	LinearMath
-    tinyobjloader
-)
-
-
 
 # Build config file
 configure_file(config.h.in ${PROJECT_SOURCE_DIR}/include/config.hpp @ONLY)

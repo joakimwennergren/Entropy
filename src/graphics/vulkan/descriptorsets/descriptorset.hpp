@@ -1,11 +1,7 @@
 #pragma once
 
 #include <config.hpp>
-#include <iostream>
-#include <set>
-#include <string>
 #include <vulkan/vulkan.hpp>
-
 #include <spdlog/spdlog.h>
 
 #include <graphics/vulkan/descriptorpools/descriptorpool.hpp>

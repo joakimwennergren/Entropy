@@ -53,14 +53,16 @@ set(CURL_USE_OPENSSL OFF)
 # Graphics API
 
 # Vulkan
-find_package(Vulkan REQUIRED)
+if(CMAKE_PLATFORM MATCHES "BUILD_FOR_MACOS" OR "BUILD_FOR_WINDOWS" OR "BUILD_FOR_MACOS")
+  find_package(Vulkan REQUIRED)
+endif()
 
 #set(KTX_FEATURE_TESTS OFF)
 #add_subdirectory(external/KTX-Software)
 
 # Windowing on desktop
-if(WIN32 OR UNIX OR APPLE)
-  add_subdirectory(external/glfw)
+if(CMAKE_PLATFORM MATCHES "BUILD_FOR_MACOS" OR "BUILD_FOR_WINDOWS" OR "BUILD_FOR_MACOS")
+    add_subdirectory(external/glfw)
 endif()
 
 # Lua SOL 2

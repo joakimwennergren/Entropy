@@ -8,29 +8,6 @@
 import Foundation
 import UIKit
 
-import AVFoundation
-var player: AVAudioPlayer?
-
-@_cdecl("say_hello")
-func playSound() {
-
-    print("")
-
-    guard let path = Bundle.main.path(forResource: "classy2", ofType:"wav") else {
-        return }
-    let url = URL(fileURLWithPath: path)
-
-    do {
-        player = try AVAudioPlayer(contentsOf: url)
-        player?.play()
-        player?.numberOfLoops = -1;
-        
-    } catch let error {
-        print(error.localizedDescription)
-    }
-}
-
-
 var _view = UIView()
 var _screen = UIScreen()
 var _touchPoint = CGPoint()
@@ -38,26 +15,20 @@ var _touchPoint = CGPoint()
 class SecondViewController: UIViewController {
     
     override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
-        var text=""
         switch UIDevice.current.orientation{
         case .portrait:
-            text="Portrait"
         case .portraitUpsideDown:
-            text="PortraitUpsideDown"
         case .landscapeLeft:
-            text="LandscapeLeft"
             print("in landscape left")
             let temp = _view.frame.size.height
             _view.frame.size.height = temp + 30
         case .landscapeRight:
-            text="LandscapeRight"
             print("in landscape left")
             let temp = _view.frame.size.height
             _view.frame.size.height = temp + 30
         default:
             text="Another"
         }
-        print(text)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

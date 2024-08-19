@@ -26,10 +26,6 @@ namespace Entropy
             auto physicalDevice = sl->getService<IPhysicalDevice>();
             auto logicalDevice = sl->getService<ILogicalDevice>();
 
-            assert(vulkanInstance == nullptr);
-            assert(physicalDevice == nullptr);
-            assert(logicalDevice == nullptr);
-
             VmaVulkanFunctions vulkanFunctions = {};
             vulkanFunctions.vkGetInstanceProcAddr = &vkGetInstanceProcAddr;
             vulkanFunctions.vkGetDeviceProcAddr = &vkGetDeviceProcAddr;

@@ -15,26 +15,25 @@
 using namespace Entropy::Graphics::Vulkan::Renderers;
 
 void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
-                            bool &needResize, bool app)
-{
+                            bool &needResize, bool app) {
 
-  if (app)
-  {
+  if (app) {
     auto currentFence = _synchronizer->GetFences()[_currentFrame];
 
-    vkWaitForFences(_logicalDevice->Get(), 1, &currentFence, VK_TRUE, UINT64_MAX);
-    vkResetFences(_logicalDevice->Get(), 1, &currentFence);
+    // vkWaitForFences(_logicalDevice->Get(), 1, &currentFence, VK_TRUE,
+    //                 UINT64_MAX);
+    // vkResetFences(_logicalDevice->Get(), 1, &currentFence);
 
-    vkAcquireNextImageKHR(
-        _logicalDevice->Get(), _swapchain->Get(), UINT64_MAX,
-        _synchronizer->GetImageSemaphores()[_currentFrame], VK_NULL_HANDLE,
-        &imageIndex);
+    vkAcquireNextImageKHR(_logicalDevice->Get(), _swapchain->Get(), UINT64_MAX,
+                          _synchronizer->GetImageSemaphores()[_currentFrame],
+                          VK_NULL_HANDLE, &imageIndex);
   }
 
-  if (needResize)
-  {
-    stagingBuffer = stagingBuffer = std::make_shared<StagedBuffer>(width * height * 4, nullptr, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
-    _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+  if (needResize) {
+    stagingBuffer = stagingBuffer = std::make_shared<StagedBuffer>(
+        width * height * 4, nullptr, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
+    _synchronizer =
+        std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
     _swapchain->RecreateSwapChain(width, height);
     _renderPass->RecreateDepthBuffer(width, height);
     _renderPass->RecreateFrameBuffers(width, height, app);
@@ -44,7 +43,8 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
   if (_world->Get()->count<Entropy::Components::Renderable>() == 0)
     return;
 
-  auto orthoCamera = static_cast<Cameras::OrthographicCamera *>(_cameraManager->currentCamera);
+  auto orthoCamera =
+      static_cast<Cameras::OrthographicCamera *>(_cameraManager->currentCamera);
   orthoCamera->setPerspective(60.0f, (float)width, (float)height, 0.1f, 256.0f);
 
   // Begin renderpass and commandbuffer recording
@@ -75,8 +75,7 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
   // });
 
   _sortQuery.each([this, width, height](flecs::entity e,
-                                        Entropy::Components::Position p)
-                  {
+                                        Entropy::Components::Position p) {
     auto position_component = e.get_ref<Entropy::Components::Position>();
     auto scale_component = e.get_ref<Entropy::Components::Scale>();
     auto color_component = e.get_ref<Entropy::Components::Color>();
@@ -115,7 +114,8 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
                                          : color_component->color;
 
     objectSSBO[render_component->id - 1].type = render_component->type;
-    objectSSBO[render_component->id - 1].resolution = glm::vec2{(float)width, (float)height};
+    objectSSBO[render_component->id - 1].resolution =
+        glm::vec2{(float)width, (float)height};
 
     vmaUnmapMemory(_allocator->Get(), _instanceDataBuffer->_allocation);
 
@@ -208,14 +208,12 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
       // Draw current renderable
       vkCmdDrawIndexed(_commandBuffers[_currentFrame].Get(),
                        renderable->indices.size(), 1, 0, 0, 0);
-    } });
+    }
+  });
 
-  if (app)
-  {
+  if (app) {
     PresentForApplication();
-  }
-  else
-  {
+  } else {
     PresentForEditor(width, height);
   }
 

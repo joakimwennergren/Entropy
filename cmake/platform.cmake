@@ -9,9 +9,9 @@ if(APPLE)
 endif()
 
 # iOS
-#if(XCODE)
-#    set(CMAKE_PLATFORM "BUILD_FOR_IOS")
-#endif()
+if(IOS)
+   set(CMAKE_PLATFORM "BUILD_FOR_IOS")
+endif()
 
 # Linux platform
 if(UNIX AND NOT APPLE)

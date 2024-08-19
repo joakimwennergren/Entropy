@@ -50,6 +50,8 @@ namespace Entropy
 
           NormalTexture(std::string path) : Texture()
           {
+            
+              spdlog::info(path);
 
             assert(path.length() != 0);
 
