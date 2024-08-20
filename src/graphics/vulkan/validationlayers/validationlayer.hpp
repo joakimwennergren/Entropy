@@ -8,6 +8,7 @@ namespace Entropy {
 namespace Graphics {
 namespace Vulkan {
 namespace ValidationLayers {
+
 class ValidationLayer {
 public:
   /**

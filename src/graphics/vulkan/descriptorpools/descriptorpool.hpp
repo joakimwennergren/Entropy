@@ -1,5 +1,6 @@
 #pragma once
 
+#include "graphics/vulkan/utilities/utilities.hpp"
 #include "vulkan/vulkan_core.h"
 #include <config.hpp>
 #include <iostream>
@@ -20,70 +21,47 @@ using namespace Entropy::Graphics::Vulkan::QueueFamilies;
 using namespace Entropy::Graphics::Vulkan::Devices;
 using namespace Entropy::Graphics::Vulkan;
 
-namespace Entropy
-{
-  namespace Graphics
-  {
-    namespace Vulkan
-    {
-      namespace DescriptorPools
-      {
+namespace Entropy {
+namespace Graphics {
+namespace Vulkan {
+namespace DescriptorPools {
 
-        // Select a binding for each descriptor type
-        constexpr int STORAGE_BINDING = 0;
-        constexpr int SAMPLER_BINDING = 1;
-        constexpr int IMAGE_BINDING = 2;
-        // Max count of each descriptor type
-        // You can query the max values for these with
-        // physicalDevice.getProperties().limits.maxDescriptrorSet*******
-        constexpr int STORAGE_COUNT = 65536;
-        constexpr int SAMPLER_COUNT = 65536;
-        constexpr int IMAGE_COUNT = 65536;
+struct DescriptorPool : public ServiceBase<IDescriptorPool> {
 
-        struct DescriptorPool : public ServiceBase<IDescriptorPool>
-        {
+  DescriptorPool() {
 
-          DescriptorPool()
-          {
+    ServiceLocator *sl = ServiceLocator::GetInstance();
+    auto logicalDevice = sl->getService<ILogicalDevice>();
 
-            ServiceLocator *sl = ServiceLocator::GetInstance();
-            auto logicalDevice = sl->getService<ILogicalDevice>();
+    std::array<VkDescriptorPoolSize, 3> poolSizes{};
 
-            std::array<VkDescriptorPoolSize, 3> poolSizes{};
+    poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    poolSizes[0].descriptorCount = MAX_DESCRIPTOR_SETS_COUNT;
 
-            poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            poolSizes[0].descriptorCount = STORAGE_COUNT;
+    poolSizes[1].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    poolSizes[1].descriptorCount = MAX_DESCRIPTOR_SETS_COUNT;
 
-            poolSizes[1].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-            poolSizes[1].descriptorCount = STORAGE_COUNT;
+    poolSizes[2].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    poolSizes[2].descriptorCount = MAX_DESCRIPTOR_SETS_COUNT;
 
-            poolSizes[2].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            poolSizes[2].descriptorCount = 100000;
+    VkDescriptorPoolCreateInfo poolInfo{};
+    poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+    poolInfo.pPoolSizes = poolSizes.data();
+    poolInfo.maxSets = MAX_DESCRIPTOR_SETS_COUNT;
+    poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT |
+                     VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;
 
-            VkDescriptorPoolCreateInfo poolInfo{};
-            poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-            poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
-            poolInfo.pPoolSizes = poolSizes.data();
-            poolInfo.maxSets = 10000;
-            poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT |
-                             VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;
+    VK_CHECK(vkCreateDescriptorPool(logicalDevice->Get(), &poolInfo, nullptr,
+                                    &_descriptorPool));
+  }
 
-            if (vkCreateDescriptorPool(logicalDevice->Get(), &poolInfo, nullptr,
-                                       &_descriptorPool) != VK_SUCCESS)
-            {
-              exit(EXIT_FAILURE);
-            }
-          }
+  inline VkDescriptorPool Get() { return _descriptorPool; };
 
-          inline VkDescriptorPool Get()
-          {
-            return _descriptorPool;
-          };
-
-        private:
-          VkDescriptorPool _descriptorPool;
-        };
-      } // namespace DescriptorPools
-    } // namespace Vulkan
-  } // namespace Graphics
+private:
+  VkDescriptorPool _descriptorPool = VK_NULL_HANDLE;
+};
+} // namespace DescriptorPools
+} // namespace Vulkan
+} // namespace Graphics
 } // namespace Entropy

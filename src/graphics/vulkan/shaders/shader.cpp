@@ -2,47 +2,29 @@
 
 using namespace Entropy::Graphics::Vulkan::Shaders;
 
-/*
+Shader::Shader(const std::string vert, const std::string frag) {
+  ServiceLocator *sl = ServiceLocator::GetInstance();
+  _logicalDevice = sl->getService<ILogicalDevice>();
 
-Shader::Shader(std::shared_ptr<ServiceLocator> serviceLocator,
-               const std::vector<char> vert, const std::vector<char> frag) {
-  _logicalDevice = serviceLocator->GetService<LogicalDevice>();
+  _vertCode = this->ReadFile(vert);
+  _fragCode = this->ReadFile(frag);
 
-  if (vert.size() > 0 && frag.size() > 0) {
-    this->_shaderModuleVert = this->BuildShader(vert);
-    this->_shaderModuleFrag = this->BuildShader(frag);
+  if (this->_vertCode.size() > 0 && _fragCode.size() > 0) {
+    _shaderModuleVert = BuildShader(_vertCode);
+    _shaderModuleFrag = BuildShader(_fragCode);
   }
 }
 
-*/
-
-Shader::Shader(
-    const std::string vert, const std::string frag)
-{
-
-  this->_vertCode = this->ReadFile(vert);
-  this->_fragCode = this->ReadFile(frag);
-
-  if (this->_vertCode.size() > 0 && this->_fragCode.size() > 0)
-  {
-    this->_shaderModuleVert = this->BuildShader(this->_vertCode);
-    this->_shaderModuleFrag = this->BuildShader(this->_fragCode);
-  }
+Shader::~Shader() {
+  vkDestroyShaderModule(_logicalDevice->Get(), _shaderModuleVert, nullptr);
+  vkDestroyShaderModule(_logicalDevice->Get(), _shaderModuleFrag, nullptr);
 }
 
-Shader::~Shader()
-{
-  // vkDestroyShaderModule(_logicalDevice->Get(), this->_shaderModuleVert,
-  // nullptr); vkDestroyShaderModule(_logicalDevice->Get(),
-  // this->_shaderModuleFrag, nullptr);
-}
-
-std::vector<char> Shader::ReadFile(std::string filename)
-{
+std::vector<char> Shader::ReadFile(std::string filename) {
   std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
-  if (!file.is_open())
-  {
+  if (!file.is_open()) {
+    spdlog::error("Couln't read shader: {}", filename);
     exit(EXIT_FAILURE);
   }
 
@@ -57,12 +39,7 @@ std::vector<char> Shader::ReadFile(std::string filename)
   return buffer;
 }
 
-VkShaderModule
-Shader::BuildShader(
-    std::vector<char> code)
-{
-  ServiceLocator *sl = ServiceLocator::GetInstance();
-  auto logicalDevice = sl->getService<ILogicalDevice>();
+VkShaderModule Shader::BuildShader(std::vector<char> code) {
 
   VkShaderModuleCreateInfo createInfo{};
   createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -70,18 +47,13 @@ Shader::BuildShader(
   createInfo.pCode = reinterpret_cast<const uint32_t *>(code.data());
 
   VkShaderModule shaderModule;
-
-  if (vkCreateShaderModule(logicalDevice->Get(), &createInfo, nullptr,
-                           &shaderModule) != VK_SUCCESS)
-  {
-    exit(EXIT_FAILURE);
-  }
+  VK_CHECK(vkCreateShaderModule(_logicalDevice->Get(), &createInfo, nullptr,
+                                &shaderModule));
 
   return shaderModule;
 }
 
-VkShaderModule Shader::BuildShader(uint32_t *code, uint32_t size)
-{
+VkShaderModule Shader::BuildShader(uint32_t *code, uint32_t size) {
 
   ServiceLocator *sl = ServiceLocator::GetInstance();
   auto logicalDevice = sl->getService<ILogicalDevice>();
@@ -95,9 +67,8 @@ VkShaderModule Shader::BuildShader(uint32_t *code, uint32_t size)
 
   VkShaderModule shaderModule;
 
-  if (vkCreateShaderModule(logicalDevice->Get(), &createInfo, nullptr,
-                           &shaderModule) != VK_SUCCESS)
-  {
+  if (vkCreateShaderModule(_logicalDevice->Get(), &createInfo, nullptr,
+                           &shaderModule) != VK_SUCCESS) {
     exit(EXIT_FAILURE);
   }
 

@@ -1,105 +1,81 @@
 #pragma once
 
-#include <vulkan/vulkan.hpp>
 #include <fstream>
-#include <servicelocators/servicelocator.hpp>
 #include <graphics/vulkan/devices/ilogical_device.hpp>
+#include <graphics/vulkan/utilities/utilities.hpp>
+#include <servicelocators/servicelocator.hpp>
+#include <spdlog/spdlog.h>
+#include <vulkan/vulkan.hpp>
 
-namespace Entropy
-{
-  namespace Graphics
-  {
-    namespace Vulkan
-    {
-      namespace Shaders
-      {
-        class Shader
-        {
-        public:
-          /**
-           * @brief Construct a new Shader object
-           *
-           * @param vert
-           * @param frag
-           * @param context
-           */
-          Shader(const std::string vert, const std::string frag);
+namespace Entropy {
+namespace Graphics {
+namespace Vulkan {
+namespace Shaders {
 
-          // Shader(std::shared_ptr<ServiceLocator> serviceLocator,
-          //        const std::vector<char> vert, const std::vector<char> frag);
+class Shader {
+public:
+  /**
+   * @brief Construct a new Shader object
+   *
+   * @param vert
+   * @param frag
+   * @param contexts
+   */
+  Shader(const std::string vert, const std::string frag);
 
-          /**
-           * @brief Destroy the Shader object
-           *
-           */
-          ~Shader();
+  /**
+   * @brief Destroy the Shader object
+   *
+   */
+  ~Shader();
 
-          /**
-           * @brief Get the Vert Code object
-           *
-           * @return std::vector<char>
-           */
-          inline std::vector<char> GetVertCode() { return this->_vertCode; };
+  /**
+   * @brief Get the Vert Shader Module object
+   *
+   * @return VkShaderModule
+   */
+  inline VkShaderModule GetVertShaderModule() { return _shaderModuleVert; };
 
-          /**
-           * @brief Get the Frag Code object
-           *
-           * @return std::vector<char>
-           */
-          inline std::vector<char> GetFragCode() { return this->_fragCode; };
+  /**
+   * @brief Get the Frag Shader Module object
+   *
+   * @return VkShaderModule
+   */
+  inline VkShaderModule GetFragShaderModule() { return _shaderModuleFrag; };
 
-          /**
-           * @brief Get the Vert Shader Module object
-           *
-           * @return VkShaderModule
-           */
-          inline VkShaderModule GetVertShaderModule()
-          {
-            return this->_shaderModuleVert;
-          };
+private:
+  /**
+   * @brief
+   *
+   * @param filename
+   * @return std::vector<char>
+   */
+  std::vector<char> ReadFile(std::string filename);
 
-          /**
-           * @brief Get the Frag Shader Module object
-           *
-           * @return VkShaderModule
-           */
-          inline VkShaderModule GetFragShaderModule()
-          {
-            return this->_shaderModuleFrag;
-          };
+  /**
+   * @brief
+   *
+   * @param code
+   * @return VkShaderModule
+   */
+  VkShaderModule BuildShader(std::vector<char> code);
 
-        private:
-          /**
-           * @brief
-           *
-           * @param filename
-           * @return std::vector<char>
-           */
-          std::vector<char> ReadFile(std::string filename);
+  /**
+   * @brief
+   *
+   * @param code
+   * @return VkShaderModule
+   */
+  VkShaderModule BuildShader(uint32_t *code, uint32_t size);
 
-          /**
-           * @brief
-           *
-           * @param code
-           * @return VkShaderModule
-           */
-          VkShaderModule BuildShader(std::vector<char> code);
-
-          /**
-           * @brief
-           *
-           * @param code
-           * @return VkShaderModule
-           */
-          VkShaderModule BuildShader(uint32_t *code, uint32_t size);
-
-        private:
-          std::vector<char> _vertCode;
-          std::vector<char> _fragCode;
-          VkShaderModule _shaderModuleVert;
-          VkShaderModule _shaderModuleFrag;
-        };
-      } // namespace Shaders
-    } // namespace Vulkan
-  } // namespace Graphics
-} // namespace Symbios
+private:
+  std::vector<char> _vertCode;
+  std::vector<char> _fragCode;
+  VkShaderModule _shaderModuleVert = VK_NULL_HANDLE;
+  VkShaderModule _shaderModuleFrag = VK_NULL_HANDLE;
+  std::shared_ptr<ILogicalDevice> _logicalDevice;
+};
+} // namespace Shaders
+} // namespace Vulkan
+} // namespace Graphics
+} // namespace Entropy
