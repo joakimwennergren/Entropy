@@ -1,24 +1,14 @@
-#pragma once
-
-#include "graphics/vulkan/utilities/utilities.hpp"
-#include "vulkan/vulkan_core.h"
-#include <config.hpp>
-#include <iostream>
-#include <set>
-#include <string>
-#include <vulkan/vulkan.hpp>
-
-#include <servicelocators/servicelocator.hpp>
+#ifndef __DESCRIPTORPOOL_HPP
+#define __DESCRIPTORPOOL_HPP
 
 #include "idescriptorpool.hpp"
 
-#include <graphics/vulkan/devices/logical_device.hpp>
-#include <graphics/vulkan/queuefamilies/queuefamily.hpp>
-#include <graphics/vulkan/surfaces/surface.hpp>
+#include <config.hpp>
+#include <graphics/vulkan/devices/ilogical_device.hpp>
+#include <graphics/vulkan/utilities/utilities.hpp>
+#include <servicelocators/servicelocator.hpp>
+#include <vulkan/vulkan.hpp>
 
-using namespace Entropy::Graphics::Vulkan::Surfaces;
-using namespace Entropy::Graphics::Vulkan::QueueFamilies;
-using namespace Entropy::Graphics::Vulkan::Devices;
 using namespace Entropy::Graphics::Vulkan;
 
 namespace Entropy {
@@ -65,3 +55,5 @@ private:
 } // namespace Vulkan
 } // namespace Graphics
 } // namespace Entropy
+
+#endif /* __DESCRIPTORPOOL_HPP */
