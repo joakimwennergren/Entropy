@@ -51,7 +51,7 @@ public:
     }
   }
 
-  inline void SetText(std::string text) {
+  inline void SetText(std::string text, int x, int y) {
     // this->children.clear();
 
     // this->text = text;
@@ -61,9 +61,9 @@ public:
     for (unsigned int i = 0; i < text.size(); i++) {
       // if (text[i] == 32)
       // {
-      //     x += 20;
-      //     continue;
-      // }
+      //      x += 20;
+      //      continue;
+      //  }
 
       // float xpos = x; //_font->glyphs[text[i]].glyphslot->bitmap.width;
       // float ypos = y;
@@ -71,8 +71,7 @@ public:
       // float w = _font->glyphs[text[i]].glyphslot->bitmap.width / 2.0;
       // float h = _font->glyphs[text[i]].glyphslot->bitmap.rows / 2.0;
 
-      // auto g = std::make_shared<Sprite>(_serviceLocator,
-      // _font->glyphs[text[i]].glyphslot->bitmap);
+      // auto g = std::make_shared<Sprite>(_font->glyphs[text[i]].glyphslot->bitmap);
 
       // auto yAdvance = (_font->glyphs[text[i]].glyphslot->bitmap.rows -
       // _font->glyphs[text[i]].glyphslot->bitmap_top) + ypos;
@@ -85,7 +84,7 @@ public:
       // g->zIndex = 999;
 
       // // now advance cursors for next glyph (note that advance is number of
-      // 1/64 pixels) x += (_font->glyphs[text[i]].glyphslot->advance.x >> 6);
+      //x += (_font->glyphs[text[i]].glyphslot->advance.x >> 6);
       // // bitshift by 6 to get value in pixels (2^6 = 64)
       // this->children.push_back(g);
     }

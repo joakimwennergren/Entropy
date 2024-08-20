@@ -4,7 +4,7 @@
 #define ENGINE_BASEPATH "@PROJECT_BASEPATH@"
 
 // Platform
-#define @CMAKE_PLATFORM@ //@CMAKE_PLATFORM@
+#define @CMAKE_PLATFORM@
 
 // Debugging
 #define USE_DEBUG_INFO
