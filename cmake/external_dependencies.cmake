@@ -15,10 +15,12 @@ add_subdirectory(external/spdlog)
 # Networking
 #add_subdirectory(external/asio.cmake)
 
-# HTTP 
+# HTTP
 set(BUILD_CURL_EXE OFF)
 set(CURL_STATICLIB ON)
 set(SSL_ENABLED ON)
+set(CURL_USE_OPENSSL ON)
+add_subdirectory(external/curl)
 
 if(WIN32)
     set(USE_WINDOWS_SSPI ON)
@@ -45,10 +47,6 @@ else()
   set(HAVE_RAND_SCREEN FALSE CACHE INTERNAL "" FORCE)
   set(HAVE_RAND_EGD FALSE CACHE INTERNAL "" FORCE)
 endif(WIN32)
-
-
-set(CURL_USE_OPENSSL OFF)
-#add_subdirectory(external/curl)
 
 # Graphics API
 

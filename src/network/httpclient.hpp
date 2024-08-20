@@ -3,9 +3,7 @@
 #include <iostream>
 #include <string>
 #include <curl/curl.h>
-
-#include <plog/Log.h>
-
+#include <spdlog/spdlog.h>
 namespace Entropy
 {
     namespace Network

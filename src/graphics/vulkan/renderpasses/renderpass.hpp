@@ -9,6 +9,7 @@
 #include <graphics/vulkan/textures/swapchain_texture.hpp>
 #include <vulkan/vulkan.hpp>
 
+#include "graphics/vulkan/utilities/utilities.hpp"
 #include "spdlog/spdlog.h"
 
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;
@@ -89,11 +90,8 @@ struct RenderPass {
     renderPassInfo.dependencyCount = 1;
     renderPassInfo.pDependencies = &dependency;
 
-    if (vkCreateRenderPass(_logicalDevice->Get(), &renderPassInfo, nullptr,
-                           &_renderPass) != VK_SUCCESS) {
-      spdlog::error("Couldn't create renderpass");
-      return;
-    }
+    VK_CHECK(vkCreateRenderPass(_logicalDevice->Get(), &renderPassInfo, nullptr,
+                                &_renderPass));
   }
 
   void Begin(CommandBuffer commandBuffer, uint32_t imageIndex, int width,
@@ -110,14 +108,8 @@ struct RenderPass {
     else
       CreateFramebuffers(width, height);
   }
+
   void RecreateDepthBuffer(int width, int height) {
-
-    // if (_depthBufferTexture != VK_NULL_HANDLE)
-    // {
-    //   spdlog::error("resetings depth texture");
-    //   _depthBufferTexture.reset();
-    // }
-
     _depthBufferTexture = std::make_shared<DepthBufferTexture>(width, height);
   }
 
@@ -184,7 +176,6 @@ struct RenderPass {
           _logicalDevice->Get(), &framebufferInfo, nullptr, &_frameBuffers[i]);
     }
   }
-  Swapchain _swapChain;
 
 private:
   std::shared_ptr<DepthBufferTexture> _depthBufferTexture = nullptr;
@@ -194,9 +185,6 @@ private:
                                VkImageTiling tiling,
                                VkFormatFeatureFlags features);
   VkFormat FindDepthFormat();
-
-  void CreateImage(uint32_t width, uint32_t height, VkFormat format,
-                   VkImageTiling tiling, VkImageUsageFlags usage);
 
   std::shared_ptr<ILogicalDevice> _logicalDevice;
   std::shared_ptr<IPhysicalDevice> _physicalDevice;

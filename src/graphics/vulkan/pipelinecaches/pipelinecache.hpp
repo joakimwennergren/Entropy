@@ -1,38 +1,46 @@
-#pragma once
+#ifndef __PIPELINECACHE_HPP
+#define __PIPELINECACHE_HPP
 
 #include "ipipelinecache.hpp"
-#include "spdlog/spdlog.h"
 
-namespace Entropy
-{
-  namespace Graphics
-  {
-    namespace Vulkan
-    {
-      namespace Caches
-      {
+#include <graphics/vulkan/devices/ilogical_device.hpp>
+#include <graphics/vulkan/utilities/utilities.hpp>
+#include <spdlog/spdlog.h>
 
-        struct PipelineCache : public ServiceBase<IPipelineCache>
-        {
+namespace Entropy {
+namespace Graphics {
+namespace Vulkan {
+namespace Caches {
+struct PipelineCache : public ServiceBase<IPipelineCache> {
+  // Constructor
+  PipelineCache() {
+    ServiceLocator *sl = ServiceLocator::GetInstance();
+    _logicalDevice = sl->getService<ILogicalDevice>();
 
-          PipelineCache()
-          {
-            ServiceLocator *sl = ServiceLocator::GetInstance();
-            auto logicalDevice = sl->getService<ILogicalDevice>();
+    VkPipelineCacheCreateInfo pipelineCacheCreateInfo = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO};
 
-            VkPipelineCacheCreateInfo pipelineCacheCreateInfo = {};
-            pipelineCacheCreateInfo.sType =
-                VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
-            vkCreatePipelineCache(logicalDevice->Get(), &pipelineCacheCreateInfo,
-                                  nullptr, &_pipelineCache);
-          }
+    VK_CHECK(vkCreatePipelineCache(_logicalDevice->Get(),
+                                   &pipelineCacheCreateInfo, nullptr,
+                                   &_pipelineCache));
+  }
+  // Destructor
+  ~PipelineCache() {
+    vkDestroyPipelineCache(_logicalDevice->Get(), _pipelineCache, nullptr);
+  }
 
-          inline VkPipelineCache Get() { return _pipelineCache; };
+  // Gets the pipelinecache handle
+  inline VkPipelineCache Get() { return _pipelineCache; };
 
-        private:
-          VkPipelineCache _pipelineCache = VK_NULL_HANDLE;
-        };
-      } // namespace Caches
-    } // namespace Vulkan
-  } // namespace Graphics
+private:
+  // Pipelinecache handle
+  VkPipelineCache _pipelineCache = VK_NULL_HANDLE;
+  // Logical device dependency
+  std::shared_ptr<ILogicalDevice> _logicalDevice;
+};
+} // namespace Caches
+} // namespace Vulkan
+} // namespace Graphics
 } // namespace Entropy
+
+#endif /* __PIPELINECACHE_HPP */

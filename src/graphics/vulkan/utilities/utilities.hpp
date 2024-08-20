@@ -1,8 +1,21 @@
 #pragma once
 
 #include "graphics/vulkan/devices/physical_device.hpp"
+#include <spdlog/spdlog.h>
 #include <vulkan/vulkan.hpp>
+
 using namespace Entropy::Graphics::Vulkan::Devices;
+
+// we want to immediately abort when there is an error. In normal engines this
+// would give an error message to the user, or perform a dump of state.
+#define VK_CHECK(x)                                                            \
+  do {                                                                         \
+    VkResult err = x;                                                          \
+    if (err) {                                                                 \
+      spdlog::error(err);                                                      \
+      abort();                                                                 \
+    }                                                                          \
+  } while (0)
 
 namespace Entropy {
 namespace Graphics {

@@ -50,9 +50,6 @@ namespace Entropy
 
           NormalTexture(std::string path) : Texture()
           {
-            
-              spdlog::info(path);
-
             assert(path.length() != 0);
 
             // Load the image pixels

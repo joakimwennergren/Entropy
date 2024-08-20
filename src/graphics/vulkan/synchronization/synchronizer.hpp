@@ -5,14 +5,13 @@
 #include <spdlog/spdlog.h>
 #include <vulkan/vulkan.hpp>
 
-#include <graphics/vulkan/devices/logical_device.hpp>
-
-using namespace Entropy::Graphics::Vulkan::Devices;
+#include <graphics/vulkan/devices/ilogical_device.hpp>
 
 namespace Entropy {
 namespace Graphics {
 namespace Vulkan {
 namespace Synchronization {
+
 class Synchronizer {
 public:
   Synchronizer(unsigned int numObjects) {
@@ -36,7 +35,6 @@ public:
     fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
     for (size_t i = 0; i < _numObjects; i++) {
-      spdlog::info("Creating fences!");
       if (vkCreateSemaphore(_logicalDevice->Get(), &semaphoreInfo, nullptr,
                             &_imageSemaphores[i]) != VK_SUCCESS ||
           vkCreateSemaphore(_logicalDevice->Get(), &semaphoreInfo, nullptr,
@@ -60,9 +58,11 @@ public:
   inline std::vector<VkSemaphore> GetImageSemaphores() {
     return _imageSemaphores;
   };
+
   inline std::vector<VkSemaphore> GetRenderFinishedSemaphores() {
     return _renderFinishedSemaphores;
   };
+
   inline std::vector<VkFence> GetFences() { return _fences; };
 
 private:

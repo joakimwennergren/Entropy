@@ -4,8 +4,7 @@
 using namespace Entropy::Graphics::Vulkan::RenderPasses;
 
 void RenderPass::Begin(CommandBuffer commandBuffer, uint32_t imageIndex,
-                       int width, int height)
-{
+                       int width, int height) {
 
   VkRenderPassBeginInfo renderPassInfo{};
   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -27,8 +26,7 @@ void RenderPass::Begin(CommandBuffer commandBuffer, uint32_t imageIndex,
                        VK_SUBPASS_CONTENTS_INLINE);
 }
 
-void RenderPass::End(CommandBuffer commandBuffer)
-{
+void RenderPass::End(CommandBuffer commandBuffer) {
   vkCmdEndRenderPass(commandBuffer.Get());
 }
 
@@ -83,80 +81,32 @@ void RenderPass::End(CommandBuffer commandBuffer)
 VkFormat
 RenderPass::findSupportedFormat(const std::vector<VkFormat> &candidates,
                                 VkImageTiling tiling,
-                                VkFormatFeatureFlags features)
-{
+                                VkFormatFeatureFlags features) {
 
-  for (VkFormat format : candidates)
-  {
+  for (VkFormat format : candidates) {
     VkFormatProperties props;
-    vkGetPhysicalDeviceFormatProperties(_physicalDevice->Get(), format,
-                                        &props);
+    vkGetPhysicalDeviceFormatProperties(_physicalDevice->Get(), format, &props);
 
     if (tiling == VK_IMAGE_TILING_LINEAR &&
-        (props.linearTilingFeatures & features) == features)
-    {
+        (props.linearTilingFeatures & features) == features) {
       return format;
-    }
-    else if (tiling == VK_IMAGE_TILING_OPTIMAL &&
-             (props.optimalTilingFeatures & features) == features)
-    {
+    } else if (tiling == VK_IMAGE_TILING_OPTIMAL &&
+               (props.optimalTilingFeatures & features) == features) {
       return format;
     }
   }
 
   spdlog::warn("Failed to find supported format.");
+  return VK_FORMAT_UNDEFINED;
 }
 
 // /**
 //  * @brief Find depth color format
 //  * @return  VKFormat depth color format
 //  */
-VkFormat RenderPass::FindDepthFormat()
-{
+VkFormat RenderPass::FindDepthFormat() {
   return findSupportedFormat(
       {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT,
        VK_FORMAT_D24_UNORM_S8_UINT},
       VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 }
-
-// /**
-//  * @brief Create frame buffer image
-//  * @param width uint32_t width of framebuffer image
-//  * @param height uint32_t height of framebuffer image
-//  * @param format VkFormat color format
-//  * @param tiling VkImageTiling tiling
-//  * @param usage VkImageUsageFlags flags
-//  * @return (void)
-//  */
-void RenderPass::CreateImage(uint32_t width, uint32_t height, VkFormat format,
-                             VkImageTiling tiling, VkImageUsageFlags usage)
-{
-
-  // VmaAllocationCreateInfo allocCreateInfo = {};
-  // allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO;
-  // allocCreateInfo.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
-
-  // VkImageCreateInfo imageInfo{};
-  // imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-  // imageInfo.imageType = VK_IMAGE_TYPE_2D;
-  // imageInfo.extent.width = width;
-  // imageInfo.extent.height = height;
-  // imageInfo.extent.depth = 1;
-  // imageInfo.mipLevels = 1;
-  // imageInfo.arrayLayers = 1;
-  // imageInfo.format = format;
-  // imageInfo.tiling = tiling;
-  // imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-  // imageInfo.usage = usage;
-  // imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-  // imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-  // VkResult res = vmaCreateImage(allocator->Get(), &imageInfo,
-  // &allocCreateInfo,
-  //     &_depthImage, &_allocation, nullptr);
-}
-
-// /**
-//  * @brief (Re)Create depth buffer
-//  * @return (void)
-//  */

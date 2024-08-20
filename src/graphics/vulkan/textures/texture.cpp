@@ -70,8 +70,7 @@ _imageView = imageView.Get();
 */
 //};
 
-void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap)
-{
+void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap) {
   /*
   auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
 
@@ -103,8 +102,7 @@ void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap)
 }
 
 void Texture::CreateTextureImageFromPixels(unsigned char *pixels, int width,
-                                           int height)
-{
+                                           int height) {
 
   /*
   #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
@@ -209,14 +207,12 @@ void Texture::CreateTextureImageFromPixels(unsigned char *pixels, int width,
  * @return (void)
  */
 void Texture::TransitionImageLayout(VkImage image, VkImageLayout oldLayout,
-                                    VkImageLayout newLayout)
-{
+                                    VkImageLayout newLayout) {
   // Assert on parameters
   assert(image != VK_NULL_HANDLE);
 
   // Create a new command buffer and start one - time recording
-  auto commandBuffer =
-      new CommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+  auto commandBuffer = new CommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
 
   commandBuffer->RecordOnce();
 
@@ -238,25 +234,20 @@ void Texture::TransitionImageLayout(VkImage image, VkImageLayout oldLayout,
   VkPipelineStageFlags destinationStage;
 
   if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED &&
-      newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
-  {
+      newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
     barrier.srcAccessMask = 0;
     barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 
     sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
     destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-  }
-  else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
-           newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
-  {
+  } else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
+             newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
     barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
     barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
     sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
     destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-  }
-  else
-  {
+  } else {
     spdlog::error("Unsupported image layout transition!");
   }
 
@@ -274,8 +265,7 @@ void Texture::TransitionImageLayout(VkImage image, VkImageLayout oldLayout,
   submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
   submitInfo.commandBufferCount = 1;
   submitInfo.pCommandBuffers = &cmdBuf;
-  vkQueueSubmit(_logicalDevice->GetGraphicQueue(), 1, &submitInfo,
-                nullptr);
+  vkQueueSubmit(_logicalDevice->GetGraphicQueue(), 1, &submitInfo, nullptr);
 
   vkDeviceWaitIdle(_logicalDevice->Get());
 }
@@ -289,8 +279,7 @@ void Texture::TransitionImageLayout(VkImage image, VkImageLayout oldLayout,
  * @return (void)
  */
 void Texture::CopyBufferToImage(const VkBuffer buffer, const VkImage image,
-                                const uint32_t width, const uint32_t height)
-{
+                                const uint32_t width, const uint32_t height) {
   // Assert on parameters
   assert(buffer != VK_NULL_HANDLE);
   assert(image != VK_NULL_HANDLE);
@@ -298,9 +287,7 @@ void Texture::CopyBufferToImage(const VkBuffer buffer, const VkImage image,
   assert(height != 0);
 
   // Create a new command buffer and start one-time recording
-  auto commandBuffer =
-      new CommandBuffer(
-          VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+  auto commandBuffer = new CommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
   commandBuffer->RecordOnce();
 
   // Make the actual copy
@@ -322,13 +309,11 @@ void Texture::CopyBufferToImage(const VkBuffer buffer, const VkImage image,
   // _queueSync.commandBuffers.push_back(commandBuffer->Get());
 
   auto cmdBuf = commandBuffer->Get();
-
   VkSubmitInfo submitInfo{};
   submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
   submitInfo.commandBufferCount = 1;
   submitInfo.pCommandBuffers = &cmdBuf;
-  vkQueueSubmit(_logicalDevice->GetGraphicQueue(), 1, &submitInfo,
-                nullptr);
+  vkQueueSubmit(_logicalDevice->GetGraphicQueue(), 1, &submitInfo, nullptr);
 
   vkDeviceWaitIdle(_logicalDevice->Get());
 }
@@ -345,8 +330,7 @@ void Texture::CopyBufferToImage(const VkBuffer buffer, const VkImage image,
  */
 void Texture::CreateImage(const uint32_t width, const uint32_t height,
                           const VkFormat format, const VkImageTiling tiling,
-                          const VkImageUsageFlags usage, VkImage &image)
-{
+                          const VkImageUsageFlags usage, VkImage &image) {
   // Assert on parameters
   assert(width != 0);
   assert(height != 0);
@@ -380,8 +364,7 @@ void Texture::CreateImage(const uint32_t width, const uint32_t height,
  * @brief Get the supported color format for current platform
  * @return VkFormat the color format
  */
-VkFormat Texture::GetColorFormat()
-{
+VkFormat Texture::GetColorFormat() {
 
   return VK_FORMAT_B8G8R8A8_UNORM;
 
