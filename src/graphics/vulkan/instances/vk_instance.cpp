@@ -2,8 +2,7 @@
 
 using namespace Entropy::Graphics::Vulkan::Instances;
 
-VulkanInstance::VulkanInstance()
-{
+VulkanInstance::VulkanInstance() {
   VkApplicationInfo appInfo{};
   appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
   appInfo.pApplicationName = "Entropy Application";
@@ -28,8 +27,7 @@ VulkanInstance::VulkanInstance()
                                          extensionProps.data());
 
   std::vector<const char *> extensions;
-  for (const auto &extension : extensionProps)
-  {
+  for (const auto &extension : extensionProps) {
     extensions.push_back(extension.extensionName);
   }
 
@@ -48,18 +46,13 @@ VulkanInstance::VulkanInstance()
   createInfo.enabledExtensionCount = (uint32_t)extensions.size();
   createInfo.ppEnabledExtensionNames = extensions.data();
 
-  if (ValidationLayer::CheckValidationLayerSupport(_validationLayers))
-  {
+  if (ValidationLayer::CheckValidationLayerSupport(_validationLayers)) {
     createInfo.enabledLayerCount = (uint32_t)_validationLayers.size();
     createInfo.ppEnabledLayerNames = _validationLayers.data();
   }
 
-  if (vkCreateInstance(&createInfo, nullptr, &this->_instance) != VK_SUCCESS)
-  {
-    std::cout << "Failed to create vulkan instance!" << std::endl;
-    exit(EXIT_FAILURE);
-  }
-
+  auto res = vkCreateInstance(&createInfo, nullptr, &this->_instance);
+  std::cout << res << std::endl;
   VkDebugUtilsMessengerCreateInfoEXT dbgCreateInfo{};
   dbgCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
   dbgCreateInfo.messageSeverity =
@@ -73,42 +66,34 @@ VulkanInstance::VulkanInstance()
   dbgCreateInfo.pUserData = nullptr; // Optional
 
   if (CreateDebugUtilsMessengerEXT(_instance, &dbgCreateInfo, nullptr,
-                                   &_debugMessenger) != VK_SUCCESS)
-  {
+                                   &_debugMessenger) != VK_SUCCESS) {
     throw std::runtime_error("failed to setup debug messenger!");
   }
 }
 
-VulkanInstance::~VulkanInstance()
-{
+VulkanInstance::~VulkanInstance() {
   DestroyDebugUtilsMessengerEXT(_instance, _debugMessenger, nullptr);
 }
 
 VkResult VulkanInstance::CreateDebugUtilsMessengerEXT(
     VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
     const VkAllocationCallbacks *pAllocator,
-    VkDebugUtilsMessengerEXT *pDebugMessenger)
-{
+    VkDebugUtilsMessengerEXT *pDebugMessenger) {
   auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
       instance, "vkCreateDebugUtilsMessengerEXT");
-  if (func != nullptr)
-  {
+  if (func != nullptr) {
     return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
-  }
-  else
-  {
+  } else {
     return VK_ERROR_EXTENSION_NOT_PRESENT;
   }
 }
 
 void VulkanInstance::DestroyDebugUtilsMessengerEXT(
     VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger,
-    const VkAllocationCallbacks *pAllocator)
-{
+    const VkAllocationCallbacks *pAllocator) {
   auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
       instance, "vkDestroyDebugUtilsMessengerEXT");
-  if (func != nullptr)
-  {
+  if (func != nullptr) {
     func(instance, debugMessenger, pAllocator);
   }
 }
