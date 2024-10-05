@@ -41,7 +41,6 @@
 #include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
 #include <graphics/vulkan/devices/logical_device.hpp>
 #include <graphics/vulkan/pipelines/pipeline.hpp>
-#include <graphics/vulkan/textures/texture.hpp>
 #include <timing/timer.hpp>
 
 #include <stb_image.h>
@@ -90,11 +89,11 @@ struct Material {
   float roughnessFactor = 1.0f;
   glm::vec4 baseColorFactor = glm::vec4(1.0f);
   glm::vec4 emissiveFactor = glm::vec4(0.0f);
-  Texture *baseColorTexture;
-  Texture *metallicRoughnessTexture;
-  Texture *normalTexture;
-  Texture *occlusionTexture;
-  Texture *emissiveTexture;
+  // Texture *baseColorTexture;
+  // Texture *metallicRoughnessTexture;
+  // Texture *normalTexture;
+  // Texture *occlusionTexture;
+  // Texture *emissiveTexture;
   bool doubleSided = false;
   struct TexCoordSets {
     uint8_t baseColor = 0;
@@ -105,8 +104,8 @@ struct Material {
     uint8_t emissive = 0;
   } texCoordSets;
   struct Extension {
-    Texture *specularGlossinessTexture;
-    Texture *diffuseTexture;
+    // Texture *specularGlossinessTexture;
+    // Texture *diffuseTexture;
     glm::vec4 diffuseFactor = glm::vec4(1.0f);
     glm::vec3 specularFactor = glm::vec3(0.0f);
   } extension;
@@ -223,7 +222,7 @@ public:
 
   std::vector<Skin *> skins;
 
-  std::vector<Texture *> textures;
+  // std::vector<Texture *> textures;
   std::vector<TextureSampler> textureSamplers;
   std::vector<Material> materials;
   std::vector<Animation> animations;
@@ -248,10 +247,10 @@ public:
 
   ~Model() {
     spdlog::info("Destroying model!");
-    for (auto &texture : textures) {
-      delete texture;
-    }
-    textures.resize(0);
+    // for (auto &texture : textures) {
+    //   delete texture;
+    // }
+    // textures.resize(0);
     textureSamplers.resize(0);
     for (auto node : nodes) {
       delete node;
@@ -290,7 +289,7 @@ public:
   void draw(VkCommandBuffer commandBuffer);
   void calculateBoundingBox(Node *node, Node *parent);
   void getSceneDimensions();
-  void SetupCubeMap(std::shared_ptr<Texture> texture);
+  // void SetupCubeMap(std::shared_ptr<Texture> texture);
   void updateAnimation(uint32_t index, float time);
   Node *findNode(Node *parent, uint32_t index);
   Node *nodeFromIndex(uint32_t index);
@@ -306,7 +305,7 @@ public:
   VkDescriptorSet _noTextureDs;
 
 private:
-  Texture *noTexture;
+  // Texture *noTexture;
   bool isCubeMap = false;
   VkDescriptorSet _cubeMapDS;
 

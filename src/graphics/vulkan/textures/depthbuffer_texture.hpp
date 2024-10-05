@@ -7,7 +7,7 @@
 #include <graphics/vulkan/imageviews/imageview.hpp>
 #include <graphics/vulkan/memory/allocator.hpp>
 #include <graphics/vulkan/swapchains/swapchain.hpp>
-#include <graphics/vulkan/textures/texture.hpp>
+#include <graphics/vulkan/textures/base_texture.hpp>
 #include <spdlog/spdlog.h>
 #include <vulkan/vulkan.hpp>
 
@@ -23,7 +23,7 @@ namespace Graphics {
 namespace Vulkan {
 namespace Textures {
 
-struct DepthBufferTexture : public Texture {
+struct DepthBufferTexture : public BaseTexture {
   DepthBufferTexture(unsigned int width, unsigned int height) {
     ServiceLocator *sl = ServiceLocator::GetInstance();
     auto allocator = sl->getService<IAllocator>();
@@ -57,8 +57,8 @@ struct DepthBufferTexture : public Texture {
     VK_CHECK(vmaCreateImage(allocator->Get(), &imageInfo, &allocCreateInfo,
                             &_textureImage, &_allocation, nullptr));
 
-    _imageView =
-        ImageView(_textureImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT).Get();
+    imageView = std::make_shared<ImageView>(_textureImage, depthFormat,
+                                            VK_IMAGE_ASPECT_DEPTH_BIT);
   };
 
 private:

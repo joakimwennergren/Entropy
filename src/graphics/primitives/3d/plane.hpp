@@ -5,9 +5,8 @@
 #include <graphics/vulkan/buffers/indexbuffer.hpp>
 #include <graphics/vulkan/buffers/vertexbuffer.hpp>
 #include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
-#include <graphics/vulkan/textures/texture.hpp>
 
-using namespace Entropy::Graphics::Vulkan::Textures;
+// using namespace Entropy::Graphics::Vulkan::Textures;
 using namespace Entropy::Graphics::Vulkan::DescriptorPools;
 using namespace Entropy::Data;
 
@@ -23,12 +22,12 @@ public:
    */
   Plane();
 
-  void Test(){};
+  void Test() {};
 
   VkDescriptorSet _descriptorSet = VK_NULL_HANDLE;
   VkDescriptorSetLayout _descriptorSetLayout = VK_NULL_HANDLE;
 
-  std::unique_ptr<Texture> _blank;
+  // std::unique_ptr<Texture> _blank;
 
   void UpdateDescriptorSets();
   /**

@@ -1,13 +1,12 @@
 #pragma once
 
 #include "cameras/camera_manager.hpp"
-#include "cameras/ortho_camera.hpp"
 #include "cameras/orthographic_camera.hpp"
 #include "config.hpp"
 #include "ecs/components/position.hpp"
 #include "graphics/vulkan/buffers/indexbuffer.hpp"
 #include "graphics/vulkan/memory/allocator.hpp"
-#include "graphics/vulkan/textures/normal_texture.hpp"
+#include "graphics/vulkan/textures/texture.hpp"
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -142,11 +141,6 @@ struct VulkanRenderer {
 
     _timer = std::make_unique<Timing::Timer>(1.0);
     _timer->Start();
-
-    // _batchedVertices = _bufferFactory.CreateVertexBufferWithSize(
-    //     MAX_INSTANCE_COUNT * sizeof(Vertex));
-    // _batchedIndices = _bufferFactory.CreateIndexBufferWithSize<uint16_t>(
-    //     MAX_INSTANCE_COUNT * sizeof(uint16_t));
   }
 
   /**

@@ -2,9 +2,9 @@
 
 #include <data/vertex.hpp>
 #include <graphics/vulkan/buffers/vertexbuffer.hpp>
-#include <graphics/vulkan/textures/texture.hpp>
+// #include <graphics/vulkan/textures/texture.hpp>
 
-using namespace Entropy::Graphics::Vulkan::Textures;
+// using namespace Entropy::Graphics::Vulkan::Textures;
 using namespace Entropy::Data;
 
 namespace Entropy {

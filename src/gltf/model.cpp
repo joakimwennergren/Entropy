@@ -16,9 +16,9 @@ using namespace Entropy::GLTF;
 
 // Bounding box
 
-BoundingBox::BoundingBox(){};
+BoundingBox::BoundingBox() {};
 
-BoundingBox::BoundingBox(glm::vec3 min, glm::vec3 max) : min(min), max(max){};
+BoundingBox::BoundingBox(glm::vec3 min, glm::vec3 max) : min(min), max(max) {};
 
 BoundingBox BoundingBox::getAABB(glm::mat4 m) {
   glm::vec3 min = glm::vec3(m[3]);
@@ -859,10 +859,12 @@ void Model::loadMaterials(tinygltf::Model &gltfModel) {
   // auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
   // auto physicalDevice = _serviceLocator->GetService<PhysicalDevice>();
   // auto descriptorPool = _serviceLocator->GetService<DescriptorPool>();
-
+  /*
   for (tinygltf::Material &mat : gltfModel.materials) {
+
     Material material{};
     material.doubleSided = mat.doubleSided;
+
     if (mat.values.find("baseColorTexture") != mat.values.end()) {
       material.baseColorTexture =
           textures[mat.values["baseColorTexture"].TextureIndex()];
@@ -942,7 +944,7 @@ void Model::loadMaterials(tinygltf::Model &gltfModel) {
 
       VkDescriptorImageInfo imageInfo{};
       imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-      imageInfo.imageView = material.baseColorTexture->GetImageView();
+      // imageInfo.imageView = material.baseColorTexture->GetImageView();
       imageInfo.sampler = _textureSampler;
 
       std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
@@ -967,6 +969,7 @@ void Model::loadMaterials(tinygltf::Model &gltfModel) {
       //                        static_cast<uint32_t>(descriptorWrites.size()),
       //                        descriptorWrites.data(), 0, nullptr);
     }
+
     if (mat.values.find("metallicRoughnessTexture") != mat.values.end()) {
       material.metallicRoughnessTexture =
           textures[mat.values["metallicRoughnessTexture"].TextureIndex()];
@@ -1029,9 +1032,11 @@ void Model::loadMaterials(tinygltf::Model &gltfModel) {
           1.0);
     }
 
+
     // Extensions
     // @TODO: Find out if there is a nicer way of reading these properties with
     // recent tinygltf headers
+
     if (mat.extensions.find("KHR_materials_pbrSpecularGlossiness") !=
         mat.extensions.end()) {
       auto ext = mat.extensions.find("KHR_materials_pbrSpecularGlossiness");
@@ -1082,9 +1087,10 @@ void Model::loadMaterials(tinygltf::Model &gltfModel) {
     material.index = static_cast<uint32_t>(materials.size());
     materials.push_back(material);
   }
+  */
   // Push a default material at the end of the list for meshes with no material
   // assigned
-  materials.push_back(Material());
+  // materials.push_back(Material());
 }
 
 void Model::loadAnimations(tinygltf::Model &gltfModel) {
@@ -1315,7 +1321,8 @@ void Model::loadFromFile(std::string filename, float scale) {
 
   VkDescriptorSetLayout descriptorSetLayout;
 
-  // if (vkCreateDescriptorSetLayout(logicalDevice->Get(), &layoutInfo, nullptr,
+  // if (vkCreateDescriptorSetLayout(logicalDevice->Get(), &layoutInfo,
+  // nullptr,
   //                                 &descriptorSetLayout) != VK_SUCCESS) {
   //   throw std::runtime_error("failed to create descriptor set layout!");
   // }
@@ -1342,7 +1349,8 @@ void Model::setupNodeDescriptorSet(Node *node, VkDescriptorSetLayout layout) {
     // descriptorSetAllocInfo.descriptorSetCount = 1;
     // if (vkAllocateDescriptorSets(logicalDevice->Get(),
     // &descriptorSetAllocInfo,
-    //                              &node->mesh->uniformBuffer.descriptorSet) !=
+    //                              &node->mesh->uniformBuffer.descriptorSet)
+    //                              !=
     //     VK_SUCCESS) {
     //   std::cout << "FAILED TO ALLOCATE DESC SET" << std::endl;
     //   exit(-1);
@@ -1540,8 +1548,8 @@ void Model::renderNode(Node *node, VkCommandBuffer commandBuffer,
           pipelineName = "unlit";
         };
 
-        // Material properties define if we e.g. need to bind a pipeline variant
-        // with culling disabled (double sided)
+        // Material properties define if we e.g. need to bind a pipeline
+        // variant with culling disabled (double sided)
         if (alphaMode == Material::ALPHAMODE_BLEND) {
           pipelineVariant = "_alpha_blending";
         } else {
@@ -1614,6 +1622,7 @@ void Model::renderNode(Node *node, VkCommandBuffer commandBuffer,
   }
 }
 
+/*
 void Model::SetupCubeMap(std::shared_ptr<Texture> texture) {
 
   // auto physicalDevice = _serviceLocator->GetService<PhysicalDevice>();
@@ -1664,7 +1673,8 @@ void Model::SetupCubeMap(std::shared_ptr<Texture> texture) {
 
   VkDescriptorSetLayout _descriptorSetLayout;
 
-  // if (vkCreateDescriptorSetLayout(logicalDevice->Get(), &layoutInfo, nullptr,
+  // if (vkCreateDescriptorSetLayout(logicalDevice->Get(), &layoutInfo,
+  // nullptr,
   //                                 &_descriptorSetLayout) != VK_SUCCESS) {
   //   throw std::runtime_error("failed to create descriptor set layout!");
   // }
@@ -1677,7 +1687,8 @@ void Model::SetupCubeMap(std::shared_ptr<Texture> texture) {
   allocInfo.descriptorSetCount = 1; // MAX_CONCURRENT_FRAMES_IN_FLIGHT;
   allocInfo.pSetLayouts = layouts.data();
 
-  // if (vkAllocateDescriptorSets(logicalDevice->Get(), &allocInfo, &_cubeMapDS)
+  // if (vkAllocateDescriptorSets(logicalDevice->Get(), &allocInfo,
+  // &_cubeMapDS)
   // !=
   //     VK_SUCCESS) {
   //   throw std::runtime_error("failed to allocate descriptor sets!");
@@ -1705,3 +1716,4 @@ void Model::SetupCubeMap(std::shared_ptr<Texture> texture) {
 
   isCubeMap = true;
 }
+*/

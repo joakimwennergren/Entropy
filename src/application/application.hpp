@@ -27,7 +27,6 @@
 #include <graphics/vulkan/surfaces/surface.hpp>
 #include <graphics/vulkan/swapchains/swapchain.hpp>
 #include <graphics/vulkan/synchronization/queuesync.hpp>
-#include <graphics/vulkan/textures/texture.hpp>
 #include <input/keyboard/keyboard.hpp>
 #include <input/mouse/mouse.hpp>
 #include <physics/2d/physics2d.hpp>
@@ -56,7 +55,7 @@ using namespace Entropy::ECS;
 
 using namespace std::chrono_literals;
 
-#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || \
+#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) ||                  \
     defined(BUILD_FOR_LINUX)
 
 #include <GLFW/glfw3.h>
@@ -76,59 +75,57 @@ void window_iconify_callback(GLFWwindow *window, int iconified);
 void window_content_scale_callback(GLFWwindow *window, float xscale,
                                    float yscale);
 
-namespace Entropy
-{
-  class Application
-  {
-  public:
-    Application();
-    ~Application();
+namespace Entropy {
+class Application {
+public:
+  Application();
+  ~Application();
 
-    virtual void OnInit() = 0;
-    virtual void OnRender(float deltaTime) = 0;
+  virtual void OnInit() = 0;
+  virtual void OnRender(float deltaTime) = 0;
 
-    void Run();
+  void Run();
 
-    // @todo this shouldn't be public
-    std::shared_ptr<Keyboard> _keyboard;
-    bool firstMouse;
-    float lastX = 0.0;
-    float lastY = 0.0;
-    // @todo look over if this should be protected..
-    bool isResizing = false;
-    std::unique_ptr<Entropy::Timing::Timer> _timer;
-    float mouse_x;
-    int nbFrames = 0;
-    float lastTime;
-    float mouse_y;
-    float screen_width;
-    float screen_height;
-    bool mouse0_state = false;
-    bool isMinimized = false;
-    float xscale = 1.0;
-    float yscale = 1.0;
+  // @todo this shouldn't be public
+  std::shared_ptr<Keyboard> _keyboard;
+  bool firstMouse;
+  float lastX = 0.0;
+  float lastY = 0.0;
+  // @todo look over if this should be protected..
+  bool isResizing = false;
+  std::unique_ptr<Entropy::Timing::Timer> _timer;
+  float mouse_x;
+  int nbFrames = 0;
+  float lastTime;
+  float mouse_y;
+  float screen_width;
+  float screen_height;
+  bool mouse0_state = false;
+  bool isMinimized = false;
+  float xscale = 1.0;
+  float yscale = 1.0;
 
-  protected:
-    GLFWwindow *_window;
-    std::vector<std::shared_ptr<CommandBuffer>> commandBuffers;
-    std::shared_ptr<VulkanInstance> _vkInstance;
-    std::shared_ptr<WindowSurface> _windowSurface;
-    std::shared_ptr<WindowSurface> _windowSurface2;
-    std::shared_ptr<PhysicalDevice> _physicalDevice;
-    std::shared_ptr<LogicalDevice> _logicalDevice;
-    std::shared_ptr<Allocator> _allocator;
-    std::shared_ptr<DescriptorPool> _descriptorPool;
-    std::shared_ptr<Swapchain> _swapChain;
-    std::shared_ptr<Physics2D> physics2d;
-    std::shared_ptr<RenderPass> renderpass;
-    std::shared_ptr<Physics3D> physics3d;
-    std::shared_ptr<World> world;
-    sol::protected_function luaOnRender;
+protected:
+  GLFWwindow *_window;
+  std::vector<std::shared_ptr<CommandBuffer>> commandBuffers;
+  std::shared_ptr<VulkanInstance> _vkInstance;
+  std::shared_ptr<WindowSurface> _windowSurface;
+  std::shared_ptr<WindowSurface> _windowSurface2;
+  std::shared_ptr<PhysicalDevice> _physicalDevice;
+  std::shared_ptr<LogicalDevice> _logicalDevice;
+  std::shared_ptr<Allocator> _allocator;
+  std::shared_ptr<DescriptorPool> _descriptorPool;
+  std::shared_ptr<Swapchain> _swapChain;
+  std::shared_ptr<Physics2D> physics2d;
+  std::shared_ptr<RenderPass> renderpass;
+  std::shared_ptr<Physics3D> physics3d;
+  std::shared_ptr<World> world;
+  sol::protected_function luaOnRender;
 
-  private:
-    float _lastTick = 0.0f;
-    float _deltaTime = 0.0f;
-  };
+private:
+  float _lastTick = 0.0f;
+  float _deltaTime = 0.0f;
+};
 } // namespace Entropy
 
 #endif

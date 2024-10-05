@@ -125,8 +125,9 @@ struct RenderPass {
         std::make_shared<SwapChainTexture>(width, height));
     _frameBuffers.resize(1);
 
-    std::array<VkImageView, 2> attachments = {_swapChainTextures[0]->_imageView,
-                                              _depthBufferTexture->_imageView};
+    std::array<VkImageView, 2> attachments = {
+        _swapChainTextures[0]->imageView->Get(),
+        _depthBufferTexture->imageView->Get()};
 
     VkFramebufferCreateInfo framebufferInfo{};
     framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -160,7 +161,8 @@ struct RenderPass {
 
     for (size_t i = 0; i < swapChain->_swapChainImageViews.size(); i++) {
       std::array<VkImageView, 2> attachments = {
-          swapChain->_swapChainImageViews[i], _depthBufferTexture->_imageView};
+          swapChain->_swapChainImageViews[i],
+          _depthBufferTexture->imageView->Get()};
 
       VkFramebufferCreateInfo framebufferInfo{};
       framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;

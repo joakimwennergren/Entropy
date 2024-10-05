@@ -22,7 +22,6 @@ set(PROJECT_BASEPATH ${PROJECT_SOURCE_DIR})
 # Include dependencies
 include(cmake/external_dependencies.cmake)
 
-
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
 # Create the library
@@ -49,6 +48,7 @@ target_include_directories(${PROJECT_NAME}
         external/myers-diff
         external/imgui
         external/bullet3/src
+        external/curl/include
 )
 if(IOS)
     target_link_libraries(${PROJECT_NAME}
@@ -87,6 +87,7 @@ if(IOS)
         box2d
         eventpp
         tinygltf
+        libcurl_static
     )
 endif()
 

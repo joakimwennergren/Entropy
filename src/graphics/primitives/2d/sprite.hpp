@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-#include "graphics/vulkan/textures/normal_texture.hpp"
+#include "graphics/vulkan/textures/texture.hpp"
 #ifdef BUILD_FOR_ANDROID
 #include <android/asset_manager.h>
 #endif
@@ -12,7 +12,6 @@
 #include <graphics/vulkan/buffers/indexbuffer.hpp>
 #include <graphics/vulkan/buffers/vertexbuffer.hpp>
 #include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
-#include <graphics/vulkan/textures/texture.hpp>
 #include <scripting/script.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Textures;
@@ -28,7 +27,7 @@ namespace Primitives {
 struct Sprite {
 public:
   Sprite(std::string path) {
-    texture = std::make_shared<NormalTexture>(path);
+    texture = std::make_shared<Texture>(path);
     vertexBuffer = std::make_shared<VertexBuffer>(vertices);
     indexBuffer = std::make_shared<IndexBuffer<uint16_t>>(indices);
   }
@@ -47,7 +46,7 @@ public:
       {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
       {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
       {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
-  std::shared_ptr<NormalTexture> texture;
+  std::shared_ptr<Texture> texture;
   std::shared_ptr<VertexBuffer> vertexBuffer;
   std::shared_ptr<IndexBuffer<uint16_t>> indexBuffer;
 };

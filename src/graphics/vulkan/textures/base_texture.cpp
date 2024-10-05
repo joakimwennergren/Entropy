@@ -1,4 +1,4 @@
-#include "texture.hpp"
+#include "base_texture.hpp"
 
 using namespace Entropy::Graphics::Vulkan::Textures;
 
@@ -70,7 +70,7 @@ _imageView = imageView.Get();
 */
 //};
 
-void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap) {
+void BaseTexture::CreateTextureImageFromBuffer(FT_Bitmap bitmap) {
   /*
   auto logicalDevice = _serviceLocator->GetService<LogicalDevice>();
 
@@ -101,8 +101,8 @@ void Texture::CreateTextureImageFromBuffer(FT_Bitmap bitmap) {
   */
 }
 
-void Texture::CreateTextureImageFromPixels(unsigned char *pixels, int width,
-                                           int height) {
+void BaseTexture::CreateTextureImageFromPixels(unsigned char *pixels, int width,
+                                               int height) {
 
   /*
   #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
@@ -206,8 +206,8 @@ void Texture::CreateTextureImageFromPixels(unsigned char *pixels, int width,
  * @param newLayout
  * @return (void)
  */
-void Texture::TransitionImageLayout(VkImage image, VkImageLayout oldLayout,
-                                    VkImageLayout newLayout) {
+void BaseTexture::TransitionImageLayout(VkImage image, VkImageLayout oldLayout,
+                                        VkImageLayout newLayout) {
   // Assert on parameters
   assert(image != VK_NULL_HANDLE);
 
@@ -278,8 +278,9 @@ void Texture::TransitionImageLayout(VkImage image, VkImageLayout oldLayout,
  * @param height image height
  * @return (void)
  */
-void Texture::CopyBufferToImage(const VkBuffer buffer, const VkImage image,
-                                const uint32_t width, const uint32_t height) {
+void BaseTexture::CopyBufferToImage(const VkBuffer buffer, const VkImage image,
+                                    const uint32_t width,
+                                    const uint32_t height) {
   // Assert on parameters
   assert(buffer != VK_NULL_HANDLE);
   assert(image != VK_NULL_HANDLE);
@@ -328,9 +329,9 @@ void Texture::CopyBufferToImage(const VkBuffer buffer, const VkImage image,
  * @param image VkImage the image
  * @return (void)
  */
-void Texture::CreateImage(const uint32_t width, const uint32_t height,
-                          const VkFormat format, const VkImageTiling tiling,
-                          const VkImageUsageFlags usage, VkImage &image) {
+void BaseTexture::CreateImage(const uint32_t width, const uint32_t height,
+                              const VkFormat format, const VkImageTiling tiling,
+                              const VkImageUsageFlags usage, VkImage &image) {
   // Assert on parameters
   assert(width != 0);
   assert(height != 0);
@@ -364,7 +365,7 @@ void Texture::CreateImage(const uint32_t width, const uint32_t height,
  * @brief Get the supported color format for current platform
  * @return VkFormat the color format
  */
-VkFormat Texture::GetColorFormat() {
+VkFormat BaseTexture::GetColorFormat() {
 
   return VK_FORMAT_B8G8R8A8_UNORM;
 
