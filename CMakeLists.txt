@@ -7,7 +7,7 @@
 # Game Engine version 1.0
 
 # Set minimum cmake version
-cmake_minimum_required(VERSION 3.30.0)
+cmake_minimum_required(VERSION 3.28.1)
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
 # Declare project
@@ -128,6 +128,29 @@ target_link_libraries(${PROJECT_NAME}
     #OpenSSL::SSL
     #OpenSSL::Crypto
     #ktx
+    ${Vulkan_LIBRARIES}
+    glfw
+    TracyClient
+    GPUOpen::VulkanMemoryAllocator
+    flecs::flecs_static
+    BulletCollision
+    BulletDynamics
+    BulletDynamics
+    BulletCollision
+    BulletInverseDynamics
+    BulletSoftBody
+    LinearMath
+    tinyobjloader
+    sol2
+    lua
+    glm
+    freetype
+    eventpp
+    spdlog
+    box2d
+    eventpp
+    tinygltf
+    libcurl_static
 )
 
 # Build config file

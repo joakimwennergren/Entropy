@@ -92,7 +92,7 @@ set(_LUA_LIB_SRC
 )
 
 add_library(lua OBJECT ${_LUA_LIB_SRC})
-add_compile_definitions(lua PRIVATE LUA_USE_IOS)
+#add_compile_definitions(lua PRIVATE LUA_USE_IOS)
 
 add_subdirectory(external/myers-diff)
 

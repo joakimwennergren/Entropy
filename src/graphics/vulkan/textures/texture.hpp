@@ -2,7 +2,6 @@
 
 #include <config.hpp>
 
-#include <ft2build.h>
 #include <stb_image.h>
 #include FT_FREETYPE_H
 
