@@ -145,18 +145,8 @@ struct RenderPass {
   void CreateFramebuffers(std::shared_ptr<ISwapchain> swapChain, int width,
                           int height) {
 
-    //_swapChainTextures.clear();
+    _swapChainTextures.clear();
     _frameBuffers.clear();
-
-    // auto swapChainTexture =
-    //     _textureFactory.CreateSwapChainTexture(width, height);
-
-    // auto swapChainTexture2 =
-    //     _textureFactory.CreateSwapChainTexture(width, height);
-
-    // _swapChainTextures.push_back(swapChainTexture);
-    // _swapChainTextures.push_back(swapChainTexture2);
-
     _frameBuffers.resize(3);
 
     for (size_t i = 0; i < swapChain->_swapChainImageViews.size(); i++) {

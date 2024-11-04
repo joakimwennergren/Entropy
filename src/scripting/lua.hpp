@@ -95,9 +95,14 @@ public:
       e.set<Scale>({glm::vec3(25.0, 25.0, 25.0)});
       e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
       e.set<Entropy::Components::SpriteComponent>({sprite});
-      e.set<Entropy::Components::Renderable>({id, true, sprite->vertexBuffer,
-                                              sprite->indexBuffer,
-                                              sprite->indices});
+      auto renderable = Entropy::Components::Renderable();
+      renderable.visible = true;
+      renderable.id = id;
+      renderable.indexBuffer = sprite->indexBuffer;
+      renderable.vertexBuffer = sprite->vertexBuffer;
+      renderable.indices = sprite->indices;
+      renderable.type = 2;
+      e.set<Entropy::Components::Renderable>(renderable);
       e.set<Entropy::Components::Color>({glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}});
       e.set<Entropy::Components::HasTexture>({sprite->texture});
       return e;
@@ -107,8 +112,8 @@ public:
       auto quad = std::make_shared<Entropy::Graphics::Primitives::Quad>();
       auto e = _world->Get()->entity();
       auto id = AssetId().GetId();
-      e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
-      e.set<Scale>({glm::vec3(25.0, 25.0, 25.0)});
+      e.set<Position>({glm::vec3(0.0, 0.0, 1.0)});
+      e.set<Scale>({glm::vec3(0.06, 0.06, 1.0)});
       e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
       e.set<Entropy::Components::QuadComponent>({quad});
       auto renderable = Entropy::Components::Renderable();
@@ -117,7 +122,7 @@ public:
       renderable.vertexBuffer = quad->vertexBuffer;
       renderable.indexBuffer = quad->indexBuffer;
       renderable.indices = quad->indices;
-      renderable.type = 1;
+      renderable.type = 3;
       e.set<Entropy::Components::Renderable>(renderable);
       e.set<Entropy::Components::Color>({glm::vec4{1.0f, 0.0f, 1.0f, 1.0f}});
       e.set<Entropy::Components::HasTexture>({quad->texture});

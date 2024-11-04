@@ -49,6 +49,7 @@ target_include_directories(${PROJECT_NAME}
         external/imgui
         external/bullet3/src
         external/curl/include
+        include
 )
 if(IOS)
     target_link_libraries(${PROJECT_NAME}

@@ -47,6 +47,7 @@ public:
   }
 
   ~Synchronizer() {
+    vkDeviceWaitIdle(_logicalDevice->Get());
     for (size_t i = 0; i < _numObjects; i++) {
       vkDestroySemaphore(_logicalDevice->Get(), _imageSemaphores[i], nullptr);
       vkDestroySemaphore(_logicalDevice->Get(), _renderFinishedSemaphores[i],

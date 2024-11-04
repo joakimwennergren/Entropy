@@ -13,18 +13,7 @@ namespace Graphics {
 namespace Vulkan {
 namespace Buffers {
 
-/**
- * @brief Buffer base class
- * @author Joakim Wennergren
- * @since Fri Jun 28 2024
- */
 struct Buffer {
-
-  /**
-   * @brief Constructor for buffer
-   * @param backend VulkanBackend
-   */
-  Buffer(){};
 
   /**
    * @brief Buffer destructor, destroy the created buffer

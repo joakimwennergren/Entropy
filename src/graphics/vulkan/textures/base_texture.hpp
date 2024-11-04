@@ -10,8 +10,6 @@
 #include <stb_image.h>
 #include FT_FREETYPE_H
 
-#include "config.hpp"
-
 #include <graphics/vulkan/devices/ilogical_device.hpp>
 #include <graphics/vulkan/devices/iphysical_device.hpp>
 

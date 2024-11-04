@@ -4,25 +4,27 @@
 #include "ecs/components/animated_sprite.hpp"
 #include "ecs/components/color.hpp"
 #include "ecs/components/hasTexture.hpp"
-#include "ecs/components/objmodel.hpp"
 #include "ecs/components/position.hpp"
 #include "ecs/components/renderable.hpp"
 #include "ecs/components/rotation.hpp"
 #include "ecs/components/scale.hpp"
-#include "ecs/components/sprite.hpp"
-#include "glm/gtx/string_cast.hpp"
+#include "vulkan/vulkan_core.h"
 
 using namespace Entropy::Graphics::Vulkan::Renderers;
 
 void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
                             bool &needResize, bool app) {
 
+  if (_world->Get()->count<Entropy::Components::Renderable>() == 0)
+    return;
+
   if (app) {
     auto currentFence = _synchronizer->GetFences()[_currentFrame];
 
-    // vkWaitForFences(_logicalDevice->Get(), 1, &currentFence, VK_TRUE,
-    //                 UINT64_MAX);
-    // vkResetFences(_logicalDevice->Get(), 1, &currentFence);
+    vkWaitForFences(_logicalDevice->Get(), 1, &currentFence, VK_TRUE,
+                    UINT64_MAX);
+
+    vkResetFences(_logicalDevice->Get(), 1, &currentFence);
 
     vkAcquireNextImageKHR(_logicalDevice->Get(), _swapchain->Get(), UINT64_MAX,
                           _synchronizer->GetImageSemaphores()[_currentFrame],
@@ -38,10 +40,8 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
     _renderPass->RecreateDepthBuffer(width, height);
     _renderPass->RecreateFrameBuffers(width, height, app);
     needResize = false;
-  }
-
-  if (_world->Get()->count<Entropy::Components::Renderable>() == 0)
     return;
+  }
 
   auto orthoCamera =
       static_cast<Cameras::OrthographicCamera *>(_cameraManager->currentCamera);

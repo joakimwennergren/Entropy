@@ -93,7 +93,13 @@ void main()
                 
                 // Output to screen
                 outColor = vec4(col,1.0);
-        } else {
+        } else if (inType == 2) {
+
                 outColor = inColor1 * texture(Sampler2D, inUV0); 
+
+        } else if (inType == 3) {
+
+                outColor = inColor1;
+
         }
 }

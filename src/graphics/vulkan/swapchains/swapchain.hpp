@@ -52,10 +52,16 @@ struct Swapchain : public ServiceBase<ISwapchain> {
   void RecreateSwapChain(int width, int height) {
     swapChainImageFormat = VK_FORMAT_B8G8R8A8_UNORM;
     swapChainExtent =
-        VkExtent2D{static_cast<uint32_t>(320), static_cast<uint32_t>(480)};
+        VkExtent2D{static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
+    _swapChainImageViews.clear();
+    _swapChainImages.clear();
+    Build(_surface, swapChainExtent, _swapChain);
   }
 
-  void Build(VkSurfaceKHR surface, VkExtent2D frame) {
+  void Build(VkSurfaceKHR surface, VkExtent2D frame,
+             VkSwapchainKHR oldswapChain) {
+
+    _surface = surface;
 
     swapChainImageFormat = VK_FORMAT_B8G8R8A8_UNORM;
     swapChainExtent =
@@ -108,7 +114,7 @@ struct Swapchain : public ServiceBase<ISwapchain> {
 #endif
     createInfo.presentMode = presentMode;
     createInfo.clipped = VK_TRUE;
-    createInfo.oldSwapchain = VK_NULL_HANDLE;
+    createInfo.oldSwapchain = oldswapChain;
 
     if (vkCreateSwapchainKHR(_logicalDevice->Get(), &createInfo, nullptr,
                              &_swapChain) != VK_SUCCESS) {
@@ -124,7 +130,6 @@ struct Swapchain : public ServiceBase<ISwapchain> {
     vkGetSwapchainImagesKHR(_logicalDevice->Get(), _swapChain, &imageCount,
                             nullptr);
 
-    spdlog::info(imageCount);
     _swapChainImages.resize(imageCount);
 
     vkGetSwapchainImagesKHR(_logicalDevice->Get(), _swapChain, &imageCount,
@@ -136,8 +141,6 @@ struct Swapchain : public ServiceBase<ISwapchain> {
       auto imageView = ImageView(_swapChainImages[i], swapChainImageFormat);
       _swapChainImageViews[i] = imageView.Get();
     }
-
-    spdlog::info("swapchain built!");
   }
 
   SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device,
@@ -236,6 +239,7 @@ struct Swapchain : public ServiceBase<ISwapchain> {
 private:
   std::shared_ptr<IPhysicalDevice> _physicalDevice;
   std::shared_ptr<ILogicalDevice> _logicalDevice;
+  VkSurfaceKHR _surface = VK_NULL_HANDLE;
 
   // VkSurfaceFormatKHR ChooseSwapSurfaceFormat(
   //     const std::vector<VkSurfaceFormatKHR> &availableFormats);
