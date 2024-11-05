@@ -13,7 +13,7 @@ add_subdirectory(external/eventpp)
 add_subdirectory(external/spdlog)
 
 # Networking
-#add_subdirectory(external/asio.cmake)
+# add_subdirectory(external/asio.cmake)
 
 # HTTP
 set(BUILD_CURL_EXE OFF)
@@ -30,12 +30,12 @@ if(CMAKE_PLATFORM MATCHES "BUILD_FOR_MACOS" OR "BUILD_FOR_WINDOWS" OR "BUILD_FOR
   find_package(Vulkan REQUIRED)
 endif()
 
-#set(KTX_FEATURE_TESTS OFF)
-#add_subdirectory(external/KTX-Software)
+# set(KTX_FEATURE_TESTS OFF)
+# add_subdirectory(external/KTX-Software)
 
 # Windowing on desktop
 if(CMAKE_PLATFORM MATCHES "BUILD_FOR_MACOS" OR "BUILD_FOR_WINDOWS" OR "BUILD_FOR_MACOS")
-    add_subdirectory(external/glfw)
+  add_subdirectory(external/glfw)
 endif()
 
 # Lua SOL 2
@@ -92,25 +92,23 @@ set(_LUA_LIB_SRC
 )
 
 add_library(lua OBJECT ${_LUA_LIB_SRC})
-#add_compile_definitions(lua PRIVATE LUA_USE_IOS)
 
+# add_compile_definitions(lua PRIVATE LUA_USE_IOS)
 add_subdirectory(external/myers-diff)
 
 set(TINYGLTF_INSTALL OFF)
-set(TINYGLTF_BUILD_LOADER_EXAMPLE  OFF)
+set(TINYGLTF_BUILD_LOADER_EXAMPLE OFF)
 add_subdirectory(external/tinygltf)
 
 if(ANDROID)
   target_compile_definitions(tinygltf PRIVATE TINYGLTF_ANDROID_LOAD_FROM_ASSETS)
 endif()
 
-#set(BUILD_STATIC_LIBS ON)
-#add_subdirectory(external/efsw)
-
+# set(BUILD_STATIC_LIBS ON)
+# add_subdirectory(external/efsw)
 option(TRACY_ENABLE "" ON)
 option(TRACY_ON_DEMAND "" ON)
 add_subdirectory(external/tracy)
-
 
 add_subdirectory(external/VulkanMemoryAllocator)
 

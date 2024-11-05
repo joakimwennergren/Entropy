@@ -7,32 +7,31 @@
 
 #include "iphysics2d.hpp"
 
-#include "box2d/b2_settings.h"
-#include "box2d/b2_world.h"
-#include "spdlog/spdlog.h"
-#include <glm/glm.hpp>
-#include <flecs/flecs.h>
-#include <ecs/iworld.hpp>
 #include <data/vertex.hpp>
+#include <ecs/components/color.hpp>
 #include <ecs/components/hasTexture.hpp>
-#include <ecs/components/quad.hpp>
 #include <ecs/components/position.hpp>
+#include <ecs/components/quad.hpp>
 #include <ecs/components/renderable.hpp>
 #include <ecs/components/rigidbody3d.hpp>
 #include <ecs/components/rotation.hpp>
 #include <ecs/components/scale.hpp>
-#include <ecs/components/color.hpp>
+#include <ecs/iworld.hpp>
+#include <flecs.h>
+#include <glm/glm.hpp>
 #include <graphics/primitives/2d/quad.hpp>
+#include <spdlog/spdlog.h>
 
 #include <assets/assetid.hpp>
 
 using namespace Entropy::Data;
+using namespace Entropy::ECS;
 
-class b2DebugDraw : public b2Draw
-{
+/*
+
+class b2DebugDraw : public b2Draw {
 public:
-  b2DebugDraw(std::vector<flecs::entity> &entities)
-  {
+  b2DebugDraw(std::vector<flecs::entity> &entities) {
     ServiceLocator *sl = ServiceLocator::GetInstance();
     _entityWorld = sl->getService<IWorld>();
     // std::vector<Vertex> _vertices(4);
@@ -40,12 +39,10 @@ public:
   }
 
   void DrawPolygon(const b2Vec2 *vertices, int32 vertexCount,
-                   const b2Color &color)
-  {
+                   const b2Color &color) {
     std::vector<Vertex> _vertices;
 
-    for (int i = 0; i < vertexCount; i++)
-    {
+    for (int i = 0; i < vertexCount; i++) {
       Vertex newVert;
       newVert.position.x = vertices[i].x;
       newVert.position.y = vertices[i].y;
@@ -53,7 +50,8 @@ public:
       _vertices.push_back(newVert);
     }
 
-    auto quad = std::make_shared<Entropy::Graphics::Primitives::Quad>(_vertices);
+    auto quad =
+        std::make_shared<Entropy::Graphics::Primitives::Quad>(_vertices);
     auto e = _entityWorld->Get()->entity();
     auto id = AssetId().GetId();
     e.set<Entropy::Components::Position>({glm::vec3(0.0, 0.0, 0.0)});
@@ -89,152 +87,136 @@ public:
   std::shared_ptr<IWorld> _entityWorld;
 };
 
-namespace Entropy
-{
-  namespace Physics
-  {
+*/
 
-    class MyContactListener : public b2ContactListener
-    {
-    public:
-      void BeginContact(b2Contact *contact) override
-      {
-        // Get the two fixtures involved in the collision
-        b2Fixture *fixtureA = contact->GetFixtureA();
-        b2Fixture *fixtureB = contact->GetFixtureB();
+namespace Entropy {
+namespace Physics {
 
-        // Check if either fixture is the sensor
-        if (fixtureA->IsSensor() || fixtureB->IsSensor())
-        {
-          // Handle the sensor collision event here
+/*
 
-          auto pos = reinterpret_cast<b2Vec2 *>(fixtureA->GetUserData().pointer);
-          if (pos != nullptr)
-          {
-            fixtureB->GetBody()->GetUserData().pointer =
-                reinterpret_cast<uintptr_t>(pos);
-            // spdlog::info("Position = {},{}", pos->x, pos->y);
-          }
+class MyContactListener : public b2ContactListener {
+public:
+void BeginContact(b2Contact *contact) override {
+  // Get the two fixtures involved in the collision
+  b2Fixture *fixtureA = contact->GetFixtureA();
+  b2Fixture *fixtureB = contact->GetFixtureB();
 
-          // Perform any actions needed for the sensor collision
-        }
-      }
+  // Check if either fixture is the sensor
+  if (fixtureA->IsSensor() || fixtureB->IsSensor()) {
+    // Handle the sensor collision event here
 
-      void EndContact(b2Contact *contact) override
-      {
-        // Handle end of contact if needed
-      }
-    };
+    auto pos = reinterpret_cast<b2Vec2 *>(fixtureA->GetUserData().pointer);
+    if (pos != nullptr) {
+      fixtureB->GetBody()->GetUserData().pointer =
+          reinterpret_cast<uintptr_t>(pos);
+      // spdlog::info("Position = {},{}", pos->x, pos->y);
+    }
 
-    class Physics2D : public ServiceBase<IPhysics2D>
-    {
+    // Perform any actions needed for the sensor collision
+  }
+}
 
-    public:
-      const float PPM = 100.0f;
-      std::vector<flecs::entity> _entities;
-      Physics2D()
-      {
-        ServiceLocator *sl = ServiceLocator::GetInstance();
-        _entityWorld = sl->getService<IWorld>();
+void EndContact(b2Contact *contact) override {
+  // Handle end of contact if needed
+}
+};
 
-        _debugDraw = new b2DebugDraw(_entities);
-        b2Vec2 gravity(0.0f, -5.0f);
-        world = new b2World(gravity);
-        world->SetDebugDraw(_debugDraw);
-        uint32 flags = 0;
-        flags += b2Draw::e_shapeBit;
-        flags += b2Draw::e_jointBit;
-        flags += b2Draw::e_aabbBit;
-        flags += b2Draw::e_pairBit;
-        flags += b2Draw::e_centerOfMassBit;
-        _debugDraw->SetFlags(flags);
-        // auto listener = new MyContactListener();
-        // world->SetContactListener(listener);
-      }
+*/
 
-      inline b2World *Get() { return world; }
+class Physics2D : public ServiceBase<IPhysics2D> {
 
-      inline b2Body *CreateGround(float x, float y, float w, float h)
-      {
-        // b2BodyDef groundBodyDef;
-        // groundBodyDef.position.Set(x, y);
-        // b2PolygonShape groundBox;
-        // groundBox.SetAsBox(w / PPM, h / PPM);
-        // b2Body *groundBody = world->CreateBody(&groundBodyDef);
-        // groundBody->CreateFixture(&groundBox, 0.0f);
-        // return groundBody;
+public:
+  const float PPM = 100.0f;
+  std::vector<flecs::entity> _entities;
+  Physics2D() {
+    ServiceLocator *sl = ServiceLocator::GetInstance();
+    _entityWorld = sl->getService<IWorld>();
 
-        b2BodyDef bodyDef;
-        bodyDef.type = b2_dynamicBody;
-        bodyDef.position.Set(x, y);
-        bodyDef.type = b2_kinematicBody;
+    b2WorldDef worldDef = b2DefaultWorldDef();
+    worldDef.gravity = (b2Vec2){0.0f, -10.0f};
+    //_debugDraw = new b2DebugDraw(_entities);
+    world = b2CreateWorld(&worldDef);
+    /*
+    world->SetDebugDraw(_debugDraw);
+    uint32 flags = 0;
+    flags += b2Draw::e_shapeBit;
+    flags += b2Draw::e_jointBit;
+    flags += b2Draw::e_aabbBit;
+    flags += b2Draw::e_pairBit;
+    flags += b2Draw::e_centerOfMassBit;
+    _debugDraw->SetFlags(flags);
+    */
+    // auto listener = new MyContactListener();
+    // world->SetContactListener(listener);
+  }
 
-        b2Body *body = world->CreateBody(&bodyDef);
-        b2PolygonShape dynamicBox;
-        dynamicBox.SetAsBox(w / PPM, h / PPM);
+  inline b2WorldId Get() { return world; }
 
-        b2FixtureDef fixtureDef;
-        fixtureDef.shape = &dynamicBox;
-        fixtureDef.density = 1.0f;
-        fixtureDef.friction = 1.0f;
-        fixtureDef.restitution = 0.0f;
-        body->CreateFixture(&fixtureDef);
+  inline b2BodyId CreateGround(float x, float y, float w, float h) {
+    // b2BodyDef groundBodyDef;
+    // groundBodyDef.position.Set(x, y);
+    // b2PolygonShape groundBox;
+    // groundBox.SetAsBox(w / PPM, h / PPM);
+    // b2Body *groundBody = world->CreateBody(&groundBodyDef);
+    // groundBody->CreateFixture(&groundBox, 0.0f);
+    // return groundBody;
 
-        return body;
-      }
+    b2BodyDef bodyDef = b2DefaultBodyDef();
+    bodyDef.position = b2Vec2{x, y};
+    bodyDef.type = b2_kinematicBody;
+    b2Polygon groundBox = b2MakeBox(w, h);
+    b2BodyId body = b2CreateBody(world, &bodyDef);
+    b2ShapeDef groundShapeDef = b2DefaultShapeDef();
+    b2CreatePolygonShape(body, &groundShapeDef, &groundBox);
+    return body;
+  }
 
-      inline b2Body *CreateDynamicBody(float x, float y, float w, float h)
-      {
+  inline b2BodyId CreateDynamicBody(float x, float y, float w, float h) {
 
-        b2BodyDef bodyDef;
-        bodyDef.type = b2_dynamicBody;
-        bodyDef.position.Set(x, y);
+    b2BodyDef bodyDef = b2DefaultBodyDef();
+    bodyDef.position = b2Vec2{x, y};
+    bodyDef.type = b2_dynamicBody;
+    b2Polygon groundBox = b2MakeBox(w, h);
+    b2BodyId body = b2CreateBody(world, &bodyDef);
+    b2ShapeDef groundShapeDef = b2DefaultShapeDef();
+    b2CreatePolygonShape(body, &groundShapeDef, &groundBox);
+    return body;
+  }
 
-        b2Body *body = world->CreateBody(&bodyDef);
-        b2PolygonShape dynamicBox;
-        dynamicBox.SetAsBox(w / PPM, h / PPM);
+  inline b2BodyId CreateSensorBody(float x, float y, float w, float h,
+                                   b2Vec2 *pos) {
 
-        b2FixtureDef fixtureDef;
-        fixtureDef.shape = &dynamicBox;
-        fixtureDef.density = 1.0f;
-        fixtureDef.friction = 1.0f;
-        fixtureDef.restitution = 0.0f;
-        body->CreateFixture(&fixtureDef);
+    /*
 
-        return body;
-      }
+b2BodyDef bodyDef;
+bodyDef.type = b2_kinematicBody;
+bodyDef.position.Set(x, y);
 
-      inline b2Body *CreateSensorBody(float x, float y, float w, float h,
-                                      b2Vec2 *pos)
-      {
+b2Body *body = world->CreateBody(&bodyDef);
+b2PolygonShape dynamicBox;
+dynamicBox.SetAsBox(w / PPM, h / PPM);
 
-        b2BodyDef bodyDef;
-        bodyDef.type = b2_kinematicBody;
-        bodyDef.position.Set(x, y);
+b2FixtureUserData userData;
+userData.pointer = reinterpret_cast<uintptr_t>(pos);
 
-        b2Body *body = world->CreateBody(&bodyDef);
-        b2PolygonShape dynamicBox;
-        dynamicBox.SetAsBox(w / PPM, h / PPM);
+b2FixtureDef fixtureDef;
+fixtureDef.shape = &dynamicBox;
+fixtureDef.density = 3.0f;
+fixtureDef.isSensor = true;
+fixtureDef.friction = 0.8f;
 
-        b2FixtureUserData userData;
-        userData.pointer = reinterpret_cast<uintptr_t>(pos);
+fixtureDef.userData = userData;
+body->CreateFixture(&fixtureDef);
 
-        b2FixtureDef fixtureDef;
-        fixtureDef.shape = &dynamicBox;
-        fixtureDef.density = 3.0f;
-        fixtureDef.isSensor = true;
-        fixtureDef.friction = 0.8f;
+return body;
 
-        fixtureDef.userData = userData;
-        body->CreateFixture(&fixtureDef);
+*/
+  }
+  b2WorldId world;
+  std::shared_ptr<IWorld> _entityWorld;
+  b2DebugDraw *_debugDraw;
 
-        return body;
-      }
-      b2World *world;
-      std::shared_ptr<IWorld> _entityWorld;
-      b2DebugDraw *_debugDraw;
-
-    private:
-    };
-  } // namespace Physics
+private:
+};
+} // namespace Physics
 } // namespace Entropy

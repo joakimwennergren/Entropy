@@ -16,29 +16,36 @@ namespace Buffers {
 struct Buffer {
 
   /**
-   * @brief Buffer destructor, destroy the created buffer
+   * Destructor for the Buffer class.
+   * Destroys the buffer and its associated allocation using Vulkan Memory
+   * Allocator.
    */
   ~Buffer() { vmaDestroyBuffer(_allocator->Get(), _buffer, _allocation); }
 
   /**
-   * @brief Get the basic vulka buffer
-   * @return VkBuffer the vulkan buffer
+   * Get the Vulkan buffer associated with this object.
+   *
+   * @return VkBuffer The Vulkan buffer.
    */
   inline VkBuffer GetVulkanBuffer() { return this->_buffer; };
 
   /**
-   * @brief Get buffer memory
-   * @return VkDeviceMemory
+   * Retrieves the Vulkan device memory associated with the buffer.
+   *
+   * @return VkDeviceMemory The Vulkan device memory of the buffer.
    */
   inline VkDeviceMemory GetBufferMemory() { return this->_bufferMemory; };
 
   /**
-   * @brief Get the mapped memory
-   * @return void* mapped memory
+   * Get the mapped memory pointer.
+   *
+   * @return A pointer to the mapped memory.
    */
   inline void *GetMappedMemory() { return this->_mappedMemory; };
 
-  // Allocation
+  /**
+   * Represents a Vulkan Memory Allocator (VMA) allocation.
+   */
   VmaAllocation _allocation = VK_NULL_HANDLE;
 
 protected:

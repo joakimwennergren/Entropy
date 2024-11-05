@@ -1,17 +1,12 @@
 #pragma once
-#include <vector>
-#include <cameras/camera.hpp>
 #include "icamera_manger.hpp"
+#include <cameras/camera.hpp>
 
-namespace Entropy
-{
-  namespace Cameras
-  {
+namespace Entropy {
+namespace Cameras {
+struct CameraManager : public ServiceBase<ICameraManager> {
+  CameraManager() {}
+};
 
-    struct CameraManager : public ServiceBase<ICameraManager>
-    {
-      CameraManager() {}
-    };
-
-  } // namespace Cameras
+} // namespace Cameras
 } // namespace Entropy

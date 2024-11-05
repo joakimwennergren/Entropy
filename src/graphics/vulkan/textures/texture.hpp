@@ -3,7 +3,7 @@
 #include <config.hpp>
 
 #include <stb_image.h>
-#include FT_FREETYPE_H
+// #include FT_FREETYPE_H
 
 #include <spdlog/spdlog.h>
 #include <string>

@@ -1,6 +1,7 @@
 #pragma once
 
-struct PushConstBlock
-{
+#include <stdint.h>
+
+struct PushConstBlock {
   uint32_t instanceIndex;
 };

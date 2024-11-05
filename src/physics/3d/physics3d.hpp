@@ -6,7 +6,7 @@
 #include <BulletCollision/CollisionDispatch/btCollisionDispatcher.h>
 #include <BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h>
 #include <btBulletDynamicsCommon.h>
-#include <flecs/flecs.h>
+#include <flecs.h>
 
 #include "spdlog/spdlog.h"
 #include <glm/glm.hpp>

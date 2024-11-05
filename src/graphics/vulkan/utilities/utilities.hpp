@@ -12,7 +12,7 @@ using namespace Entropy::Graphics::Vulkan::Devices;
   do {                                                                         \
     VkResult err = x;                                                          \
     if (err) {                                                                 \
-      spdlog::error(err);                                                      \
+      spdlog::error(std::to_string(err));                                      \
       abort();                                                                 \
     }                                                                          \
   } while (0)

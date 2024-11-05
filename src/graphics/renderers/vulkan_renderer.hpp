@@ -27,7 +27,7 @@
 #include <ecs/components/renderable.hpp>
 #include <ecs/components/sprite.hpp>
 
-#include <flecs/flecs.h>
+#include <flecs.h>
 #include <timing/timer.hpp>
 #include <tracy/Tracy.hpp>
 

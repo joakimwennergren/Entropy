@@ -1,7 +1,8 @@
 #pragma once
 
-#include "graphics/renderers/vulkan_renderer.hpp"
+#include <config.hpp>
 #include <entropy.hpp>
+#include <graphics/renderers/vulkan_renderer.hpp>
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) ||                  \
     defined(BUILD_FOR_LINUX)
