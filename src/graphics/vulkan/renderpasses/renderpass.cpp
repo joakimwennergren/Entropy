@@ -1,11 +1,9 @@
 #include "renderpass.hpp"
-#include "vulkan/vulkan_core.h"
 
 using namespace Entropy::Graphics::Vulkan::RenderPasses;
 
-void RenderPass::Begin(CommandBuffer commandBuffer, uint32_t imageIndex,
-                       int width, int height) {
-
+void RenderPass::Begin(const CommandBuffer commandBuffer, const uint32_t imageIndex,
+                       const int width, const int height) const {
   VkRenderPassBeginInfo renderPassInfo{};
   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
   renderPassInfo.renderPass = _renderPass;
@@ -26,64 +24,14 @@ void RenderPass::Begin(CommandBuffer commandBuffer, uint32_t imageIndex,
                        VK_SUBPASS_CONTENTS_INLINE);
 }
 
-void RenderPass::End(CommandBuffer commandBuffer) {
+void RenderPass::End(const CommandBuffer commandBuffer) {
   vkCmdEndRenderPass(commandBuffer.Get());
 }
 
-// /**
-//  * @brief Create frame buffers
-//  * @return (void)
-//  */
-// void RenderPass::CreateFramebuffers() {
-//   this->_swapChainFramebuffers.resize(_swapChain->swapChainImageViews.size());
-
-//   for (size_t i = 0; i < _swapChain->swapChainImageViews.size(); i++) {
-//     std::array<VkImageView, 2> attachments = {
-//         _swapChain->swapChainImageViews[i], depthImageView};
-
-//     VkFramebufferCreateInfo framebufferInfo{};
-//     framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-//     framebufferInfo.renderPass = _renderPass;
-//     framebufferInfo.attachmentCount =
-//     static_cast<uint32_t>(attachments.size()); framebufferInfo.pAttachments =
-//     attachments.data(); framebufferInfo.width =
-//     _swapChain->swapChainExtent.width; framebufferInfo.height =
-//     _swapChain->swapChainExtent.height; framebufferInfo.layers = 1;
-
-//     if (vkCreateFramebuffer(_logicalDevice->Get(), &framebufferInfo, nullptr,
-//                             &_swapChainFramebuffers[i]) != VK_SUCCESS) {
-//       spdlog::error("Could not create framebuffers");
-//       return;
-//     }
-//   }
-// }
-
-// /**
-//  * @brief
-//  * @todo Dont destroy all the framebuffers at once..
-//  * @return (void)
-//  */
-// void RenderPass::RecreateFrameBuffers() {
-//   for (auto framebuffer : _swapChainFramebuffers) {
-//     vkDestroyFramebuffer(_logicalDevice->Get(), framebuffer, nullptr);
-//   }
-
-//   this->CreateFramebuffers();
-// }
-
-// /**
-//  * @brief Find supported format among candidates
-//  * @param candidates vector<VkFormat> candidates
-//  * @param tiling VkImageTiling tiling
-//  * @param features VkFormatFeatureFlags flags
-//  * @return VkFormat supported format
-//  */
-VkFormat
-RenderPass::findSupportedFormat(const std::vector<VkFormat> &candidates,
-                                VkImageTiling tiling,
-                                VkFormatFeatureFlags features) {
-
-  for (VkFormat format : candidates) {
+VkFormat RenderPass::findSupportedFormat(const std::vector<VkFormat> &candidates,
+                                         const VkImageTiling tiling,
+                                         const VkFormatFeatureFlags features) const {
+  for (VkFormat format: candidates) {
     VkFormatProperties props;
     vkGetPhysicalDeviceFormatProperties(_physicalDevice->Get(), format, &props);
 
@@ -100,13 +48,11 @@ RenderPass::findSupportedFormat(const std::vector<VkFormat> &candidates,
   return VK_FORMAT_UNDEFINED;
 }
 
-// /**
-//  * @brief Find depth color format
-//  * @return  VKFormat depth color format
-//  */
-VkFormat RenderPass::FindDepthFormat() {
+VkFormat RenderPass::FindDepthFormat() const {
   return findSupportedFormat(
-      {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT,
-       VK_FORMAT_D24_UNORM_S8_UINT},
-      VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+    {
+      VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT,
+      VK_FORMAT_D24_UNORM_S8_UINT
+    },
+    VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 }

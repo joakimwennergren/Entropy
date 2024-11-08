@@ -1,52 +1,31 @@
 #pragma once
 
-#include "vulkan/vulkan_core.h"
 #include <graphics/vulkan/buffers/buffer.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Buffers;
 using namespace Entropy::Graphics::Vulkan;
 
-namespace Entropy
-{
-  namespace Graphics
-  {
-    namespace Vulkan
-    {
-      namespace Buffers
-      {
+namespace Entropy::Graphics::Vulkan::Buffers {
+  struct StagingBuffer : Buffer {
+    /**
+     * Constructs a StagedBuffer with the specified size, data, and usage flags.
+     *
+     * @param size The size of the buffer in bytes.
+     * @param data A pointer to the data to be copied into the buffer. Can be nullptr.
+     * @param flags The usage flags specifying how the buffer will be used.
+     * @return A new StagedBuffer object.
+     */
+    StagingBuffer(const VkDeviceSize size, const uint8_t *data,
+                  const VkBufferUsageFlags flags) {
+      CreateBuffer(size, flags);
 
-        struct StagedBuffer : public Buffer
-        {
+      vmaMapMemory(_allocator->Get(), _allocation, &_mappedMemory);
 
-          /**
-           * @brief Constructor for staged buffer
-           * @param backend VulkanBackend
-           * @param size size of the buffer
-           * @param data Data to be put in the buffer
-           */
-          StagedBuffer(VkDeviceSize size, uint8_t *data,
-                       VkBufferUsageFlags flags)
-          {
+      if (data != nullptr) {
+        memcpy(_mappedMemory, data, static_cast<size_t>(size));
+      }
 
-            // Create the buffer
-            CreateBuffer(size,
-                         /*VK_BUFFER_USAGE_TRANSFER_SRC_BIT*/ flags);
-
-            // Map the memory
-            vmaMapMemory(_allocator->Get(), _allocation, &_mappedMemory);
-
-            // Copy the data
-            if (data != nullptr)
-            {
-              memcpy(_mappedMemory, data, static_cast<size_t>(size));
-            }
-
-            // Unmap memory
-            vmaUnmapMemory(_allocator->Get(), _allocation);
-          }
-        };
-
-      } // namespace Buffers
-    } // namespace Vulkan
-  } // namespace Graphics
-} // namespace Entropy
+      vmaUnmapMemory(_allocator->Get(), _allocation);
+    }
+  };
+} // namespace Entropy::Graphics::Vulkan::Buffers

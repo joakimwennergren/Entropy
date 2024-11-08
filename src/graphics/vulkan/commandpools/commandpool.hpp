@@ -1,5 +1,4 @@
-#ifndef __COMMANDPOOL_HPP
-#define __COMMANDPOOL_HPP
+#pragma once
 
 #include "icommandpool.hpp"
 
@@ -8,38 +7,45 @@
 #include <spdlog/spdlog.h>
 #include <vulkan/vulkan.hpp>
 
-namespace Entropy {
-namespace Graphics {
-namespace Vulkan {
-namespace CommandPools {
-class CommandPool : public ServiceBase<ICommandPool> {
-public:
-  CommandPool() {
-    ServiceLocator *sl = ServiceLocator::GetInstance();
-    _logicalDevice = sl->getService<ILogicalDevice>();
+namespace Entropy::Graphics::Vulkan::CommandPools {
+  struct CommandPool final : ServiceBase<ICommandPool> {
+    /**
+     * Constructs a CommandPool object and initializes a Vulkan command pool.
+     *
+     * This constructor retrieves the logical device from the ServiceLocator,
+     * sets up the VkCommandPoolCreateInfo structure, and creates a Vulkan command pool.
+     * The command pool allows for command buffer management and supports the reset command buffer operation.
+     *
+     * @return Initialized CommandPool object.
+     */
+    CommandPool() {
+      const ServiceLocator *sl = ServiceLocator::GetInstance();
+      _logicalDevice = sl->getService<ILogicalDevice>();
 
-    VkCommandPoolCreateInfo poolInfo{};
-    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-    poolInfo.queueFamilyIndex = _logicalDevice->queueFamiliy;
+      VkCommandPoolCreateInfo poolInfo{};
+      poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+      poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+      poolInfo.queueFamilyIndex = _logicalDevice->queueFamiliy;
 
-    VK_CHECK(vkCreateCommandPool(_logicalDevice->Get(), &poolInfo, nullptr,
-                                 &_commandPool));
-  }
+      VK_CHECK(vkCreateCommandPool(_logicalDevice->Get(), &poolInfo, nullptr,
+        &_commandPool));
+    }
 
-  ~CommandPool() {
-    // vkDestroyCommandPool(_logicalDevice->Get(), _commandPool, nullptr);
-  }
+    /**
+     * Destroys the CommandPool object and cleans up the Vulkan command pool.
+     *
+     * This destructor releases the Vulkan command pool associated with the logical device.
+     * It ensures that the Vulkan command pool is properly destroyed before the CommandPool
+     * object is deallocated.
+     */
+    ~CommandPool() override {
+      vkDestroyCommandPool(_logicalDevice->Get(), _commandPool, nullptr);
+    }
 
-  inline VkCommandPool Get() { return _commandPool; };
+    VkCommandPool Get() override { return _commandPool; }
 
-private:
-  VkCommandPool _commandPool = VK_NULL_HANDLE;
-  std::shared_ptr<ILogicalDevice> _logicalDevice;
-};
-} // namespace CommandPools
-} // namespace Vulkan
-} // namespace Graphics
-} // namespace Entropy
-
-#endif /* __COMMANDPOOL_HPP */
+  private:
+    VkCommandPool _commandPool = VK_NULL_HANDLE;
+    std::shared_ptr<ILogicalDevice> _logicalDevice;
+  };
+} // namespace Entropy::Graphics::Vulkan::CommandPools

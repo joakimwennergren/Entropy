@@ -24,21 +24,21 @@ namespace Entropy::Graphics::Vulkan::Buffers {
    *
    * @return VkBuffer The Vulkan buffer.
    */
-  [[nodiscard]] inline VkBuffer GetVulkanBuffer() const { return this->_buffer; };
+  [[nodiscard]] VkBuffer GetVulkanBuffer() const { return this->_buffer; };
 
   /**
    * Retrieves the Vulkan device memory associated with the buffer.
    *
    * @return VkDeviceMemory The Vulkan device memory of the buffer.
    */
-  [[nodiscard]] inline VkDeviceMemory GetBufferMemory() const { return this->_bufferMemory; };
+  [[nodiscard]] VkDeviceMemory GetBufferMemory() const { return this->_bufferMemory; };
 
   /**
    * Retrieves the pointer to the mapped memory of the buffer.
    *
    * @return void* Pointer to the mapped memory.
    */
-  [[nodiscard]] inline void *GetMappedMemory() const { return this->_mappedMemory; };
+  [[nodiscard]] void *GetMappedMemory() const { return this->_mappedMemory; };
 
   /**
    * Represents a Vulkan Memory Allocator (VMA) allocation.
@@ -52,7 +52,7 @@ namespace Entropy::Graphics::Vulkan::Buffers {
    * @param size The size of the buffer to create.
    * @param usage The usage flags specifying the allowed usages of the buffer (e.g., transfer source, storage).
    */
-  inline void CreateBuffer(const VkDeviceSize size, const VkBufferUsageFlags usage) {
+  void CreateBuffer(const VkDeviceSize size, const VkBufferUsageFlags usage) {
    const ServiceLocator *sl = ServiceLocator::GetInstance();
    _allocator = sl->getService<IAllocator>();
 

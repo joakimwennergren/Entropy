@@ -2,91 +2,95 @@
 
 #include <graphics/vulkan/commandpools/commandpool.hpp>
 #include <graphics/vulkan/synchronization/queuesync.hpp>
+#include <graphics/vulkan/utilities/utilities.hpp>
 #include <spdlog/spdlog.h>
 
 using namespace Entropy::Graphics::Vulkan::CommandPools;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
+using namespace Entropy::Graphics::Vulkan::Utilities;
 
-namespace Entropy
-{
-  namespace Graphics
-  {
-    namespace Vulkan
-    {
-      namespace CommandBuffers
-      {
+namespace Entropy::Graphics::Vulkan::CommandBuffers {
+ struct CommandBuffer {
+  /**
+   * @brief CommandBuffer constructor to allocate a Vulkan command buffer.
+   * @param level Specifies the level of the allocated command buffer,
+   *        which can be either VK_COMMAND_BUFFER_LEVEL_PRIMARY or VK_COMMAND_BUFFER_LEVEL_SECONDARY.
+   * @return (void)
+   */
+  explicit CommandBuffer(const VkCommandBufferLevel level) {
+   const ServiceLocator *sl = ServiceLocator::GetInstance();
+   const auto logicalDevice = sl->getService<ILogicalDevice>();
+   const auto commandPool = sl->getService<ICommandPool>();
 
-        /**
-         * @brief CommandBuffer
-         * @author Joakim Wennergren
-         * @since Wed Jul 03 2024
-         */
-        struct CommandBuffer
-        {
-        public:
-          /**
-           * @brief Constructor for CommandBuffer
-           * @param vbe VulkanBackend
-           * @param qs QueueSync
-           * @param cp CommandPool
-           * @param level VkCommandBufferLevel
-           */
-          CommandBuffer(VkCommandBufferLevel level)
-          {
+   assert(logicalDevice != nullptr);
 
-            ServiceLocator *sl = ServiceLocator::GetInstance();
-            auto logicalDevice = sl->getService<ILogicalDevice>();
-            auto commandPool = sl->getService<ICommandPool>();
+   VkCommandBufferAllocateInfo allocInfo{};
+   allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+   allocInfo.commandPool = commandPool->Get();
+   allocInfo.level = level;
+   allocInfo.commandBufferCount = 1;
 
-            assert(logicalDevice != nullptr);
+   VK_CHECK(vkAllocateCommandBuffers(logicalDevice->Get(), &allocInfo,
+    &_commandBuffer));
+  }
 
-            VkCommandBufferAllocateInfo allocInfo{};
-            allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-            allocInfo.commandPool = commandPool->Get();
-            allocInfo.level = level;
-            allocInfo.commandBufferCount = 1;
-            if (vkAllocateCommandBuffers(logicalDevice->Get(), &allocInfo,
-                                         &_commandBuffer) != VK_SUCCESS)
-            {
-              spdlog::warn("[CommandBuffer] Failed to allocate command buffer.");
-            }
-          }
+  /**
+   * @brief Begins recording commands into the Vulkan command buffer.
+   *
+   * This method sets up the command buffer for recording by initializing
+   * a VkCommandBufferBeginInfo structure and calling vkBeginCommandBuffer.
+   * It ensures that the command buffer is valid before starting the recording process.
+   *
+   * @return (void)
+   */
+  void Record() const;
 
-          /**
-           * @brief Start recording commandbuffer
-           * @return (void)
-           */
-          void Record();
 
-          /**
-           * @brief End recording commandbuffer
-           * @return (void)
-           */
-          void EndRecording();
+  /**
+   * @brief Ends the recording of commands to this command buffer.
+   *
+   * This method finalizes the command buffer recording, making it ready for execution.
+   * If the command buffer is not in a valid state, a warning will be logged.
+   *
+   * @return (void)
+   */
+  void EndRecording() const;
 
-          /**
-           * @brief Record once
-           * @return (void)
-           */
-          void RecordOnce();
 
-          /**
-           * @brief End Record once
-           * @return (void)
-           */
-          void EndRecordingOnce();
+  /**
+   * @brief Begins recording of a Vulkan command buffer for a one-time submission.
+   *
+   * This method sets up a Vulkan command buffer for recording commands that are intended to be submitted
+   * only once. It configures the command buffer with VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT.
+   * If the command buffer cannot be successfully started for recording, a warning is logged.
+   *
+   * @return void
+   */
+  void RecordOnce() const;
 
-          /**
-           * @brief Get the command buffer handle
-           * @return VkCommandBuffer
-           */
-          inline VkCommandBuffer Get() { return _commandBuffer; };
 
-        private:
-          // CommandBuffer handle
-          VkCommandBuffer _commandBuffer = VK_NULL_HANDLE;
-        };
-      } // namespace CommandBuffers
-    } // namespace Vulkan
-  } // namespace Graphics
-} // namespace Entropy
+  /**
+   * @brief Ends the recording of the Vulkan command buffer.
+   *
+   * This function ensures the command buffer recording is properly terminated.
+   * It asserts that the command buffer handle is valid and logs a warning in case of an error during the end recording operation.
+   *
+   * @return void
+   */
+  void EndRecordingOnce() const;
+
+
+  /**
+   * @brief Retrieves the currently allocated Vulkan command buffer.
+   *
+   * This method returns the VkCommandBuffer handle that has been allocated
+   * to this CommandBuffer instance.
+   *
+   * @return VkCommandBuffer The allocated Vulkan command buffer handle.
+   */
+  [[nodiscard]] VkCommandBuffer Get() const { return _commandBuffer; }
+
+ private:
+  VkCommandBuffer _commandBuffer = VK_NULL_HANDLE;
+ };
+} // namespace Entropy::Graphics::Vulkan::CommandBuffers

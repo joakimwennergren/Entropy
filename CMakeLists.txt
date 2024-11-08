@@ -1,5 +1,4 @@
 # Entropy Game Engine version 1.0
-
 # Set minimum cmake version
 cmake_minimum_required(VERSION 3.29.6)
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
@@ -22,108 +21,108 @@ file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
 # Compiler flags
-if(MSVC)
+if (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
     add_definitions(-w)
-endif(MSVC)
+endif (MSVC)
 
 target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17 -Wno-deprecated -Wno-macro-redefined)
 
 # Include headers
 target_include_directories(${PROJECT_NAME}
-    PUBLIC
-    ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/src
-    ${Vulkan_INCLUDE_DIRS}
-    external
-    external/vulkan-headers
-    external/lua-5.4.6/src
-    external/metal-cpp
-    external/myers-diff
-    external/imgui
-    external/bullet3/src
-    external/curl/include
-    include
+        PUBLIC
+        ${PROJECT_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/src
+        ${Vulkan_INCLUDE_DIRS}
+        external
+        external/vulkan-headers
+        external/lua-5.4.6/src
+        external/metal-cpp
+        external/myers-diff
+        external/imgui
+        external/bullet3/src
+        external/curl/include
+        include
 )
 
-if(IOS)
+if (IOS)
     target_link_libraries(${PROJECT_NAME}
-        "-framework foundation"
-        "-framework metal"
-        "-framework metalkit"
-        "-framework uikit"
-        "-framework iosurface"
-        "-framework coregraphics"
-        "-framework quartzcore"
-        "-framework coreaudio"
-        "-framework audiotoolbox"
-        "-framework avfoundation"
-        "-framework coretext"
+            "-framework foundation"
+            "-framework metal"
+            "-framework metalkit"
+            "-framework uikit"
+            "-framework iosurface"
+            "-framework coregraphics"
+            "-framework quartzcore"
+            "-framework coreaudio"
+            "-framework audiotoolbox"
+            "-framework avfoundation"
+            "-framework coretext"
     )
 
     # Link dependencies for desktop (shouldn't link to vulkanlibs on iOS since wer're using moltenvk)
     target_link_libraries(${PROJECT_NAME}
-        TracyClient
-        GPUOpen::VulkanMemoryAllocator
-        flecs::flecs_static
-        BulletCollision
-        BulletDynamics
-        BulletDynamics
-        BulletCollision
-        BulletInverseDynamics
-        BulletSoftBody
-        LinearMath
-        tinyobjloader
-        sol2
-        lua
-        glm
-        freetype
-        eventpp
-        spdlog
-        box2d
-        eventpp
-        tinygltf
-        libcurl_static
+            TracyClient
+            GPUOpen::VulkanMemoryAllocator
+            flecs::flecs_static
+            BulletCollision
+            BulletDynamics
+            BulletDynamics
+            BulletCollision
+            BulletInverseDynamics
+            BulletSoftBody
+            LinearMath
+            tinyobjloader
+            sol2
+            lua
+            glm
+            freetype
+            eventpp
+            spdlog
+            box2d
+            eventpp
+            tinygltf
+            libcurl_static
     )
-endif()
+endif ()
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND APPLE)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND APPLE)
     target_link_libraries(${PROJECT_NAME}
-        ${Vulkan_LIBRARIES}
-        glfw
-        TracyClient
-        GPUOpen::VulkanMemoryAllocator
-        flecs::flecs_static
-        BulletCollision
-        BulletDynamics
-        BulletDynamics
-        BulletCollision
-        BulletInverseDynamics
-        BulletSoftBody
-        LinearMath
-        tinyobjloader
-        sol2
-        lua
-        glm
-        freetype
-        eventpp
-        spdlog
-        box2d
-        eventpp
-        tinygltf
-        libcurl_static
+            ${Vulkan_LIBRARIES}
+            glfw
+            TracyClient
+            GPUOpen::VulkanMemoryAllocator
+            flecs::flecs_static
+            BulletCollision
+            BulletDynamics
+            BulletDynamics
+            BulletCollision
+            BulletInverseDynamics
+            BulletSoftBody
+            LinearMath
+            tinyobjloader
+            sol2
+            lua
+            glm
+            freetype
+            eventpp
+            spdlog
+            box2d
+            eventpp
+            tinygltf
+            libcurl_static
     )
-endif()
+endif ()
 
 # Link common dependencies
 target_link_libraries(${PROJECT_NAME}
 
-    # asio::asio
-    # libcurl_static
-    # libcurl_shared
-    # OpenSSL::SSL
-    # OpenSSL::Crypto
-    # ktx
+        # asio::asio
+        # libcurl_static
+        # libcurl_shared
+        # OpenSSL::SSL
+        # OpenSSL::Crypto
+        # ktx
 )
 
 # Build config file

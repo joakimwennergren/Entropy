@@ -1,13 +1,16 @@
-#ifndef __IDESCRIPTORPOOL_HPP
-#define __IDESCRIPTORPOOL_HPP
+#pragma once
 
 #include <servicelocators/servicelocator.hpp>
 #include <vulkan/vulkan.hpp>
 
-class IDescriptorPool : public IService {
-public:
-  virtual ~IDescriptorPool() = default;
-  virtual VkDescriptorPool Get() = 0;
-};
+struct IDescriptorPool : IService {
+    /**
+     * @brief Virtual destructor for the IDescriptorPool interface.
+     *
+     * This destructor ensures that derived classes can clean up resources
+     * appropriately when the pool is destroyed.
+     */
+    ~IDescriptorPool() override = default;
 
-#endif /* __IDESCRIPTORPOOL_HPP */
+    virtual VkDescriptorPool Get() = 0;
+};

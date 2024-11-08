@@ -1,5 +1,4 @@
-#ifndef __PIPELINECACHE_HPP
-#define __PIPELINECACHE_HPP
+#pragma once
 
 #include "ipipelinecache.hpp"
 
@@ -7,40 +6,51 @@
 #include <graphics/vulkan/utilities/utilities.hpp>
 #include <spdlog/spdlog.h>
 
-namespace Entropy {
-namespace Graphics {
-namespace Vulkan {
-namespace Caches {
-struct PipelineCache : public ServiceBase<IPipelineCache> {
-  // Constructor
-  PipelineCache() {
-    ServiceLocator *sl = ServiceLocator::GetInstance();
-    _logicalDevice = sl->getService<ILogicalDevice>();
+namespace Entropy::Graphics::Vulkan::Caches {
+  struct PipelineCache final : ServiceBase<IPipelineCache> {
+    /**
+     * @brief Constructs a new PipelineCache object.
+     *
+     * This constructor initializes the PipelineCache by retrieving the logical device
+     * through the ServiceLocator. It then creates a Vulkan pipeline cache using
+     * vkCreatePipelineCache.
+     *
+     * @return A new instance of the PipelineCache class.
+     */
+    PipelineCache() {
+      const ServiceLocator *sl = ServiceLocator::GetInstance();
+      _logicalDevice = sl->getService<ILogicalDevice>();
 
-    VkPipelineCacheCreateInfo pipelineCacheCreateInfo = {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO};
+      VkPipelineCacheCreateInfo pipelineCacheCreateInfo = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO
+      };
 
-    VK_CHECK(vkCreatePipelineCache(_logicalDevice->Get(),
-                                   &pipelineCacheCreateInfo, nullptr,
-                                   &_pipelineCache));
-  }
-  // Destructor
-  ~PipelineCache() {
-    vkDestroyPipelineCache(_logicalDevice->Get(), _pipelineCache, nullptr);
-  }
+      VK_CHECK(vkCreatePipelineCache(_logicalDevice->Get(),
+        &pipelineCacheCreateInfo, nullptr,
+        &_pipelineCache));
+    }
 
-  // Gets the pipelinecache handle
-  inline VkPipelineCache Get() { return _pipelineCache; };
+    /**
+     * @brief Destructor for the PipelineCache class.
+     *
+     * This method is responsible for cleaning up the Vulkan pipeline cache. It uses
+     * the Vulkan function vkDestroyPipelineCache to destroy the pipeline cache associated
+     * with the logical device. This is called automatically when an object of the
+     * PipelineCache class goes out of scope.
+     *
+     * @note This destructor overrides the base class destructor to ensure proper
+     * cleanup of Vulkan resources.
+     */
+    ~PipelineCache() override {
+      vkDestroyPipelineCache(_logicalDevice->Get(), _pipelineCache, nullptr);
+    }
 
-private:
-  // Pipelinecache handle
-  VkPipelineCache _pipelineCache = VK_NULL_HANDLE;
-  // Logical device dependency
-  std::shared_ptr<ILogicalDevice> _logicalDevice;
-};
-} // namespace Caches
-} // namespace Vulkan
-} // namespace Graphics
-} // namespace Entropy
+    VkPipelineCache Get() override { return _pipelineCache; }
 
-#endif /* __PIPELINECACHE_HPP */
+  private:
+    // Pipeline cache handle
+    VkPipelineCache _pipelineCache = VK_NULL_HANDLE;
+    // Logical device dependency
+    std::shared_ptr<ILogicalDevice> _logicalDevice;
+  };
+} // namespace Entropy::Graphics::Vulkan::Caches

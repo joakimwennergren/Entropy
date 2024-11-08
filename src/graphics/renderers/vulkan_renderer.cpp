@@ -32,7 +32,7 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
   }
 
   if (needResize) {
-    stagingBuffer = stagingBuffer = std::make_shared<StagedBuffer>(
+    stagingBuffer = stagingBuffer = std::make_shared<StagingBuffer>(
         width * height * 4, nullptr, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
     _synchronizer =
         std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);

@@ -181,7 +181,7 @@ namespace Entropy::EntryPoints {
   bool needResize = false;
 
  protected:
-  GLFWwindow *_window;
+  GLFWwindow *_window = nullptr;
   std::shared_ptr<Renderers::VulkanRenderer> _renderer;
 
  private:

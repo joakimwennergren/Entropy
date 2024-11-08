@@ -1,26 +1,19 @@
+
 #pragma once
 
 #include <flecs.h>
 #include <servicelocators/servicelocator.hpp>
 
-/**
- * Interface for a world object that extends the IService interface.
- */
-namespace Entropy {
-namespace ECS {
-struct IWorld : public IService {
+namespace Entropy::ECS {
+ struct IWorld : IService {
   /**
-   * Virtual destructor for the IWorld interface.
+   * @brief Destructor for the IWorld interface.
    *
-   * @returns None
+   * This is a defaulted override of the base class destructor. It ensures
+   * proper cleanup of resources when an instance of an IWorld-derived class is destroyed.
    */
-  virtual ~IWorld() = default;
-  /**
-   * Abstract method to get a pointer to a flecs world.
-   *
-   * @returns A pointer to a flecs world.
-   */
+  ~IWorld() override = default;
+
   virtual flecs::world *Get() = 0;
-};
-} // namespace ECS
-} // namespace Entropy
+ };
+} // namespace Entropy::ECS

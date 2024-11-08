@@ -1,7 +1,9 @@
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
-struct PushConstBlock {
-  uint32_t instanceIndex;
-};
+namespace Entropy::Data {
+    struct PushConstBlock {
+        uint32_t instanceIndex;
+    };
+}

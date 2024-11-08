@@ -1,79 +1,74 @@
 #pragma once
 
 #include <array>
-#include <utility>
-
 #include <data/vertex.hpp>
+#include <data/pushcontants.hpp>
 #include <filesystem/filesystem.hpp>
 #include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
-#include <graphics/vulkan/descriptorsetlayouts/descriptorsetlayout.hpp>
 #include <graphics/vulkan/descriptorsets/descriptorset.hpp>
-#include <graphics/vulkan/devices/logical_device.hpp>
 #include <graphics/vulkan/pipelinecaches/pipelinecache.hpp>
 #include <graphics/vulkan/renderpasses/renderpass.hpp>
 #include <graphics/vulkan/shaders/shader.hpp>
 #include <graphics/vulkan/swapchains/swapchain.hpp>
-#include <spdlog/spdlog.h>
 
 using namespace Entropy::Filesystem;
 using namespace Entropy::Graphics::Vulkan::Shaders;
 using namespace Entropy::Graphics::Vulkan::RenderPasses;
 using namespace Entropy::Graphics::Vulkan::Swapchains;
-using namespace Entropy::Graphics::Vulkan::Descriptorsets;
+using namespace Entropy::Graphics::Vulkan::DescriptorSets;
 using namespace Entropy::Graphics::Vulkan::DescriptorPools;
 using namespace Entropy::Graphics::Vulkan::Devices;
 using namespace Entropy::Data;
 
-namespace Entropy {
-namespace Graphics {
-namespace Vulkan {
-namespace Pipelines {
-class Pipeline {
-public:
-  Pipeline(std::shared_ptr<RenderPass> renderPass) {
-    ServiceLocator *sl = ServiceLocator::GetInstance();
-    _logicalDevice = sl->getService<ILogicalDevice>();
-    _swapchain = sl->getService<ISwapchain>();
-    _pipelineCache = sl->getService<IPipelineCache>();
-    _renderPass = renderPass;
-  }
+namespace Entropy::Graphics::Vulkan::Pipelines {
+  class Pipeline {
+    /**
+     * Constructs a Pipeline object.
+     *
+     * @param renderPass A shared pointer to a RenderPass object that this pipeline will use.
+     * @return A constructed Pipeline object.
+     */
+  public:
+    explicit Pipeline(const std::shared_ptr<RenderPass> &renderPass) {
+      const ServiceLocator *sl = ServiceLocator::GetInstance();
+      _logicalDevice = sl->getService<ILogicalDevice>();
+      _swapChain = sl->getService<ISwapchain>();
+      _pipelineCache = sl->getService<IPipelineCache>();
+      _renderPass = renderPass;
+    }
 
-  ~Pipeline() {
-    vkDestroyPipeline(_logicalDevice->Get(), _pipeline, nullptr);
-    vkDestroyPipelineLayout(_logicalDevice->Get(), _pipelineLayout, nullptr);
-  }
+    /**
+     * Destructor for the Pipeline class.
+     *
+     * This method cleans up Vulkan pipeline resources by destroying the pipeline
+     * and pipeline layout using the logical device.
+     */
+    ~Pipeline() {
+      vkDestroyPipeline(_logicalDevice->Get(), _pipeline, nullptr);
+      vkDestroyPipelineLayout(_logicalDevice->Get(), _pipelineLayout, nullptr);
+    }
 
-  void Build(std::shared_ptr<Shader> shader,
-             std::vector<VkDescriptorSetLayout> dsLayouts);
+    /**
+     * Builds a new pipeline with the given shader and descriptor set layouts.
+     *
+     * @param shader A shared pointer to a Shader object that will be used by the pipeline.
+     * @param dsLayouts A vector containing the descriptor set layouts to be used by the pipeline.
+     */
+    void Build(const std::shared_ptr<Shader> &shader,
+               std::vector<VkDescriptorSetLayout> dsLayouts);
 
-  // void Build(const std::string name, const std::string vertexShader,
-  //            const std::string fragmentShader,
-  //            std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite,
-  //            glm::vec2 depthBounds, VkPipelineLayoutCreateInfo
-  //            pipelinelayout, VkPolygonMode polygonMode);
+    [[nodiscard]] VkPipeline GetPipeline() const { return _pipeline; };
+    [[nodiscard]] VkPipelineLayout GetPipelineLayout() const { return _pipelineLayout; };
 
-  // void Build(const std::string name, std::vector<char> vert_shader,
-  //            std::vector<char> frag_shader,
-  //            std::vector<VkDescriptorSetLayout> dsLayout, bool depthWrite,
-  //            glm::vec2 depthBounds, VkPipelineLayoutCreateInfo
-  //            pipelinelayout, VkPolygonMode polygonMode);
+    std::vector<DescriptorSet> descriptorSets;
 
-  inline VkPipeline GetPipeline() { return _pipeline; };
-  inline VkPipelineLayout GetPipelineLayout() { return _pipelineLayout; };
-
-  std::vector<Descriptorset> descriptorSets;
-
-protected:
-  // PipelineLayout and pipeline
-  VkPipelineLayout _pipelineLayout = VK_NULL_HANDLE;
-  VkPipeline _pipeline = VK_NULL_HANDLE;
-  std::shared_ptr<Shader> _shader;
-  std::shared_ptr<ILogicalDevice> _logicalDevice;
-  std::shared_ptr<ISwapchain> _swapchain;
-  std::shared_ptr<RenderPass> _renderPass;
-  std::shared_ptr<IPipelineCache> _pipelineCache;
-};
-} // namespace Pipelines
-} // namespace Vulkan
-} // namespace Graphics
-} // namespace Entropy
+  protected:
+    VkPipelineLayout _pipelineLayout = VK_NULL_HANDLE;
+    VkPipeline _pipeline = VK_NULL_HANDLE;
+    std::shared_ptr<Shader> _shader;
+    std::shared_ptr<ILogicalDevice> _logicalDevice;
+    std::shared_ptr<ISwapchain> _swapChain;
+    std::shared_ptr<RenderPass> _renderPass;
+    std::shared_ptr<IPipelineCache> _pipelineCache;
+  };
+} // namespace Entropy::Graphics::Vulkan::Pipelines

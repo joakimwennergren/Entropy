@@ -3,36 +3,25 @@
 #include "iworld.hpp"
 #include <flecs.h>
 
-namespace Entropy {
-namespace ECS {
-/**
- * Definition of a struct World that inherits from ServiceBase<IWorld>.
- */
-struct World : public ServiceBase<IWorld> {
+namespace Entropy::ECS {
+ struct World final : public ServiceBase<IWorld> {
   /**
    * Constructor for the World class.
-   * Initializes a new flecs world for the game.
+   * Initializes the gameWorld object by creating a new instance of flecs::world.
    *
-   * @returns None
+   * @return A pointer to the newly created flecs::world instance.
    */
   World() { gameWorld = new flecs::world(); }
+
   /**
    * Destructor for the World class.
-   * Deletes the gameWorld object to free up memory.
+   * Cleans up the gameWorld object by deleting the instance of flecs::world.
    */
-  ~World() { delete gameWorld; }
-  /**
-   * Get the flecs world instance.
-   *
-   * @return A pointer to the flecs world instance.
-   */
-  inline flecs::world *Get() override { return gameWorld; }
+  ~World() override { delete gameWorld; }
 
-private:
-  /**
-   * Pointer to the flecs world representing the game world.
-   */
+  flecs::world *Get() override { return gameWorld; }
+
+ private:
   flecs::world *gameWorld;
-};
-} // namespace ECS
-} // namespace Entropy
+ };
+} // namespace Entropy::ECS

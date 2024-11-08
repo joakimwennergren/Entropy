@@ -1,51 +1,45 @@
-#ifndef __DESCRIPTORSET_HPP
-#define __DESCRIPTORSET_HPP
+#pragma once
 
-#include <config.hpp>
-#include <graphics/vulkan/utilities/utilities.hpp>
-#include <spdlog/spdlog.h>
 #include <vulkan/vulkan.hpp>
-
+#include <graphics/vulkan/utilities/utilities.hpp>
 #include <graphics/vulkan/descriptorpools/idescriptorpool.hpp>
 #include <graphics/vulkan/descriptorsetlayouts/descriptorsetlayout.hpp>
 #include <graphics/vulkan/devices/ilogical_device.hpp>
 
-using namespace Entropy::Graphics::Vulkan::DescriptorsetLayouts;
+using namespace Entropy::Graphics::Vulkan::DescriptorSetLayouts;
 
-namespace Entropy {
-namespace Graphics {
-namespace Vulkan {
-namespace Descriptorsets {
-class Descriptorset {
-public:
-  Descriptorset(DescriptorsetLayout layout) {
-    ServiceLocator *sl = ServiceLocator::GetInstance();
-    auto logicalDevice = sl->getService<ILogicalDevice>();
-    auto descriptorPool = sl->getService<IDescriptorPool>();
+namespace Entropy::Graphics::Vulkan::DescriptorSets {
+  class DescriptorSet {
+    /**
+     * Constructs a DescriptorSet object and allocates descriptor sets.
+     *
+     * @param layout The DescriptorSetLayout used to create the descriptor sets.
+     * @return An initialized instance of DescriptorSet with allocated descriptor sets.
+     */
+  public:
+    explicit DescriptorSet(const DescriptorSetLayout layout) {
+      const ServiceLocator *sl = ServiceLocator::GetInstance();
+      const auto logicalDevice = sl->getService<ILogicalDevice>();
+      const auto descriptorPool = sl->getService<IDescriptorPool>();
 
-    std::vector<VkDescriptorSetLayout> layouts(MAX_CONCURRENT_FRAMES_IN_FLIGHT,
-                                               layout.Get());
+      const std::vector layouts(MAX_CONCURRENT_FRAMES_IN_FLIGHT,
+                                layout.Get());
 
-    VkDescriptorSetAllocateInfo allocInfo{};
-    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    allocInfo.descriptorPool = descriptorPool->Get();
-    allocInfo.descriptorSetCount = MAX_CONCURRENT_FRAMES_IN_FLIGHT;
-    allocInfo.pSetLayouts = layouts.data();
+      VkDescriptorSetAllocateInfo allocInfo{};
+      allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+      allocInfo.descriptorPool = descriptorPool->Get();
+      allocInfo.descriptorSetCount = MAX_CONCURRENT_FRAMES_IN_FLIGHT;
+      allocInfo.pSetLayouts = layouts.data();
 
-    _descriptorSets.resize(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+      _descriptorSets.resize(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
 
-    VK_CHECK(vkAllocateDescriptorSets(logicalDevice->Get(), &allocInfo,
-                                      _descriptorSets.data()));
-  }
+      VK_CHECK(vkAllocateDescriptorSets(logicalDevice->Get(), &allocInfo,
+        _descriptorSets.data()));
+    }
 
-  inline std::vector<VkDescriptorSet> Get() { return _descriptorSets; };
+    std::vector<VkDescriptorSet> Get() { return _descriptorSets; }
 
-private:
-  std::vector<VkDescriptorSet> _descriptorSets;
-};
-} // namespace Descriptorsets
-} // namespace Vulkan
-} // namespace Graphics
-} // namespace Entropy
-
-#endif /* __DESCRIPTORSET_HPP */
+  private:
+    std::vector<VkDescriptorSet> _descriptorSets;
+  };
+} // namespace Entropy::Graphics::Vulkan::DescriptorSets

@@ -86,7 +86,7 @@ Application::Application() {
   VkExtent2D frame = {(uint32_t) screen_width, (uint32_t) screen_height};
 
   _renderer->_swapchain->Build(_surface, frame, VK_NULL_HANDLE);
-  _renderer->_renderPass->CreateFramebuffers(sl->getService<ISwapchain>(),
+  _renderer->_renderPass->CreateFrameBuffers(sl->getService<ISwapchain>(),
                                              screen_width, screen_height);
 }
 
