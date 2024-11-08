@@ -1,20 +1,20 @@
 #pragma once
 
-#include "../src/cameras/camera_manager.hpp"
-#include "../src/ecs/world.hpp"
-#include "../src/graphics/vulkan/commandpools/commandpool.hpp"
-#include "../src/graphics/vulkan/descriptorpools/descriptorpool.hpp"
-#include "../src/graphics/vulkan/devices/logical_device.hpp"
-#include "../src/graphics/vulkan/devices/physical_device.hpp"
-#include "../src/graphics/vulkan/instances/vk_instance.hpp"
-#include "../src/graphics/vulkan/memory/allocator.hpp"
-#include "../src/graphics/vulkan/pipelinecaches/pipelinecache.hpp"
-#include "../src/graphics/vulkan/swapchains/swapchain.hpp"
-#include "../src/physics/2d/physics2d.hpp"
-#include "../src/physics/3d/physics3d.hpp"
-#include "../src/scripting/lua.hpp"
-#include "../src/timing/timer.hpp"
-#include "config.hpp"
+#include <cameras/camera_manager.hpp>
+#include <ecs/world.hpp>
+#include <graphics/vulkan/commandpools/commandpool.hpp>
+#include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
+#include <graphics/vulkan/devices/logical_device.hpp>
+#include <graphics/vulkan/devices/physical_device.hpp>
+#include <graphics/vulkan/instances/vk_instance.hpp>
+#include <graphics/vulkan/memory/allocator.hpp>
+#include <graphics/vulkan/pipelinecaches/pipelinecache.hpp>
+#include <graphics/vulkan/swapchains/swapchain.hpp>
+#include <physics/2d/physics2d.hpp>
+#include <physics/3d/physics3d.hpp>
+#include <scripting/lua.hpp>
+#include <timing/timer.hpp>
+#include <config.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Instances;
 using namespace Entropy::Graphics::Vulkan::Surfaces;
@@ -31,7 +31,6 @@ using namespace Entropy::Timing;
 using namespace Entropy::Scripting;
 using namespace Entropy::Physics;
 using namespace Entropy::Graphics::Vulkan::Textures;
-using namespace Entropy;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
 using namespace Entropy::Graphics::Vulkan::Memory;
 using namespace Entropy::ECS;

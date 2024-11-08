@@ -1,6 +1,7 @@
 .DS_Store
 .vscode
 build
+cmake-build-debug
 include/config.hpp
 docs
 **/.DS_Store.DS_Store

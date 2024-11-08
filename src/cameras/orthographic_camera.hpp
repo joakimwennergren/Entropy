@@ -5,248 +5,84 @@
 #include <cameras/camera.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/quaternion.hpp>
 
-namespace Entropy {
-namespace Cameras {
-
-/**
- * @brief Perspective Camera
- * @author Joakim Wennergren
- * @since Thu Jul 04 2024
- */
-class OrthographicCamera : public Camera {
-public:
-  OrthographicCamera() {
-    matrices.view =
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 256.0f), glm::vec3(0.0f, 0.0f, 0.0f),
-                    glm::vec3(0.0f, 1.0f, 0.0f));
-  }
-
-private:
-  float fov;
-  float znear, zfar;
-
-  void Test() {}
-
-  void updateViewMatrix() {
-    glm::mat4 currentMatrix = matrices.view;
-
-    glm::mat4 rotM = glm::mat4(1.0f);
-    glm::mat4 transM;
-
-    rotM = glm::rotate(rotM, glm::radians(rotation.x * (flipY ? -1.0f : 1.0f)),
-                       glm::vec3(1.0f, 0.0f, 0.0f));
-    rotM = glm::rotate(rotM, glm::radians(rotation.y),
-                       glm::vec3(0.0f, 1.0f, 0.0f));
-    rotM = glm::rotate(rotM, glm::radians(rotation.z),
-                       glm::vec3(0.0f, 0.0f, 1.0f));
-
-    glm::vec3 translation = position;
-    if (flipY) {
-      translation.y *= -1.0f;
-    }
-    transM = glm::translate(glm::mat4(1.0f), translation);
-
-    if (type == CameraType::firstperson) {
-      matrices.view = rotM * transM;
-    } else {
-      matrices.view = transM * rotM;
+namespace Entropy::Cameras {
+  /**
+   * @class OrthographicCamera
+   * @brief Represents a camera that uses orthographic projection.
+   *
+   * This class inherits from Camera and provides functionality for orthographic
+   * projection, including updating the view and perspective matrices, and handling
+   * camera movement and rotation.
+   *
+   * The orthographic camera projects objects onto the screen without perspective,
+   * meaning objects retain the same size regardless of their depth from the camera.
+   */
+  class OrthographicCamera final : public Camera {
+    /**
+     * @brief Default constructor for the OrthographicCamera class.
+     *
+     * Initializes the view matrix using the glm::lookAt function, setting the
+     * camera position to (0.0f, 0.0f, 256.0f) and looking at the origin (0.0f, 0.0f, 0.0f)
+     * with the up direction being the positive y-axis (0.0f, 1.0f, 0.0f).
+     */
+  public:
+    OrthographicCamera() {
+      matrices.view =
+          glm::lookAt(glm::vec3(0.0f, 0.0f, 256.0f), glm::vec3(0.0f, 0.0f, 0.0f),
+                      glm::vec3(0.0f, 1.0f, 0.0f));
     }
 
-    viewPos = glm::vec4(position, 0.0f) * glm::vec4(-1.0f, 1.0f, -1.0f, 1.0f);
+    float fov{};
+    float znear{}, zfar{};
 
-    if (matrices.view != currentMatrix) {
-      updated = true;
+    void Test() {
     }
-  };
 
-public:
-  enum CameraType { lookat, firstperson };
-  CameraType type = CameraType::firstperson;
+    enum CameraType { lookat, firstperson };
 
-  glm::vec3 rotation = glm::vec3();
-  glm::vec3 position = glm::vec3();
-  glm::vec4 viewPos = glm::vec4();
+    CameraType type = CameraType::firstperson;
 
-  float rotationSpeed = 1.0f;
-  float movementSpeed = 1.0f;
+    glm::vec3 rotation = glm::vec3();
+    glm::vec3 position = glm::vec3();
+    glm::vec4 viewPos = glm::vec4();
 
-  bool updated = true;
-  bool flipY = false;
+    float rotationSpeed = 1.0f;
+    float movementSpeed = 1.0f;
 
-  struct {
-    glm::mat4 perspective;
-    glm::mat4 view;
-  } matrices;
+    bool updated = true;
+    bool flipY = false;
 
-  struct {
-    bool left = false;
-    bool right = false;
-    bool up = false;
-    bool down = false;
-  } keys;
+    struct {
+      glm::mat4 perspective;
+      glm::mat4 view;
+    } matrices{};
 
-  const float PPM = 100.0f; // Pixels Per Meter
+    struct {
+      bool left = false;
+      bool right = false;
+      bool up = false;
+      bool down = false;
+    } keys;
 
-  bool moving() { return keys.left || keys.right || keys.up || keys.down; }
+    const float PPM = 100.0f; // Pixels Per Meter
 
-  float getNearClip() { return znear; }
-
-  float getFarClip() { return zfar; }
-
-  void setPerspective(float fov, int width, int height, float znear,
-                      float zfar) {
-
-    // Vulkan-trick because GLM was written for OpenGL, and Vulkan uses
-    // a right-handed coordinate system instead. Without this correction,
-    // geometry will be y-inverted in screen space, and the coordinate space
-    // will be left-handed. Described at:
-    // https://matthewwellings.com/blog/the-new-vulkan-coordinate-system/
-    glm::mat4 correction(
+    void setPerspective(float fov, int width, int height, float znear,
+                        float zfar) {
+      // Vulkan-trick because GLM was written for OpenGL, and Vulkan uses
+      // a right-handed coordinate system instead. Without this correction,
+      // geometry will be y-inverted in screen space, and the coordinate space
+      // will be left-handed. Described at:
+      // https://matthewwellings.com/blog/the-new-vulkan-coordinate-system/
+      glm::mat4 correction(
         glm::vec4(1.0f, 0.0f, 0.0f, 0.0f), glm::vec4(0.0f, -1.0f, 0.0f, 0.0f),
         glm::vec4(0.0f, 0.0f, 0.5f, 0.0f), glm::vec4(0.0f, 0.0f, 0.5f, 1.0f));
-    matrices.perspective = glm::ortho(0.0f, (float)width / PPM,
-                                      (float)height / PPM, 0.0f, znear, zfar);
-    // matrices.perspective =
-    //     correction * glm::ortho(-1.0f, 1.0f, -aspect, aspect, znear, zfar);
+      matrices.perspective = glm::ortho(0.0f, (float) width / PPM,
+                                        (float) height / PPM, 0.0f, znear, zfar);
+      // matrices.perspective =
+      //     correction * glm::ortho(-1.0f, 1.0f, -aspect, aspect, znear, zfar);
+    };
   };
-
-  void updateAspectRatio(float aspect) {
-    glm::mat4 currentMatrix = matrices.perspective;
-    matrices.perspective =
-        glm::perspective(glm::radians(fov), aspect, znear, zfar);
-    if (flipY) {
-      matrices.perspective[1][1] *= -1.0f;
-    }
-    if (matrices.view != currentMatrix) {
-      updated = true;
-    }
-  }
-
-  void setPosition(glm::vec3 position) {
-    this->position = position;
-    this->matrices.view = glm::translate(matrices.view, position);
-  }
-
-  void setRotation(glm::vec3 rotation) {
-    this->rotation = rotation;
-    updateViewMatrix();
-  }
-
-  void rotate(glm::vec3 delta) {
-    this->rotation += delta;
-    updateViewMatrix();
-  }
-
-  void setTranslation(glm::vec3 translation) {
-    this->position = translation;
-    updateViewMatrix();
-  };
-
-  void translate(glm::vec3 delta) {
-    this->position += delta;
-    updateViewMatrix();
-  }
-
-  void setRotationSpeed(float rotationSpeed) {
-    this->rotationSpeed = rotationSpeed;
-  }
-
-  void setMovementSpeed(float movementSpeed) {
-    this->movementSpeed = movementSpeed;
-  }
-
-  void update(float deltaTime) {
-    updated = false;
-    if (type == CameraType::firstperson) {
-      if (moving()) {
-        glm::vec3 camFront;
-        camFront.x =
-            -cos(glm::radians(rotation.x)) * sin(glm::radians(rotation.y));
-        camFront.y = sin(glm::radians(rotation.x));
-        camFront.z =
-            cos(glm::radians(rotation.x)) * cos(glm::radians(rotation.y));
-        camFront = glm::normalize(camFront);
-
-        float moveSpeed = deltaTime * movementSpeed;
-
-        if (keys.up)
-          position += camFront * moveSpeed;
-        if (keys.down)
-          position -= camFront * moveSpeed;
-        if (keys.left)
-          position -= glm::normalize(
-                          glm::cross(camFront, glm::vec3(0.0f, 1.0f, 0.0f))) *
-                      moveSpeed;
-        if (keys.right)
-          position += glm::normalize(
-                          glm::cross(camFront, glm::vec3(0.0f, 1.0f, 0.0f))) *
-                      moveSpeed;
-      }
-    }
-    updateViewMatrix();
-  };
-
-  // Update camera passing separate axis data (gamepad)
-  // Returns true if view or position has been changed
-  bool updatePad(glm::vec2 axisLeft, glm::vec2 axisRight, float deltaTime) {
-    bool retVal = false;
-
-    if (type == CameraType::firstperson) {
-      // Use the common console thumbstick layout
-      // Left = view, right = move
-
-      const float deadZone = 0.0015f;
-      const float range = 1.0f - deadZone;
-
-      glm::vec3 camFront;
-      camFront.x =
-          -cos(glm::radians(rotation.x)) * sin(glm::radians(rotation.y));
-      camFront.y = sin(glm::radians(rotation.x));
-      camFront.z =
-          cos(glm::radians(rotation.x)) * cos(glm::radians(rotation.y));
-      camFront = glm::normalize(camFront);
-
-      float moveSpeed = deltaTime * movementSpeed * 2.0f;
-      float rotSpeed = deltaTime * rotationSpeed * 50.0f;
-
-      // Move
-      if (fabsf(axisLeft.y) > deadZone) {
-        float pos = (fabsf(axisLeft.y) - deadZone) / range;
-        position -=
-            camFront * pos * ((axisLeft.y < 0.0f) ? -1.0f : 1.0f) * moveSpeed;
-        retVal = true;
-      }
-      if (fabsf(axisLeft.x) > deadZone) {
-        float pos = (fabsf(axisLeft.x) - deadZone) / range;
-        position +=
-            glm::normalize(glm::cross(camFront, glm::vec3(0.0f, 1.0f, 0.0f))) *
-            pos * ((axisLeft.x < 0.0f) ? -1.0f : 1.0f) * moveSpeed;
-        retVal = true;
-      }
-
-      // Rotate
-      if (fabsf(axisRight.x) > deadZone) {
-        float pos = (fabsf(axisRight.x) - deadZone) / range;
-        rotation.y += pos * ((axisRight.x < 0.0f) ? -1.0f : 1.0f) * rotSpeed;
-        retVal = true;
-      }
-      if (fabsf(axisRight.y) > deadZone) {
-        float pos = (fabsf(axisRight.y) - deadZone) / range;
-        rotation.x -= pos * ((axisRight.y < 0.0f) ? -1.0f : 1.0f) * rotSpeed;
-        retVal = true;
-      }
-    } else {
-      // todo: move code from example base class for look-at
-    }
-
-    if (retVal) {
-      updateViewMatrix();
-    }
-
-    return retVal;
-  }
 };
-} // namespace Cameras
-} // namespace Entropy
+
+

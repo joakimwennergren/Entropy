@@ -8,72 +8,68 @@
 
 using namespace Entropy::Graphics::Vulkan::Memory;
 
-namespace Entropy {
-namespace Graphics {
-namespace Vulkan {
-namespace Buffers {
-
-struct Buffer {
-
+namespace Entropy::Graphics::Vulkan::Buffers {
+ struct Buffer {
   /**
    * Destructor for the Buffer class.
    * Destroys the buffer and its associated allocation using Vulkan Memory
    * Allocator.
    */
-  ~Buffer() { vmaDestroyBuffer(_allocator->Get(), _buffer, _allocation); }
+  ~Buffer() {
+   vmaDestroyBuffer(_allocator->Get(), _buffer, _allocation);
+  }
 
   /**
    * Get the Vulkan buffer associated with this object.
    *
    * @return VkBuffer The Vulkan buffer.
    */
-  inline VkBuffer GetVulkanBuffer() { return this->_buffer; };
+  [[nodiscard]] inline VkBuffer GetVulkanBuffer() const { return this->_buffer; };
 
   /**
    * Retrieves the Vulkan device memory associated with the buffer.
    *
    * @return VkDeviceMemory The Vulkan device memory of the buffer.
    */
-  inline VkDeviceMemory GetBufferMemory() { return this->_bufferMemory; };
+  [[nodiscard]] inline VkDeviceMemory GetBufferMemory() const { return this->_bufferMemory; };
 
   /**
-   * Get the mapped memory pointer.
+   * Retrieves the pointer to the mapped memory of the buffer.
    *
-   * @return A pointer to the mapped memory.
+   * @return void* Pointer to the mapped memory.
    */
-  inline void *GetMappedMemory() { return this->_mappedMemory; };
+  [[nodiscard]] inline void *GetMappedMemory() const { return this->_mappedMemory; };
 
   /**
    * Represents a Vulkan Memory Allocator (VMA) allocation.
    */
   VmaAllocation _allocation = VK_NULL_HANDLE;
 
-protected:
+ protected:
   /**
-   * @brief Create a buffer
-   * @param size buffer size
-   * @param usage buffer usage flags
-   * @return (void)
+   * Creates a Vulkan buffer with the specified size and usage flags using the Vulkan Memory Allocator.
+   *
+   * @param size The size of the buffer to create.
+   * @param usage The usage flags specifying the allowed usages of the buffer (e.g., transfer source, storage).
    */
-  inline void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage) {
+  inline void CreateBuffer(const VkDeviceSize size, const VkBufferUsageFlags usage) {
+   const ServiceLocator *sl = ServiceLocator::GetInstance();
+   _allocator = sl->getService<IAllocator>();
 
-    ServiceLocator *sl = ServiceLocator::GetInstance();
-    _allocator = sl->getService<IAllocator>();
+   assert(size != 0);
+   assert(usage != 0);
 
-    assert(size != 0);
-    assert(usage != 0);
+   VkBufferCreateInfo bufferInfo = {};
+   bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+   bufferInfo.size = size;
+   bufferInfo.usage = usage;
 
-    VkBufferCreateInfo bufferInfo = {};
-    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    bufferInfo.size = size;
-    bufferInfo.usage = usage;
+   VmaAllocationCreateInfo allocInfo = {};
+   allocInfo.usage = VMA_MEMORY_USAGE_AUTO;
+   allocInfo.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT;
 
-    VmaAllocationCreateInfo allocInfo = {};
-    allocInfo.usage = VMA_MEMORY_USAGE_AUTO;
-    allocInfo.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT;
-
-    VK_CHECK(vmaCreateBuffer(_allocator->Get(), &bufferInfo, &allocInfo,
-                             &_buffer, &_allocation, nullptr));
+   VK_CHECK(vmaCreateBuffer(_allocator->Get(), &bufferInfo, &allocInfo,
+    &_buffer, &_allocation, nullptr));
   }
 
   // Vulkan Buffer handle
@@ -84,9 +80,5 @@ protected:
   void *_mappedMemory = nullptr;
   // Allocator dependency
   std::shared_ptr<IAllocator> _allocator;
-};
-
-} // namespace Buffers
-} // namespace Vulkan
-} // namespace Graphics
-} // namespace Entropy
+ };
+} // namespace Entropy::Graphics::Vulkan::Buffers

@@ -3,8 +3,6 @@
 #include <box2d/box2d.h>
 #include <vulkan/vulkan.hpp>
 
-#include <iostream>
-
 #include "iphysics2d.hpp"
 
 #include <data/vertex.hpp>

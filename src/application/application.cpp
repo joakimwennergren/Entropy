@@ -11,7 +11,6 @@ using namespace Entropy::EntryPoints;
     defined(BUILD_FOR_WINDOWS)
 
 Application::Application() {
-
   // Seed random
   srand(static_cast<unsigned>(time(0)));
 
@@ -33,7 +32,7 @@ Application::Application() {
 
   // Bind window callbacks
   glfwSetWindowUserPointer(_window, this);
-  glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
+  glfwSetFramebufferSizeCallback(_window, framebuffer_resize_callback);
   glfwSetMouseButtonCallback(_window, mouse_button_callback);
   glfwSetKeyCallback(_window, keyCallback);
   glfwSetCursorPosCallback(_window, cursor_position_callback);
@@ -79,12 +78,12 @@ Application::Application() {
   if (glfwCreateWindowSurface(instance->Get(), _window, nullptr, &_surface) !=
       VK_SUCCESS) {
     std::cout << "Failed to create a window surface for platform 'MacOS'"
-              << std::endl;
+        << std::endl;
     exit(EXIT_FAILURE);
   }
 
   glfwGetFramebufferSize(_window, &screen_width, &screen_height);
-  VkExtent2D frame = {(uint32_t)screen_width, (uint32_t)screen_height};
+  VkExtent2D frame = {(uint32_t) screen_width, (uint32_t) screen_height};
 
   _renderer->_swapchain->Build(_surface, frame, VK_NULL_HANDLE);
   _renderer->_renderPass->CreateFramebuffers(sl->getService<ISwapchain>(),
@@ -138,19 +137,18 @@ glm::vec2 convertToNDC(float mouseX, float mouseY, float windowWidth,
 
 glm::vec2 convertMouseToWorld(float mouseX, float mouseY, float windowWidth,
                               float windowHeight) {
-
   glm::mat4 correction(
-      glm::vec4(1.0f, 0.0f, 0.0f, 0.0f), glm::vec4(0.0f, -1.0f, 0.0f, 0.0f),
-      glm::vec4(0.0f, 0.0f, 0.5f, 0.0f), glm::vec4(0.0f, 0.0f, 0.5f, 1.0f));
+    glm::vec4(1.0f, 0.0f, 0.0f, 0.0f), glm::vec4(0.0f, -1.0f, 0.0f, 0.0f),
+    glm::vec4(0.0f, 0.0f, 0.5f, 0.0f), glm::vec4(0.0f, 0.0f, 0.5f, 1.0f));
 
   auto PPM = 100.0f;
 
-  float left = -(float)windowWidth / (2.0f * PPM);
-  float right = (float)windowWidth / (2.0f * PPM);
-  float bottom = -(float)windowHeight / (2.0f * PPM);
-  float top = (float)windowHeight / (2.0f * PPM);
-  auto perspective = glm::ortho(0.0f, (float)windowWidth / PPM,
-                                (float)windowHeight / PPM, 0.0f, 0.1f, 256.0f);
+  float left = -(float) windowWidth / (2.0f * PPM);
+  float right = (float) windowWidth / (2.0f * PPM);
+  float bottom = -(float) windowHeight / (2.0f * PPM);
+  float top = (float) windowHeight / (2.0f * PPM);
+  auto perspective = glm::ortho(0.0f, (float) windowWidth / PPM,
+                                (float) windowHeight / PPM, 0.0f, 0.1f, 256.0f);
   // Step 1: Convert mouse coordinates to NDC
   glm::vec2 ndc = convertToNDC(mouseX, mouseY, windowWidth, windowHeight);
 
@@ -172,9 +170,8 @@ glm::vec2 convertMouseToWorld(float mouseX, float mouseY, float windowWidth,
 }
 
 glm::vec2 convertWorldToScreen(glm::vec2 worldCoords, int width, int height) {
-
   glm::mat4 perspective = glm::ortho(
-      0.0f, (float)width / 100.0f, (float)height / 100.0f, 0.0f, 0.1f, 256.0f);
+    0.0f, (float) width / 100.0f, (float) height / 100.0f, 0.0f, 0.1f, 256.0f);
   // Convert world coordinates to homogeneous clip space
   glm::vec4 clipSpaceCoords = perspective * glm::vec4(worldCoords, 0.0f, 1.0f);
 
@@ -196,7 +193,6 @@ Application::CreateGrid(std::shared_ptr<IWorld> world, float screenWidth,
                         float screenHeight) {
   std::vector<flecs::entity> lines;
   for (int i = 1; i < 200; i++) {
-
     auto pos = convertToNDC(i * 200, 0.25, screenWidth, screenHeight);
 
     auto line = std::make_shared<Entropy::Graphics::Primitives::Quad>();
@@ -244,11 +240,10 @@ Application::CreateGrid(std::shared_ptr<IWorld> world, float screenWidth,
 }
 
 void Application::Run() {
-
   this->OnInit();
 
   _timer->Start();
-  _lastTick = (float)_timer->GetTick();
+  _lastTick = (float) _timer->GetTick();
 
   ServiceLocator *sl = ServiceLocator::GetInstance();
   auto world = sl->getService<IWorld>();
@@ -265,7 +260,6 @@ void Application::Run() {
   glm::vec2 end;
 
   while (!glfwWindowShouldClose(_window)) {
-
     // spdlog::info("ms/frame = {}", _deltaTime);
 
     // Calculate delta time
@@ -409,7 +403,8 @@ io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
 */
 }
 
-void character_callback(GLFWwindow *window, unsigned int codepoint) {}
+void character_callback(GLFWwindow *window, unsigned int codepoint) {
+}
 
 void cursor_position_callback(GLFWwindow *window, double xposIn,
                               double yposIn) {
@@ -441,7 +436,7 @@ void cursor_position_callback(GLFWwindow *window, double xposIn,
   // app->_camera->ProcessMouseMovement(xoffset, yoffset);
 }
 
-void framebufferResizeCallback(GLFWwindow *window, int width, int height) {
+void framebuffer_resize_callback(GLFWwindow *window, int width, int height) {
   auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
   if (app != nullptr) {
     app->needResize = true;
@@ -457,7 +452,6 @@ void framebufferResizeCallback(GLFWwindow *window, int width, int height) {
 
 void mouse_button_callback(GLFWwindow *window, int button, int action,
                            int mods) {
-
   auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
 
   if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)

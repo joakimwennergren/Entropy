@@ -1,14 +1,12 @@
-#pragma once
+#ifndef CAMERA_HPP
+#define CAMERA_HPP
 
-namespace Entropy
-{
-  namespace Cameras
-  {
+namespace Entropy::Cameras {
+  struct Camera {
+    virtual ~Camera() = default;
 
-    struct Camera
-    {
-      virtual void Test() = 0;
-    };
+    virtual void Test() = 0;
+  };
+} // namespace Entropy::Cameras
 
-  } // namespace Cameras
-} // namespace Entropy
+#endif // CAMERA_HPP
