@@ -6,7 +6,7 @@
 #include <physics/2d/physics2d.hpp>
 #define SOL_ALL_SAFETIES_ON 1
 
-#include <spdlog/spdlog.h>
+#include <graphics/primitives/primitives.hpp>
 
 #include <sol/sol.hpp>
 
@@ -22,24 +22,10 @@
 #include <cameras/orthographic_camera.hpp>
 #include <filesystem/filesystem.hpp>
 
-#include <ecs/components/boxcollisionshape3d.hpp>
-#include <ecs/components/color.hpp>
-#include <ecs/components/gizmo.hpp>
-#include <ecs/components/hasTexture.hpp>
-#include <ecs/components/line.hpp>
 #include <ecs/components/model.hpp>
 #include <ecs/components/position.hpp>
-#include <ecs/components/renderable.hpp>
-#include <ecs/components/rigidbody3d.hpp>
-#include <ecs/components/rotation.hpp>
 #include <ecs/components/scale.hpp>
-#include <ecs/components/sprite.hpp>
-#include <ecs/components/tags/scripted.hpp>
-#include <ecs/components/trianglemeshcollisionshape3d.hpp>
-
-#include <assets/assetid.hpp>
 #include <timing/timer.hpp>
-#include <tracy/Tracy.hpp>
 
 #include "ilua.hpp"
 
@@ -54,50 +40,32 @@ using namespace Entropy::Timing;
 using namespace std::chrono_literals;
 
 namespace Entropy::Scripting {
-  struct Lua : public ServiceBase<ILua> {
-    inline sol::state *Get() override { return _lua; }
-    const float PPM = 100.0f; // Pixels Per Meter
-  public:
+  struct Lua final : ServiceBase<ILua> {
+    /**
+     * @brief Initializes the Lua scripting environment and sets up various Lua functions for interaction with the world.
+     *
+     * This constructor sets up the Lua state, opens necessary Lua libraries, and binds various custom C++ functions and components
+     * to be used within Lua scripts, enabling interaction with the application's world and entities.
+     *
+     * @return A new instance of the Lua class.
+     */
     Lua() {
-      ServiceLocator *sl = ServiceLocator::GetInstance();
+      const ServiceLocator *sl = ServiceLocator::GetInstance();
       _world = sl->getService<IWorld>();
       _physics2d = sl->getService<IPhysics2D>();
 
-      _lua = new sol::state();
-      _lua->open_libraries(sol::lib::base, sol::lib::table, sol::lib::math,
-                           sol::lib::string, sol::lib::io);
-      // _lua->new_usertype<b2Vec2>("b2vec2", "x", &b2Vec2::x, "y", &b2Vec2::y);
-      // // _lua->new_usertype<b2BodyId>("b2BodyId", "GetPosition",
-      // //                              &b2Body::GetPosition, "GetAngle",
-      // //                              &b2Body::GetAngle);
+      _lua.open_libraries(sol::lib::base, sol::lib::table, sol::lib::math,
+                          sol::lib::string, sol::lib::io, sol::lib::package);
 
-      // _lua->new_usertype<Timer>("Timer", "GetTick", &Timer::GetTick, "Start",
-      //                           &Timer::Start, "Reset", &Timer::Reset);
+      // Set the Lua module path to include your current working directory
+      std::string cwd = "/Users/joakimwennergren/Entropy-Editor/scripts";
+      _lua["package"]["path"] = cwd + "/?.lua;" + _lua["package"]["path"].get<std::string>();
 
-      // _lua->set_function("create_timer", [this](float tick_duration) {
-      //   return new Timer(tick_duration);
-      // });
+      BindFunctions();
 
-      _lua->set_function("create_sprite", [this](const std::string &path) {
-        const auto sprite = std::make_shared<Sprite>(
-          GetSpritesDir() + path);
-        const auto e = _world->Get()->entity();
-        const auto id = AssetId().GetId();
-        e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
-        e.set<Scale>({glm::vec3(25.0, 25.0, 25.0)});
-        e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
-        e.set<SpriteComponent>({sprite});
-        auto renderable = Renderable();
-        renderable.visible = true;
-        renderable.id = id;
-        renderable.indexBuffer = sprite->indexBuffer;
-        renderable.vertexBuffer = sprite->vertexBuffer;
-        renderable.indices = sprite->indices;
-        renderable.type = 2;
-        e.set<Renderable>(renderable);
-        e.set<Color>({glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}});
-        e.set<HasTexture>({sprite->texture});
-        return e;
+
+      _lua.set_function("create_sprite", [](const std::string &path) {
+        return PrimitiveFactory::CreateSprite(path);
       });
 
       // _lua->set_function("create_quad", [this]() {
@@ -121,8 +89,8 @@ namespace Entropy::Scripting {
       //   return e;
       // });
 
-      _lua->set_function("translate_3d", [this](flecs::entity entity, float x,
-                                                float y, float z) {
+      _lua.set_function("translate_3d", [this](flecs::entity entity, float x,
+                                               float y, float z) {
         if (!entity.is_alive()) {
           return;
         }
@@ -142,16 +110,16 @@ namespace Entropy::Scripting {
       //   rot->angle = angle;
       // });
 
-      _lua->set_function("scale_3d",
-                         [this](flecs::entity entity, float x, float y, float
-                                z) {
-                           if (!entity.is_alive())
-                             return;
+      _lua.set_function("scale_3d",
+                        [this](flecs::entity entity, float x, float y, float
+                               z) {
+                          if (!entity.is_alive())
+                            return;
 
-                           auto s =
-                               entity.get_mut<Entropy::Components::Scale>();
-                           s->scale = glm::vec3(x / PPM, y / PPM, z / PPM);
-                         });
+                          auto s =
+                              entity.get_mut<Entropy::Components::Scale>();
+                          s->scale = glm::vec3(x / PPM, y / PPM, z / PPM);
+                        });
 
       // _lua->set_function("set_color", [](flecs::entity entity, float r, float
       // g,
@@ -294,14 +262,29 @@ namespace Entropy::Scripting {
     //   }
     // }
 
+    void BindFunctions() const {
+    }
+
+    void BindTypes() const {
+      // Box2D 2D vector
+      //_lua->new_usertype<b2Vec2>("b2vec2", "x", &b2Vec2::x, "y", &b2Vec2::y);
+
+      // _lua->new_usertype<Timer>("Timer", "GetTick", &Timer::GetTick, "Start",
+      //                           &Timer::Start, "Reset", &Timer::Reset);
+
+      // _lua->set_function("create_timer", [this](float tick_duration) {
+      //   return new Timer(tick_duration);
+      // });
+    }
+
+    sol::state *Get() override { return &_lua; }
+
     // Lua state
-    sol::state *_lua;
+    sol::state _lua;
+    const float PPM = 100.0f; // Pixels Per Meter
 
     // Dependencies
     std::shared_ptr<IWorld> _world;
     std::shared_ptr<IPhysics2D> _physics2d;
-
-  private
-  :
   };
 }

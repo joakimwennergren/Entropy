@@ -2,11 +2,10 @@
 
 using namespace Entropy::Network;
 
-HttpClient::HttpClient() {}
+HttpClient::HttpClient() = default;
 
-int HttpClient::Get(std::string url) {
-  CURL *curl = curl_easy_init();
-  if (curl) {
+int HttpClient::Get(const std::string &url) {
+  if (CURL *curl = curl_easy_init()) {
     CURLcode res;
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     res = curl_easy_perform(curl);

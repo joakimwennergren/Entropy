@@ -130,11 +130,11 @@ namespace Entropy::Graphics::Vulkan::Renderers {
             return (p1->pos.z > p2->pos.z) - (p1->pos.z < p2->pos.z);
         }
 
-        void PresentForEditor(int width, int height) {
-            _renderPass->End(_commandBuffers[_currentFrame]);
+        void PresentForEditor(const int width, const int height) const {
+            RenderPass::End(_commandBuffers[_currentFrame]);
 
-            const VkImageLayout oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-            const VkImageLayout newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+            constexpr VkImageLayout oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            constexpr VkImageLayout newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
 
             /* Synchronize image access. */
             VkImageMemoryBarrier barrier{
@@ -167,11 +167,10 @@ namespace Entropy::Graphics::Vulkan::Renderers {
                                  &barrier);
 
             /* Copy framebuffer content to staging buffer. */
-            VkBufferImageCopy region{
+            const VkBufferImageCopy region{
                 .bufferOffset = 0,
                 .bufferRowLength = 0,
                 .bufferImageHeight = 0,
-
                 .imageSubresource =
                 {
                     .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
@@ -194,7 +193,7 @@ namespace Entropy::Graphics::Vulkan::Renderers {
             _commandBuffers[_currentFrame].EndRecording();
 
             auto cmdBuf = _commandBuffers[_currentFrame].Get();
-            VkSubmitInfo submitInfo{
+            const VkSubmitInfo submitInfo{
                 .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
                 .waitSemaphoreCount = 0,
                 .commandBufferCount = 1,
@@ -212,24 +211,24 @@ namespace Entropy::Graphics::Vulkan::Renderers {
 
         void PresentForApplication() const {
             // End render pass and command buffer recording
-            _renderPass->End(_commandBuffers[_currentFrame]);
+            RenderPass::End(_commandBuffers[_currentFrame]);
             _commandBuffers[_currentFrame].EndRecording();
 
             const auto cmdBuffer = _commandBuffers[_currentFrame].Get();
 
             // Submit info
             VkSubmitInfo submitInfo{};
-            VkSemaphore signalSemaphores[] = {
+            const VkSemaphore signalSemaphores[] = {
                 _synchronizer->GetRenderFinishedSemaphores()[_currentFrame]
             };
-            VkSemaphore waitSemaphores[] = {
+            const VkSemaphore waitSemaphores[] = {
                 _synchronizer->GetImageSemaphores()[_currentFrame]
             };
             VkPipelineStageFlags waitStages[] = {
                 VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
             };
 
-            std::vector<VkCommandBuffer> submittables = {cmdBuffer};
+            std::vector submittables = {cmdBuffer};
             submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
             submitInfo.waitSemaphoreCount = 1;
             submitInfo.pWaitSemaphores = waitSemaphores;

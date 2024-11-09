@@ -18,7 +18,7 @@ namespace Entropy::Cameras {
    * The orthographic camera projects objects onto the screen without perspective,
    * meaning objects retain the same size regardless of their depth from the camera.
    */
-  class OrthographicCamera final : public Camera {
+  struct OrthographicCamera final : Camera {
     /**
      * @brief Default constructor for the OrthographicCamera class.
      *
@@ -26,7 +26,6 @@ namespace Entropy::Cameras {
      * camera position to (0.0f, 0.0f, 256.0f) and looking at the origin (0.0f, 0.0f, 0.0f)
      * with the up direction being the positive y-axis (0.0f, 1.0f, 0.0f).
      */
-  public:
     OrthographicCamera() {
       matrices.view =
           glm::lookAt(glm::vec3(0.0f, 0.0f, 256.0f), glm::vec3(0.0f, 0.0f, 0.0f),
@@ -58,16 +57,9 @@ namespace Entropy::Cameras {
       glm::mat4 view;
     } matrices{};
 
-    struct {
-      bool left = false;
-      bool right = false;
-      bool up = false;
-      bool down = false;
-    } keys;
-
     const float PPM = 100.0f; // Pixels Per Meter
 
-    void setPerspective(float fov, int width, int height, float znear,
+    void setPerspective(float fov, const int width, const int height, float znear,
                         float zfar) {
       // Vulkan-trick because GLM was written for OpenGL, and Vulkan uses
       // a right-handed coordinate system instead. Without this correction,
@@ -77,12 +69,10 @@ namespace Entropy::Cameras {
       glm::mat4 correction(
         glm::vec4(1.0f, 0.0f, 0.0f, 0.0f), glm::vec4(0.0f, -1.0f, 0.0f, 0.0f),
         glm::vec4(0.0f, 0.0f, 0.5f, 0.0f), glm::vec4(0.0f, 0.0f, 0.5f, 1.0f));
-      matrices.perspective = glm::ortho(0.0f, (float) width / PPM,
-                                        (float) height / PPM, 0.0f, znear, zfar);
+      matrices.perspective = glm::ortho(0.0f, static_cast<float>(width) / PPM,
+                                        static_cast<float>(height) / PPM, 0.0f, znear, zfar);
       // matrices.perspective =
       //     correction * glm::ortho(-1.0f, 1.0f, -aspect, aspect, znear, zfar);
     };
   };
 };
-
-

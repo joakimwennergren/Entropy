@@ -4,16 +4,11 @@
 #include <spdlog/spdlog.h>
 #include <string>
 
-namespace Entropy {
-namespace Network {
-class HttpClient {
+namespace Entropy::Network {
+  class HttpClient {
+  public:
+    HttpClient();
 
-public:
-  HttpClient();
-  int Get(std::string url);
-
-private:
-};
-
-} // namespace Network
-} // namespace Entropy
+    static int Get(const std::string &url);
+  };
+}

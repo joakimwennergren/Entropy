@@ -1,5 +1,4 @@
-#ifndef CAMERA_HPP
-#define CAMERA_HPP
+#pragma once
 
 namespace Entropy::Cameras {
   struct Camera {
@@ -8,5 +7,3 @@ namespace Entropy::Cameras {
     virtual void Test() = 0;
   };
 } // namespace Entropy::Cameras
-
-#endif // CAMERA_HPP

@@ -191,7 +191,7 @@ namespace Entropy::Graphics::Vulkan::RenderPasses {
                 std::make_shared<SwapChainTexture>(width, height));
             _frameBuffers.resize(1);
 
-            std::array<VkImageView, 2> attachments = {
+            const std::array<VkImageView, 2> attachments = {
                 _swapChainTextures[0]->imageView->Get(),
                 _depthBufferTexture->imageView->Get()
             };

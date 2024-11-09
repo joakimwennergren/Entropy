@@ -41,14 +41,13 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
         _renderPass->RecreateDepthBuffer(width, height);
         _renderPass->RecreateFrameBuffers(width, height, app);
         needResize = false;
-        return;
     }
 
     auto orthoCamera =
             dynamic_cast<Cameras::OrthographicCamera *>(_cameraManager->currentCamera);
     orthoCamera->setPerspective(60.0f, (float) width, (float) height, 0.1f, 256.0f);
 
-    // Begin renderpass and commandbuffer recording
+    // Begin render pass and command buffer recording
     _commandBuffers[_currentFrame].Record();
     _renderPass->Begin(_commandBuffers[_currentFrame],
                        app ? imageIndex : VK_SUBPASS_CONTENTS_INLINE, width,
@@ -60,12 +59,11 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
     memcpy(_UBO->GetMappedMemory(), &ubodyn, sizeof(ubodyn));
 
     _sortQuery.each([this, width, height](flecs::entity e,
-                                          Entropy::Components::Position p) {
+                                          Components::Position p) {
         auto position_component = e.get_ref<Entropy::Components::Position>();
         auto scale_component = e.get_ref<Entropy::Components::Scale>();
         auto color_component = e.get_ref<Entropy::Components::Color>();
         auto rotation_component = e.get_ref<Entropy::Components::Rotation>();
-        auto texture_component = e.get_ref<Entropy::Components::HasTexture>();
         auto render_component = e.get_ref<Entropy::Components::Renderable>();
 
         auto translate = glm::mat4(1.0f);

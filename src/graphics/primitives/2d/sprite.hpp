@@ -13,6 +13,7 @@
 #include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
 #include <scripting/script.hpp>
 
+
 using namespace Entropy::Graphics::Vulkan::Textures;
 using namespace Entropy::Graphics::Vulkan::Buffers;
 using namespace Entropy::Scripting;
