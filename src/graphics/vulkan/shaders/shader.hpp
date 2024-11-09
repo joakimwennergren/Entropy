@@ -3,79 +3,78 @@
 #include <fstream>
 #include <graphics/vulkan/devices/ilogical_device.hpp>
 #include <graphics/vulkan/utilities/utilities.hpp>
-#include <servicelocators/servicelocator.hpp>
-#include <spdlog/spdlog.h>
 #include <vulkan/vulkan.hpp>
 
-namespace Entropy {
-namespace Graphics {
-namespace Vulkan {
-namespace Shaders {
-
-class Shader {
-public:
+namespace Entropy::Graphics::Vulkan::Shaders {
+ class Shader {
+ public:
   /**
-   * @brief Construct a new Shader object
-   *
-   * @param vert
-   * @param frag
-   * @param contexts
-   */
-  Shader(const std::string vert, const std::string frag);
+  * @brief Constructs a Shader object from given vertex and fragment shader files.
+  *
+  * This constructor initializes the Shader object by reading and compiling
+  * the provided vertex and fragment shader files.
+  *
+  * @param vert Path to the vertex shader file.
+  * @param frag Path to the fragment shader file.
+  * @return No return value as it is a constructor.
+  */
+  Shader(const std::string &vert, const std::string &frag);
 
   /**
-   * @brief Destroy the Shader object
+   * @brief Destructor for the Shader class.
    *
+   * This destructor releases resources associated with the Shader object,
+   * specifically destroying the vertex and fragment shader modules.
    */
   ~Shader();
 
+  [[nodiscard]] VkShaderModule GetVertShaderModule() const { return _shaderModuleVert; }
+
+  [[nodiscard]] VkShaderModule GetFragShaderModule() const { return _shaderModuleFrag; }
+
+ private:
   /**
-   * @brief Get the Vert Shader Module object
-   *
-   * @return VkShaderModule
-   */
-  inline VkShaderModule GetVertShaderModule() { return _shaderModuleVert; };
+  * @brief Reads the contents of a file and returns it as a vector of characters.
+  *
+  * This method opens the specified file in binary mode, reads its contents, and
+  * returns the data as a vector of characters. If the file cannot be opened, it
+  * logs an error message and terminates the application.
+  *
+  * @param filename The path to the file to be read.
+  * @return A vector of characters containing the contents of the file.
+  */
+  static std::vector<char> ReadFile(std::string filename);
 
   /**
-   * @brief Get the Frag Shader Module object
+   * @brief Creates a Vulkan shader module from given shader code.
    *
-   * @return VkShaderModule
-   */
-  inline VkShaderModule GetFragShaderModule() { return _shaderModuleFrag; };
-
-private:
-  /**
-   * @brief
+   * This method initializes a Vulkan shader module using the provided
+   * vector of characters containing shader code.
    *
-   * @param filename
-   * @return std::vector<char>
+   * @param code A vector of characters representing the shader code.
+   * @return A VkShaderModule object representing the created shader module.
    */
-  std::vector<char> ReadFile(std::string filename);
+  VkShaderModule BuildShader(const std::vector<char> &code) const;
 
   /**
-   * @brief
+   * @brief Constructs a Vulkan Shader Module from the provided shader code.
    *
-   * @param code
-   * @return VkShaderModule
-   */
-  VkShaderModule BuildShader(std::vector<char> code);
-
-  /**
-   * @brief
+   * This method generates a Vulkan Shader Module by creating and
+   * initializing a VkShaderModuleCreateInfo structure with the given
+   * shader code and its size, and then creating the module using Vulkan's
+   * vkCreateShaderModule API.
    *
-   * @param code
-   * @return VkShaderModule
+   * @param code Pointer to the buffer containing the shader code.
+   * @param size Size in bytes of the shader code.
+   * @return A VkShaderModule handle representing the created shader module.
    */
-  VkShaderModule BuildShader(uint32_t *code, uint32_t size);
+  VkShaderModule BuildShader(const uint32_t *code, uint32_t size) const;
 
-private:
+ private:
   std::vector<char> _vertCode;
   std::vector<char> _fragCode;
   VkShaderModule _shaderModuleVert = VK_NULL_HANDLE;
   VkShaderModule _shaderModuleFrag = VK_NULL_HANDLE;
   std::shared_ptr<ILogicalDevice> _logicalDevice;
-};
-} // namespace Shaders
-} // namespace Vulkan
-} // namespace Graphics
-} // namespace Entropy
+ };
+} // namespace Entropy::Graphics::Vulkan::Shaders

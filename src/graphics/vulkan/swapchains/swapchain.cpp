@@ -1,7 +1,7 @@
 #include "swapchain.hpp"
 #include "vulkan/vulkan_core.h"
 
-using namespace Entropy::Graphics::Vulkan::Swapchains;
+using namespace Entropy::Graphics::Vulkan::SwapChains;
 
 // Swapchain::Swapchain(VkPhysicalDevice physicalDevice, VkDevice logicalDevice,
 //                      VkExtent2D frame, int width, int height) {

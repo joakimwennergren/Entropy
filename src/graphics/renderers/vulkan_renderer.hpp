@@ -38,7 +38,7 @@ using namespace Entropy::Graphics::Vulkan::RenderPasses;
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
 using namespace Entropy::Graphics::Vulkan::DescriptorSets;
-using namespace Entropy::Graphics::Vulkan::Swapchains;
+using namespace Entropy::Graphics::Vulkan::SwapChains;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
 using namespace Entropy::Data;
 using namespace Entropy::ECS;
@@ -56,7 +56,7 @@ namespace Entropy::Graphics::Vulkan::Renderers {
             _cameraManager = sl->getService<ICameraManager>();
 
             _renderPass = std::make_shared<RenderPass>();
-            //_renderPass->CreateFramebuffers(800, 800);
+            //_renderPass->CreateFrameBuffers(800, 800);
 
             // Static Pipeline creation
             _staticPipeline = std::make_unique<StaticPipeline>(_renderPass);
@@ -210,7 +210,7 @@ namespace Entropy::Graphics::Vulkan::Renderers {
             vkDeviceWaitIdle(_logicalDevice->Get());
         }
 
-        void PresentForApplication() {
+        void PresentForApplication() const {
             // End render pass and command buffer recording
             _renderPass->End(_commandBuffers[_currentFrame]);
             _commandBuffers[_currentFrame].EndRecording();

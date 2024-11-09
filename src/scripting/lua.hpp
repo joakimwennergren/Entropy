@@ -81,22 +81,22 @@ namespace Entropy::Scripting {
       _lua->set_function("create_sprite", [this](const std::string &path) {
         const auto sprite = std::make_shared<Sprite>(
           GetSpritesDir() + path);
-        auto e = _world->Get()->entity();
+        const auto e = _world->Get()->entity();
         const auto id = AssetId().GetId();
         e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
         e.set<Scale>({glm::vec3(25.0, 25.0, 25.0)});
         e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
-        e.set<Entropy::Components::SpriteComponent>({sprite});
-        auto renderable = Entropy::Components::Renderable();
+        e.set<SpriteComponent>({sprite});
+        auto renderable = Renderable();
         renderable.visible = true;
         renderable.id = id;
         renderable.indexBuffer = sprite->indexBuffer;
         renderable.vertexBuffer = sprite->vertexBuffer;
         renderable.indices = sprite->indices;
         renderable.type = 2;
-        return e.set<Entropy::Components::Renderable>(renderable);
-        e.set<Entropy::Components::Color>({glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}});
-        e.set<Entropy::Components::HasTexture>({sprite->texture});
+        e.set<Renderable>(renderable);
+        e.set<Color>({glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}});
+        e.set<HasTexture>({sprite->texture});
         return e;
       });
 

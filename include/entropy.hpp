@@ -18,7 +18,7 @@
 
 using namespace Entropy::Graphics::Vulkan::Instances;
 using namespace Entropy::Graphics::Vulkan::Surfaces;
-using namespace Entropy::Graphics::Vulkan::Swapchains;
+using namespace Entropy::Graphics::Vulkan::SwapChains;
 using namespace Entropy::Graphics::Vulkan::ImageViews;
 using namespace Entropy::Graphics::Vulkan::CommandPools;
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;

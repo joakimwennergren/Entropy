@@ -1,9 +1,5 @@
 #pragma once
 
-#include "vulkan/vulkan_core.h"
-#include <graphics/vulkan/commandpools/commandpool.hpp>
-#include <string>
-
 #include <spdlog/spdlog.h>
 
 #include <ft2build.h>
@@ -14,7 +10,6 @@
 #include <graphics/vulkan/devices/iphysical_device.hpp>
 
 #include <graphics/vulkan/buffers/buffer.hpp>
-#include <graphics/vulkan/buffers/stagedbuffer.hpp>
 #include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
 #include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
 #include <graphics/vulkan/imageviews/imageview.hpp>
@@ -34,70 +29,107 @@ using namespace Entropy::Graphics::Vulkan::Memory;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
 using namespace Entropy::Graphics::Vulkan::DescriptorPools;
 
-namespace Entropy {
-namespace Graphics {
-namespace Vulkan {
-namespace Textures {
-
-class BaseTexture {
-public:
-  std::shared_ptr<ImageView> imageView;
-  VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
-
+namespace Entropy::Graphics::Vulkan::Textures {
+ struct BaseTexture {
+  /**
+   * Constructor for the BaseTexture class.
+   *
+   * Initializes the resources for texture management using the service locator pattern.
+   * Retrieves instances of physical device, logical device, descriptor pool, and allocator from the service locator.
+   *
+   * @return An initialized instance of the BaseTexture class.
+   */
   BaseTexture() {
-    ServiceLocator *sl = ServiceLocator::GetInstance();
-    _physicalDevice = sl->getService<IPhysicalDevice>();
-    _logicalDevice = sl->getService<ILogicalDevice>();
-    _descriptorPool = sl->getService<IDescriptorPool>();
-    _allocator = sl->getService<IAllocator>();
+   const ServiceLocator *sl = ServiceLocator::GetInstance();
+   _physicalDevice = sl->getService<IPhysicalDevice>();
+   _logicalDevice = sl->getService<ILogicalDevice>();
+   _descriptorPool = sl->getService<IDescriptorPool>();
+   _allocator = sl->getService<IAllocator>();
   }
 
+  /**
+   * Destructor for the BaseTexture class.
+   *
+   * Cleans up Vulkan resources associated with the texture. It destroys the Vulkan image
+   * and frees the descriptor sets. Ensures that the logical device and descriptor pool
+   * acquired during initialization are properly released.
+   */
   ~BaseTexture() {
-    // vkDeviceWaitIdle(_vulkanBackend.logicalDevice.Get());
-    // vkDestroyImageView(_vulkanBackend.logicalDevice.Get(), _imageView,
-    // nullptr); vkDestroyImage(_vulkanBackend.logicalDevice.Get(),
-    // _textureImage, nullptr); if(_descriptorSet != nullptr)
-    // {
-    //   vkFreeDescriptorSets(_vulkanBackend.logicalDevice.Get(),
-    //                      _descriptorPool.Get(), 1, &_descriptorSet);
-    // }
+   vkDestroyImage(_logicalDevice->Get(),
+                  _textureImage, nullptr);
+   vkFreeDescriptorSets(_logicalDevice->Get(),
+                        _descriptorPool->Get(), 1, &descriptorSet);
   }
 
-  void CreateTextureImage(std::string path);
 
-  void CreateTextureImageFromPixels(unsigned char *pixels, int width,
-                                    int height);
-
-  // void CreateTextureImageFromKtx(unsigned char *pixels, unsigned int width,
-  // unsigned int height, int size, int mips, VkFormat format, ktxTexture
-  // *ktxTexture);
-
-  void CreateTextureImageFromBuffer(FT_Bitmap bitmap);
-
-#ifdef BUILD_FOR_ANDROID
-  void CreateTextureImage(std::string path, AAssetManager *assetManager);
-#endif
-
+  /**
+   * Transitions the layout of an image in Vulkan from one layout to another.
+   *
+   * This method records a command buffer with a pipeline barrier that transitions
+   * the image from the specified old layout to the new layout. It handles synchronization
+   * and layout transitions for optimal performance.
+   *
+   * @param image The Vulkan image to transition.
+   * @param oldLayout The current layout of the image.
+   * @param newLayout The desired new layout for the image.
+   */
   void TransitionImageLayout(VkImage image, VkImageLayout oldLayout,
-                             VkImageLayout newLayout);
-  void CopyBufferToImage(const VkBuffer buffer, const VkImage image,
-                         const uint32_t width, const uint32_t height);
-  void CreateImage(const uint32_t width, const uint32_t height,
-                   const VkFormat format, const VkImageTiling tiling,
-                   const VkImageUsageFlags usage, VkImage &image);
+                             VkImageLayout newLayout) const;
 
-  VkFormat GetColorFormat();
+  /**
+   * Copies data from a buffer to an image.
+   *
+   * This method is used to transfer data from a specified VkBuffer to a specified VkImage.
+   * It ensures that the image is in the correct transfer destination layout and performs
+   * the copy operation.
+   *
+   * @param buffer The VkBuffer containing the data to be copied.
+   *               Must not be VK_NULL_HANDLE.
+   * @param image The VkImage where the data will be copied to.
+   *              Must not be VK_NULL_HANDLE.
+   * @param width The width of the image.
+   *              Must be greater than 0.
+   * @param height The height of the image.
+   *               Must be greater than 0.
+   */
+  void CopyBufferToImage(VkBuffer buffer, VkImage image,
+                         uint32_t width, uint32_t height) const;
+
+  /**
+   * Creates an image with specified parameters.
+   *
+   * This method initializes and creates a Vulkan image object with the provided width, height, format, tiling, and usage parameters.
+   *
+   * @param width The width of the image to be created.
+   * @param height The height of the image to be created.
+   * @param format The format of the image.
+   * @param tiling The tiling arrangement of the image.
+   * @param usage The intended usage of the image (e.g., storage, render target).
+   * @param image A reference to a VkImage object where the created image will be stored.
+   */
+  void CreateImage(uint32_t width, uint32_t height,
+                   VkFormat format, VkImageTiling tiling,
+                   VkImageUsageFlags usage, VkImage &image);
+
+  /**
+   * Retrieves the color format used for texture sampling in the BaseTexture class.
+   *
+   * This method determines the appropriate Vulkan color format to use based on
+   * the underlying operating system defined during the build process.
+   *
+   * @return A Vulkan format (VkFormat) representing the color format of the texture.
+   */
+  static VkFormat GetColorFormat();
 
   VkImage _textureImage = VK_NULL_HANDLE;
   VmaAllocation _allocation = VK_NULL_HANDLE;
   VkDescriptorSetLayout _descriptorSetLayout = VK_NULL_HANDLE;
+  VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
+  std::shared_ptr<ImageView> imageView;
 
   std::shared_ptr<IPhysicalDevice> _physicalDevice;
   std::shared_ptr<ILogicalDevice> _logicalDevice;
   std::shared_ptr<IDescriptorPool> _descriptorPool;
   std::shared_ptr<IAllocator> _allocator;
-};
-} // namespace Textures
-} // namespace Vulkan
-} // namespace Graphics
-} // namespace Entropy
+ };
+} // namespace Entropy::Graphics::Vulkan::Textures

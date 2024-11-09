@@ -11,7 +11,7 @@
 #include <graphics/vulkan/utilities/utilities.hpp>
 
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;
-using namespace Entropy::Graphics::Vulkan::Swapchains;
+using namespace Entropy::Graphics::Vulkan::SwapChains;
 using namespace Entropy::Graphics::Vulkan::Devices;
 using namespace Entropy::Graphics::Vulkan::ImageViews;
 using namespace Entropy::Graphics::Vulkan::Memory;

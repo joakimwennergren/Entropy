@@ -14,7 +14,7 @@
 using namespace Entropy::Filesystem;
 using namespace Entropy::Graphics::Vulkan::Shaders;
 using namespace Entropy::Graphics::Vulkan::RenderPasses;
-using namespace Entropy::Graphics::Vulkan::Swapchains;
+using namespace Entropy::Graphics::Vulkan::SwapChains;
 using namespace Entropy::Graphics::Vulkan::DescriptorSets;
 using namespace Entropy::Graphics::Vulkan::DescriptorPools;
 using namespace Entropy::Graphics::Vulkan::Devices;

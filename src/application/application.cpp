@@ -51,7 +51,7 @@ Application::Application() {
   sl->registerService(std::make_shared<PhysicalDevice>());
   sl->registerService(std::make_shared<LogicalDevice>());
   sl->registerService(std::make_shared<Allocator>());
-  sl->registerService(std::make_shared<Swapchain>());
+  sl->registerService(std::make_shared<SwapChain>());
   sl->registerService(std::make_shared<CommandPool>());
   sl->registerService(std::make_shared<DescriptorPool>());
   sl->registerService(std::make_shared<PipelineCache>());
