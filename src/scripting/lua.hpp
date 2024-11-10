@@ -1,27 +1,21 @@
 #pragma once
+
+
 #include <animation/easing/easing.hpp>
-#include <cameras/camera_manager.hpp>
-#include <ecs/components/objmodel.hpp>
+
+#define SOL_ALL_SAFETIES_ON 1
+#include <sol/sol.hpp>
+#include <graphics/primitives/primitives.hpp>
+#include <animation/easing/easing.hpp>
 #include <filesystem/filesystem.hpp>
 #include <physics/2d/physics2d.hpp>
-#define SOL_ALL_SAFETIES_ON 1
 
-#include <graphics/primitives/primitives.hpp>
 
-#include <sol/sol.hpp>
-
-#include <ecs/world.hpp>
 #include <input/mouse/mouse.hpp>
 
 // Bound entities
 #include <gltf/model.hpp>
-#include <graphics/primitives/2d/sprite.hpp>
-#include <graphics/text/font.hpp>
-#include <graphics/text/label.hpp>
-
 #include <cameras/orthographic_camera.hpp>
-#include <filesystem/filesystem.hpp>
-
 #include <ecs/components/model.hpp>
 #include <ecs/components/position.hpp>
 #include <ecs/components/scale.hpp>
@@ -58,15 +52,11 @@ namespace Entropy::Scripting {
                           sol::lib::string, sol::lib::io, sol::lib::package);
 
       // Set the Lua module path to include your current working directory
-      std::string cwd = "/Users/joakimwennergren/Entropy-Editor/scripts";
+      const std::string cwd = "/Users/joakimwennergren/Entropy-Editor/scripts";
       _lua["package"]["path"] = cwd + "/?.lua;" + _lua["package"]["path"].get<std::string>();
 
       BindFunctions();
 
-
-      _lua.set_function("create_sprite", [](const std::string &path) {
-        return PrimitiveFactory::CreateSprite(path);
-      });
 
       // _lua->set_function("create_quad", [this]() {
       //   auto quad = std::make_shared<Entropy::Graphics::Primitives::Quad>();
@@ -99,16 +89,16 @@ namespace Entropy::Scripting {
         pos->pos = glm::vec3(x / PPM, y / PPM, z);
       });
 
-      // _lua->set_function("rotate_3d", [](flecs::entity entity, float x, float
-      // y,
-      //                                    float z, float angle) {
-      //   if (!entity.is_alive())
-      //     return;
+      _lua.set_function("rotate_3d", [](flecs::entity entity, float x, float
+                                        y,
+                                        float z, float angle) {
+        if (!entity.is_alive())
+          return;
 
-      //   auto rot = entity.get_mut<Entropy::Components::Rotation>();
-      //   rot->orientation = glm::vec3(x, y, z);
-      //   rot->angle = angle;
-      // });
+        auto rot = entity.get_mut<Entropy::Components::Rotation>();
+        rot->orientation = glm::vec3(x, y, z);
+        rot->angle = angle;
+      });
 
       _lua.set_function("scale_3d",
                         [this](flecs::entity entity, float x, float y, float
@@ -262,7 +252,22 @@ namespace Entropy::Scripting {
     //   }
     // }
 
-    void BindFunctions() const {
+    void BindFunctions() {
+      // Easing functions
+      _lua["EaseInSine"] = EasingFunctions::easeInSine;
+      _lua["EaseOutSine"] = EasingFunctions::easeOutSine;
+      _lua["EaseInOutSine"] = EasingFunctions::easeInOutSine;
+      _lua["EaseInQuad"] = EasingFunctions::easeInQuad;
+      _lua["EaseOutQuad"] = EasingFunctions::easeOutQuad;
+      _lua["EaseInOutQuad"] = EasingFunctions::easeInOutQuad;
+      _lua["EaseInCubic"] = EasingFunctions::easeInCubic;
+      _lua["EaseOutCubic"] = EasingFunctions::easeOutCubic;
+      _lua["EaseInOutCubic"] = EasingFunctions::easeInOutCubic;
+
+      // Primitives
+      _lua["CreateSprite"] = [](const std::string &path) {
+        return PrimitiveFactory::CreateSprite(path);
+      };
     }
 
     void BindTypes() const {
