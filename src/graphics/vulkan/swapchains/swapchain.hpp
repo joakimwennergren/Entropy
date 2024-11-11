@@ -199,7 +199,7 @@ namespace Entropy::Graphics::Vulkan::SwapChains {
       //     auto colorFormat = VK_FORMAT_B8G8R8A8_SRGB;
       // #endif
 
-      auto colorFormat = VK_FORMAT_B8G8R8A8_UNORM;
+      auto colorFormat = VK_FORMAT_R8G8B8A8_UNORM;
 
       for (const auto &availableFormat: availableFormats) {
         if (availableFormat.format == colorFormat &&

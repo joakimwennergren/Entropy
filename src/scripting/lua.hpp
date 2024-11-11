@@ -9,9 +9,8 @@
 #include <animation/easing/easing.hpp>
 #include <filesystem/filesystem.hpp>
 #include <physics/2d/physics2d.hpp>
+#include <config.hpp>
 
-
-#include <input/mouse/mouse.hpp>
 
 // Bound entities
 #include <gltf/model.hpp>
@@ -52,92 +51,12 @@ namespace Entropy::Scripting {
                           sol::lib::string, sol::lib::io, sol::lib::package);
 
       // Set the Lua module path to include your current working directory
-      const std::string cwd = "/Users/joakimwennergren/Entropy-Editor/scripts";
+      const std::string base_path = ENGINE_BASEPATH;
+      const std::string cwd = base_path + "/lua";
       _lua["package"]["path"] = cwd + "/?.lua;" + _lua["package"]["path"].get<std::string>();
 
       BindFunctions();
 
-
-      // _lua->set_function("create_quad", [this]() {
-      //   auto quad = std::make_shared<Entropy::Graphics::Primitives::Quad>();
-      //   auto e = _world->Get()->entity();
-      //   auto id = AssetId().GetId();
-      //   e.set<Position>({glm::vec3(0.0, 0.0, 1.0)});
-      //   e.set<Scale>({glm::vec3(0.06, 0.06, 1.0)});
-      //   e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
-      //   e.set<Entropy::Components::QuadComponent>({quad});
-      //   auto renderable = Entropy::Components::Renderable();
-      //   renderable.id = id;
-      //   renderable.visible = true;
-      //   renderable.vertexBuffer = quad->vertexBuffer;
-      //   renderable.indexBuffer = quad->indexBuffer;
-      //   renderable.indices = quad->indices;
-      //   renderable.type = 3;
-      //   e.set<Entropy::Components::Renderable>(renderable);
-      //   e.set<Entropy::Components::Color>({glm::vec4{1.0f, 0.0f, 1.0f, 1.0f}});
-      //   e.set<Entropy::Components::HasTexture>({quad->texture});
-      //   return e;
-      // });
-
-      _lua.set_function("translate_3d", [this](flecs::entity entity, float x,
-                                               float y, float z) {
-        if (!entity.is_alive()) {
-          return;
-        }
-
-        const auto pos = entity.get_mut<Entropy::Components::Position>();
-        pos->pos = glm::vec3(x / PPM, y / PPM, z);
-      });
-
-      _lua.set_function("rotate_3d", [](flecs::entity entity, float x, float
-                                        y,
-                                        float z, float angle) {
-        if (!entity.is_alive())
-          return;
-
-        auto rot = entity.get_mut<Entropy::Components::Rotation>();
-        rot->orientation = glm::vec3(x, y, z);
-        rot->angle = angle;
-      });
-
-      _lua.set_function("scale_3d",
-                        [this](flecs::entity entity, float x, float y, float
-                               z) {
-                          if (!entity.is_alive())
-                            return;
-
-                          auto s =
-                              entity.get_mut<Entropy::Components::Scale>();
-                          s->scale = glm::vec3(x / PPM, y / PPM, z / PPM);
-                        });
-
-      // _lua->set_function("set_color", [](flecs::entity entity, float r, float
-      // g,
-      //                                    float b, float a) {
-      //   if (!entity.is_alive())
-      //     return;
-
-      //   auto col = entity.get_mut<Entropy::Components::Color>();
-      //   col->color = glm::vec4(r, g, b, a);
-      // });
-
-      // _lua->set_function("delete", [](flecs::entity entity) {
-      //   if (!entity.is_alive())
-      //     return;
-      //   spdlog::info("REMOVING ENTITY!!!");
-      //   entity.destruct();
-      // });
-
-      //   _lua->set_function("clone", [](flecs::entity entity) -> flecs::entity
-      //                      { return entity.clone(); });
-
-      //   _lua->set_function("set_zindex", [](flecs::entity entity, int zIndex)
-      //                      {
-      // if (!entity.is_alive())
-      //   return;
-
-      // auto s = entity.get_mut<Entropy::Components::Renderable>();
-      // s->zIndex = zIndex; });
 
       // _lua->set_function("get_position", [](flecs::entity entity) -> b2Vec3 {
       //   if (!entity.is_alive())
@@ -252,6 +171,15 @@ namespace Entropy::Scripting {
     //   }
     // }
 
+    /**
+     * @brief Binds various utility functions and easing functions to the Lua scripting environment.
+     *
+     * This method maps different easing functions and primitive creation
+     * functions to corresponding Lua script functions.
+     * Additionally, it binds transformation, rotation, scaling, color setting, and
+     * entity lifecycle management functions
+     * to allow manipulation of entities within the Lua scripts.
+     */
     void BindFunctions() {
       // Easing functions
       _lua["EaseInSine"] = EasingFunctions::easeInSine;
@@ -263,10 +191,72 @@ namespace Entropy::Scripting {
       _lua["EaseInCubic"] = EasingFunctions::easeInCubic;
       _lua["EaseOutCubic"] = EasingFunctions::easeOutCubic;
       _lua["EaseInOutCubic"] = EasingFunctions::easeInOutCubic;
+      _lua["EaseInQuart"] = EasingFunctions::easeInQuart;
+      _lua["EaseOutQuart"] = EasingFunctions::easeOutQuart;
+      _lua["EaseInOutQuart"] = EasingFunctions::easeInOutQuart;
+      _lua["EaseInQuint"] = EasingFunctions::easeInQuint;
+      _lua["EaseOutQuint"] = EasingFunctions::easeOutQuint;
+      _lua["EaseInOutQuint"] = EasingFunctions::easeInOutQuint;
+      _lua["EaseInExpo"] = EasingFunctions::easeInExpo;
+      _lua["EaseOutExpo"] = EasingFunctions::easeOutExpo;
+      _lua["EaseInOutExpo"] = EasingFunctions::easeInOutExpo;
+      _lua["EaseInCirc"] = EasingFunctions::easeInCirc;
+      _lua["EaseOutCirc"] = EasingFunctions::easeOutCirc;
+      _lua["EaseInOutCirc"] = EasingFunctions::easeInOutCirc;
+      _lua["EaseInBack"] = EasingFunctions::easeInBack;
+      _lua["EaseOutBack"] = EasingFunctions::easeOutBack;
+      _lua["EaseInOutBack"] = EasingFunctions::easeInOutBack;
+      _lua["EaseInElastic"] = EasingFunctions::easeInElastic;
+      _lua["EaseOutElastic"] = EasingFunctions::easeOutElastic;
+      _lua["EaseInOutElastic"] = EasingFunctions::easeInOutElastic;
+      _lua["EaseInBounce"] = EasingFunctions::easeInBounce;
+      _lua["EaseOutBounce"] = EasingFunctions::easeOutBounce;
+      _lua["EaseInOutBounce"] = EasingFunctions::easeInOutBounce;
 
       // Primitives
       _lua["CreateSprite"] = [](const std::string &path) {
         return PrimitiveFactory::CreateSprite(path);
+      };
+
+      _lua["CreateQuad"] = []() {
+        return PrimitiveFactory::CreateQuad();
+      };
+
+      // TRS functions
+      _lua["Translate"] = [this](const flecs::entity entity, const float x,
+                                               const float y, const float z) {
+        if(const auto position = entity.get_mut<Position>(); position != nullptr) {
+          position->pos = glm::vec3(x / PPM, y / PPM, z);
+        }
+      };
+
+      _lua["Rotate"] = [](const flecs::entity entity, const float x,
+                                         const float y, const float z, const float angle) {
+        if(const auto rotation = entity.get_mut<Rotation>(); rotation != nullptr) {
+          rotation->orientation = glm::vec3(x, y, z);
+          rotation->angle = angle;
+        }
+      };
+
+      _lua["Scale"] = [this](const flecs::entity entity, const float x,
+                                         const float y, const float z) {
+        if(const auto scale = entity.get_mut<Scale>(); scale != nullptr) {
+          scale->scale = glm::vec3(x / PPM, y / PPM, z / PPM);
+        }
+      };
+
+      _lua["SetColor"] = [](const flecs::entity entity, const float r,
+                                         const float g, const float b, const float a) {
+        if(const auto color = entity.get_mut<Color>(); color != nullptr) {
+          color->color = glm::vec4(r,g,b,a);
+        }
+      };
+
+      // Entity lifecycle
+      _lua["Delete"] = [](const flecs::entity entity) {
+        if(entity.is_alive()) {
+          entity.destruct();
+        }
       };
     }
 

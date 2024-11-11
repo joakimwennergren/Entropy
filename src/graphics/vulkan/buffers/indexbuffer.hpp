@@ -26,6 +26,7 @@ namespace Entropy::Graphics::Vulkan::Buffers {
                                      VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
             vmaMapMemory(_allocator->Get(), _allocation, &_mappedMemory);
             memcpy(_mappedMemory, indices.data(), bufferSize);
+            vmaUnmapMemory(_allocator->Get(), _allocation);
         }
 
         /**
@@ -45,6 +46,7 @@ namespace Entropy::Graphics::Vulkan::Buffers {
             CreateBuffer(size, VK_BUFFER_USAGE_TRANSFER_DST_BIT |
                                VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
             vmaMapMemory(_allocator->Get(), _allocation, &_mappedMemory);
+            vmaUnmapMemory(_allocator->Get(), _allocation);
         }
     };
 } // namespace Entropy::Graphics::Vulkan::Buffers

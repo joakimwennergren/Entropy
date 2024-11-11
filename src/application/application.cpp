@@ -311,12 +311,11 @@ void Application::Run() {
     }
 
     if (createGrid) {
-      CreateGrid(world, screen_width, screen_height);
-      createGrid = false;
+
     }
 
-    sol::function on_render = _lua->Get()->get<sol::function>("OnRender");
-    sol::function on_input = _lua->Get()->get<sol::function>("OnInput");
+    auto on_render = _lua->Get()->get<sol::function>("OnRender");
+    auto on_input = _lua->Get()->get<sol::function>("OnInput");
 
     if (on_render.valid()) {
       on_render(screen_width, screen_height);

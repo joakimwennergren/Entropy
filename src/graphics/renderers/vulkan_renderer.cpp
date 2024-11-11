@@ -41,6 +41,7 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
         _renderPass->RecreateDepthBuffer(width, height);
         _renderPass->RecreateFrameBuffers(width, height, app);
         needResize = false;
+        return;
     }
 
     auto orthoCamera =

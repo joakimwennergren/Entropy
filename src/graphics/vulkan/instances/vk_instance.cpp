@@ -27,7 +27,7 @@ VulkanInstance::VulkanInstance() {
                                          extensionProps.data());
 
   std::vector<const char *> extensions;
-  for (const auto &extension : extensionProps) {
+  for (const auto &extension: extensionProps) {
     extensions.push_back(extension.extensionName);
   }
 
@@ -35,6 +35,7 @@ VulkanInstance::VulkanInstance() {
 
 #ifdef BUILD_FOR_MACOS
   extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+  extensions.push_back("VK_MVK_macos_surface");
 #endif
 
 #ifdef BUILD_FOR_ANDROID
@@ -43,11 +44,11 @@ VulkanInstance::VulkanInstance() {
   // extensions.push_back("VK_KHR_surface_protected_capabilities");
 #endif
 
-  createInfo.enabledExtensionCount = (uint32_t)extensions.size();
+  createInfo.enabledExtensionCount = (uint32_t) extensions.size();
   createInfo.ppEnabledExtensionNames = extensions.data();
 
   if (ValidationLayer::CheckValidationLayerSupport(_validationLayers)) {
-    createInfo.enabledLayerCount = (uint32_t)_validationLayers.size();
+    createInfo.enabledLayerCount = (uint32_t) _validationLayers.size();
     createInfo.ppEnabledLayerNames = _validationLayers.data();
   }
 
@@ -76,11 +77,11 @@ VulkanInstance::~VulkanInstance() {
 }
 
 VkResult VulkanInstance::CreateDebugUtilsMessengerEXT(
-    VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
-    const VkAllocationCallbacks *pAllocator,
-    VkDebugUtilsMessengerEXT *pDebugMessenger) {
-  auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
-      instance, "vkCreateDebugUtilsMessengerEXT");
+  VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
+  const VkAllocationCallbacks *pAllocator,
+  VkDebugUtilsMessengerEXT *pDebugMessenger) {
+  auto func = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(
+    instance, "vkCreateDebugUtilsMessengerEXT");
   if (func != nullptr) {
     return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
   } else {
@@ -89,10 +90,10 @@ VkResult VulkanInstance::CreateDebugUtilsMessengerEXT(
 }
 
 void VulkanInstance::DestroyDebugUtilsMessengerEXT(
-    VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger,
-    const VkAllocationCallbacks *pAllocator) {
-  auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
-      instance, "vkDestroyDebugUtilsMessengerEXT");
+  VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger,
+  const VkAllocationCallbacks *pAllocator) {
+  auto func = (PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(
+    instance, "vkDestroyDebugUtilsMessengerEXT");
   if (func != nullptr) {
     func(instance, debugMessenger, pAllocator);
   }

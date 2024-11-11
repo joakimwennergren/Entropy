@@ -136,7 +136,6 @@ namespace Entropy::Graphics::Vulkan::Renderers {
             constexpr VkImageLayout oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
             constexpr VkImageLayout newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
 
-            /* Synchronize image access. */
             VkImageMemoryBarrier barrier{
                 .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
                 .srcAccessMask = VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
