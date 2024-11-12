@@ -145,14 +145,11 @@ namespace Entropy::Graphics::Vulkan::RenderPasses {
          * @param app A boolean flag indicating whether the framebuffers should be created
          *        using the swapchain (true) or directly with the provided dimensions (false).
          */
-        void RecreateFrameBuffers(int width, int height, bool app) {
+        void RecreateFrameBuffers(const int width, const int height) {
             for (const auto framebuffer: _frameBuffers) {
                 vkDestroyFramebuffer(_logicalDevice->Get(), framebuffer, nullptr);
             }
-            if (app)
-                CreateFrameBuffers(_swapChain, width, height);
-            else
-                CreateFrameBuffers(width, height);
+            CreateFrameBuffers(_swapChain, width, height);
         }
 
         /**

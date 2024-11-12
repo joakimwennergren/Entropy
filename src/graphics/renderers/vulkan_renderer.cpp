@@ -12,46 +12,44 @@
 
 using namespace Entropy::Graphics::Vulkan::Renderers;
 
-void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
-                            bool &needResize, bool app) {
-    if (_world->Get()->count<Entropy::Components::Renderable>() == 0)
+void VulkanRenderer::Render(int width, int height,
+                            bool &needResize) {
+    if (_world->Get()->count<Components::Renderable>() == 0)
         return;
 
-    if (app) {
-        const auto currentFence = _synchronizer->GetFences()[_currentFrame];
 
-        vkWaitForFences(_logicalDevice->Get(), 1, &currentFence, VK_TRUE,
-                        UINT64_MAX);
+    const auto currentFence = _synchronizer->GetFences()[_currentFrame];
 
-        vkResetFences(_logicalDevice->Get(), 1, &currentFence);
+    vkWaitForFences(_logicalDevice->Get(), 1, &currentFence, VK_TRUE,
+                    UINT64_MAX);
 
-        vkAcquireNextImageKHR(_logicalDevice->Get(), _swapchain->Get(), UINT64_MAX,
-                              _synchronizer->GetImageSemaphores()[_currentFrame],
-                              VK_NULL_HANDLE, &imageIndex);
-    }
+    vkResetFences(_logicalDevice->Get(), 1, &currentFence);
+
+    vkAcquireNextImageKHR(_logicalDevice->Get(), _swapchain->Get(), UINT64_MAX,
+                          _synchronizer->GetImageSemaphores()[_currentFrame],
+                          VK_NULL_HANDLE, &imageIndex);
+
 
     if (needResize) {
         stagingBuffer = std::make_shared<StagingBuffer>(
             width * height * 4, nullptr, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
         _synchronizer =
                 std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
-        if (app) {
-            _swapchain->RecreateSwapChain(width, height);
-        }
+        _swapchain->RecreateSwapChain(width, height);
         _renderPass->RecreateDepthBuffer(width, height);
-        _renderPass->RecreateFrameBuffers(width, height, app);
+        _renderPass->RecreateFrameBuffers(width, height);
         needResize = false;
         return;
     }
 
-    auto orthoCamera =
-            dynamic_cast<Cameras::OrthographicCamera *>(_cameraManager->currentCamera);
-    orthoCamera->setPerspective(60.0f, (float) width, (float) height, 0.1f, 256.0f);
+    const auto orthoCamera =
+            dynamic_cast<OrthographicCamera *>(_cameraManager->currentCamera);
+    orthoCamera->setPerspective((float) width, (float) height, 0.1f, 256.0f);
 
     // Begin render pass and command buffer recording
     _commandBuffers[_currentFrame].Record();
     _renderPass->Begin(_commandBuffers[_currentFrame],
-                       app ? imageIndex : VK_SUBPASS_CONTENTS_INLINE, width,
+                       imageIndex, width,
                        height);
 
     UboDataDynamic ubodyn{};
@@ -59,37 +57,33 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
     ubodyn.view = orthoCamera->matrices.view;
     memcpy(_UBO->GetMappedMemory(), &ubodyn, sizeof(ubodyn));
 
-    _sortQuery.each([this, width, height](flecs::entity e,
+    _sortQuery.each([this, width, height](const flecs::entity e,
                                           Components::Position p) {
-        auto position_component = e.get_ref<Entropy::Components::Position>();
-        auto scale_component = e.get_ref<Entropy::Components::Scale>();
-        auto color_component = e.get_ref<Entropy::Components::Color>();
-        auto rotation_component = e.get_ref<Entropy::Components::Rotation>();
-        auto render_component = e.get_ref<Entropy::Components::Renderable>();
+        auto scale_component = e.get_ref<Components::Scale>();
+        auto color_component = e.get_ref<Components::Color>();
+        auto rotation_component = e.get_ref<Components::Rotation>();
+        auto render_component = e.get_ref<Components::Renderable>();
 
-        auto translate = glm::mat4(1.0f);
         auto rotation = glm::mat4(1.0f);
         auto scaling = glm::mat4(1.0f);
 
-        if (position_component.get() != nullptr) {
-            translate = glm::translate(glm::mat4(1.0f), position_component->pos);
-        }
+        const auto translate = glm::translate(glm::mat4(1.0f), p.pos);
 
         if (scale_component.get() != nullptr) {
-            scaling = glm::scale(glm::mat4(1.0f), scale_component->scale);
+            scaling = scale(glm::mat4(1.0f), scale_component->scale);
         }
 
         if (rotation_component.get() != nullptr) {
             rotation =
-                    glm::rotate(glm::mat4(1.0f), glm::radians(rotation_component->angle),
-                                rotation_component->orientation);
+                    rotate(glm::mat4(1.0f), glm::radians(rotation_component->angle),
+                           rotation_component->orientation);
         }
 
         void *objectData;
         vmaMapMemory(_allocator->Get(), _instanceDataBuffer->_allocation,
                      &objectData);
 
-        InstanceData *objectSSBO = (InstanceData *) objectData;
+        auto *objectSSBO = static_cast<InstanceData *>(objectData);
         objectSSBO[render_component->id - 1].model =
                 (translate * scaling * rotation);
 
@@ -123,14 +117,14 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
                           VK_PIPELINE_BIND_POINT_GRAPHICS,
                           _staticPipeline->GetPipeline());
 
-        auto ds0 = _staticPipeline->descriptorSets[0].Get()[_currentFrame];
+        const auto ds0 = _staticPipeline->descriptorSets[0].Get()[_currentFrame];
 
         vkCmdBindDescriptorSets(
             _commandBuffers[_currentFrame].Get(), VK_PIPELINE_BIND_POINT_GRAPHICS,
             _staticPipeline->GetPipelineLayout(), 0, 1, &ds0, 0, nullptr);
 
-        if (e.has<Entropy::Components::HasTexture>()) {
-            auto texture = e.get<Entropy::Components::HasTexture>();
+        if (e.has<Components::HasTexture>()) {
+            auto texture = e.get<Components::HasTexture>();
 
             vkCmdBindDescriptorSets(_commandBuffers[_currentFrame].Get(),
                                     VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -138,8 +132,8 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
                                     &texture->texture->descriptorSet, 0, nullptr);
         }
 
-        if (e.has<Entropy::Components::HasAnimatedSprite>()) {
-            auto textures = e.get<Entropy::Components::HasAnimatedSprite>();
+        if (e.has<Components::HasAnimatedSprite>()) {
+            auto textures = e.get<Components::HasAnimatedSprite>();
             static int textureId;
 
             if (_timer->GetTick() >= 120.0) {
@@ -153,7 +147,7 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
                 &textures->textures[textureId]->descriptorSet, 0, nullptr);
         }
 
-        PushConstBlock constants;
+        PushConstBlock constants{};
         constants.instanceIndex = render_component->id - 1;
 
         // upload the matrix to the GPU via push constants
@@ -176,10 +170,10 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
         }
 
         if (render_component.get() != nullptr &&
-            e.get<Entropy::Components::Renderable>()->indexBuffer != nullptr) {
-            auto renderable = e.get<Entropy::Components::Renderable>();
+            e.get<Components::Renderable>()->indexBuffer != nullptr) {
+            const auto renderable = e.get<Components::Renderable>();
             // Bind vertex & index buffers
-            VkBuffer vertexBuffers[] = {renderable->vertexBuffer->GetVulkanBuffer()};
+            const VkBuffer vertexBuffers[] = {renderable->vertexBuffer->GetVulkanBuffer()};
             VkDeviceSize offsets[] = {0};
             vkCmdBindVertexBuffers(_commandBuffers[_currentFrame].Get(), 0, 1,
                                    vertexBuffers, offsets);
@@ -194,11 +188,7 @@ void VulkanRenderer::Render(int width, int height, float xscale, float yscale,
         }
     });
 
-    if (app) {
-        PresentForApplication();
-    } else {
-        PresentForEditor(width, height);
-    }
+    PresentForApplication();
 
-    _currentFrame = (_currentFrame + 1) % MAX_CONCURRENT_FRAMES_IN_FLIGHT - 1;
+    _currentFrame = (_currentFrame + 1) % MAX_CONCURRENT_FRAMES_IN_FLIGHT;
 }

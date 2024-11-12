@@ -12,17 +12,17 @@ using namespace Entropy::EntryPoints;
 
 Application::Application() {
   // Seed random
-  srand(static_cast<unsigned>(time(0)));
+  srand(time(nullptr));
 
   // Initialize GLFW
   if (!glfwInit()) {
-    spdlog::critical("Could not initialize GLFW.");
+    spdlog::critical("Could not initialize GLFW");
     exit(EXIT_FAILURE);
   }
 
   // Create the window
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-  _window = glfwCreateWindow(1000, 640, "Entropy application", NULL, NULL);
+  _window = glfwCreateWindow(1000, 640, "Entropy application", nullptr, nullptr);
 
   if (!_window) {
     spdlog::critical("Could not create window.");
@@ -67,58 +67,28 @@ Application::Application() {
 
   // Cameras
   sl->registerService(std::make_shared<CameraManager>());
-  auto cameraManager = sl->getService<ICameraManager>();
-  auto camera = new OrthographicCamera();
+  const auto cameraManager = sl->getService<ICameraManager>();
+  const auto camera = new OrthographicCamera();
   cameraManager->currentCamera = camera;
 
-  _renderer = std::make_shared<Renderers::VulkanRenderer>();
+  _renderer = std::make_unique<Renderers::VulkanRenderer>();
 
-  auto instance = sl->getService<IVulkanInstance>();
-
-  if (glfwCreateWindowSurface(instance->Get(), _window, nullptr, &_surface) !=
-      VK_SUCCESS) {
+  if (const auto instance = sl->getService<IVulkanInstance>(); glfwCreateWindowSurface(instance->Get(), _window,
+                                                                 nullptr,
+                                                                 &_surface) !=
+                                                               VK_SUCCESS) {
     std::cout << "Failed to create a window surface for platform 'MacOS'"
         << std::endl;
-    exit(EXIT_FAILURE);
   }
 
   glfwGetFramebufferSize(_window, &screen_width, &screen_height);
-  VkExtent2D frame = {(uint32_t) screen_width, (uint32_t) screen_height};
+  const VkExtent2D frame = {static_cast<uint32_t>(screen_width), static_cast<uint32_t>(screen_height)};
 
   _renderer->_swapchain->Build(_surface, frame, VK_NULL_HANDLE);
   _renderer->_renderPass->CreateFrameBuffers(sl->getService<ISwapchain>(),
                                              screen_width, screen_height);
 }
 
-// void Application::ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph,
-// std::shared_ptr<Lua> lua)
-// {
-//     for (auto renderable : sceneGraph->renderables)
-//     {
-//         if (!renderable->script->hasExecuted)
-//         {
-//             if (renderable->script->scriptFile.length() > 0)
-//             {
-//                 lua->ExecuteScript("", renderable->script->scriptFile,
-//                 renderable->script->environment);
-//             }
-//             else
-//             {
-//                 lua->ExecuteScript(renderable->script->script, "",
-//                 renderable->script->environment);
-//             }
-
-//             renderable->script->hasExecuted = true;
-//         }
-
-//         auto onRenderFunc = renderable->script->environment["OnRender"];
-
-//         // if (onRenderFunc != nullptr)
-//         //{
-//         //     onRenderFunc();
-//         // }
-//     }
-// }
 
 Application::~Application() {
   glfwDestroyWindow(_window);
@@ -188,131 +158,31 @@ glm::vec2 convertWorldToScreen(glm::vec2 worldCoords, int width, int height) {
   return glm::vec2(ndcX, ndcY);
 }
 
-std::vector<flecs::entity>
-Application::CreateGrid(std::shared_ptr<IWorld> world, float screenWidth,
-                        float screenHeight) {
-  std::vector<flecs::entity> lines;
-  for (int i = 1; i < 200; i++) {
-    auto pos = convertToNDC(i * 200, 0.25, screenWidth, screenHeight);
-
-    auto line = std::make_shared<Entropy::Graphics::Primitives::Quad>();
-    auto e = world->Get()->entity();
-    auto id = AssetId().GetId();
-    e.set<Position>({glm::vec3((pos.x), 0.0, 1.0)});
-    e.set<Scale>({glm::vec3(0.02, 20.0, 1.0)});
-    e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
-    e.set<Entropy::Components::HasTexture>({line->texture});
-    auto renderable = Entropy::Components::Renderable();
-    renderable.visible = true;
-    renderable.id = id;
-    renderable.indexBuffer = line->indexBuffer;
-    renderable.vertexBuffer = line->vertexBuffer;
-    renderable.indices = line->indices;
-    renderable.type = 3;
-    e.set<Entropy::Components::Renderable>(renderable);
-    e.set<Entropy::Components::Color>({glm::vec4{1.0f, 1.0f, 1.0f, 0.5f}});
-    lines.push_back(e);
-  }
-
-  /*
-  for (int i = 1; i < 200; i++) {
-    auto line = std::make_shared<Entropy::Graphics::Primitives::Quad>();
-    auto e = world->Get()->entity();
-    auto id = AssetId().GetId();
-    e.set<Position>({glm::vec3(0.0, (0.25 * i), 1.0)});
-    e.set<Scale>({glm::vec3(40.0, 0.02, 1.0)});
-    e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
-    e.set<Entropy::Components::HasTexture>({line->texture});
-    auto renderable = Entropy::Components::Renderable();
-    renderable.visible = true;
-    renderable.id = id;
-    renderable.indexBuffer = line->indexBuffer;
-    renderable.vertexBuffer = line->vertexBuffer;
-    renderable.indices = line->indices;
-    renderable.type = 3;
-    e.set<Entropy::Components::Renderable>(renderable);
-    e.set<Entropy::Components::Color>({glm::vec4{1.0f, 1.0f, 1.0f, 0.5f}});
-    lines.push_back(e);
-  }
-  */
-
-  return lines;
-}
-
 void Application::Run() {
   this->OnInit();
 
   _timer->Start();
-  _lastTick = (float) _timer->GetTick();
+  _lastTick = _timer->GetTick();
 
-  ServiceLocator *sl = ServiceLocator::GetInstance();
-  auto world = sl->getService<IWorld>();
-  auto _lua = sl->getService<ILua>();
-
-  bool hasClicked = false;
+  const ServiceLocator *sl = ServiceLocator::GetInstance();
+  const auto world = sl->getService<IWorld>();
+  const auto _lua = sl->getService<ILua>();
 
   std::vector<flecs::entity> lines;
   std::vector<flecs::entity> grid;
 
-  bool createGrid = true;
-
-  glm::vec2 start;
-  glm::vec2 end;
-
   while (!glfwWindowShouldClose(_window)) {
-    // spdlog::info("ms/frame = {}", _deltaTime);
+    // Wait for events when minimized
+    while (isMinimized) {
+      glfwWaitEvents();
+    }
 
     // Calculate delta time
     _deltaTime = _timer->GetTick() - _lastTick;
     _lastTick = _timer->GetTick();
 
-    _renderer->Render(screen_width, screen_height, 0.0, 0.0, needResize, true);
-
-    if (mouse0_state) {
-      start =
-          convertMouseToWorld(mouse_x, mouse_y, screen_width, screen_height);
-      auto pos = convertWorldToScreen(start, screen_width, screen_height);
-      hasClicked = true;
-    }
-
-    if (!mouse0_state && hasClicked) {
-      /*
-      int referenceWidth = 1920;
-      int referenceHeight = 1080;
-
-      float scaleX = (float)screen_width / referenceWidth;
-      float scaleY = (float)screen_height / referenceHeight;
-
-      glm::vec2 referencePosition = glm::vec2(
-          start.x, start.y); // Example position in reference resolution
-      glm::vec2 scaledPosition =
-          glm::vec2(referencePosition.x * scaleX, referencePosition.y * scaleY);
-
-      spdlog::info("{}:{}", scaledPosition.x, scaledPosition.y);
-      auto line = std::make_shared<Entropy::Graphics::Primitives::Quad>();
-      auto e = world->Get()->entity();
-      auto id = AssetId().GetId();
-      e.set<Position>({glm::vec3(scaledPosition.x, scaledPosition.y, 0.9)});
-      e.set<Scale>({glm::vec3(0.06, 0.06, 1.0)});
-      e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
-      e.set<Entropy::Components::HasTexture>({line->texture});
-      auto renderable = Entropy::Components::Renderable();
-      renderable.visible = true;
-      renderable.id = id;
-      renderable.indexBuffer = line->indexBuffer;
-      renderable.vertexBuffer = line->vertexBuffer;
-      renderable.indices = line->indices;
-      renderable.type = 3;
-      e.set<Entropy::Components::Renderable>(renderable);
-      e.set<Entropy::Components::Color>({glm::vec4{1.0f, 0.0f, 1.0f, 1.0f}});
-      lines.push_back(e);
-      hasClicked = false;
-      */
-    }
-
-    if (createGrid) {
-
-    }
+    _renderer->Render(screen_width, screen_height, needResize);
+    this->OnRender(screen_width, screen_height, _deltaTime);
 
     auto on_render = _lua->Get()->get<sol::function>("OnRender");
     auto on_input = _lua->Get()->get<sol::function>("OnInput");
@@ -322,21 +192,13 @@ void Application::Run() {
     }
 
     if (on_input.valid()) {
-      on_input(mouse_x, mouse_y, mouse0_state);
+      //on_input(mouse_x, mouse_y, mouse0_state);
     }
 
     glfwPollEvents();
 
-    /*
-    #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) || \
-        defined(BUILD_FOR_WINDOWS)
-        while (isMinimized) {
-          glfwWaitEvents();
-        }
-    #endif
-    */
 
-    // this->OnRender(_deltaTime);
+    //
     //  this->_renderer->Render(width * xscale, height * yscale, xscale,
     //  yscale);
     //   On render
@@ -416,6 +278,8 @@ void cursor_position_callback(GLFWwindow *window, double xposIn,
   float xpos = static_cast<float>(xposIn);
   float ypos = static_cast<float>(yposIn);
 
+  /*
+
   app->mouse_x = xpos;
   app->mouse_y = ypos;
 
@@ -432,6 +296,8 @@ void cursor_position_callback(GLFWwindow *window, double xposIn,
   app->lastX = xpos;
   app->lastY = ypos;
 
+  */
+
   // app->_camera->ProcessMouseMovement(xoffset, yoffset);
 }
 
@@ -439,9 +305,6 @@ void framebuffer_resize_callback(GLFWwindow *window, int width, int height) {
   auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
   if (app != nullptr) {
     app->needResize = true;
-    // Update previous resolution before changing current resolution
-    app->old_screen_width = app->screen_width;
-    app->old_screen_height = app->screen_height;
 
     // Update current resolution
     app->screen_width = width;
@@ -453,10 +316,12 @@ void mouse_button_callback(GLFWwindow *window, int button, int action,
                            int mods) {
   auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
 
-  if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-    app->mouse0_state = true;
-  if (button == GLFW_MOUSE_BUTTON_LEFT && action != GLFW_PRESS)
-    app->mouse0_state = false;
+  /*
+if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+  app->mouse0_state = true;
+if (button == GLFW_MOUSE_BUTTON_LEFT && action != GLFW_PRESS)
+  app->mouse0_state = false;
+  */
 
   // if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
   //   io.MouseDown[2] = true;
@@ -473,9 +338,9 @@ void window_iconify_callback(GLFWwindow *window, int iconified) {
   auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
 
   if (iconified) {
-    app->isMinimized = true;
+    //app->isMinimized = true;
   } else {
-    app->isMinimized = false;
+    //app->isMinimized = false;
   }
 }
 

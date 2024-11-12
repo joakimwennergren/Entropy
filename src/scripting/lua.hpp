@@ -11,7 +11,6 @@
 #include <physics/2d/physics2d.hpp>
 #include <config.hpp>
 
-
 // Bound entities
 #include <gltf/model.hpp>
 #include <cameras/orthographic_camera.hpp>
@@ -224,37 +223,37 @@ namespace Entropy::Scripting {
 
       // TRS functions
       _lua["Translate"] = [this](const flecs::entity entity, const float x,
-                                               const float y, const float z) {
-        if(const auto position = entity.get_mut<Position>(); position != nullptr) {
+                                 const float y, const float z) {
+        if (const auto position = entity.get_mut<Position>(); position != nullptr) {
           position->pos = glm::vec3(x / PPM, y / PPM, z);
         }
       };
 
       _lua["Rotate"] = [](const flecs::entity entity, const float x,
-                                         const float y, const float z, const float angle) {
-        if(const auto rotation = entity.get_mut<Rotation>(); rotation != nullptr) {
+                          const float y, const float z, const float angle) {
+        if (const auto rotation = entity.get_mut<Rotation>(); rotation != nullptr) {
           rotation->orientation = glm::vec3(x, y, z);
           rotation->angle = angle;
         }
       };
 
       _lua["Scale"] = [this](const flecs::entity entity, const float x,
-                                         const float y, const float z) {
-        if(const auto scale = entity.get_mut<Scale>(); scale != nullptr) {
+                             const float y, const float z) {
+        if (const auto scale = entity.get_mut<Scale>(); scale != nullptr) {
           scale->scale = glm::vec3(x / PPM, y / PPM, z / PPM);
         }
       };
 
       _lua["SetColor"] = [](const flecs::entity entity, const float r,
-                                         const float g, const float b, const float a) {
-        if(const auto color = entity.get_mut<Color>(); color != nullptr) {
-          color->color = glm::vec4(r,g,b,a);
+                            const float g, const float b, const float a) {
+        if (const auto color = entity.get_mut<Color>(); color != nullptr) {
+          color->color = glm::vec4(r, g, b, a);
         }
       };
 
       // Entity lifecycle
       _lua["Delete"] = [](const flecs::entity entity) {
-        if(entity.is_alive()) {
+        if (entity.is_alive()) {
           entity.destruct();
         }
       };

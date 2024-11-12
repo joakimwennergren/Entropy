@@ -28,51 +28,24 @@ namespace Entropy::Cameras {
      */
     OrthographicCamera() {
       matrices.view =
-          glm::lookAt(glm::vec3(0.0f, 0.0f, 256.0f), glm::vec3(0.0f, 0.0f, 0.0f),
-                      glm::vec3(0.0f, 1.0f, 0.0f));
+          lookAt(glm::vec3(0.0f, 0.0f, 256.0f), glm::vec3(0.0f, 0.0f, 0.0f),
+                 glm::vec3(0.0f, 1.0f, 0.0f));
     }
-
-    float fov{};
-    float znear{}, zfar{};
 
     void Test() {
     }
-
-    enum CameraType { lookat, firstperson };
-
-    CameraType type = CameraType::firstperson;
-
-    glm::vec3 rotation = glm::vec3();
-    glm::vec3 position = glm::vec3();
-    glm::vec4 viewPos = glm::vec4();
-
-    float rotationSpeed = 1.0f;
-    float movementSpeed = 1.0f;
-
-    bool updated = true;
-    bool flipY = false;
 
     struct {
       glm::mat4 perspective;
       glm::mat4 view;
     } matrices{};
 
-    const float PPM = 100.0f; // Pixels Per Meter
+    const float PPM = 100.0f;
 
-    void setPerspective(float fov, const int width, const int height, float znear,
-                        float zfar) {
-      // Vulkan-trick because GLM was written for OpenGL, and Vulkan uses
-      // a right-handed coordinate system instead. Without this correction,
-      // geometry will be y-inverted in screen space, and the coordinate space
-      // will be left-handed. Described at:
-      // https://matthewwellings.com/blog/the-new-vulkan-coordinate-system/
-      glm::mat4 correction(
-        glm::vec4(1.0f, 0.0f, 0.0f, 0.0f), glm::vec4(0.0f, -1.0f, 0.0f, 0.0f),
-        glm::vec4(0.0f, 0.0f, 0.5f, 0.0f), glm::vec4(0.0f, 0.0f, 0.5f, 1.0f));
+    void setPerspective(const int width, const int height, const float znear,
+                        const float zfar) {
       matrices.perspective = glm::ortho(0.0f, static_cast<float>(width) / PPM,
                                         static_cast<float>(height) / PPM, 0.0f, znear, zfar);
-      // matrices.perspective =
-      //     correction * glm::ortho(-1.0f, 1.0f, -aspect, aspect, znear, zfar);
     };
   };
 };

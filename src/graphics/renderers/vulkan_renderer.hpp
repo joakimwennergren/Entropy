@@ -120,92 +120,14 @@ namespace Entropy::Graphics::Vulkan::Renderers {
 
         ~VulkanRenderer() = default;
 
-        void Render(int width, int height, float xscale, float yscale,
-                    bool &needResize, bool app);
+        void Render(int width, int height,
+                    bool &needResize);
 
         // Comparison function for sorting based on z index
         static int compare_zIndex(flecs::entity_t e1, const Components::Position *p1,
                                   flecs::entity_t e2,
                                   const Components::Position *p2) {
             return (p1->pos.z > p2->pos.z) - (p1->pos.z < p2->pos.z);
-        }
-
-        void PresentForEditor(const int width, const int height) const {
-            RenderPass::End(_commandBuffers[_currentFrame]);
-
-            constexpr VkImageLayout oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-            constexpr VkImageLayout newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-
-            VkImageMemoryBarrier barrier{
-                .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-                .srcAccessMask = VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
-                .dstAccessMask = VK_ACCESS_2_TRANSFER_READ_BIT,
-                .oldLayout = oldLayout,
-                .newLayout = newLayout,
-                .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-                .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-                .image = _renderPass->_swapChainTextures[0]->_textureImage,
-                .subresourceRange =
-                {
-                    .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-                    .baseMipLevel = 0,
-                    .levelCount = 1,
-                    .baseArrayLayer = 0,
-                    .layerCount = 1,
-                },
-            };
-
-            barrier.srcAccessMask = 0;
-            barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-
-            constexpr VkPipelineStageFlags sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-            constexpr VkPipelineStageFlags destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-
-            vkCmdPipelineBarrier(_commandBuffers[_currentFrame].Get(), sourceStage,
-                                 destinationStage, 0, 0, nullptr, 0, nullptr, 1,
-                                 &barrier);
-
-            /* Copy framebuffer content to staging buffer. */
-            const VkBufferImageCopy region{
-                .bufferOffset = 0,
-                .bufferRowLength = 0,
-                .bufferImageHeight = 0,
-                .imageSubresource =
-                {
-                    .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-                    .mipLevel = 0,
-                    .baseArrayLayer = 0,
-                    .layerCount = 1,
-                },
-                .imageOffset = {0, 0, 0},
-                .imageExtent = {
-                    static_cast<uint32_t>(width),
-                    static_cast<uint32_t>(height), 1
-                },
-            };
-
-            vkCmdCopyImageToBuffer(_commandBuffers[_currentFrame].Get(),
-                                   _renderPass->_swapChainTextures[0]->_textureImage,
-                                   VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                                   stagingBuffer->GetVulkanBuffer(), 1, &region);
-
-            _commandBuffers[_currentFrame].EndRecording();
-
-            auto cmdBuf = _commandBuffers[_currentFrame].Get();
-            const VkSubmitInfo submitInfo{
-                .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-                .waitSemaphoreCount = 0,
-                .commandBufferCount = 1,
-                .pCommandBuffers = &cmdBuf,
-                .signalSemaphoreCount = 0,
-            };
-
-            if (vkQueueSubmit(_logicalDevice->GetGraphicQueue(), 1, &submitInfo,
-                              nullptr) != VK_SUCCESS) {
-                exit(EXIT_FAILURE);
-            }
-
-            vkDeviceWaitIdle(_logicalDevice->Get());
         }
 
         void PresentForApplication() const {
