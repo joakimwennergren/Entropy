@@ -18,9 +18,7 @@ include(cmake/external_dependencies.cmake)
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
 # Create the library
-add_library(${PROJECT_NAME} STATIC ${SOURCES}
-        src/graphics/primitives/primitives.hpp
-        tests/unit/animation/easing_test.cpp)
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
 # Compiler flags
 if (MSVC)

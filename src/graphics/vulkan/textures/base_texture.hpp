@@ -59,6 +59,9 @@ namespace Entropy::Graphics::Vulkan::Textures {
                   _textureImage, nullptr);
    vkFreeDescriptorSets(_logicalDevice->Get(),
                         _descriptorPool->Get(), 1, &descriptorSet);
+   if (textureSampler != nullptr) {
+    vkDestroySampler(_logicalDevice->Get(), textureSampler, nullptr);
+   }
   }
 
 
@@ -125,6 +128,7 @@ namespace Entropy::Graphics::Vulkan::Textures {
   VmaAllocation _allocation = VK_NULL_HANDLE;
   VkDescriptorSetLayout _descriptorSetLayout = VK_NULL_HANDLE;
   VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
+  VkSampler textureSampler = VK_NULL_HANDLE;
   std::shared_ptr<ImageView> imageView;
 
   std::shared_ptr<IPhysicalDevice> _physicalDevice;

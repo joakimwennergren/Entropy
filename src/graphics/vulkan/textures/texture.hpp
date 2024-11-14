@@ -144,7 +144,5 @@ namespace Entropy::Graphics::Vulkan::Textures {
                                    descriptorWrites.size(),
                                    descriptorWrites.data(), 0, nullptr);
         }
-
-        VkSampler textureSampler{};
     };
 } // namespace Entropy::Graphics::Vulkan::Textures

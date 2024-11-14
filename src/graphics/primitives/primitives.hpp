@@ -91,5 +91,28 @@ namespace Entropy::Graphics::Primitives {
             e.set<HasTexture>({quad->texture});
             return e;
         }
+
+        static flecs::entity CreateQuadFromVertices(const std::vector<Vertex> &vertices) {
+            const ServiceLocator *sl = ServiceLocator::GetInstance();
+            const auto world = sl->getService<IWorld>();
+            const auto quad = std::make_shared<Quad>(vertices);
+            const auto e = world->Get()->entity();
+            const auto id = AssetId().GetId();
+            e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
+            e.set<Scale>({glm::vec3(1.0, 1.0, 1.0)});
+            e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
+            e.set<QuadComponent>({quad});
+            auto renderable = Renderable();
+            renderable.visible = true;
+            renderable.id = id;
+            renderable.indexBuffer = quad->indexBuffer;
+            renderable.vertexBuffer = quad->vertexBuffer;
+            renderable.indices = quad->indices;
+            renderable.type = 2;
+            e.set<Renderable>(renderable);
+            e.set<Color>({glm::vec4{1.0f, 0.0f, 0.0f, 1.0f}});
+            e.set<HasTexture>({quad->texture});
+            return e;
+        }
     };
 }

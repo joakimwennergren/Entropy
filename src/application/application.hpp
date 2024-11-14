@@ -217,6 +217,10 @@ namespace Entropy::EntryPoints {
    */
   bool isMinimized = false;
 
+  std::vector<flecs::entity> entities;
+
+  std::vector<Vertex> vertices;
+
   /**
    * Unique pointer to the VulkanRenderer instance.
    *

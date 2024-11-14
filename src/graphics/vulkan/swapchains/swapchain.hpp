@@ -249,7 +249,7 @@ namespace Entropy::Graphics::Vulkan::SwapChains {
     //                                                      VkSurfaceKHR surface);
     // std::vector<VkImageView> swapChainImageViews;
 
-    inline VkSwapchainKHR Get() { return _swapChain; };
+    inline VkSwapchainKHR Get() override { return _swapChain; };
     // std::shared_ptr<WindowSurface> _surface;
 
   private:

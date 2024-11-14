@@ -2,20 +2,42 @@
 
 #include <functional>
 
-class AssetId {
-public:
+struct AssetId {
+    /**
+     * Constructs an AssetId object with an automatically generated unique identifier.
+     */
     AssetId()
         : m_id(++ID) {
     }
 
-    explicit AssetId(unsigned int id)
+    /**
+     * Constructs an AssetId object with the specified unique identifier.
+     *
+     * @param id The unique identifier to be assigned to the AssetId object.
+     */
+    explicit AssetId(const unsigned int id)
         : m_id(id) {
     }
 
+    /**
+     * Overloads a specific operator for the class or type.
+     *
+     * @param lhs The left-hand side operand for the operator.
+     * @param rhs The right-hand side operand for the operator.
+     *
+     * @return The result of the operation based on the overloaded operator.
+     */
     bool operator<(const AssetId &rhs) const {
         return m_id < rhs.m_id;
     }
 
+    /**
+     * Overloads the assignment operator to allow copying of one object
+     * to another.
+     *
+     * @param rhs The right-hand side object to copy from.
+     * @return A reference to the assigned object.
+     */
     bool operator==(const AssetId &rhs) const {
         return m_id == rhs.m_id;
     }

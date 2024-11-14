@@ -7,5 +7,6 @@ class ICameraManager : public IService {
 public:
     ~ICameraManager() override = default;
 
+
     Entropy::Cameras::Camera *currentCamera;
 };

@@ -47,13 +47,14 @@ namespace Entropy::Scripting {
       _physics2d = sl->getService<IPhysics2D>();
 
       _lua.open_libraries(sol::lib::base, sol::lib::table, sol::lib::math,
-                          sol::lib::string, sol::lib::io, sol::lib::package);
+                          sol::lib::string, sol::lib::io, sol::lib::os, sol::lib::package);
 
       // Set the Lua module path to include your current working directory
       const std::string base_path = ENGINE_BASEPATH;
       const std::string cwd = base_path + "/lua";
       _lua["package"]["path"] = cwd + "/?.lua;" + _lua["package"]["path"].get<std::string>();
 
+      BindTypes();
       BindFunctions();
 
 
@@ -170,6 +171,21 @@ namespace Entropy::Scripting {
     //   }
     // }
 
+    void BindTypes() {
+      _lua.new_usertype<b2BodyId>("b2BodyId");
+      //_lua.new_usertype<b2Vec2>("b2Vec2", "x", &b2Vec2::x, "y", &b2Vec2::y);
+
+      // Box2D 2D vector
+      //
+
+      // _lua->new_usertype<Timer>("Timer", "GetTick", &Timer::GetTick, "Start",
+      //                           &Timer::Start, "Reset", &Timer::Reset);
+
+      // _lua->set_function("create_timer", [this](float tick_duration) {
+      //   return new Timer(tick_duration);
+      // });
+    }
+
     /**
      * @brief Binds various utility functions and easing functions to the Lua scripting environment.
      *
@@ -244,6 +260,8 @@ namespace Entropy::Scripting {
         }
       };
 
+      // Colors
+
       _lua["SetColor"] = [](const flecs::entity entity, const float r,
                             const float g, const float b, const float a) {
         if (const auto color = entity.get_mut<Color>(); color != nullptr) {
@@ -257,19 +275,17 @@ namespace Entropy::Scripting {
           entity.destruct();
         }
       };
+
+      // 2D physics
+      _lua["Create2DDynamicBody"] = [this](const float x, const float y, const float w, const float h) {
+        return _physics2d->CreateDynamicBody(x, y, w, h);
+      };
+
+      _lua["Get2DDynamicBodyPosition"] = [](const b2BodyId bodyId) {
+        return b2Body_GetPosition(bodyId).y;
+      };
     }
 
-    void BindTypes() const {
-      // Box2D 2D vector
-      //_lua->new_usertype<b2Vec2>("b2vec2", "x", &b2Vec2::x, "y", &b2Vec2::y);
-
-      // _lua->new_usertype<Timer>("Timer", "GetTick", &Timer::GetTick, "Start",
-      //                           &Timer::Start, "Reset", &Timer::Reset);
-
-      // _lua->set_function("create_timer", [this](float tick_duration) {
-      //   return new Timer(tick_duration);
-      // });
-    }
 
     sol::state *Get() override { return &_lua; }
 

@@ -4,6 +4,8 @@
 #include "glm/gtx/string_cast.hpp"
 #include "graphics/renderers/vulkan_renderer.hpp"
 #include "vulkan/vulkan_core.h"
+#include <graphics/primitives/primitives.hpp>
+
 
 using namespace Entropy::EntryPoints;
 
@@ -56,20 +58,20 @@ Application::Application() {
   sl->registerService(std::make_shared<DescriptorPool>());
   sl->registerService(std::make_shared<PipelineCache>());
 
-  // ECS
-  sl->registerService(std::make_shared<World>());
-
-  // 2D Physics
-  sl->registerService(std::make_shared<Physics2D>());
-
-  // Scripting
-  sl->registerService(std::make_shared<Lua>());
-
   // Cameras
   sl->registerService(std::make_shared<CameraManager>());
   const auto cameraManager = sl->getService<ICameraManager>();
   const auto camera = new OrthographicCamera();
   cameraManager->currentCamera = camera;
+
+  // 2D Physics
+  sl->registerService(std::make_shared<Physics2D>());
+
+  // ECS
+  sl->registerService(std::make_shared<World>());
+
+  // Scripting
+  sl->registerService(std::make_shared<Lua>());
 
   _renderer = std::make_unique<Renderers::VulkanRenderer>();
 
@@ -158,6 +160,40 @@ glm::vec2 convertWorldToScreen(glm::vec2 worldCoords, int width, int height) {
   return glm::vec2(ndcX, ndcY);
 }
 
+struct RGBA8 {
+  uint8_t r, g, b, a;
+};
+
+RGBA8 MakeRGBA8(b2HexColor c, float alpha) {
+  return {uint8_t((c >> 16) & 0xFF), uint8_t((c >> 8) & 0xFF), uint8_t(c & 0xFF), uint8_t(0xFF * alpha)};
+}
+
+/// Draw a solid closed polygon provided in CCW order.
+void DrawSolidPolygon(b2Transform transform, const b2Vec2 *vertices, int vertexCount, float radius,
+                      b2HexColor color,
+                      void *context) {
+  std::vector<Vertex> entropyVertices;
+  for (int i = 0; i < vertexCount; i++) {
+    Vertex vertex{};
+    vertex.position.x = vertices[i].x;
+    vertex.position.y = vertices[i].y;
+    entropyVertices.push_back(vertex);
+  }
+  if (const auto app = static_cast<Application *>(context); app != nullptr) {
+    app->vertices = entropyVertices;
+  }
+
+  /*
+  const auto poly = PrimitiveFactory::CreateQuadFromVertices(entropyVertices);
+  if (const auto position = poly.get_mut<Position>(); position != nullptr) {
+    position->pos = glm::vec3(transform.p.x / 100.0f, transform.p.y / 100.0f, 0.0f);
+  }
+  if (const auto app = static_cast<Application *>(context); app != nullptr) {
+    app->entities.push_back(poly);
+  }
+  */
+}
+
 void Application::Run() {
   this->OnInit();
 
@@ -167,6 +203,12 @@ void Application::Run() {
   const ServiceLocator *sl = ServiceLocator::GetInstance();
   const auto world = sl->getService<IWorld>();
   const auto _lua = sl->getService<ILua>();
+  const auto physics2d = sl->getService<IPhysics2D>();
+  const auto debug2DDrawer = new b2DebugDraw();
+  debug2DDrawer->drawShapes = true;
+  debug2DDrawer->DrawSolidPolygon = DrawSolidPolygon;
+  debug2DDrawer->context = this;
+
 
   std::vector<flecs::entity> lines;
   std::vector<flecs::entity> grid;
@@ -196,7 +238,18 @@ void Application::Run() {
     }
 
     glfwPollEvents();
+    if (!vertices.empty()) {
+      const auto poly = PrimitiveFactory::CreateQuadFromVertices(vertices);
+      if (const auto position = poly.get_mut<Position>(); position != nullptr) {
+        position->pos = glm::vec3(100 / 100.0f, 100 / 100.0f, 0.0f);
+      }
+    }
 
+
+    constexpr float timeStep = 1.0f / 60.0f;
+    constexpr int subStepCount = 4;
+    b2World_Step(physics2d->Get(), timeStep, subStepCount);
+    b2World_Draw(physics2d->Get(), debug2DDrawer);
 
     //
     //  this->_renderer->Render(width * xscale, height * yscale, xscale,

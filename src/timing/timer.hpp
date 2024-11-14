@@ -3,13 +3,12 @@
 #include <cassert>
 #include <chrono>
 
-namespace Entropy {
-namespace Timing {
-/**
- * A simple class for measuring time durations.
- */
-class Timer {
-public:
+namespace Entropy::Timing {
+ /**
+  * A simple class for measuring time durations.
+  */
+ class Timer {
+ public:
   /**
    * Constructs a Timer object with the specified tick duration and maximum tick
    * value.
@@ -19,13 +18,15 @@ public:
    *
    * @returns None
    */
-  Timer(float tick_duration, float const &max_tick = 10000.0f);
+  explicit Timer(float tick_duration, float const &max_tick = 10000.0f);
+
   /**
    * Gets the current tick value.
    *
    * @returns The current tick value as a float.
    */
   float GetTick();
+
   /**
    * Set the duration of a tick.
    *
@@ -34,6 +35,7 @@ public:
    * @returns None
    */
   void SetTickDuration(float const &d);
+
   /**
    * Set the maximum tick value.
    *
@@ -42,18 +44,21 @@ public:
    * @returns None
    */
   void SetMaxTick(float const &max);
+
   /**
    * Starts the process or operation.
    *
    * @returns None
    */
   void Start();
+
   /**
    * Resets the state of an object to its initial state.
    *
    * @returns None
    */
   void Reset();
+
   /**
    * Checks if an update has occurred.
    *
@@ -61,20 +66,21 @@ public:
    */
   bool Updated();
 
-private:
+ private:
   /**
    * Calculates a result based on the internal state of the object.
    *
    * @returns None
    */
   void Calculate();
-  float _tick_duration;
-  float _max_tick;
-  float _current_tick;
-  bool _update;
+
+  float _tick_duration{};
+  float _max_tick{};
+  float _current_tick{};
+  bool _update{};
   std::chrono::time_point<std::chrono::system_clock> _start;
   std::chrono::time_point<std::chrono::system_clock> _end;
-  std::chrono::duration<float> _elapsed;
-};
-} // namespace Timing
-} // namespace Entropy
+  std::chrono::duration<float> _elapsed{};
+ };
+} // namespace Entropy::Timing
+

@@ -52,8 +52,8 @@ VulkanInstance::VulkanInstance() {
     createInfo.ppEnabledLayerNames = _validationLayers.data();
   }
 
-  auto res = vkCreateInstance(&createInfo, nullptr, &this->_instance);
-  std::cout << res << std::endl;
+  vkCreateInstance(&createInfo, nullptr, &this->_instance);
+
   VkDebugUtilsMessengerCreateInfoEXT dbgCreateInfo{};
   dbgCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
   dbgCreateInfo.messageSeverity =
