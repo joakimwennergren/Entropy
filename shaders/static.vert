@@ -9,28 +9,29 @@ layout (location = 5) in vec4 inWeight0;
 layout (location = 6) in vec4 inColor0;
 
 //push constants block
-layout( push_constant ) uniform constants
+layout(push_constant) uniform constants
 {
-	uint instanceIndex;
+    uint instanceIndex;
+    uint hasTexture;
 } PushConstants;
 
 struct ObjectData{
-	mat4 model;
-	vec4 color;
-	vec2 resolution;
-	int type;
+    mat4 model;
+    vec4 color;
+    vec2 resolution;
+    int type;
 
 };
 
 //all object matrices
-layout(std140,set = 0, binding = 0) readonly buffer ObjectBuffer{
-	ObjectData objects[];
+layout(std140, set = 0, binding = 0) readonly buffer ObjectBuffer{
+    ObjectData objects[];
 } objectBuffer;
 
-layout (set = 0, binding = 1) uniform UboInstance 
+layout (set = 0, binding = 1) uniform UboInstance
 {
-	mat4 perspective;
-	mat4 view;
+    mat4 perspective;
+    mat4 view;
 
 } uboInstance;
 
@@ -40,25 +41,27 @@ layout (location = 3) out vec4 outColor0;
 layout (location = 4) out vec4 outColor1;
 layout (location = 5) out int outType;
 layout (location = 6) out vec2 outResolution;
+layout (location = 7) out uint outHasTexture;
 
-void main() 
-{	
-	uint instanceIndex = PushConstants.instanceIndex;
+void main()
+{
+    uint instanceIndex = PushConstants.instanceIndex;
 
-	// Colors
-	outColor0 = inColor0;
-	outColor1 = objectBuffer.objects[instanceIndex].color;
+    // Colors
+    outColor0 = inColor0;
+    outColor1 = objectBuffer.objects[instanceIndex].color;
 
-	// UV
-	outUV0 = inUV0;
+    // UV
+    outUV0 = inUV0;
 
-	// Normals
-	outNormal = inNormal;
+    // Normals
+    outNormal = inNormal;
 
-	outType = objectBuffer.objects[instanceIndex].type;
-	outResolution = objectBuffer.objects[instanceIndex].resolution;
+    outType = objectBuffer.objects[instanceIndex].type;
+    outResolution = objectBuffer.objects[instanceIndex].resolution;
+    outHasTexture = PushConstants.hasTexture;
 
-	mat4 modelMatrix = objectBuffer.objects[instanceIndex].model;
+    mat4 modelMatrix = objectBuffer.objects[instanceIndex].model;
 
-	gl_Position =  uboInstance.perspective * uboInstance.view * modelMatrix * vec4(inPos, 1.0);
+    gl_Position =  uboInstance.perspective * uboInstance.view * modelMatrix * vec4(inPos, 1.0);
 }

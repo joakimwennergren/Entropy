@@ -124,8 +124,7 @@ void VulkanRenderer::Render(int width, int height,
             _staticPipeline->GetPipelineLayout(), 0, 1, &ds0, 0, nullptr);
 
         if (e.has<Components::HasTexture>()) {
-            auto texture = e.get<Components::HasTexture>();
-
+            const auto texture = e.get<Components::HasTexture>();
             vkCmdBindDescriptorSets(_commandBuffers[_currentFrame].Get(),
                                     VK_PIPELINE_BIND_POINT_GRAPHICS,
                                     _staticPipeline->GetPipelineLayout(), 1, 1,
@@ -149,6 +148,7 @@ void VulkanRenderer::Render(int width, int height,
 
         PushConstBlock constants{};
         constants.instanceIndex = render_component->id - 1;
+        constants.hasTexture = 0;
 
         // upload the matrix to the GPU via push constants
         vkCmdPushConstants(_commandBuffers[_currentFrame].Get(),

@@ -69,6 +69,10 @@ namespace Entropy::Graphics::Vulkan::Textures {
 
             imageView = std::make_shared<ImageView>(_textureImage, colorFormat);
 
+            BindDescriptorSet(false);
+        }
+
+        void BindDescriptorSet(bool empty) {
             VkPhysicalDeviceProperties properties{};
             vkGetPhysicalDeviceProperties(_physicalDevice->Get(), &properties);
 
@@ -94,6 +98,16 @@ namespace Entropy::Graphics::Vulkan::Textures {
             VK_CHECK(vkCreateSampler(_logicalDevice->Get(), &samplerInfo, nullptr,
                 &textureSampler));
 
+            const std::vector<VkDescriptorBindingFlags> bindingFlags = {
+                VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT
+            };
+
+            VkDescriptorSetLayoutBindingFlagsCreateInfo bindingFlagsInfo = {};
+            bindingFlagsInfo.sType =
+                    VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO_EXT;
+            bindingFlagsInfo.bindingCount = bindingFlags.size();
+            bindingFlagsInfo.pBindingFlags = bindingFlags.data();
+
             VkDescriptorSetLayoutBinding samplerLayoutBinding{};
             samplerLayoutBinding.binding = 2;
             samplerLayoutBinding.descriptorCount = 1;
@@ -102,6 +116,7 @@ namespace Entropy::Graphics::Vulkan::Textures {
             samplerLayoutBinding.pImmutableSamplers = nullptr;
             samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
+
             std::array<VkDescriptorSetLayoutBinding, 1> bindings = {
                 samplerLayoutBinding
             };
@@ -109,11 +124,12 @@ namespace Entropy::Graphics::Vulkan::Textures {
             layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
             layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
             layoutInfo.pBindings = bindings.data();
+            layoutInfo.pNext = &bindingFlagsInfo;
 
             VK_CHECK(vkCreateDescriptorSetLayout(_logicalDevice->Get(), &layoutInfo,
                 nullptr, &_descriptorSetLayout));
 
-            std::vector layouts(1, _descriptorSetLayout);
+            const std::vector layouts(1, _descriptorSetLayout);
 
             VkDescriptorSetAllocateInfo allocInfo{};
             allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -128,7 +144,7 @@ namespace Entropy::Graphics::Vulkan::Textures {
 
             VkDescriptorImageInfo imageInfo{};
             imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            imageInfo.imageView = imageView->Get();
+            imageInfo.imageView = empty ? nullptr : imageView->Get();
             imageInfo.sampler = textureSampler;
 
             descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;

@@ -50,10 +50,10 @@ namespace Entropy::Graphics::Vulkan::Devices {
       deviceFeatures.samplerAnisotropy = VK_TRUE;
       deviceFeatures.fillModeNonSolid = VK_TRUE;
 
-      // Enable all features: just pass the physical features 2 struct.
-      VkPhysicalDeviceDescriptorIndexingFeaturesEXT indexingFeatures = {};
+      VkPhysicalDeviceDescriptorIndexingFeatures indexingFeatures = {};
       indexingFeatures.sType =
-          VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT;
+          VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
+      //indexingFeatures.descriptorBindingUpdateUnusedWhilePending = VK_TRUE;
       // indexingFeatures.runtimeDescriptorArray = VK_TRUE;
       // indexingFeatures.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
       indexingFeatures.descriptorBindingPartiallyBound = VK_TRUE;

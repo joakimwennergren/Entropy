@@ -18,7 +18,7 @@ namespace Entropy::Graphics::Vulkan::DescriptorSetLayouts {
       const ServiceLocator *sl = ServiceLocator::GetInstance();
       const auto logicalDevice = sl->getService<ILogicalDevice>();
 
-      VkDescriptorSetLayoutBindingFlagsCreateInfoEXT bindingFlagsInfo = {};
+      VkDescriptorSetLayoutBindingFlagsCreateInfo bindingFlagsInfo = {};
       bindingFlagsInfo.sType =
           VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO_EXT;
       bindingFlagsInfo.bindingCount = bindingFlags.size();

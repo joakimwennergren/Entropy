@@ -1,7 +1,7 @@
 #pragma once
 
-#include "filesystem/filesystem.hpp"
-#include "graphics/vulkan/pipelinecaches/pipelinecache.hpp"
+#include <filesystem/filesystem.hpp>
+#include <graphics/vulkan/pipelinecaches/pipelinecache.hpp>
 #include <graphics/vulkan/pipelines/pipeline.hpp>
 
 namespace Entropy::Graphics::Vulkan::Pipelines {
@@ -14,7 +14,7 @@ namespace Entropy::Graphics::Vulkan::Pipelines {
          */
         explicit StaticPipeline(const std::shared_ptr<RenderPass> &renderPass)
             : Pipeline(renderPass) {
-            auto dsLayouts = CreateDescriptorSets();
+            const auto dsLayouts = CreateDescriptorSets();
             _shader = std::make_shared<Shader>(GetShadersDir() + "static_vert.spv",
                                                GetShadersDir() + "static_frag.spv");
             Build(_shader, dsLayouts);
@@ -61,10 +61,10 @@ namespace Entropy::Graphics::Vulkan::Pipelines {
                 samplerLayoutBinding
             };
 
-            const std::vector<VkDescriptorBindingFlagsEXT> bindingFlags0 = {};
+            const std::vector<VkDescriptorBindingFlags> bindingFlags0 = {};
 
-            const std::vector<VkDescriptorBindingFlagsEXT> bindingFlags1 = {
-                // VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT_EXT, // For binding 0
+            const std::vector<VkDescriptorBindingFlags> bindingFlags1 = {
+                VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT
             };
 
             const auto descriptorSetLayout0 = DescriptorSetLayout(bindings, bindingFlags0);

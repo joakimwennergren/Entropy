@@ -13,60 +13,72 @@ using namespace Entropy::Graphics::Vulkan::DescriptorPools;
 using namespace Entropy::Data;
 
 namespace Entropy {
-namespace Graphics {
-namespace Primitives {
-struct Quad {
-public:
-  Quad() {
-    texture =
-        std::make_shared<Texture>(Filesystem::GetSpritesDir() + "_blank.png");
-    vertexBuffer = std::make_shared<VertexBuffer>(this->vertices);
-    indexBuffer = std::make_shared<IndexBuffer<uint16_t>>(indices);
-  }
-  Quad(std::vector<Vertex> v) {
-    texture =
-        std::make_shared<Texture>(Filesystem::GetSpritesDir() + "_blank.png");
-    vertexBuffer = std::make_shared<VertexBuffer>(v);
-    indexBuffer = std::make_shared<IndexBuffer<uint16_t>>(indices);
-  }
-  std::shared_ptr<IndexBuffer<uint16_t>> indexBuffer;
-  std::shared_ptr<VertexBuffer> vertexBuffer;
-  std::vector<Vertex> vertices = {{{-1.0f, -1.0f, 0.0f},
-                                   {1.0f, 1.0f, 1.0f},
-                                   {1.0f, 0.0f},
-                                   {0.0, 0.0},
-                                   {0.0, 0.0, 0.0, 0.0},
-                                   {0.0, 0.0, 0.0, 0.0},
-                                   {0.0, 1.0, 0.0, 0.0}},
-                                  {{1.0f, -1.0f, 0.0f},
-                                   {1.0f, 1.0f, 1.0f},
-                                   {0.0f, 0.0f},
-                                   {0.0, 0.0},
-                                   {0.0, 0.0, 0.0, 0.0},
-                                   {0.0, 0.0, 0.0, 0.0},
-                                   {0.0, 1.0, 0.0, 0.0}},
-                                  {{1.0f, 1.0f, 0.0f},
-                                   {1.0f, 1.0f, 1.0f},
-                                   {0.0f, 1.0f},
-                                   {0.0, 0.0},
-                                   {0.0, 0.0, 0.0, 0.0},
-                                   {0.0, 0.0, 0.0, 0.0},
-                                   {0.0, 1.0, 0.0, 0.0}},
-                                  {{-1.0f, 1.0f, 0.0f},
-                                   {1.0f, 1.0f, 1.0f},
-                                   {1.0f, 1.0f},
-                                   {0.0, 0.0},
-                                   {0.0, 0.0, 0.0, 0.0},
-                                   {0.0, 0.0, 0.0, 0.0},
-                                   {0.0, 1.0, 0.0, 0.0}}};
-  // Indices for the two triangles that make up the quad
-  std::vector<uint16_t> indices = {
-      0, 1, 2, // First triangle
-      2, 3, 0  // Second triangle
-  };
+    namespace Graphics {
+        namespace Primitives {
+            struct Quad {
+            public:
+                Quad() {
+                    texture =
+                            std::make_shared<Texture>(Filesystem::GetSpritesDir() + "_blank.png");
+                    vertexBuffer = std::make_shared<VertexBuffer>(this->vertices);
+                    indexBuffer = std::make_shared<IndexBuffer<uint16_t> >(indices);
+                }
 
-  std::shared_ptr<Texture> texture;
-};
-} // namespace Primitives
-} // namespace Graphics
+                explicit Quad(std::vector<Vertex> v) {
+                    texture =
+                            std::make_shared<Texture>(Filesystem::GetSpritesDir() + "_blank.png");
+                    vertexBuffer = std::make_shared<VertexBuffer>(v);
+                    indexBuffer = std::make_shared<IndexBuffer<uint16_t> >(indices);
+                }
+
+                std::shared_ptr<IndexBuffer<uint16_t> > indexBuffer;
+                std::shared_ptr<VertexBuffer> vertexBuffer;
+                std::vector<Vertex> vertices = {
+                    {
+                        {-1.0f, -1.0f, 0.0f},
+                        {1.0f, 1.0f, 1.0f},
+                        {1.0f, 0.0f},
+                        {0.0, 0.0},
+                        {0.0, 0.0, 0.0, 0.0},
+                        {0.0, 0.0, 0.0, 0.0},
+                        {0.0, 1.0, 0.0, 0.0}
+                    },
+                    {
+                        {1.0f, -1.0f, 0.0f},
+                        {1.0f, 1.0f, 1.0f},
+                        {0.0f, 0.0f},
+                        {0.0, 0.0},
+                        {0.0, 0.0, 0.0, 0.0},
+                        {0.0, 0.0, 0.0, 0.0},
+                        {0.0, 1.0, 0.0, 0.0}
+                    },
+                    {
+                        {1.0f, 1.0f, 0.0f},
+                        {1.0f, 1.0f, 1.0f},
+                        {0.0f, 1.0f},
+                        {0.0, 0.0},
+                        {0.0, 0.0, 0.0, 0.0},
+                        {0.0, 0.0, 0.0, 0.0},
+                        {0.0, 1.0, 0.0, 0.0}
+                    },
+                    {
+                        {-1.0f, 1.0f, 0.0f},
+                        {1.0f, 1.0f, 1.0f},
+                        {1.0f, 1.0f},
+                        {0.0, 0.0},
+                        {0.0, 0.0, 0.0, 0.0},
+                        {0.0, 0.0, 0.0, 0.0},
+                        {0.0, 1.0, 0.0, 0.0}
+                    }
+                };
+                // Indices for the two triangles that make up the quad
+                std::vector<uint16_t> indices = {
+                    0, 1, 2, // First triangle
+                    2, 3, 0 // Second triangle
+                };
+
+                std::shared_ptr<Texture> texture;
+            };
+        } // namespace Primitives
+    } // namespace Graphics
 } // namespace Entropy
