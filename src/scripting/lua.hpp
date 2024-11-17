@@ -11,7 +11,7 @@
 #include <physics/2d/physics2d.hpp>
 #include <config.hpp>
 
-// Bound entities
+
 #include <gltf/model.hpp>
 #include <cameras/orthographic_camera.hpp>
 #include <ecs/components/model.hpp>
@@ -45,6 +45,7 @@ namespace Entropy::Scripting {
       const ServiceLocator *sl = ServiceLocator::GetInstance();
       _world = sl->getService<IWorld>();
       _physics2d = sl->getService<IPhysics2D>();
+      _cameraManager = sl->getService<ICameraManager>();
 
       _lua.open_libraries(sol::lib::base, sol::lib::table, sol::lib::math,
                           sol::lib::string, sol::lib::io, sol::lib::os, sol::lib::package);
@@ -82,18 +83,6 @@ namespace Entropy::Scripting {
       //   return vec;
       // });
 
-      //   _lua->set_function("easeInOutCubic", [](float time)
-      //                      { return
-      //                      Animation::EasingFunctions::easeInBounce(time); });
-
-      //   _lua->set_function("random_float", [](float min, float max) -> float
-      //                      { return min + static_cast<float>(rand()) /
-      //                                         (static_cast<float>(RAND_MAX /
-      //                                         (max - min))); });
-
-      //   _lua->set_function("random_int", [](int min, int max) -> int
-      //                      { return rand() % (max - min + 1) + min; });
-
       // _lua->set_function("include", [this](std::string path) {
       //   _lua->do_file(GetProjectBasePath() + path);
       // });
@@ -105,25 +94,6 @@ namespace Entropy::Scripting {
       //     _cameraManager.currentCamera);
       // orthoCamera->setPosition(glm::vec3{x, y, 0.0}); });
 
-      // _lua->set_function(
-      //     "create_dynamic_body", [this](float x, float y, float w, float h) {
-      //       auto dynBody = _physics2d->CreateDynamicBody(x, y, w, h);
-      //       return dynBody;
-      //     });
-
-      //   _lua->set_function("create_vec2", [this](float x, float y) -> b2Vec2 *
-      //                      {
-      // auto vec = new b2Vec2();
-      // vec->x = x;
-      // vec->y = y;
-      // return vec; });
-
-      //   _lua->set_function("create_sensor_body", [this](float x, float y, float
-      //   w,
-      //                                                   float h, b2Vec2 *pos)
-      //                      {
-      // auto dynBody = _physics2d.CreateSensorBody(x, y, w, h, pos);
-      // return dynBody; });
 
       // _lua->set_function("delete_dynamic_body", [this](b2Body *body) {
       //   _physics2d->Get()->DestroyBody(body);
@@ -144,12 +114,6 @@ namespace Entropy::Scripting {
       // _lua->set_function("get_dynbody_linear_velocity", [this](b2Body *body) {
       //   return body->GetLinearVelocity();
       // });
-
-      // _lua->set_function("create_static_body",
-      //                    [this](float x, float y, float w, float h) {
-      //                      auto dynBody = _physics2d->CreateGround(x, y, w, h);
-      //                      return dynBody;
-      //                    });
     }
 
     // inline bool ExecuteScript(std::string script, std::string scriptFile,
@@ -170,6 +134,7 @@ namespace Entropy::Scripting {
     //     spdlog::error(msg);
     //   }
     // }
+
 
     void BindTypes() {
       _lua.new_usertype<b2BodyId>("b2BodyId");
@@ -241,7 +206,8 @@ namespace Entropy::Scripting {
       _lua["Translate"] = [this](const flecs::entity entity, const float x,
                                  const float y, const float z) {
         if (const auto position = entity.get_mut<Position>(); position != nullptr) {
-          position->pos = glm::vec3(x / PPM, y / PPM, z);
+          const float ppm = _cameraManager->currentCamera->PPM;
+          position->pos = glm::vec3(x / ppm, y / ppm, z);
         }
       };
 
@@ -256,7 +222,8 @@ namespace Entropy::Scripting {
       _lua["Scale"] = [this](const flecs::entity entity, const float x,
                              const float y, const float z) {
         if (const auto scale = entity.get_mut<Scale>(); scale != nullptr) {
-          scale->scale = glm::vec3(x / PPM, y / PPM, z / PPM);
+          const float ppm = _cameraManager->currentCamera->PPM;
+          scale->scale = glm::vec3(x / ppm, y / ppm, z / ppm);
         }
       };
 
@@ -286,15 +253,15 @@ namespace Entropy::Scripting {
       };
     }
 
-
     sol::state *Get() override { return &_lua; }
 
+  private:
     // Lua state
     sol::state _lua;
-    const float PPM = 100.0f; // Pixels Per Meter
 
     // Dependencies
     std::shared_ptr<IWorld> _world;
     std::shared_ptr<IPhysics2D> _physics2d;
+    std::shared_ptr<ICameraManager> _cameraManager;
   };
 }

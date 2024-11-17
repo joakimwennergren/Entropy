@@ -6,7 +6,6 @@
 #include "vulkan/vulkan_core.h"
 #include <graphics/primitives/primitives.hpp>
 
-
 using namespace Entropy::EntryPoints;
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) ||                    \
@@ -35,13 +34,13 @@ Application::Application() {
   // Bind window callbacks
   glfwSetWindowUserPointer(_window, this);
   glfwSetFramebufferSizeCallback(_window, framebuffer_resize_callback);
-  glfwSetMouseButtonCallback(_window, mouse_button_callback);
+  glfwSetMouseButtonCallback(_window, MouseButtonCallback);
   glfwSetKeyCallback(_window, keyCallback);
   glfwSetCursorPosCallback(_window, cursor_position_callback);
   glfwSetCharCallback(_window, character_callback);
-  glfwSetScrollCallback(_window, scroll_callback);
-  glfwSetWindowIconifyCallback(_window, window_iconify_callback);
-  glfwSetWindowContentScaleCallback(_window, window_content_scale_callback);
+  glfwSetScrollCallback(_window, ScrollCallback);
+  glfwSetWindowIconifyCallback(_window, WindowIconifyCallback);
+  glfwSetWindowContentScaleCallback(_window, WindowContentScaleCallback);
 
   // Create 1ms Timer
   _timer = std::make_unique<Timer>(1.0);
@@ -97,14 +96,14 @@ Application::~Application() {
   glfwTerminate();
 }
 
-glm::vec2 convertToNDC(float mouseX, float mouseY, float windowWidth,
+glm::vec2 convertToNDC(const float mouseX, float mouseY, float windowWidth,
                        float windowHeight) {
   // Convert from [0, windowWidth] to [-1, 1] for X
   float ndcX = (mouseX / windowWidth) * 2.0f - 1.0f;
   // Convert from [0, windowHeight] to [-1, 1] for Y, but flip Y because
   // Vulkan's Y is inverted
   float ndcY = 1.0f - (mouseY / windowHeight) * 2.0f;
-  return glm::vec2(ndcX, ndcY);
+  return {ndcX, ndcY};
 }
 
 glm::vec2 convertMouseToWorld(float mouseX, float mouseY, float windowWidth,
@@ -141,9 +140,9 @@ glm::vec2 convertMouseToWorld(float mouseX, float mouseY, float windowWidth,
   return glm::vec2(mouseWorld.x, mouseWorld.y);
 }
 
-glm::vec2 convertWorldToScreen(glm::vec2 worldCoords, int width, int height) {
-  glm::mat4 perspective = glm::ortho(
-    0.0f, (float) width / 100.0f, (float) height / 100.0f, 0.0f, 0.1f, 256.0f);
+glm::vec2 convertWorldToScreen(const glm::vec2 worldCoords, const int width, const int height) {
+  const glm::mat4 perspective = glm::ortho(
+    0.0f, static_cast<float>(width) / 100.0f, static_cast<float>(height) / 100.0f, 0.0f, 0.1f, 256.0f);
   // Convert world coordinates to homogeneous clip space
   glm::vec4 clipSpaceCoords = perspective * glm::vec4(worldCoords, 0.0f, 1.0f);
 
@@ -157,7 +156,7 @@ glm::vec2 convertWorldToScreen(glm::vec2 worldCoords, int width, int height) {
   float ndcY =
       (1.0f - (clipSpaceCoords.y + 1.0f) * 0.5f) * height; // Y is inverted
 
-  return glm::vec2(ndcX, ndcY);
+  return {ndcX, ndcY};
 }
 
 struct RGBA8 {
@@ -165,31 +164,66 @@ struct RGBA8 {
 };
 
 RGBA8 MakeRGBA8(b2HexColor c, float alpha) {
-  return {uint8_t((c >> 16) & 0xFF), uint8_t((c >> 8) & 0xFF), uint8_t(c & 0xFF), uint8_t(0xFF * alpha)};
+  return {
+    static_cast<uint8_t>((c >> 16) & 0xFF), static_cast<uint8_t>((c >> 8) & 0xFF), static_cast<uint8_t>(c & 0xFF),
+    static_cast<uint8_t>(0xFF * alpha)
+  };
 }
 
-/// Draw a solid closed polygon provided in CCW order.
-void DrawSolidPolygon(b2Transform transform, const b2Vec2 *vertices, int vertexCount, float radius,
-                      b2HexColor color,
-                      void *context) {
-  std::vector<Vertex> entropyVertices;
+// Helper function to generate a unique hash for the polygon
+size_t GeneratePolygonHash(const b2Vec2 *vertices, int vertexCount) {
+  size_t hash = 0;
+
+
   for (int i = 0; i < vertexCount; i++) {
-    Vertex vertex{};
-    vertex.position.x = vertices[i].x;
-    vertex.position.y = vertices[i].y;
-    entropyVertices.push_back(vertex);
-  }
-  if (const auto app = static_cast<Application *>(context); app != nullptr) {
-    app->vertices = entropyVertices;
+    const size_t prime = 31;
+    // Combine x and y coordinates using bitwise operations and primes
+    hash = hash * prime + std::hash<float>()(vertices[i].x);
+    hash = hash * prime + std::hash<float>()(vertices[i].y);
   }
 
+  return hash;
+}
+
+void DrawSolidPolygon(b2Transform transform, const b2Vec2 *vertices, int vertexCount, float radius,
+                      b2HexColor color, void *context) {
   /*
-  const auto poly = PrimitiveFactory::CreateQuadFromVertices(entropyVertices);
-  if (const auto position = poly.get_mut<Position>(); position != nullptr) {
-    position->pos = glm::vec3(transform.p.x / 100.0f, transform.p.y / 100.0f, 0.0f);
+  const auto app = static_cast<Application *>(context);
+
+  const ServiceLocator *sl = ServiceLocator::GetInstance();
+  const auto world = sl->getService<IWorld>();
+
+  app->physics2dindex = (app->physics2dindex + 1) % world->Get()->count<DynamicBodyComponent>();
+
+  // Generate a unique key for each polygon using app->physics2dindex and a hash of the vertices
+  size_t polygonKey = GeneratePolygonHash(vertices, vertexCount); // Unique per polygon shape
+  polygonKey += app->physics2dindex;
+  std::cout << "Generated Polygon Key: " << polygonKey << std::endl; // Debugging output
+
+
+  // Check if an entity for this polygon already exists
+  flecs::entity polyEntity;
+  if (app->entityMap.find(polygonKey) == app->entityMap.end()) {
+    // Create a new entity for this polygon
+    std::vector<Vertex> entropyVertices;
+    for (int i = 0; i < vertexCount; i++) {
+      Vertex vertex{};
+      vertex.position.x = vertices[i].x;
+      vertex.position.y = vertices[i].y;
+      entropyVertices.push_back(vertex);
+    }
+
+    polyEntity = PrimitiveFactory::CreateQuadFromVertices(entropyVertices);
+
+    app->entityMap[polygonKey] = polyEntity; // Store the entity in the map
+  } else {
+    // Retrieve the existing entity for this polygon
+    polyEntity = app->entityMap[polygonKey];
   }
-  if (const auto app = static_cast<Application *>(context); app != nullptr) {
-    app->entities.push_back(poly);
+
+  // Update the entity's position (transform)
+  if (auto position = polyEntity.get_mut<Position>()) {
+    position->pos = glm::vec3(transform.p.x / 100.0f, transform.p.y / 100.0f, 0.0f);
   }
   */
 }
@@ -208,7 +242,6 @@ void Application::Run() {
   debug2DDrawer->drawShapes = true;
   debug2DDrawer->DrawSolidPolygon = DrawSolidPolygon;
   debug2DDrawer->context = this;
-
 
   std::vector<flecs::entity> lines;
   std::vector<flecs::entity> grid;
@@ -238,23 +271,11 @@ void Application::Run() {
     }
 
     glfwPollEvents();
-    if (!vertices.empty()) {
-      const auto poly = PrimitiveFactory::CreateQuadFromVertices(vertices);
-      if (const auto position = poly.get_mut<Position>(); position != nullptr) {
-        position->pos = glm::vec3(100 / 100.0f, 100 / 100.0f, 0.0f);
-      }
-    }
-
 
     constexpr float timeStep = 1.0f / 60.0f;
     constexpr int subStepCount = 4;
     b2World_Step(physics2d->Get(), timeStep, subStepCount);
     b2World_Draw(physics2d->Get(), debug2DDrawer);
-
-    //
-    //  this->_renderer->Render(width * xscale, height * yscale, xscale,
-    //  yscale);
-    //   On render
 
     // Increment current frame
 
@@ -262,28 +283,6 @@ void Application::Run() {
     //   glfwSetWindowShouldClose(_window, true);
 
     /*
-    if (io.MouseDown[2] || io.MouseDown[1]) {
-      float speed = 0.1;
-      if (ImGui::IsKeyDown(ImGuiKey_LeftShift)) {
-        speed = 0.8;
-      }
-      if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS)
-        _camera->ProcessKeyboard(FORWARD, speed);
-      if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS)
-        _camera->ProcessKeyboard(BACKWARD, speed);
-      if (glfwGetKey(_window, GLFW_KEY_A) == GLFW_PRESS)
-        _camera->ProcessKeyboard(LEFT, speed);
-      if (glfwGetKey(_window, GLFW_KEY_D) == GLFW_PRESS)
-        _camera->ProcessKeyboard(RIGHT, speed);
-    }
-    */
-
-    //     float timeStep = 1.0f / 60.0f;
-    // int32 velocityIterations = 6;
-    // int32 positionIterations = 2;
-
-    /*
-    // physics2d->world->Step(timeStep, velocityIterations, positionIterations);
     physics3d->GetWorld()->stepSimulation(
         1.0f /
         60.0f); // Example: step the simulation with a time step of 1/60 seconds
@@ -322,14 +321,12 @@ void character_callback(GLFWwindow *window, unsigned int codepoint) {
 
 void cursor_position_callback(GLFWwindow *window, double xposIn,
                               double yposIn) {
-  auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
-
-  if (app == nullptr) {
+  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app == nullptr) {
     return;
   }
 
-  float xpos = static_cast<float>(xposIn);
-  float ypos = static_cast<float>(yposIn);
+  auto xpos = static_cast<float>(xposIn);
+  auto ypos = static_cast<float>(yposIn);
 
   /*
 
@@ -354,20 +351,18 @@ void cursor_position_callback(GLFWwindow *window, double xposIn,
   // app->_camera->ProcessMouseMovement(xoffset, yoffset);
 }
 
-void framebuffer_resize_callback(GLFWwindow *window, int width, int height) {
-  auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
-  if (app != nullptr) {
+void framebuffer_resize_callback(GLFWwindow *window, const int width, const int height) {
+  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr) {
     app->needResize = true;
-
-    // Update current resolution
     app->screen_width = width;
     app->screen_height = height;
   }
 }
 
-void mouse_button_callback(GLFWwindow *window, int button, int action,
-                           int mods) {
-  auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
+void MouseButtonCallback(GLFWwindow *window, int button, int action,
+                         int mods) {
+  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr) {
+  }
 
   /*
 if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
@@ -382,27 +377,29 @@ if (button == GLFW_MOUSE_BUTTON_LEFT && action != GLFW_PRESS)
   //   io.MouseDown[2] = false;
 }
 
-void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
-  auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
-  // app->_camera->ProcessMouseScroll((float)yoffset);
-}
-
-void window_iconify_callback(GLFWwindow *window, int iconified) {
-  auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
-
-  if (iconified) {
-    //app->isMinimized = true;
-  } else {
-    //app->isMinimized = false;
+void ScrollCallback(GLFWwindow *window, double xoffset, double yoffset) {
+  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr) {
+    app->scrollX = static_cast<float>(xoffset);
+    app->scrollY = static_cast<float>(yoffset);
   }
 }
 
-void window_content_scale_callback(GLFWwindow *window, float xscale,
-                                   float yscale) {
-  auto app = reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
+void WindowIconifyCallback(GLFWwindow *window, const int iconified) {
+  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr) {
+    if (iconified) {
+      app->isMinimized = true;
+    } else {
+      app->isMinimized = false;
+    }
+  }
+}
 
-  app->xscale = xscale;
-  app->yscale = yscale;
+void WindowContentScaleCallback(GLFWwindow *window, const float xscale,
+                                const float yscale) {
+  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr) {
+    app->xscale = xscale;
+    app->yscale = yscale;
+  }
 }
 
 #endif

@@ -17,6 +17,8 @@
 #include <ecs/components/color.hpp>
 #include <ecs/components/hasTexture.hpp>
 
+#include "ecs/components/tags/dynamicbody.h"
+
 using namespace Entropy::Components;
 using namespace Entropy::Graphics::Primitives;
 using namespace Entropy::ECS;
@@ -102,6 +104,7 @@ namespace Entropy::Graphics::Primitives {
             e.set<Scale>({glm::vec3(1.0, 1.0, 1.0)});
             e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
             e.set<QuadComponent>({quad});
+            e.set<DynamicBodyComponent>({true});
             auto renderable = Renderable();
             renderable.visible = true;
             renderable.id = id;

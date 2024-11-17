@@ -43,8 +43,8 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action,
  * camera movement or object dragging.
  *
  * @param window The GLFW window in which the cursor position event occurred.
- * @param xposIn The new x-coordinate of the cursor.
- * @param yposIn The new y-coordinate of the cursor.
+ * @param xpos The new x-coordinate of the cursor.
+ * @param ypos The new y-coordinate of the cursor.
  */
 void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
 
@@ -69,8 +69,8 @@ void window_refresh_callback(GLFWwindow *window);
  * @param action Indicates whether the button was pressed or released.
  * @param mods Bitfield describing which modifier keys were held down.
  */
-void mouse_button_callback(GLFWwindow *window, int button, int action,
-                           int mods);
+void MouseButtonCallback(GLFWwindow *window, int button, int action,
+                         int mods);
 
 /**
  * Callback function for handling Unicode character input events.
@@ -87,7 +87,7 @@ void character_callback(GLFWwindow *window, unsigned int codepoint);
  * @param xoffset The scroll offset along the x-axis.
  * @param yoffset The scroll offset along the y-axis.
  */
-void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
+void ScrollCallback(GLFWwindow *window, double xoffset, double yoffset);
 
 /**
  * Callback function called when a GLFW window is iconified or restored.
@@ -95,7 +95,7 @@ void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
  * @param window A pointer to the GLFW window that received the event.
  * @param iconified A flag indicating whether the window was iconified (1) or restored (0).
  */
-void window_iconify_callback(GLFWwindow *window, int iconified);
+void WindowIconifyCallback(GLFWwindow *window, int iconified);
 
 /**
  * Callback function for handling changes in the content scale of a specified window.
@@ -106,8 +106,8 @@ void window_iconify_callback(GLFWwindow *window, int iconified);
  * @param xscale The new x-axis content scale of the window.
  * @param yscale The new y-axis content scale of the window.
  */
-void window_content_scale_callback(GLFWwindow *window, float xscale,
-                                   float yscale);
+void WindowContentScaleCallback(GLFWwindow *window, float xscale,
+                                float yscale);
 
 namespace Entropy::EntryPoints {
  class Application {
@@ -168,6 +168,10 @@ namespace Entropy::EntryPoints {
    */
   void Run();
 
+  float scrollX = 0.0f;
+
+  float scrollY = 0.0f;
+
   /**
    * Scaling factor along the x-axis.
    *
@@ -217,9 +221,9 @@ namespace Entropy::EntryPoints {
    */
   bool isMinimized = false;
 
-  std::vector<flecs::entity> entities;
+  std::unordered_map<uint32_t, flecs::entity> entityMap;
 
-  std::vector<Vertex> vertices;
+  uint32_t physics2dindex = 0;
 
   /**
    * Unique pointer to the VulkanRenderer instance.

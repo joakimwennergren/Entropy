@@ -44,5 +44,3 @@ namespace Entropy::Graphics::Primitives {
     std::shared_ptr<IndexBuffer<uint16_t> > indexBuffer;
   };
 } // namespace Entropy::Graphics::Primitives
-
-

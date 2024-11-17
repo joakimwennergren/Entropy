@@ -4,13 +4,8 @@
 
 using namespace Entropy::Graphics::Primitives;
 
-namespace Entropy
-{
-    namespace Components
-    {
-        struct Color
-        {
-            glm::vec4 color;
-        };
-    }
+namespace Entropy::Components {
+    struct Color {
+        glm::vec4 color;
+    };
 }
