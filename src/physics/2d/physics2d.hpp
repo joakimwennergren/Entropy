@@ -1,80 +1,102 @@
 #pragma once
 
-#include <vulkan/vulkan.hpp>
-#include <servicelocators/servicelocator.hpp>
-// #include <box2d/box2d.h>
+#include <box2d/box2d.h>
+#include <cameras/icamera_manger.hpp>
+#include <flecs.h>
 
-#include <iostream>
+#include "iphysics2d.hpp"
 
-#include "spdlog/spdlog.h"
-#include <glm/glm.hpp>
+namespace Entropy::Physics {
+    /**
+     * @brief Initializes the Physics2D system.
+     *
+     * This constructor sets up the necessary services and initializes the Box2D physics world
+     * with a default world definition which includes setting the gravity.
+     *
+     * The ServiceLocator is used to retrieve necessary services such as the camera manager.
+     *
+     * Initializes the Box2D world object with a gravity vector of (0.0f, -10.0f).
+     */
+    struct Physics2D final : ServiceBase<IPhysics2D> {
+        /**
+         * @brief Initializes the Physics2D system.
+         *
+         * This constructor sets up the necessary services and initializes the Box2D physics world
+         * with a default world definition which includes setting the gravity.
+         *
+         * The ServiceLocator is used to retrieve necessary services such as the camera manager.
+         *
+         * Initializes the Box2D world object with a gravity vector of (0.0f, -10.0f).
+         */
+        Physics2D() {
+            const ServiceLocator *sl = ServiceLocator::GetInstance();
+            _cameraManager = sl->getService<ICameraManager>();
+            b2WorldDef worldDef = b2DefaultWorldDef();
+            worldDef.gravity = (b2Vec2){0.0f, -10.0f};
+            _world = b2CreateWorld(&worldDef);
+        }
 
-using namespace Entropy::ServiceLocators;
-using namespace Entropy::Services;
+        /**
+         * @brief Retrieves the identifier for the Box2D world.
+         *
+         * This method provides access to the internal id representing the current Box2D world.
+         *
+         * @return An identifier for the Box2D world.
+         */
+        b2WorldId Get() override { return _world; }
 
-namespace Entropy
-{
-    namespace Physics
-    {
-        class Physics2D : public Service
-        {
-        public:
-            Physics2D(std::shared_ptr<ServiceLocator> serviceLocator);
-
-            // inline b2Body *CreateBody(float x, float y)
-            //{
-            /*
-            b2BodyDef groundBodyDef;
-            groundBodyDef.position.Set(x, y);
-            b2Body *groundBody = world->CreateBody(&groundBodyDef);
-            b2PolygonShape groundBox;
-            groundBox.SetAsBox(50.0f, 10.0f);
-            groundBody->CreateFixture(&groundBox, 0.0f);
-            return groundBody;
-            */
-            //}
-
-            // inline b2Body *CreateDynamicBody()
-            // {
-            /*
-            b2BodyDef bodyDef;
-            bodyDef.type = b2_dynamicBody;
-            bodyDef.position.Set(0.0f, 4.0f);
-
-            b2Body *body = world->CreateBody(&bodyDef);
-            b2PolygonShape dynamicBox;
-            dynamicBox.SetAsBox(1.0f, 1.0f);
-
-            b2FixtureDef fixtureDef;
-            fixtureDef.shape = &dynamicBox;
-            fixtureDef.density = 1.0f;
-            fixtureDef.friction = 0.3f;
-            body->CreateFixture(&fixtureDef);
-
+        /**
+         * @brief Creates a kinematic body in the Box2D world.
+         *
+         * This method sets up a kinematic body at the specified position (x, y) with the given width (w)
+         * and height (h). The body and shape definitions are configured, and the body is added to the
+         * Box2D physics world.
+         *
+         * @param x X-coordinate for the position of the body.
+         * @param y Y-coordinate for the position of the body.
+         * @param w Width of the body.
+         * @param h Height of the body.
+         * @return The identifier of the created kinematic body.
+         */
+        b2BodyId CreateKinematicBody(const float x, const float y, const float w, const float h) override {
+            const float ppm = _cameraManager->currentCamera->PPM;
+            b2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.position = b2Vec2{x, y};
+            bodyDef.type = b2_kinematicBody;
+            const b2Polygon groundBox = b2MakeBox(w / ppm, h / ppm);
+            const b2BodyId body = b2CreateBody(_world, &bodyDef);
+            const b2ShapeDef groundShapeDef = b2DefaultShapeDef();
+            b2CreatePolygonShape(body, &groundShapeDef, &groundBox);
             return body;
-            */
-            //}
+        }
 
-            // b2World *world;
+        /**
+         * @brief Creates a dynamic body in the Box2D world.
+         *
+         * This method sets up a dynamic body at the specified position (x, y) with the given width (w)
+         * and height (h). The body and shape definitions are configured, and the body is added to the
+         * Box2D physics world.
+         *
+         * @param x X-coordinate for the position of the body.
+         * @param y Y-coordinate for the position of the body.
+         * @param w Width of the body.
+         * @param h Height of the body.
+         * @return The identifier of the created dynamic body.
+         */
+        b2BodyId CreateDynamicBody(const float x, const float y, const float w, const float h) override {
+            const float ppm = _cameraManager->currentCamera->PPM;
+            b2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.position = b2Vec2{x, y};
+            bodyDef.type = b2_dynamicBody;
+            const b2Polygon groundBox = b2MakeBox(w / ppm, h / ppm);
+            const b2BodyId body = b2CreateBody(_world, &bodyDef);
+            const b2ShapeDef groundShapeDef = b2DefaultShapeDef();
+            b2CreatePolygonShape(body, &groundShapeDef, &groundBox);
+            return body;
+        }
 
-        private:
-        };
-
-        class DynamicBody
-        {
-        public:
-            DynamicBody(std::shared_ptr<Physics2D> physics){
-                // body = physics->CreateDynamicBody();
-            };
-
-            float GetPosition()
-            {
-                // auto pos = body->GetPosition();
-                // return pos.y;
-                return 0.1;
-            }
-
-            // b2Body *body;
-        };
-    }
-}
+    private:
+        b2WorldId _world{};
+        std::shared_ptr<ICameraManager> _cameraManager;
+    };
+} // namespace Entropy::Physics

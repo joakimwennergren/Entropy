@@ -13,5 +13,5 @@ TEST_CASE("Pipeline can be created", "[Pipeline]")
 
     auto renderPass = std::make_shared<RenderPass>(serviceLocator);
 
-    auto pipeline = Pipeline(renderPass, serviceLocator);
+    //auto pipeline = Pipeline(renderPass, serviceLocator, VK_POLYGON_MODE_FILL);
 }

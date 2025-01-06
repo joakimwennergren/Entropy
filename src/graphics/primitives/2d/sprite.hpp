@@ -1,49 +1,46 @@
 #pragma once
 
+#include <cstdint>
+
+#include "graphics/vulkan/textures/texture.hpp"
 #ifdef BUILD_FOR_ANDROID
 #include <android/asset_manager.h>
 #endif
 
-#include <graphics/data/vertex.hpp>
-#include <graphics/textures/texture.hpp>
-#include <graphics/buffers/vertexbuffer.hpp>
-#include <renderables/renderable.hpp>
-#include <filesystem/filesystem.hpp>
+#include <data/vertex.hpp>
+#include <graphics/vulkan/buffers/indexbuffer.hpp>
+#include <graphics/vulkan/buffers/vertexbuffer.hpp>
+#include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
 #include <scripting/script.hpp>
 
-using namespace Entropy::Graphics::Textures;
-using namespace Entropy::Renderables;
+
+using namespace Entropy::Graphics::Vulkan::Textures;
+using namespace Entropy::Graphics::Vulkan::Buffers;
 using namespace Entropy::Scripting;
+using namespace Entropy::Graphics::Vulkan::DescriptorPools;
+using namespace Entropy::Data;
 
-namespace Entropy
-{
-    namespace Graphics
-    {
-        namespace Primitives
-        {
-            class Sprite : public Renderable
-            {
-            public:
-                Sprite();
-
-                ~Sprite();
-
-                void Test(){};
-
-                Sprite(std::shared_ptr<ServiceLocator> serviceLocator, FT_Bitmap bitmap);
-
-                Sprite(std::shared_ptr<ServiceLocator> serviceLocator, std::string path);
-#ifdef BUILD_FOR_ANDROID
-                Sprite(std::shared_ptr<ServiceLocator> serviceLocator, std::string path, AAssetManager *assetmanager);
-#endif
-                Sprite(unsigned char *pixels, int width, int height);
-
-                VkDescriptorSet _descriptorSet = VK_NULL_HANDLE;
-                VkDescriptorSetLayout _descriptorSetLayout = VK_NULL_HANDLE;
-
-            private:
-                void UpdateDescriptorSets();
-            };
-        }
+namespace Entropy::Graphics::Primitives {
+  struct Sprite {
+    explicit Sprite(const std::string &path) {
+      texture = std::make_shared<Texture>(path);
+      vertexBuffer = std::make_shared<VertexBuffer>(vertices);
+      indexBuffer = std::make_shared<IndexBuffer<uint16_t> >(indices);
     }
-}
+
+#ifdef BUILD_FOR_ANDROID
+  Sprite(std::string path, AAssetManager *assetmanager);
+#endif
+
+    std::vector<uint16_t> indices = {0, 1, 2, 2, 3, 0};
+    std::vector<Vertex> vertices = {
+      {{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+      {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
+      {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
+      {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}
+    };
+    std::shared_ptr<Texture> texture;
+    std::shared_ptr<VertexBuffer> vertexBuffer;
+    std::shared_ptr<IndexBuffer<uint16_t> > indexBuffer;
+  };
+} // namespace Entropy::Graphics::Primitives

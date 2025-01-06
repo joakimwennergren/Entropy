@@ -1,90 +1,76 @@
 #pragma once
 
-#include "config.hpp"
+#include <config.hpp>
 #include <filesystem>
 #include <string>
-#include <vector>
 
 #ifdef BUILD_FOR_IOS
 #include <CoreFoundation/CoreFoundation.h>
 #endif
 
-namespace Entropy
-{
-        namespace Filesystem
-        {
-                inline static std::string GetProjectBasePath()
-                {
-
+namespace Entropy::Filesystem {
+  static std::string GetProjectBasePath() {
 #ifdef BUILD_FOR_WINDOWS
-                        return ENGINE_BASEPATH;
+  return ENGINE_BASEPATH;
 #endif
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
-                        return ENGINE_BASEPATH;
+    return ENGINE_BASEPATH;
 #endif
 
 #ifdef BUILD_FOR_IOS
-                        CFURLRef resourceURL = CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
-                        char resourcePath[PATH_MAX];
-                        if (CFURLGetFileSystemRepresentation(resourceURL, true,
-                                                             (UInt8 *)resourcePath,
-                                                             PATH_MAX))
-                        {
-                                if (resourceURL != NULL)
-                                {
-                                        CFRelease(resourceURL);
-                                }
-                                return resourcePath;
-                        }
+  CFURLRef resourceURL =
+      CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
+  char resourcePath[PATH_MAX];
+  if (CFURLGetFileSystemRepresentation(resourceURL, true, (UInt8 *)resourcePath,
+                                       PATH_MAX)) {
+    if (resourceURL != NULL) {
+      CFRelease(resourceURL);
+    }
+    return resourcePath;
+  }
 #endif
 
-                        return "";
-                }
+    return "";
+  }
 
-                inline static std::string GetTexturesDir()
-                {
+  static std::string GetTexturesDir() {
 #ifdef BUILD_FOR_IOS
-                        return Filesystem::GetProjectBasePath() + "/";
+  return GetProjectBasePath() + "/";
 #else
-                        return Filesystem::GetProjectBasePath() + "/resources/textures/";
+    return GetProjectBasePath() + "/resources/textures/";
 #endif
-                }
+  }
 
-                inline static std::string GetScriptsDir()
-                {
+  static std::string GetScriptsDir() {
 #ifdef BUILD_FOR_IOS
-                        return Filesystem::GetProjectBasePath() + "/";
+  return GetProjectBasePath() + "/";
 #else
-                        return Filesystem::GetProjectBasePath() + "/resources/scripts/";
+    return GetProjectBasePath() + "/resources/scripts/";
 #endif
-                }
+  }
 
-                inline static std::string GetSpritesDir()
-                {
+  static std::string GetSpritesDir() {
 #ifdef BUILD_FOR_IOS
-                        return Filesystem::GetProjectBasePath() + "/";
+  return GetProjectBasePath() + "/";
 #else
-                        return Filesystem::GetProjectBasePath() + "/resources/sprites/";
+    return GetProjectBasePath() + "/resources/sprites/";
 #endif
-                }
+  }
 
-                inline static std::string GetShadersDir()
-                {
+  static std::string GetShadersDir() {
 #ifdef BUILD_FOR_IOS
-                        return Filesystem::GetProjectBasePath() + "/";
+  return GetProjectBasePath() + "/";
 #else
-                        return Filesystem::GetProjectBasePath() + "/shaders/basic/";
+    return GetProjectBasePath() + "/shaders/compiled/";
 #endif
-                }
+  }
 
-                inline static std::string GetFontsDir()
-                {
+  static std::string GetFontsDir() {
 #ifdef BUILD_FOR_IOS
-                        return Filesystem::GetProjectBasePath() + "/";
+  return GetProjectBasePath() + "/";
 #else
-                        return Filesystem::GetProjectBasePath() + "/resources/fonts/";
+    return GetProjectBasePath() + "/resources/fonts/";
 #endif
-                }
-        }
-}
+  }
+} // namespace Entropy::Filesystem

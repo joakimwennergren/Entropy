@@ -1,44 +1,84 @@
 #pragma once
 
-#include <graphics/data/vertex.hpp>
-#include <graphics/textures/texture.hpp>
-#include <graphics/buffers/vertexbuffer.hpp>
-#include <renderables/renderable.hpp>
+#include "graphics/vulkan/textures/texture.hpp"
+#include <data/vertex.hpp>
 #include <filesystem/filesystem.hpp>
+#include <graphics/vulkan/buffers/indexbuffer.hpp>
+#include <graphics/vulkan/buffers/vertexbuffer.hpp>
+#include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
 
-using namespace Entropy::Graphics::Textures;
-using namespace Entropy::Renderables;
+using namespace Entropy::Graphics::Vulkan::Textures;
+using namespace Entropy::Graphics::Vulkan::Buffers;
+using namespace Entropy::Graphics::Vulkan::DescriptorPools;
+using namespace Entropy::Data;
 
-namespace Entropy
-{
-    namespace Graphics
-    {
-        namespace Primitives
-        {
-            class Quad : public Renderable
-            {
+namespace Entropy {
+    namespace Graphics {
+        namespace Primitives {
+            struct Quad {
             public:
-                /**
-                 * @brief Construct a new Quad object
-                 *
-                 * @param context
-                 */
-                Quad(std::shared_ptr<ServiceLocator> serviceLocator);
+                Quad() {
+                    texture =
+                            std::make_shared<Texture>(Filesystem::GetSpritesDir() + "_blank.png");
+                    vertexBuffer = std::make_shared<VertexBuffer>(this->vertices);
+                    indexBuffer = std::make_shared<IndexBuffer<uint16_t> >(indices);
+                }
 
-                void Test(){};
+                explicit Quad(std::vector<Vertex> v) {
+                    texture =
+                            std::make_shared<Texture>(Filesystem::GetSpritesDir() + "_blank.png");
+                    vertexBuffer = std::make_shared<VertexBuffer>(v);
+                    indexBuffer = std::make_shared<IndexBuffer<uint16_t> >(indices);
+                }
 
-                VkDescriptorSet _descriptorSet = VK_NULL_HANDLE;
-                VkDescriptorSetLayout _descriptorSetLayout = VK_NULL_HANDLE;
+                std::shared_ptr<IndexBuffer<uint16_t> > indexBuffer;
+                std::shared_ptr<VertexBuffer> vertexBuffer;
+                std::vector<Vertex> vertices = {
+                    {
+                        {-1.0f, -1.0f, 0.0f},
+                        {1.0f, 1.0f, 1.0f},
+                        {1.0f, 0.0f},
+                        {0.0, 0.0},
+                        {0.0, 0.0, 0.0, 0.0},
+                        {0.0, 0.0, 0.0, 0.0},
+                        {0.0, 1.0, 0.0, 0.0}
+                    },
+                    {
+                        {1.0f, -1.0f, 0.0f},
+                        {1.0f, 1.0f, 1.0f},
+                        {0.0f, 0.0f},
+                        {0.0, 0.0},
+                        {0.0, 0.0, 0.0, 0.0},
+                        {0.0, 0.0, 0.0, 0.0},
+                        {0.0, 1.0, 0.0, 0.0}
+                    },
+                    {
+                        {1.0f, 1.0f, 0.0f},
+                        {1.0f, 1.0f, 1.0f},
+                        {0.0f, 1.0f},
+                        {0.0, 0.0},
+                        {0.0, 0.0, 0.0, 0.0},
+                        {0.0, 0.0, 0.0, 0.0},
+                        {0.0, 1.0, 0.0, 0.0}
+                    },
+                    {
+                        {-1.0f, 1.0f, 0.0f},
+                        {1.0f, 1.0f, 1.0f},
+                        {1.0f, 1.0f},
+                        {0.0, 0.0},
+                        {0.0, 0.0, 0.0, 0.0},
+                        {0.0, 0.0, 0.0, 0.0},
+                        {0.0, 1.0, 0.0, 0.0}
+                    }
+                };
+                // Indices for the two triangles that make up the quad
+                std::vector<uint16_t> indices = {
+                    0, 1, 2, // First triangle
+                    2, 3, 0 // Second triangle
+                };
 
-                std::unique_ptr<Texture> _blank;
-
-                void UpdateDescriptorSets();
-                /**
-                 * @brief Destroy the Quad object
-                 *
-                 */
-                ~Quad();
+                std::shared_ptr<Texture> texture;
             };
-        }
-    }
-}
+        } // namespace Primitives
+    } // namespace Graphics
+} // namespace Entropy

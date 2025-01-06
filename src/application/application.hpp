@@ -1,394 +1,283 @@
-/**
-    application.hpp
-    Application wrapper interface, common for all platforms
-    @author Joakim Wennergren
-    @version 1.0 2/11/2023
-*/
 #pragma once
 
-#include <thread>
-#include <memory>
 #include <config.hpp>
+#include <entropy.hpp>
+#include <graphics/renderers/vulkan_renderer.hpp>
 
-#include <graphics/renderers/renderer.hpp>
-#include <servicelocators/servicelocator.hpp>
-#include <timing/timer.hpp>
-#include <graphics/devices/logical_device.hpp>
-
-// new includes
-#include <graphics/instances/vk_instance.hpp>
-#include <graphics/surfaces/surface.hpp>
-#include <graphics/devices/physical_device.hpp>
-#include <graphics/swapchains/swapchain.hpp>
-#include <graphics/imageviews/imageview.hpp>
-#include <graphics/descriptorpools/descriptorpool.hpp>
-#include <graphics/descriptorsetlayouts/descriptorsetlayout.hpp>
-#include <graphics/descriptorsets/descriptorset.hpp>
-#include <graphics/commandpools/commandpool.hpp>
-#include <graphics/commandbuffers/commandbuffer.hpp>
-#include <scenegraphs/scenegraph.hpp>
-#include <physics/2d/physics2d.hpp>
-#include <scripting/lua.hpp>
-#include <input/mouse/mouse.hpp>
-#include <filesystem/filesystem.hpp>
-#include <input/keyboard/keyboard.hpp>
-#include <graphics/cameras/flying_camera.hpp>
-#include <renderables/renderable.hpp>
-#include <graphics/utilities/utilities.hpp>
-#include <graphics/textures/texture.hpp>
-#include <graphics/buffers/buffer.hpp>
-#include <graphics/buffers/vertexbuffer.hpp>
-
-using namespace Entropy::Graphics::Instances;
-using namespace Entropy::Graphics::Surfaces;
-using namespace Entropy::Graphics::Swapchains;
-using namespace Entropy::Graphics::ImageViews;
-using namespace Entropy::Graphics::CommandPools;
-using namespace Entropy::Graphics::CommandBuffers;
-using namespace Entropy::Graphics::DescriptorPools;
-using namespace Entropy::Graphics::DescriptorsetLayouts;
-using namespace Entropy::Graphics::Descriptorsets;
-using namespace Entropy::SceneGraphs;
-using namespace Entropy::Scripting;
-using namespace Entropy::Physics;
-using namespace Entropy::ServiceLocators;
-using namespace Entropy::Graphics::Textures;
-using namespace Entropy::Graphics::Renderers;
-using namespace Entropy::Renderables;
-using namespace Entropy;
-using namespace Entropy::Input;
-using namespace Entropy::Graphics::Buffers;
-using namespace Entropy::Graphics::Utilities;
-
-#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_LINUX)
+#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) ||                  \
+    defined(BUILD_FOR_LINUX)
 
 #include <GLFW/glfw3.h>
 
-// @todo remove symbios namespace
-using namespace Entropy::Graphics::Renderers;
-using namespace Entropy::Timing;
-using namespace Entropy::ServiceLocators;
+/**
+ * Callback function for handling framebuffer resize events.
+ *
+ * This function is called whenever the framebuffer of the specified window is resized.
+ * It updates the application's resolution and sets a flag indicating that resizing is required.
+ *
+ * @param window The GLFW window that received the resize event.
+ * @param width The new width of the framebuffer.
+ * @param height The new height of the framebuffer.
+ */
+void framebuffer_resize_callback(GLFWwindow *window, int width, int height);
 
-void framebufferResizeCallback(GLFWwindow *window, int width, int height);
-void cursorPositionCallback(GLFWwindow *window, double x, double y);
-void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
-static void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
+/**
+ * Callback function for handling GLFW key events.
+ *
+ * @param window The GLFW window that received the event.
+ * @param key The keyboard key that was pressed or released.
+ * @param scancode The system-specific scancode of the key.
+ * @param action The key action: GLFW_PRESS, GLFW_RELEASE, or GLFW_REPEAT.
+ * @param mods Bit field describing which modifier keys were held down.
+ */
+void keyCallback(GLFWwindow *window, int key, int scancode, int action,
+                 int mods);
+
+/**
+ * Callback function to handle cursor position events in a GLFW window.
+ *
+ * This function is called whenever the cursor is moved within the window's
+ * client area. It updates the application's internal state with the new
+ * cursor position and calculates the offset from the last known cursor
+ * position. This offset can be used for implementing functionalities like
+ * camera movement or object dragging.
+ *
+ * @param window The GLFW window in which the cursor position event occurred.
+ * @param xpos The new x-coordinate of the cursor.
+ * @param ypos The new y-coordinate of the cursor.
+ */
+void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
+
+/**
+ * @brief Callback function that handles window refresh events.
+ *
+ * This function is invoked whenever the window needs to be refreshed.
+ * It ensures the contents of the window are properly redrawn.
+ *
+ * @param window A pointer to the GLFW window that requires refreshing.
+ */
 void window_refresh_callback(GLFWwindow *window);
-void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
-
-class Application
-{
-public:
-    Application();
-    ~Application();
-
-    virtual void OnInit() = 0;
-
-    virtual void OnRender(float deltaTime) = 0;
-
-    void Run();
-
-    // @todo this shouldn't be public
-    inline std::shared_ptr<Renderer> GetRenderer() { return this->_renderer; };
-    std::shared_ptr<Keyboard> _keyboard;
-    std::shared_ptr<Cam> _camera;
-    bool firstMouse;
-    float lastX = 0.0;
-    float lastY = 0.0;
-    std::shared_ptr<ServiceLocator> serviceLocator;
-    std::shared_ptr<SceneGraph> sceneGraph;
-    // @todo look over if this should be protected..
-    std::shared_ptr<Renderer> _renderer;
-    std::shared_ptr<Mouse> mouse;
-    bool isResizing = false;
-    Timer *_timer;
-    float mouse_x;
-    float mouse_y;
-    float screen_width;
-    float screen_height;
-    bool mouse0_state = false;
-    ImGuiIO io;
-
-protected:
-    GLFWwindow *_window;
-    std::vector<std::shared_ptr<CommandBuffer>> commandBuffers;
-    std::shared_ptr<VulkanInstance> _vkInstance;
-    std::shared_ptr<WindowSurface> _windowSurface;
-    std::shared_ptr<WindowSurface> _windowSurface2;
-    std::shared_ptr<PhysicalDevice> _physicalDevice;
-    std::shared_ptr<LogicalDevice> _logicalDevice;
-    std::shared_ptr<Swapchain> _swapChain;
-    std::shared_ptr<Lua> lua;
-    uint32_t imageIndex;
-    std::shared_ptr<Physics2D> physics2d;
-    sol::protected_function luaOnRender;
-    std::shared_ptr<RenderPass> renderpass;
-    std::shared_ptr<Synchronizer> synchronizer;
-    int _currentFrame = 0;
-    std::unique_ptr<Entropy::Graphics::Buffers::VertexBuffer> vertexBuffer;
-    std::unique_ptr<Buffer> indexBuffer;
-
-private:
-    void ExecuteScripts(std::shared_ptr<SceneGraph> sceneGraph, std::shared_ptr<Lua> lua);
-
-    float _lastTick = 0.0f;
-    std::thread th;
-    float _deltaTime = 0.0f;
-};
-#endif
-
-#ifdef BUILD_FOR_IOS
-
-#include <Metal/Metal.hpp>
-#include <UIKit/UIKit.hpp>
-#include <MetalKit/MetalKit.hpp>
-#include <MetalFX/MetalFX.hpp>
-
-using namespace std::chrono;
-
-extern "C" UI::ViewController *get_native_bounds(UI::View *view, UI::Screen *screen);
-extern "C" CGPoint touch();
-extern "C" void say_hello();
-
-class EntropyApplication : public UI::ApplicationDelegate
-{
-public:
-    std::shared_ptr<Keyboard> _keyboard;
-    std::shared_ptr<Cam> _camera;
-    bool firstMouse;
-    float lastX = 0.0;
-    float lastY = 0.0;
-
-    std::shared_ptr<ServiceLocator> serviceLocator;
-    std::shared_ptr<SceneGraph> sceneGraph;
-    std::shared_ptr<Physics2D> physics2d;
-    sol::protected_function luaOnRender;
-    std::shared_ptr<Renderer> _renderer;
-
-    class MTKViewDelegate : public MTK::ViewDelegate
-    {
-    public:
-        std::shared_ptr<SceneGraph> graph;
-
-        MTKViewDelegate(EntropyApplication *app) : MTK::ViewDelegate()
-        {
-            this->app = app;
-        }
-
-        virtual ~MTKViewDelegate() override
-        {
-        }
-        EntropyApplication *app;
-        std::shared_ptr<Renderer> _renderer;
-        CGRect frame;
-
-    private:
-        /**
-         * @brief
-         *
-         * @param pView
-         */
-        inline virtual void drawInMTKView(MTK::View *pView) override
-        {
-            /*
-            auto tick_time = (float)GetTimeAsDouble();
-
-            deltaTime = tick_time - lastTick;
-
-            lastTick = tick_time;
-
-            app->OnRender(deltaTime);
-
-            auto ratio = (app->frame.size.width) / (app->frame.size.height);
-
-            app->screen.width = app->frame.size.width * 3.0;
-            app->screen.height = app->frame.size.height * 3.3;
-             */
-
-            _renderer->Render(frame.size.width, frame.size.height);
-            app->OnRender(0.0);
-        }
-
-        float lastTick = 0.0;
-        float deltaTime = 0.0;
-    };
-
-    /**
-     * @brief Construct a new Application object
-     *
-     */
-    EntropyApplication()
-    {
-        say_hello();
-        this->_autoreleasePool = NS::AutoreleasePool::alloc()->init();
-    }
-
-    /**
-     * @brief Destroy the Application object
-     *
-     */
-    ~EntropyApplication()
-    {
-        _pMtkView->release();
-        _pWindow->release();
-        _pViewController->release();
-        _pDevice->release();
-        delete _pViewDelegate;
-        this->_autoreleasePool->release();
-    }
-
-    inline bool applicationDidFinishLaunching(UI::Application *pApp, NS::Value *options) override
-    {
-        frame = UI::Screen::mainScreen()->bounds();
-
-        VkExtent2D extent =
-            {
-                (uint32_t)frame.size.width,
-                (uint32_t)frame.size.height};
 
-        //_pViewController = UI::ViewController::alloc()->init(nil, nil);
-
-        _pWindow = UI::Window::alloc()->init(frame);
-
-        _pDevice = MTL::CreateSystemDefaultDevice();
-
-        _pMtkView = MTK::View::alloc()->init(frame, _pDevice);
-
-        _pViewController = get_native_bounds((UI::View *)_pMtkView, UI::Screen::mainScreen());
-
-        _pMtkView->setColorPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
-        _pMtkView->setClearColor(MTL::ClearColor::Make(1.0, 1.0, 1.0, 1.0));
-
-        _pViewDelegate = new MTKViewDelegate(this);
-        _pMtkView->setDelegate(_pViewDelegate);
-
-        UI::View *mtkView = (UI::View *)_pMtkView;
-        mtkView->setAutoresizingMask(UI::ViewAutoresizingFlexibleWidth | UI::ViewAutoresizingFlexibleHeight);
-
-        _pViewController->view()->addSubview(mtkView);
-        _pWindow->setRootViewController(_pViewController);
-
-        _pWindow->makeKeyAndVisible();
-
-        CA::MetalLayer *layer = _pMtkView->currentDrawable()->layer();
-
-        // Create items for vulkan
-        _vkInstance = std::make_shared<VulkanInstance>("Entropy tests");
-        auto windowSurface = std::make_shared<WindowSurface>(vkInstance, layer);
-        auto physicalDevice = std::make_shared<PhysicalDevice>(vkInstance, windowSurface);
-        auto logicalDevice = std::make_shared<LogicalDevice>(physicalDevice, windowSurface);
-        auto swapChain = std::make_shared<Swapchain>(physicalDevice->Get(), logicalDevice->Get(), windowSurface, extent);
-        auto commandPool = std::make_shared<CommandPool>(logicalDevice, physicalDevice, windowSurface);
-        auto descriptorPool = std::make_shared<DescriptorPool>(logicalDevice);
-
-        // Add services to service locator
-        serviceLocator = std::make_shared<ServiceLocator>();
-
-        _keyboard = std::make_shared<Keyboard>(serviceLocator);
-        _camera = std::make_shared<Cam>(glm::vec3(0.0f, 0.0f, 3.0f));
-        serviceLocator->AddService(_camera);
-        serviceLocator->AddService(_keyboard);
-        serviceLocator->AddService(physicalDevice);
-        serviceLocator->AddService(logicalDevice);
-        serviceLocator->AddService(descriptorPool);
-        serviceLocator->AddService(swapChain);
-        serviceLocator->AddService(commandPool);
-
-        sceneGraph = std::make_shared<SceneGraph>();
-        serviceLocator->AddService(sceneGraph);
-
-        physics2d = std::make_shared<Physics2D>(serviceLocator);
-        serviceLocator->AddService(physics2d);
-
-        _renderer = std::make_shared<Renderer>(serviceLocator);
-        _pViewDelegate->_renderer = _renderer;
-        _pViewDelegate->frame = frame;
-        _pViewDelegate->app = this;
-
-        OnInit();
-
-        return true;
-    }
-
-    /**
-     * @brief
-     *
-     * @param pApp
-     * @param options
-     * @return true
-     * @return false
-     */
-    /*
-    inline bool applicationDidFinishLaunching(UI::Application *pApp, NS::Value *options) override
-    {
-        frame = UI::Screen::mainScreen()->bounds();
-
-        //_pViewController = UI::ViewController::alloc()->init(nil, nil);
-
-        _pWindow = UI::Window::alloc()->init(frame);
-
-        _pDevice = MTL::CreateSystemDefaultDevice();
-
-        _pMtkView = MTK::View::alloc()->init(frame, _pDevice);
-
-        _pViewController = get_native_bounds((UI::View *)_pMtkView, UI::Screen::mainScreen());
-
-        _pMtkView->setColorPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
-        _pMtkView->setClearColor(MTL::ClearColor::Make(1.0, 1.0, 1.0, 1.0));
-
-        _pViewDelegate = new MTKViewDelegate(this);
-        _pMtkView->setDelegate(_pViewDelegate);
-
-        UI::View *mtkView = (UI::View *)_pMtkView;
-        mtkView->setAutoresizingMask(UI::ViewAutoresizingFlexibleWidth | UI::ViewAutoresizingFlexibleHeight);
-
-        _pViewController->view()->addSubview(mtkView);
-        _pWindow->setRootViewController(_pViewController);
-
-        _pWindow->makeKeyAndVisible();
-
-
-        OnInit();
-
-        return true;
-    }
-
-*/
-    virtual void OnInit() = 0;
-
-    virtual void OnRender(float deltaTime) = 0;
-
-    /**
-     * @brief
-     *
-     * @param pApp
-     */
-    /*
-    inline void applicationWillTerminate(UI::Application *pApp) override
-    {
-    }
-    */
-
-public:
-    /**
-     * @brief
-     *
-     */
-    inline void Run()
-    {
-        UI::ApplicationMain(0, 0, this);
-    }
-
-    CGRect frame;
-
-protected:
-private:
-    UI::Window *_pWindow = nullptr;
-    MTK::View *_pMtkView = nullptr;
-    MTL::Device *_pDevice = nullptr;
-    MTKViewDelegate *_pViewDelegate = nullptr;
-    NS::AutoreleasePool *_autoreleasePool = nullptr;
-    UI::ViewController *_pViewController = nullptr;
-};
-
+/**
+ * @brief Callback for handling mouse button events.
+ *
+ * This function is triggered whenever a mouse button is pressed or released within the application window.
+ * It updates the application's internal mouse state based on which button was interacted with and the type of action performed.
+ *
+ * @param window Pointer to the GLFW window that received the event.
+ * @param button Identifier of the mouse button that was pressed or released.
+ * @param action Indicates whether the button was pressed or released.
+ * @param mods Bitfield describing which modifier keys were held down.
+ */
+void MouseButtonCallback(GLFWwindow *window, int button, int action,
+                         int mods);
+
+/**
+ * Callback function for handling Unicode character input events.
+ *
+ * @param window A pointer to the GLFW window that received the event.
+ * @param codepoint The Unicode code point of the character.
+ */
+void character_callback(GLFWwindow *window, unsigned int codepoint);
+
+/**
+ * Callback function for handling scroll events in a GLFW window.
+ *
+ * @param window A pointer to the GLFWwindow in which the scroll event occurred.
+ * @param xoffset The scroll offset along the x-axis.
+ * @param yoffset The scroll offset along the y-axis.
+ */
+void ScrollCallback(GLFWwindow *window, double xoffset, double yoffset);
+
+/**
+ * Callback function called when a GLFW window is iconified or restored.
+ *
+ * @param window A pointer to the GLFW window that received the event.
+ * @param iconified A flag indicating whether the window was iconified (1) or restored (0).
+ */
+void WindowIconifyCallback(GLFWwindow *window, int iconified);
+
+/**
+ * Callback function for handling changes in the content scale of a specified window.
+ * This function is called when the content scale of the window changes, typically
+ * due to a change in the display scaling settings for high-DPI displays.
+ *
+ * @param window Pointer to the GLFW window that received the event.
+ * @param xscale The new x-axis content scale of the window.
+ * @param yscale The new y-axis content scale of the window.
+ */
+void WindowContentScaleCallback(GLFWwindow *window, float xscale,
+                                float yscale);
+
+namespace Entropy::EntryPoints {
+ class Application {
+ public:
+  /**
+  * Constructor for the Application class.
+  *
+  * This constructor initializes the GLFW library, creates a GLFW window, and sets various
+  * callbacks for handling window events. It also initializes random seeding, sets up a timer,
+  * and registers several services, including Vulkan services, ECS, 2D physics, scripting,
+  * camera management, and the Vulkan renderer. Additionally, it creates a window surface and
+  * builds the swapchain and framebuffers required for the Vulkan renderer.
+  *
+  * Upon failure to initialize GLFW or create the window, the constructor logs a critical
+  * error message and exits the application.
+  */
+  Application();
+
+  /**
+   * Destructor for the Application class.
+   *
+   * This destructor is responsible for cleaning up resources associated with the
+   * application. It destroys the GLFW window and terminates the GLFW library.
+   */
+  virtual ~Application();
+
+  /**
+   * Pure virtual function to initialize the application.
+   *
+   * This function is meant to be overridden by derived classes to perform any
+   * necessary initialization steps specific to the application.
+   * It is called once before the main loop of the application starts.
+   */
+  virtual void OnInit() = 0;
+
+  /**
+   * Pure virtual function that must be implemented to handle rendering operations.
+   *
+   * This function is called every frame and is intended to encompass all necessary
+   * drawing and rendering logic, using the provided delta-time to ensure frame-rate
+   * independent updates.
+   *
+   * @param screen_width
+   * @param screen_height
+   * @param deltaTime The time difference between the current frame and the previous frame in seconds.
+   */
+  virtual void OnRender(float screen_width, float screen_height, float deltaTime) = 0;
+
+  /**
+   * Runs the application's main loop.
+   *
+   * This method initializes the application, begins the main loop, and handles
+   * events such as rendering, script execution, and input processing.
+   * - Calls the OnInit function to perform initial setup.
+   * - Continuously updates the timer and calculates the delta time for frame updates.
+   * - Manages the rendering process and script callbacks for rendering and input.
+   * - Handles window events and maintains the application state until the window should close.
+   */
+  void Run();
+
+  int keyDown = -1;
+
+  float scrollX = 0.0f;
+
+  float scrollY = 0.0f;
+
+  /**
+   * Scaling factor along the x-axis.
+   *
+   * This member variable holds the value for the scaling factor applied
+   * to the x-axis content within the application window.
+   * It is updated through the window content scale callback to reflect changes
+   * in the display scaling settings.
+   */
+  float xscale = 1.0;
+  /**
+   * Scaling factor for the application's content along the Y-axis.
+   *
+   * This value determines how much the content is scaled in the vertical direction.
+   * It is typically updated by the window content scale callback to reflect changes
+   * in the window's scaling settings.
+   */
+  float yscale = 1.0;
+
+  /**
+   * Stores the width of the application's screen.
+   *
+   * This variable holds the current width of the screen in pixels. It is primarily used
+   * for configuring rendering settings and handling window resize events.
+   */
+  int screen_width = 0;
+  /**
+   * Global variable that stores the height of the screen.
+   *
+   * This variable is used within the Application class to keep track of the current
+   * screen height, which can be referenced in rendering and layout calculations.
+   */
+  int screen_height = 0;
+  /**
+   * Flag indicating whether the application needs to be resized.
+   *
+   * This boolean flag is set to true whenever a resize event occurs.
+   * It is checked in the main loop to determine if the framebuffer
+   * and related resources need to be updated to match the new window size.
+   */
+  bool needResize = false;
+  /**
+   * A flag indicating whether the application window is minimized.
+   *
+   * This boolean variable is set to true when the application window is minimized
+   * and set to false when it is restored. It helps to manage the application's
+   * state and event handling related to window size changes.
+   */
+  bool isMinimized = false;
+
+  std::unordered_map<uint32_t, flecs::entity> entityMap;
+
+  uint32_t physics2dindex = 0;
+
+  /**
+   * Unique pointer to the VulkanRenderer instance.
+   *
+   * This variable holds an instance of VulkanRenderer, responsible for managing
+   * the rendering process using the Vulkan API. By using a unique pointer,
+   * ownership and lifecycle management are ensured, preventing memory leaks
+   * and ensuring the renderer is properly destroyed when no longer needed.
+   */
+ private:
+  std::unique_ptr<Renderers::VulkanRenderer> _renderer;
+  /**
+   * Unique pointer to a Timer object.
+   *
+   * This variable holds a unique pointer to an instance of the Timer class.
+   * It is used to manage the timer's lifecycle and ensure that only one instance
+   * of the timer exists throughout its scope. The Timer object is responsible for
+   * handling timed events within the application.
+   */
+  std::unique_ptr<Timer> _timer;
+  /**
+   * Pointer to the main GLFW window object.
+   *
+   * This variable holds a reference to the main window used by the application.
+   * It is initialized to nullptr and is assigned a valid window object
+   * once the window is created. This window serves as the primary context
+   * for rendering and event handling in the application.
+   */
+  GLFWwindow *_window = nullptr;
+  /**
+   * Vulkan surface handle used for presentation.
+   *
+   * This variable holds the handle to a Vulkan surface, which represents an abstraction for a
+   * platform-specific surface where rendering can occur. It is typically used for presenting rendered images to a display.
+   * The initial value is set to VK_NULL_HANDLE, indicating that it is not yet initialized.
+   */
+  VkSurfaceKHR _surface = VK_NULL_HANDLE;
+  /**
+   * Stores the timestamp of the last game tick.
+   *
+   * This variable keeps track of the time at which the last game tick was processed.
+   * It is used to calculate the time elapsed between ticks, facilitating updates
+   * and synchronization within the game loop.
+   */
+  float _lastTick = 0.0f;
+  /**
+   * Variable that represents the time difference between the current frame and the previous frame.
+   *
+   * This value is typically used to achieve frame rate independent movement and calculations
+   * in real-time applications, such as games or simulations.
+   */
+  float _deltaTime = 0.0f;
+ };
+} // namespace Entropy::EntryPoints
 #endif

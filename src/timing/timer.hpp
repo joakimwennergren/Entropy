@@ -1,42 +1,87 @@
-/*
- * This timer handles ticks, ticks are a predetermined duration, usually in msecs.
- * This is part of 2f, a 2D game engine based on SFML I'm currently creating.
- */
-
 #pragma once
 
-#include <chrono>
+#include <cassert>
 #include <cmath>
+#include <chrono>
 
-namespace Entropy
-{
-    namespace Timing
-    {
-        class Timer
-        {
-        protected:
-            float _tick_duration; // Tick duration in msec
-            float _max_tick;      // Max ticks before max ticks gets back to 0
-            float _current_tick;  // Current tick
-            bool _update;         // If the tick count has updated
-            /* Timers */
-            std::chrono::time_point<std::chrono::system_clock> _start; // Time start
-            std::chrono::time_point<std::chrono::system_clock> _end;   // End
-            std::chrono::duration<float> _elapsed;                     // Delta
-            /* Calculations */
-            void calculate(); // Calculates the stuff
-        public:
-            Timer();                                                      // Default constructor
-            Timer(float tick_duration, float const &max_tick = 10000.0f); // Creates a timer
-            /* Getters */
-            float get_tick(); // Returns current tick
-            /* Setters */
-            void set_tick_duration(float const &d); // Sets tick duration
-            void set_max_tick(float const &max);    // Sets max tick
-            /* Methods */
-            void start();   // Starts the timer
-            void reset();   // Resets the timer
-            bool updated(); // If the tick count has changed
-        };
-    }
-}
+namespace Entropy::Timing {
+ /**
+  * A simple class for measuring time durations.
+  */
+ class Timer {
+ public:
+  /**
+   * Constructs a Timer object with the specified tick duration and maximum tick
+   * value.
+   *
+   * @param tick_duration The duration of each tick in seconds.
+   * @param max_tick The maximum tick value (default is 10000.0f).
+   *
+   * @returns None
+   */
+  explicit Timer(float tick_duration, float const &max_tick = 10000.0f);
+
+  /**
+   * Gets the current tick value.
+   *
+   * @returns The current tick value as a float.
+   */
+  float GetTick();
+
+  /**
+   * Set the duration of a tick.
+   *
+   * @param d The duration of a tick to be set.
+   *
+   * @returns None
+   */
+  void SetTickDuration(float const &d);
+
+  /**
+   * Set the maximum tick value.
+   *
+   * @param max The maximum tick value to be set.
+   *
+   * @returns None
+   */
+  void SetMaxTick(float const &max);
+
+  /**
+   * Starts the process or operation.
+   *
+   * @returns None
+   */
+  void Start();
+
+  /**
+   * Resets the state of an object to its initial state.
+   *
+   * @returns None
+   */
+  void Reset();
+
+  /**
+   * Checks if an update has occurred.
+   *
+   * @returns True if an update has occurred, false otherwise.
+   */
+  bool Updated();
+
+ private:
+  /**
+   * Calculates a result based on the internal state of the object.
+   *
+   * @returns None
+   */
+  void Calculate();
+
+  float _tick_duration{};
+  float _max_tick{};
+  float _current_tick{};
+  bool _update{};
+  std::chrono::time_point<std::chrono::system_clock> _start;
+  std::chrono::time_point<std::chrono::system_clock> _end;
+  std::chrono::duration<float> _elapsed{};
+ };
+} // namespace Entropy::Timing
+
