@@ -1,7 +1,10 @@
 #pragma once
 
 #include <servicelocators/servicelocator.hpp>
+#include <graphics/vulkan/imageviews/imageview.hpp>
 #include <vulkan/vulkan.hpp>
+
+using namespace Entropy::Graphics::Vulkan::ImageViews;
 
 struct ISwapchain : public IService {
     ~ISwapchain() override = default;
@@ -17,5 +20,5 @@ struct ISwapchain : public IService {
     VkFormat swapChainImageFormat;
     std::vector<VkImage> _swapChainImages;
     VkSwapchainKHR _swapChain;
-    std::vector<VkImageView> _swapChainImageViews;
+    std::vector<std::shared_ptr<ImageView> > _swapChainImageViews;
 };

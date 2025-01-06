@@ -188,18 +188,7 @@ size_t GeneratePolygonHash(const b2Vec2 *vertices, int vertexCount) {
 void DrawSolidPolygon(b2Transform transform, const b2Vec2 *vertices, int vertexCount, float radius,
                       b2HexColor color, void *context) {
   /*
-  const auto app = static_cast<Application *>(context);
-
-  const ServiceLocator *sl = ServiceLocator::GetInstance();
-  const auto world = sl->getService<IWorld>();
-
-  app->physics2dindex = (app->physics2dindex + 1) % world->Get()->count<DynamicBodyComponent>();
-
-  // Generate a unique key for each polygon using app->physics2dindex and a hash of the vertices
-  size_t polygonKey = GeneratePolygonHash(vertices, vertexCount); // Unique per polygon shape
-  polygonKey += app->physics2dindex;
-  std::cout << "Generated Polygon Key: " << polygonKey << std::endl; // Debugging output
-
+  const auto pool = static_cast<std::vector<flecs::entity> *>(context);
 
   // Check if an entity for this polygon already exists
   flecs::entity polyEntity;
@@ -231,6 +220,7 @@ void DrawSolidPolygon(b2Transform transform, const b2Vec2 *vertices, int vertexC
 void Application::Run() {
   this->OnInit();
 
+
   _timer->Start();
   _lastTick = _timer->GetTick();
 
@@ -238,10 +228,13 @@ void Application::Run() {
   const auto world = sl->getService<IWorld>();
   const auto _lua = sl->getService<ILua>();
   const auto physics2d = sl->getService<IPhysics2D>();
+  for (uint32_t i = 0; i < 100; i++) {
+    physics2d->debugDrawEntities.push_back(PrimitiveFactory::CreateQuad());
+  }
   const auto debug2DDrawer = new b2DebugDraw();
   debug2DDrawer->drawShapes = true;
   debug2DDrawer->DrawSolidPolygon = DrawSolidPolygon;
-  debug2DDrawer->context = this;
+  debug2DDrawer->context = &physics2d->debugDrawEntities;
 
   std::vector<flecs::entity> lines;
   std::vector<flecs::entity> grid;
@@ -256,18 +249,21 @@ void Application::Run() {
     _deltaTime = _timer->GetTick() - _lastTick;
     _lastTick = _timer->GetTick();
 
-    _renderer->Render(screen_width, screen_height, needResize);
+    glfwGetWindowContentScale(_window, &xscale, &yscale);
+
+    _renderer->Render(screen_width, screen_height, xscale, yscale, needResize);
     this->OnRender(screen_width, screen_height, _deltaTime);
 
     auto on_render = _lua->Get()->get<sol::function>("OnRender");
     auto on_input = _lua->Get()->get<sol::function>("OnInput");
 
     if (on_render.valid()) {
-      on_render(screen_width, screen_height);
+      on_render(_deltaTime, screen_width, screen_height);
     }
 
     if (on_input.valid()) {
       //on_input(mouse_x, mouse_y, mouse0_state);
+      on_input(keyDown);
     }
 
     glfwPollEvents();
@@ -298,22 +294,29 @@ void Application::Run() {
 
 void keyCallback(GLFWwindow *window, int key, int scancode, int action,
                  int mods) {
-  /*
-ImGuiIO &io = ImGui::GetIO();
-if (action == GLFW_PRESS)
-io.KeysDown[key] = true;
-if (action == GLFW_RELEASE)
-io.KeysDown[key] = false;
-// Modifiers are not reliable across systems
-io.KeyCtrl =
-io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
-io.KeyShift =
-io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
-io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
-io.KeySuper =
-io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
+  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr) {
+    if (action == GLFW_REPEAT || action == GLFW_PRESS) {
+      app->keyDown = key;
+    } else {
+      app->keyDown = -1;
+    }
+  }
 
-*/
+  /*
+  ImGuiIO &io = ImGui::GetIO();
+  if (action == GLFW_PRESS)
+    io.KeysDown[key] = true;
+  if (action == GLFW_RELEASE)
+    io.KeysDown[key] = false;
+  // Modifiers are not reliable across systems
+  io.KeyCtrl =
+      io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
+  io.KeyShift =
+      io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
+  io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
+  io.KeySuper =
+      io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
+      */
 }
 
 void character_callback(GLFWwindow *window, unsigned int codepoint) {
@@ -397,6 +400,7 @@ void WindowIconifyCallback(GLFWwindow *window, const int iconified) {
 void WindowContentScaleCallback(GLFWwindow *window, const float xscale,
                                 const float yscale) {
   if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr) {
+    spdlog::error(xscale);
     app->xscale = xscale;
     app->yscale = yscale;
   }

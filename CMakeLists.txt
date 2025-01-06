@@ -1,4 +1,5 @@
 # Entropy Game Engine version 1.0
+
 # Set minimum cmake version
 cmake_minimum_required(VERSION 3.29.6)
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)

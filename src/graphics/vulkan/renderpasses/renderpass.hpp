@@ -214,7 +214,7 @@ namespace Entropy::Graphics::Vulkan::RenderPasses {
 
             for (size_t i = 0; i < swapChain->_swapChainImageViews.size(); i++) {
                 std::array<VkImageView, 2> attachments = {
-                    swapChain->_swapChainImageViews[i],
+                    swapChain->_swapChainImageViews[i]->Get(),
                     _depthBufferTexture->imageView->Get()
                 };
 

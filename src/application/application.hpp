@@ -168,6 +168,8 @@ namespace Entropy::EntryPoints {
    */
   void Run();
 
+  int keyDown = -1;
+
   float scrollX = 0.0f;
 
   float scrollY = 0.0f;

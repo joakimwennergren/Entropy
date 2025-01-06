@@ -152,13 +152,12 @@ namespace Entropy::Graphics::Vulkan::SwapChains {
       _swapChainImageViews.resize(_swapChainImages.size());
 
       for (uint32_t i = 0; i < _swapChainImages.size(); i++) {
-        auto imageView = ImageView(_swapChainImages[i], swapChainImageFormat);
-        _swapChainImageViews[i] = imageView.Get();
+        _swapChainImageViews[i] = std::make_shared<ImageView>(_swapChainImages[i], swapChainImageFormat);
       }
     }
 
-    SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device,
-                                                  VkSurfaceKHR surface) {
+    static SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device,
+                                                         VkSurfaceKHR surface) {
       SwapChainSupportDetails details;
 
       vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface,

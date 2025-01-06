@@ -13,6 +13,7 @@
 using namespace Entropy::Graphics::Vulkan::Renderers;
 
 void VulkanRenderer::Render(int width, int height,
+                            float xscale, float yscale,
                             bool &needResize) {
     if (_world->Get()->count<Components::Renderable>() == 0)
         return;
@@ -44,7 +45,7 @@ void VulkanRenderer::Render(int width, int height,
 
     const auto orthoCamera =
             dynamic_cast<OrthographicCamera *>(_cameraManager->currentCamera);
-    orthoCamera->setPerspective((float) width, (float) height, 0.1f, 256.0f);
+    orthoCamera->setPerspective((float) width, (float) height, xscale, yscale, 0.1f, 256.0f);
 
     // Begin render pass and command buffer recording
     _commandBuffers[_currentFrame].Record();
@@ -57,17 +58,29 @@ void VulkanRenderer::Render(int width, int height,
     ubodyn.view = orthoCamera->matrices.view;
     memcpy(_UBO->GetMappedMemory(), &ubodyn, sizeof(ubodyn));
 
-    _sortQuery.each([this, width, height](const flecs::entity e,
-                                          Components::Position p) {
+    _world->Get()->each<Components::Position>([&](flecs::entity e, Components::Position &position) {
+        _sortedEntities.emplace_back(e);
+    });
+
+    std::sort(_sortedEntities.begin(), _sortedEntities.end(),
+              [](const auto &a, const auto &b) {
+                  return CompareZIndex(a, b); // Compare Positions
+              });
+
+    for (const auto &e: _sortedEntities) {
+        auto position_component = e.get_ref<Components::Position>();
         auto scale_component = e.get_ref<Components::Scale>();
         auto color_component = e.get_ref<Components::Color>();
         auto rotation_component = e.get_ref<Components::Rotation>();
         auto render_component = e.get_ref<Components::Renderable>();
 
+        auto translate = glm::mat4(1.0f);
         auto rotation = glm::mat4(1.0f);
         auto scaling = glm::mat4(1.0f);
 
-        const auto translate = glm::translate(glm::mat4(1.0f), p.pos);
+        if (position_component.get() != nullptr) {
+            translate = glm::translate(glm::mat4(1.0f), position_component->pos);
+        }
 
         if (scale_component.get() != nullptr) {
             scaling = scale(glm::mat4(1.0f), scale_component->scale);
@@ -94,7 +107,7 @@ void VulkanRenderer::Render(int width, int height,
 
         objectSSBO[render_component->id - 1].type = render_component->type;
         objectSSBO[render_component->id - 1].resolution =
-                glm::vec2{(float) width, (float) height};
+                glm::vec2{static_cast<float>(width), static_cast<float>(height)};
 
         vmaUnmapMemory(_allocator->Get(), _instanceDataBuffer->_allocation);
 
@@ -107,8 +120,8 @@ void VulkanRenderer::Render(int width, int height,
         VkViewport viewport{};
         viewport.x = 0.0f;
         viewport.y = 0.0f;
-        viewport.width = (float) width;
-        viewport.height = (float) height;
+        viewport.width = static_cast<float>(width);
+        viewport.height = static_cast<float>(height);
         viewport.minDepth = 0.0f;
         viewport.maxDepth = 1.0f;
         vkCmdSetViewport(_commandBuffers[_currentFrame].Get(), 0, 1, &viewport);
@@ -186,9 +199,11 @@ void VulkanRenderer::Render(int width, int height,
             vkCmdDrawIndexed(_commandBuffers[_currentFrame].Get(),
                              renderable->indices.size(), 1, 0, 0, 0);
         }
-    });
+    }
 
     PresentForApplication();
+
+    _sortedEntities.clear();
 
     _currentFrame = (_currentFrame + 1) % MAX_CONCURRENT_FRAMES_IN_FLIGHT;
 }

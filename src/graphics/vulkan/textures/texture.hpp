@@ -30,6 +30,7 @@ namespace Entropy::Graphics::Vulkan::Textures {
          * @return None
          */
         explicit Texture(const std::string &path) {
+            spdlog::info("TEXTURE: {0}", path);
             assert(!path.empty());
 
             int texWidth, texHeight, texChannels;

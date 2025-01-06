@@ -40,7 +40,7 @@ namespace Entropy::Graphics::Primitives {
         static flecs::entity CreateSprite(const std::string &path) {
             const ServiceLocator *sl = ServiceLocator::GetInstance();
             const auto world = sl->getService<IWorld>();
-            const auto sprite = std::make_shared<Sprite>(GetSpritesDir() + path);
+            const auto sprite = std::make_shared<Sprite>(path);
             const auto e = world->Get()->entity();
             const auto id = AssetId().GetId();
             e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});

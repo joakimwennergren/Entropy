@@ -135,6 +135,10 @@ namespace Entropy::Scripting {
     //   }
     // }
 
+    void SetBasePath(const std::string &path) override {
+      _lua["package"]["path"] = path + "/?.lua;" + _lua["package"]["path"].get<std::string>();
+    }
+
 
     void BindTypes() {
       _lua.new_usertype<b2BodyId>("b2BodyId");
@@ -207,7 +211,7 @@ namespace Entropy::Scripting {
                                  const float y, const float z) {
         if (const auto position = entity.get_mut<Position>(); position != nullptr) {
           const float ppm = _cameraManager->currentCamera->PPM;
-          position->pos = glm::vec3(x / ppm, y / ppm, z);
+          position->pos = glm::vec3(x, y, z);
         }
       };
 
@@ -223,7 +227,7 @@ namespace Entropy::Scripting {
                              const float y, const float z) {
         if (const auto scale = entity.get_mut<Scale>(); scale != nullptr) {
           const float ppm = _cameraManager->currentCamera->PPM;
-          scale->scale = glm::vec3(x / ppm, y / ppm, z / ppm);
+          scale->scale = glm::vec3(x, y, z);
         }
       };
 
@@ -250,6 +254,16 @@ namespace Entropy::Scripting {
 
       _lua["Get2DDynamicBodyPosition"] = [](const b2BodyId bodyId) {
         return b2Body_GetPosition(bodyId).y;
+      };
+
+      // Camera
+      _lua["SetCameraPosition"] = [this](const float x, const float y) {
+        const auto camera = dynamic_cast<Cameras::OrthographicCamera *>(_cameraManager->currentCamera);
+        camera->PanCamera(x, y);
+      };
+      _lua["SetCameraZoom"] = [this](const float z) {
+        const auto camera = dynamic_cast<Cameras::OrthographicCamera *>(_cameraManager->currentCamera);
+        camera->Zoom(z);
       };
     }
 

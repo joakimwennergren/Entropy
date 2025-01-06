@@ -21,22 +21,23 @@ set(CURL_STATICLIB ON)
 set(BUILD_STATIC_LIBS ON)
 set(SSL_ENABLED ON)
 set(CURL_USE_OPENSSL ON)
+set(USE_LIBIDN2 OFF)
 add_subdirectory(external/curl)
 
 # Graphics API
 
 # Vulkan
-if(CMAKE_PLATFORM MATCHES "BUILD_FOR_MACOS" OR "BUILD_FOR_WINDOWS" OR "BUILD_FOR_MACOS")
-  find_package(Vulkan REQUIRED)
-endif()
+if (CMAKE_PLATFORM MATCHES "BUILD_FOR_MACOS" OR "BUILD_FOR_WINDOWS" OR "BUILD_FOR_MACOS")
+    find_package(Vulkan REQUIRED)
+endif ()
 
 # set(KTX_FEATURE_TESTS OFF)
 # add_subdirectory(external/KTX-Software)
 
 # Windowing on desktop
-if(CMAKE_PLATFORM MATCHES "BUILD_FOR_MACOS" OR "BUILD_FOR_WINDOWS" OR "BUILD_FOR_MACOS")
-  add_subdirectory(external/glfw)
-endif()
+if (CMAKE_PLATFORM MATCHES "BUILD_FOR_MACOS" OR "BUILD_FOR_WINDOWS" OR "BUILD_FOR_MACOS")
+    add_subdirectory(external/glfw)
+endif ()
 
 # Lua SOL 2
 add_subdirectory(external/sol2)
@@ -57,38 +58,38 @@ add_subdirectory(external/freetype-2.13.2)
 
 set(_LUA_SOURCE_DIR external/lua-5.4.6/src)
 set(_LUA_LIB_SRC
-  "${_LUA_SOURCE_DIR}/lapi.c"
-  "${_LUA_SOURCE_DIR}/lcode.c"
-  "${_LUA_SOURCE_DIR}/lctype.c"
-  "${_LUA_SOURCE_DIR}/ldebug.c"
-  "${_LUA_SOURCE_DIR}/ldo.c"
-  "${_LUA_SOURCE_DIR}/ldump.c"
-  "${_LUA_SOURCE_DIR}/lfunc.c"
-  "${_LUA_SOURCE_DIR}/lgc.c"
-  "${_LUA_SOURCE_DIR}/llex.c"
-  "${_LUA_SOURCE_DIR}/lmem.c"
-  "${_LUA_SOURCE_DIR}/lobject.c"
-  "${_LUA_SOURCE_DIR}/lopcodes.c"
-  "${_LUA_SOURCE_DIR}/lparser.c"
-  "${_LUA_SOURCE_DIR}/lstate.c"
-  "${_LUA_SOURCE_DIR}/lstring.c"
-  "${_LUA_SOURCE_DIR}/ltable.c"
-  "${_LUA_SOURCE_DIR}/ltm.c"
-  "${_LUA_SOURCE_DIR}/lundump.c"
-  "${_LUA_SOURCE_DIR}/lvm.c"
-  "${_LUA_SOURCE_DIR}/lzio.c"
-  "${_LUA_SOURCE_DIR}/lauxlib.c"
-  "${_LUA_SOURCE_DIR}/lbaselib.c"
-  "${_LUA_SOURCE_DIR}/lcorolib.c"
-  "${_LUA_SOURCE_DIR}/ldblib.c"
-  "${_LUA_SOURCE_DIR}/liolib.c"
-  "${_LUA_SOURCE_DIR}/lmathlib.c"
-  "${_LUA_SOURCE_DIR}/loadlib.c"
-  "${_LUA_SOURCE_DIR}/loslib.c"
-  "${_LUA_SOURCE_DIR}/lstrlib.c"
-  "${_LUA_SOURCE_DIR}/ltablib.c"
-  "${_LUA_SOURCE_DIR}/lutf8lib.c"
-  "${_LUA_SOURCE_DIR}/linit.c"
+        "${_LUA_SOURCE_DIR}/lapi.c"
+        "${_LUA_SOURCE_DIR}/lcode.c"
+        "${_LUA_SOURCE_DIR}/lctype.c"
+        "${_LUA_SOURCE_DIR}/ldebug.c"
+        "${_LUA_SOURCE_DIR}/ldo.c"
+        "${_LUA_SOURCE_DIR}/ldump.c"
+        "${_LUA_SOURCE_DIR}/lfunc.c"
+        "${_LUA_SOURCE_DIR}/lgc.c"
+        "${_LUA_SOURCE_DIR}/llex.c"
+        "${_LUA_SOURCE_DIR}/lmem.c"
+        "${_LUA_SOURCE_DIR}/lobject.c"
+        "${_LUA_SOURCE_DIR}/lopcodes.c"
+        "${_LUA_SOURCE_DIR}/lparser.c"
+        "${_LUA_SOURCE_DIR}/lstate.c"
+        "${_LUA_SOURCE_DIR}/lstring.c"
+        "${_LUA_SOURCE_DIR}/ltable.c"
+        "${_LUA_SOURCE_DIR}/ltm.c"
+        "${_LUA_SOURCE_DIR}/lundump.c"
+        "${_LUA_SOURCE_DIR}/lvm.c"
+        "${_LUA_SOURCE_DIR}/lzio.c"
+        "${_LUA_SOURCE_DIR}/lauxlib.c"
+        "${_LUA_SOURCE_DIR}/lbaselib.c"
+        "${_LUA_SOURCE_DIR}/lcorolib.c"
+        "${_LUA_SOURCE_DIR}/ldblib.c"
+        "${_LUA_SOURCE_DIR}/liolib.c"
+        "${_LUA_SOURCE_DIR}/lmathlib.c"
+        "${_LUA_SOURCE_DIR}/loadlib.c"
+        "${_LUA_SOURCE_DIR}/loslib.c"
+        "${_LUA_SOURCE_DIR}/lstrlib.c"
+        "${_LUA_SOURCE_DIR}/ltablib.c"
+        "${_LUA_SOURCE_DIR}/lutf8lib.c"
+        "${_LUA_SOURCE_DIR}/linit.c"
 )
 
 add_library(lua OBJECT ${_LUA_LIB_SRC})
@@ -100,9 +101,9 @@ set(TINYGLTF_INSTALL OFF)
 set(TINYGLTF_BUILD_LOADER_EXAMPLE OFF)
 add_subdirectory(external/tinygltf)
 
-if(ANDROID)
-  target_compile_definitions(tinygltf PRIVATE TINYGLTF_ANDROID_LOAD_FROM_ASSETS)
-endif()
+if (ANDROID)
+    target_compile_definitions(tinygltf PRIVATE TINYGLTF_ANDROID_LOAD_FROM_ASSETS)
+endif ()
 
 # set(BUILD_STATIC_LIBS ON)
 # add_subdirectory(external/efsw)

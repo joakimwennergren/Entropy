@@ -12,4 +12,6 @@ struct IPhysics2D : IService {
   virtual b2BodyId CreateKinematicBody(float x, float y, float w, float h) = 0;
 
   virtual b2BodyId CreateDynamicBody(float x, float y, float w, float h) = 0;
+
+  std::vector<flecs::entity> debugDrawEntities;
 };

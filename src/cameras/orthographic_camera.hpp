@@ -27,25 +27,58 @@ namespace Entropy::Cameras {
      * with the up direction being the positive y-axis (0.0f, 1.0f, 0.0f).
      */
     OrthographicCamera() {
+      cameraPosition = glm::vec3(0.0f, 0.0f, 256.0f);
       matrices.view =
           lookAt(glm::vec3(0.0f, 0.0f, 256.0f), glm::vec3(0.0f, 0.0f, 0.0f),
                  glm::vec3(0.0f, 1.0f, 0.0f));
     }
 
-    void Test() {
+    void Test() override {
     }
+
+    // Camera state
+    glm::vec3 cameraPosition{}; // Camera's world position
+
+    float zoomFactor = 1.0f;
+
+    // Function to update zoom factor (call this based on user input)
+    void Zoom(const float delta) {
+      zoomFactor += delta;
+      if (zoomFactor < 0.1f) zoomFactor = 0.1f; // Prevent zooming too far in
+    }
+
 
     struct {
       glm::mat4 perspective;
       glm::mat4 view;
     } matrices{};
 
-    const float PPM = 100.0f;
+    // Pan the camera by offsetting the position
+    void PanCamera(const float deltaX, const float deltaY) {
+      cameraPosition.x = deltaX;
+      cameraPosition.y = deltaY;
 
-    void setPerspective(const int width, const int height, const float znear,
+      // Recalculate view matrix
+      // Recalculate the view matrix
+      /*
+      matrices.view = lookAt(
+        cameraPosition, // Camera position
+        cameraPosition + glm::vec3(0.0f, 0.0f, -1.0f), // Target (forward direction)
+        glm::vec3(0.0f, 1.0f, 0.0f) // Up vector
+      );
+      */
+    }
+
+    void setPerspective(const int width, const int height, const float xscale, const float yscale, const float znear,
                         const float zfar) {
-      matrices.perspective = glm::ortho(0.0f, static_cast<float>(width) / PPM,
-                                        static_cast<float>(height) / PPM, 0.0f, znear, zfar);
-    };
+      matrices.perspective = glm::ortho(
+        cameraPosition.x, // Left (allows panning)
+        (static_cast<float>(width) * xscale) / zoomFactor + cameraPosition.x, // Right (panning offset)
+        (static_cast<float>(height) * yscale) / zoomFactor + cameraPosition.y, // Top (panning offset)
+        cameraPosition.y, // Bottom (panning offset)
+        znear, // Near
+        zfar // Far
+      );
+    }
   };
 };

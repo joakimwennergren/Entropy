@@ -7,6 +7,13 @@
 using namespace Entropy::Graphics::Vulkan::Instances;
 
 namespace Entropy::Graphics::Vulkan::Devices {
+    /**
+     * @brief Represents a physical device in Vulkan, serving as an interface for querying device properties and capabilities.
+     *
+     * The PhysicalDevice class provides functions for device enumeration, querying physical device properties,
+     * and determining the capabilities of the physical device. It plays a pivotal role in the Vulkan setup,
+     * facilitating the communication between the application and the GPU hardware.
+     */
     struct PhysicalDevice final : ServiceBase<IPhysicalDevice> {
         /**
          * @brief Constructs the PhysicalDevice object and initializes the Vulkan physical device.

@@ -2,6 +2,7 @@
 
 #include <box2d/box2d.h>
 #include <cameras/icamera_manger.hpp>
+#include <flecs.h>
 
 #include "iphysics2d.hpp"
 

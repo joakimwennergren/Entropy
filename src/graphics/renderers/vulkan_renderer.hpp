@@ -61,7 +61,7 @@ namespace Entropy::Graphics::Vulkan::Renderers {
             // Static Pipeline creation
             _staticPipeline = std::make_unique<StaticPipeline>(_renderPass);
 
-            _synchronizer = std::make_unique<Synchronizer>(2);
+            _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
 
             for (uint32_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++) {
                 _commandBuffers.push_back(CommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY));
@@ -121,6 +121,7 @@ namespace Entropy::Graphics::Vulkan::Renderers {
         ~VulkanRenderer() = default;
 
         void Render(int width, int height,
+                    float xscale, float yscale,
                     bool &needResize);
 
         // Comparison function for sorting based on z index
@@ -188,6 +189,15 @@ namespace Entropy::Graphics::Vulkan::Renderers {
 
     private:
         flecs::query<Components::Position> _sortQuery;
+
+        // Container to hold entities and their Position components
+        std::vector<flecs::entity> _sortedEntities;
+
+        // Custom comparator function for sorting
+        static bool CompareZIndex(const flecs::entity &a, const flecs::entity &b) {
+            return a.get_ref<Components::Position>()->pos.z < b.get_ref<Components::Position>()->pos.z;
+            // Sort by zIndex
+        }
 
         std::unique_ptr<Timing::Timer> _timer;
 

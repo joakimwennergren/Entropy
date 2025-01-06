@@ -5,6 +5,13 @@
 #include <vulkan/vulkan.hpp>
 
 namespace Entropy::Graphics::Vulkan::Devices {
+  /**
+   * @brief A class that manages the Vulkan logical device and associated graphics queue.
+   *
+   * This class is responsible for initializing and configuring a Vulkan logical device
+   * with the necessary features, queue information, and extensions. It provides methods
+   * to retrieve the logical device handle and the graphics queue handle.
+   */
   struct LogicalDevice final : ServiceBase<ILogicalDevice> {
     /**
      * @brief Initializes the logical device with necessary features and queue information.
@@ -76,8 +83,22 @@ namespace Entropy::Graphics::Vulkan::Devices {
       vkGetDeviceQueue(_logicalDevice, queueFamiliy, 0, &_graphicsQueue);
     }
 
+    /**
+     * @brief Returns the Vulkan logical device handle.
+     *
+     * This method provides access to the Vulkan logical device handle initialized and configured by this class.
+     *
+     * @return The handle to the Vulkan logical device.
+     */
     VkDevice Get() override { return _logicalDevice; }
 
+    /**
+     * @brief Retrieves the graphics queue handle from the logical device.
+     *
+     * This method returns the handle to the graphics queue, which was initialized during the logical device setup.
+     *
+     * @return The handle to the Vulkan graphics queue.
+     */
     VkQueue GetGraphicQueue() override { return _graphicsQueue; }
 
   private:
