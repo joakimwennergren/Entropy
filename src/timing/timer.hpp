@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <cmath>
 #include <chrono>
 
 namespace Entropy::Timing {

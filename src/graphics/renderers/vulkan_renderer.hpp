@@ -25,7 +25,7 @@
 
 #include <flecs.h>
 #include <timing/timer.hpp>
-#include <tracy/Tracy.hpp>
+//#include <tracy/Tracy.hpp>
 
 #ifdef BUILD_FOR_ANDROID
 #include <android/asset_manager.h>

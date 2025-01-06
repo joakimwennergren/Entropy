@@ -1,7 +1,7 @@
 # Entropy Game Engine version 1.0
 
 # Set minimum cmake version
-cmake_minimum_required(VERSION 3.29.6)
+cmake_minimum_required(VERSION 3.28.3)
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
 # Declare project
@@ -115,6 +115,34 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND APPLE)
             libcurl_static
     )
 endif ()
+
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME}
+            ${Vulkan_LIBRARIES}
+            glfw
+            #TracyClient
+            GPUOpen::VulkanMemoryAllocator
+            flecs::flecs_static
+            BulletCollision
+            BulletDynamics
+            BulletDynamics
+            BulletCollision
+            BulletInverseDynamics
+            BulletSoftBody
+            LinearMath
+            tinyobjloader
+            sol2
+            lua
+            glm
+            freetype
+            eventpp
+            spdlog
+            box2d
+            eventpp
+            tinygltf
+            libcurl_static
+    )
+endif (WIN32)
 
 # Link common dependencies
 target_link_libraries(${PROJECT_NAME}

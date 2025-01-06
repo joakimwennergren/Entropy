@@ -1,6 +1,7 @@
 # External Dependencies
 
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+set(BUILD_TESTING OFF)
 add_compile_definitions(HAVE_FCNTL_H=1)
 
 # GLM matrix maths
@@ -22,6 +23,7 @@ set(BUILD_STATIC_LIBS ON)
 set(SSL_ENABLED ON)
 set(CURL_USE_OPENSSL ON)
 set(USE_LIBIDN2 OFF)
+set(CURL_DISABLE_ALTSVC ON)
 add_subdirectory(external/curl)
 
 # Graphics API
@@ -35,7 +37,7 @@ endif ()
 # add_subdirectory(external/KTX-Software)
 
 # Windowing on desktop
-if (CMAKE_PLATFORM MATCHES "BUILD_FOR_MACOS" OR "BUILD_FOR_WINDOWS" OR "BUILD_FOR_MACOS")
+if (NOT CMAKE_PLATFORM MATCHES "BUILD_FOR_IOS" )
     add_subdirectory(external/glfw)
 endif ()
 
@@ -107,9 +109,9 @@ endif ()
 
 # set(BUILD_STATIC_LIBS ON)
 # add_subdirectory(external/efsw)
-option(TRACY_ENABLE "" ON)
-option(TRACY_ON_DEMAND "" ON)
-add_subdirectory(external/tracy)
+#option(TRACY_ENABLE "" ON)
+#option(TRACY_ON_DEMAND "" ON)
+#add_subdirectory(external/tracy)
 
 add_subdirectory(external/VulkanMemoryAllocator)
 
