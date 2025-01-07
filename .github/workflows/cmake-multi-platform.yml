@@ -27,18 +27,20 @@ jobs:
         build_type: [Debug]
         c_compiler: [gcc, clang, cl]
         include:
-       #   - os: windows-latest
-       #     c_compiler: cl
-       #     cpp_compiler: cl
-           - os: windows-latest
-             c_compiler: gcc
-             cpp_compiler: g++
-       #   - os: ubuntu-latest
-       #     c_compiler: gcc
-       #     cpp_compiler: g++
-       #   - os: ubuntu-latest
-       #    c_compiler: clang
-       #    cpp_compiler: clang++
+          - os: windows-latest
+            c_compiler: cl
+            cpp_compiler: cl
+          - os: ubuntu-latest
+            c_compiler: gcc
+            cpp_compiler: g++
+          - os: ubuntu-latest
+            c_compiler: clang
+            cpp_compiler: clang++
+        exclude:
+          - os: windows-latest
+            c_compiler: clang
+          - os: ubuntu-latest
+            c_compiler: cl
 
     steps:
       - uses: NcStudios/VulkanCI@v1.0
@@ -65,14 +67,25 @@ jobs:
           echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
       - name: Configure CMake
-        # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-        # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-        run: >
-          cmake -B ${{ steps.strings.outputs.build-output-dir }}
-          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-          -S ${{ github.workspace }}
+        run: |
+              if [ "$RUNNER_OS" == "Linux" ]; then
+                  cmake -B ${{ steps.strings.outputs.build-output-dir }}
+                  -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+                  -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+                  -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+                  -S ${{ github.workspace }}
+                  -D GLFW_USE_WAYLAND=1
+              elif [ "$RUNNER_OS" == "Windows" ]; then
+                  cmake -B ${{ steps.strings.outputs.build-output-dir }}
+                  -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+                  -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+                  -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+                  -S ${{ github.workspace }}      
+              else
+                   echo "$RUNNER_OS not supported"
+                   exit 1
+              fi
+        shell: bash
 
       - name: Build
         # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
