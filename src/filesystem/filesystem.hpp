@@ -8,10 +8,12 @@
 #include <CoreFoundation/CoreFoundation.h>
 #endif
 
-namespace Entropy::Filesystem {
-  static std::string GetProjectBasePath() {
+namespace Entropy::Filesystem
+{
+  static std::string GetProjectBasePath()
+  {
 #ifdef BUILD_FOR_WINDOWS
-  return ENGINE_BASEPATH;
+    return ENGINE_BASEPATH;
 #endif
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
@@ -19,56 +21,63 @@ namespace Entropy::Filesystem {
 #endif
 
 #ifdef BUILD_FOR_IOS
-  CFURLRef resourceURL =
-      CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
-  char resourcePath[PATH_MAX];
-  if (CFURLGetFileSystemRepresentation(resourceURL, true, (UInt8 *)resourcePath,
-                                       PATH_MAX)) {
-    if (resourceURL != NULL) {
-      CFRelease(resourceURL);
+    CFURLRef resourceURL =
+        CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
+    char resourcePath[PATH_MAX];
+    if (CFURLGetFileSystemRepresentation(resourceURL, true, (UInt8 *)resourcePath,
+                                         PATH_MAX))
+    {
+      if (resourceURL != NULL)
+      {
+        CFRelease(resourceURL);
+      }
+      return resourcePath;
     }
-    return resourcePath;
-  }
 #endif
 
     return "";
   }
 
-  static std::string GetTexturesDir() {
+  static std::string GetTexturesDir()
+  {
 #ifdef BUILD_FOR_IOS
-  return GetProjectBasePath() + "/";
+    return GetProjectBasePath() + "/";
 #else
     return GetProjectBasePath() + "/resources/textures/";
 #endif
   }
 
-  static std::string GetScriptsDir() {
+  static std::string GetScriptsDir()
+  {
 #ifdef BUILD_FOR_IOS
-  return GetProjectBasePath() + "/";
+    return GetProjectBasePath() + "/";
 #else
     return GetProjectBasePath() + "/resources/scripts/";
 #endif
   }
 
-  static std::string GetSpritesDir() {
+  static std::string GetSpritesDir()
+  {
 #ifdef BUILD_FOR_IOS
-  return GetProjectBasePath() + "/";
+    return GetProjectBasePath() + "/";
 #else
     return GetProjectBasePath() + "/resources/sprites/";
 #endif
   }
 
-  static std::string GetShadersDir() {
+  static std::string GetShadersDir()
+  {
 #ifdef BUILD_FOR_IOS
-  return GetProjectBasePath() + "/";
+    return GetProjectBasePath() + "/";
 #else
     return GetProjectBasePath() + "/shaders/compiled/";
 #endif
   }
 
-  static std::string GetFontsDir() {
+  static std::string GetFontsDir()
+  {
 #ifdef BUILD_FOR_IOS
-  return GetProjectBasePath() + "/";
+    return GetProjectBasePath() + "/";
 #else
     return GetProjectBasePath() + "/resources/fonts/";
 #endif
