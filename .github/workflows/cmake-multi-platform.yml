@@ -74,7 +74,7 @@ jobs:
                   -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
                   -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
                   -S ${{ github.workspace }}
-                  -D GLFW_USE_WAYLAND=1
+                  -DGLFW_USE_WAYLAND=ON
               elif [ "$RUNNER_OS" == "Windows" ]; then
                   cmake -B ${{ steps.strings.outputs.build-output-dir }}
                   -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
