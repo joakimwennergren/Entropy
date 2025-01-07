@@ -37,9 +37,6 @@
 [submodule "tracy"]
 	path = external/tracy
 	url = https://github.com/wolfpld/tracy.git
-[submodule "openssl-cmake"]
-	path = external/openssl-cmake
-	url = https://github.com/viaduck/openssl-cmake.git
 [submodule "myers-diff"]
 	path = external/myers-diff
 	url = https://github.com/gritzko/myers-diff.git

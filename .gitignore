@@ -1,6 +1,8 @@
 .DS_Store
 .vscode
+.idea
 build
+cmake-build-mingw
 cmake-build-debug
 cmake-build-debug-ubuntu
 include/config.hpp

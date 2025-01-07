@@ -6,17 +6,38 @@
 #include "vulkan/vulkan_core.h"
 #include <graphics/primitives/primitives.hpp>
 
+using namespace Entropy::Graphics::Vulkan::Instances;
+using namespace Entropy::Graphics::Vulkan::Surfaces;
+using namespace Entropy::Graphics::Vulkan::SwapChains;
+using namespace Entropy::Graphics::Vulkan::ImageViews;
+using namespace Entropy::Graphics::Vulkan::CommandPools;
+using namespace Entropy::Graphics::Vulkan::CommandBuffers;
+using namespace Entropy::Graphics::Vulkan::DescriptorPools;
+using namespace Entropy::Graphics::Vulkan::DescriptorSetLayouts;
+using namespace Entropy::Graphics::Vulkan::DescriptorSets;
+using namespace Entropy::Graphics::Vulkan::Caches;
+using namespace Entropy::Cameras;
+using namespace Entropy::Timing;
+using namespace Entropy::Scripting;
+using namespace Entropy::Physics;
+using namespace Entropy::Graphics::Vulkan::Textures;
+using namespace Entropy::Graphics::Vulkan::Synchronization;
+using namespace Entropy::Graphics::Vulkan::Memory;
+using namespace Entropy::ECS;
+
 using namespace Entropy::EntryPoints;
 
-#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) ||                    \
+#if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX) || \
     defined(BUILD_FOR_WINDOWS)
 
-Application::Application() {
+Application::Application()
+{
   // Seed random
   srand(time(nullptr));
 
   // Initialize GLFW
-  if (!glfwInit()) {
+  if (!glfwInit())
+  {
     spdlog::critical("Could not initialize GLFW");
     exit(EXIT_FAILURE);
   }
@@ -25,7 +46,8 @@ Application::Application() {
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
   _window = glfwCreateWindow(1000, 640, "Entropy application", nullptr, nullptr);
 
-  if (!_window) {
+  if (!_window)
+  {
     spdlog::critical("Could not create window.");
     glfwTerminate();
     exit(EXIT_FAILURE);
@@ -75,11 +97,12 @@ Application::Application() {
   _renderer = std::make_unique<Renderers::VulkanRenderer>();
 
   if (const auto instance = sl->getService<IVulkanInstance>(); glfwCreateWindowSurface(instance->Get(), _window,
-                                                                 nullptr,
-                                                                 &_surface) !=
-                                                               VK_SUCCESS) {
+                                                                                       nullptr,
+                                                                                       &_surface) !=
+                                                               VK_SUCCESS)
+  {
     std::cout << "Failed to create a window surface for platform 'MacOS'"
-        << std::endl;
+              << std::endl;
   }
 
   glfwGetFramebufferSize(_window, &screen_width, &screen_height);
@@ -90,14 +113,15 @@ Application::Application() {
                                              screen_width, screen_height);
 }
 
-
-Application::~Application() {
+Application::~Application()
+{
   glfwDestroyWindow(_window);
   glfwTerminate();
 }
 
 glm::vec2 convertToNDC(const float mouseX, float mouseY, float windowWidth,
-                       float windowHeight) {
+                       float windowHeight)
+{
   // Convert from [0, windowWidth] to [-1, 1] for X
   float ndcX = (mouseX / windowWidth) * 2.0f - 1.0f;
   // Convert from [0, windowHeight] to [-1, 1] for Y, but flip Y because
@@ -107,19 +131,20 @@ glm::vec2 convertToNDC(const float mouseX, float mouseY, float windowWidth,
 }
 
 glm::vec2 convertMouseToWorld(float mouseX, float mouseY, float windowWidth,
-                              float windowHeight) {
+                              float windowHeight)
+{
   glm::mat4 correction(
-    glm::vec4(1.0f, 0.0f, 0.0f, 0.0f), glm::vec4(0.0f, -1.0f, 0.0f, 0.0f),
-    glm::vec4(0.0f, 0.0f, 0.5f, 0.0f), glm::vec4(0.0f, 0.0f, 0.5f, 1.0f));
+      glm::vec4(1.0f, 0.0f, 0.0f, 0.0f), glm::vec4(0.0f, -1.0f, 0.0f, 0.0f),
+      glm::vec4(0.0f, 0.0f, 0.5f, 0.0f), glm::vec4(0.0f, 0.0f, 0.5f, 1.0f));
 
   auto PPM = 100.0f;
 
-  float left = -(float) windowWidth / (2.0f * PPM);
-  float right = (float) windowWidth / (2.0f * PPM);
-  float bottom = -(float) windowHeight / (2.0f * PPM);
-  float top = (float) windowHeight / (2.0f * PPM);
-  auto perspective = glm::ortho(0.0f, (float) windowWidth / PPM,
-                                (float) windowHeight / PPM, 0.0f, 0.1f, 256.0f);
+  float left = -(float)windowWidth / (2.0f * PPM);
+  float right = (float)windowWidth / (2.0f * PPM);
+  float bottom = -(float)windowHeight / (2.0f * PPM);
+  float top = (float)windowHeight / (2.0f * PPM);
+  auto perspective = glm::ortho(0.0f, (float)windowWidth / PPM,
+                                (float)windowHeight / PPM, 0.0f, 0.1f, 256.0f);
   // Step 1: Convert mouse coordinates to NDC
   glm::vec2 ndc = convertToNDC(mouseX, mouseY, windowWidth, windowHeight);
 
@@ -140,14 +165,16 @@ glm::vec2 convertMouseToWorld(float mouseX, float mouseY, float windowWidth,
   return glm::vec2(mouseWorld.x, mouseWorld.y);
 }
 
-glm::vec2 convertWorldToScreen(const glm::vec2 worldCoords, const int width, const int height) {
+glm::vec2 convertWorldToScreen(const glm::vec2 worldCoords, const int width, const int height)
+{
   const glm::mat4 perspective = glm::ortho(
-    0.0f, static_cast<float>(width) / 100.0f, static_cast<float>(height) / 100.0f, 0.0f, 0.1f, 256.0f);
+      0.0f, static_cast<float>(width) / 100.0f, static_cast<float>(height) / 100.0f, 0.0f, 0.1f, 256.0f);
   // Convert world coordinates to homogeneous clip space
   glm::vec4 clipSpaceCoords = perspective * glm::vec4(worldCoords, 0.0f, 1.0f);
 
   // Perform the perspective divide if necessary
-  if (clipSpaceCoords.w != 0) {
+  if (clipSpaceCoords.w != 0)
+  {
     clipSpaceCoords /= clipSpaceCoords.w;
   }
 
@@ -159,23 +186,25 @@ glm::vec2 convertWorldToScreen(const glm::vec2 worldCoords, const int width, con
   return {ndcX, ndcY};
 }
 
-struct RGBA8 {
+struct RGBA8
+{
   uint8_t r, g, b, a;
 };
 
-RGBA8 MakeRGBA8(b2HexColor c, float alpha) {
+RGBA8 MakeRGBA8(b2HexColor c, float alpha)
+{
   return {
-    static_cast<uint8_t>((c >> 16) & 0xFF), static_cast<uint8_t>((c >> 8) & 0xFF), static_cast<uint8_t>(c & 0xFF),
-    static_cast<uint8_t>(0xFF * alpha)
-  };
+      static_cast<uint8_t>((c >> 16) & 0xFF), static_cast<uint8_t>((c >> 8) & 0xFF), static_cast<uint8_t>(c & 0xFF),
+      static_cast<uint8_t>(0xFF * alpha)};
 }
 
 // Helper function to generate a unique hash for the polygon
-size_t GeneratePolygonHash(const b2Vec2 *vertices, int vertexCount) {
+size_t GeneratePolygonHash(const b2Vec2 *vertices, int vertexCount)
+{
   size_t hash = 0;
 
-
-  for (int i = 0; i < vertexCount; i++) {
+  for (int i = 0; i < vertexCount; i++)
+  {
     const size_t prime = 31;
     // Combine x and y coordinates using bitwise operations and primes
     hash = hash * prime + std::hash<float>()(vertices[i].x);
@@ -186,7 +215,8 @@ size_t GeneratePolygonHash(const b2Vec2 *vertices, int vertexCount) {
 }
 
 void DrawSolidPolygon(b2Transform transform, const b2Vec2 *vertices, int vertexCount, float radius,
-                      b2HexColor color, void *context) {
+                      b2HexColor color, void *context)
+{
   /*
   const auto pool = static_cast<std::vector<flecs::entity> *>(context);
 
@@ -217,9 +247,9 @@ void DrawSolidPolygon(b2Transform transform, const b2Vec2 *vertices, int vertexC
   */
 }
 
-void Application::Run() {
+void Application::Run()
+{
   this->OnInit();
-
 
   _timer->Start();
   _lastTick = _timer->GetTick();
@@ -228,7 +258,8 @@ void Application::Run() {
   const auto world = sl->getService<IWorld>();
   const auto _lua = sl->getService<ILua>();
   const auto physics2d = sl->getService<IPhysics2D>();
-  for (uint32_t i = 0; i < 100; i++) {
+  for (uint32_t i = 0; i < 100; i++)
+  {
     physics2d->debugDrawEntities.push_back(PrimitiveFactory::CreateQuad());
   }
   const auto debug2DDrawer = new b2DebugDraw();
@@ -239,9 +270,11 @@ void Application::Run() {
   std::vector<flecs::entity> lines;
   std::vector<flecs::entity> grid;
 
-  while (!glfwWindowShouldClose(_window)) {
+  while (!glfwWindowShouldClose(_window))
+  {
     // Wait for events when minimized
-    while (isMinimized) {
+    while (isMinimized)
+    {
       glfwWaitEvents();
     }
 
@@ -257,12 +290,14 @@ void Application::Run() {
     auto on_render = _lua->Get()->get<sol::function>("OnRender");
     auto on_input = _lua->Get()->get<sol::function>("OnInput");
 
-    if (on_render.valid()) {
+    if (on_render.valid())
+    {
       on_render(_deltaTime, screen_width, screen_height);
     }
 
-    if (on_input.valid()) {
-      //on_input(mouse_x, mouse_y, mouse0_state);
+    if (on_input.valid())
+    {
+      // on_input(mouse_x, mouse_y, mouse0_state);
       on_input(keyDown);
     }
 
@@ -293,11 +328,16 @@ void Application::Run() {
 }
 
 void keyCallback(GLFWwindow *window, int key, int scancode, int action,
-                 int mods) {
-  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr) {
-    if (action == GLFW_REPEAT || action == GLFW_PRESS) {
+                 int mods)
+{
+  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr)
+  {
+    if (action == GLFW_REPEAT || action == GLFW_PRESS)
+    {
       app->keyDown = key;
-    } else {
+    }
+    else
+    {
       app->keyDown = -1;
     }
   }
@@ -319,12 +359,15 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action,
       */
 }
 
-void character_callback(GLFWwindow *window, unsigned int codepoint) {
+void character_callback(GLFWwindow *window, unsigned int codepoint)
+{
 }
 
 void cursor_position_callback(GLFWwindow *window, double xposIn,
-                              double yposIn) {
-  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app == nullptr) {
+                              double yposIn)
+{
+  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app == nullptr)
+  {
     return;
   }
 
@@ -354,8 +397,10 @@ void cursor_position_callback(GLFWwindow *window, double xposIn,
   // app->_camera->ProcessMouseMovement(xoffset, yoffset);
 }
 
-void framebuffer_resize_callback(GLFWwindow *window, const int width, const int height) {
-  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr) {
+void framebuffer_resize_callback(GLFWwindow *window, const int width, const int height)
+{
+  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr)
+  {
     app->needResize = true;
     app->screen_width = width;
     app->screen_height = height;
@@ -363,8 +408,10 @@ void framebuffer_resize_callback(GLFWwindow *window, const int width, const int 
 }
 
 void MouseButtonCallback(GLFWwindow *window, int button, int action,
-                         int mods) {
-  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr) {
+                         int mods)
+{
+  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr)
+  {
   }
 
   /*
@@ -380,26 +427,35 @@ if (button == GLFW_MOUSE_BUTTON_LEFT && action != GLFW_PRESS)
   //   io.MouseDown[2] = false;
 }
 
-void ScrollCallback(GLFWwindow *window, double xoffset, double yoffset) {
-  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr) {
+void ScrollCallback(GLFWwindow *window, double xoffset, double yoffset)
+{
+  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr)
+  {
     app->scrollX = static_cast<float>(xoffset);
     app->scrollY = static_cast<float>(yoffset);
   }
 }
 
-void WindowIconifyCallback(GLFWwindow *window, const int iconified) {
-  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr) {
-    if (iconified) {
+void WindowIconifyCallback(GLFWwindow *window, const int iconified)
+{
+  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr)
+  {
+    if (iconified)
+    {
       app->isMinimized = true;
-    } else {
+    }
+    else
+    {
       app->isMinimized = false;
     }
   }
 }
 
 void WindowContentScaleCallback(GLFWwindow *window, const float xscale,
-                                const float yscale) {
-  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr) {
+                                const float yscale)
+{
+  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr)
+  {
     spdlog::error(xscale);
     app->xscale = xscale;
     app->yscale = yscale;

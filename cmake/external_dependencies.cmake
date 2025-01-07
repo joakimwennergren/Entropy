@@ -17,14 +17,14 @@ add_subdirectory(external/spdlog)
 # add_subdirectory(external/asio.cmake)
 
 # HTTP
-set(BUILD_CURL_EXE OFF)
-set(CURL_STATICLIB ON)
-set(BUILD_STATIC_LIBS ON)
-set(SSL_ENABLED ON)
-set(CURL_USE_OPENSSL ON)
-set(USE_LIBIDN2 OFF)
-set(CURL_DISABLE_ALTSVC ON)
-add_subdirectory(external/curl)
+#set(BUILD_CURL_EXE OFF)
+#set(CURL_STATICLIB ON)
+#set(BUILD_STATIC_LIBS ON)
+#set(SSL_ENABLED ON)
+#set(CURL_USE_OPENSSL ON)
+#set(USE_LIBIDN2 OFF)
+#set(CURL_DISABLE_ALTSVC ON)
+#add_subdirectory(external/curl)
 
 # Graphics API
 
