@@ -38,7 +38,8 @@ endif ()
 
 # Windowing on desktop
 if (NOT CMAKE_PLATFORM MATCHES "BUILD_FOR_IOS" )
-    set(GLFW_USE_WAYLAND ON)
+    set(GLFW_BUILD_WAYLAND ON)
+    set(GLFW_BUILD_X11 ON)
     add_subdirectory(external/glfw)
 endif ()
 
