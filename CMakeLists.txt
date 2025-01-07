@@ -26,8 +26,6 @@ if (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17 /utf-8")
 endif (MSVC)
 
-# target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17 -Wno-deprecated -Wno-macro-redefined)
-
 # Include headers
 target_include_directories(${PROJECT_NAME}
         PUBLIC
@@ -87,6 +85,7 @@ if (IOS)
 endif ()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND APPLE)
+    target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17 -Wno-deprecated -Wno-macro-redefined)
     target_link_libraries(${PROJECT_NAME}
             ${Vulkan_LIBRARIES}
             glfw
