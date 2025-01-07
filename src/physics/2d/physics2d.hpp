@@ -32,7 +32,7 @@ namespace Entropy::Physics {
             const ServiceLocator *sl = ServiceLocator::GetInstance();
             _cameraManager = sl->getService<ICameraManager>();
             b2WorldDef worldDef = b2DefaultWorldDef();
-            worldDef.gravity = (b2Vec2){0.0f, -10.0f};
+            worldDef.gravity = {0.0f, -10.0f};
             _world = b2CreateWorld(&worldDef);
         }
 

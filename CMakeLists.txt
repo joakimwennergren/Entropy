@@ -19,16 +19,14 @@ include(cmake/external_dependencies.cmake)
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
 # Create the library
-add_library(${PROJECT_NAME} STATIC ${SOURCES}
-        src/ecs/components/tags/dynamicbody.h)
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
 # Compiler flags
 if (MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
-    add_definitions(-w)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17 /utf-8")
 endif (MSVC)
 
-target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17 -Wno-deprecated -Wno-macro-redefined)
+# target_compile_options(${PROJECT_NAME} PUBLIC -std=c++17 -Wno-deprecated -Wno-macro-redefined)
 
 # Include headers
 target_include_directories(${PROJECT_NAME}
