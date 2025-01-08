@@ -1,0 +1,4 @@
+# Windows using MSVC
+if(CMAKE_PLATFORM MATCHES "BUILD_FOR_WINDOWS" AND MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17 /utf-8")
+endif()

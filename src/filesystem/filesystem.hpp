@@ -61,7 +61,7 @@ namespace Entropy::Filesystem
 #ifdef BUILD_FOR_IOS
     return GetProjectBasePath() + "/";
 #else
-    return GetProjectBasePath() + "/resources/sprites/";
+    return GetProjectBasePath() + "/resources/temp/";
 #endif
   }
 

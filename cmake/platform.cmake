@@ -10,7 +10,7 @@ endif()
 
 # iOS
 if(IOS)
-   set(CMAKE_PLATFORM "BUILD_FOR_IOS")
+    set(CMAKE_PLATFORM "BUILD_FOR_IOS")
 endif()
 
 # Linux platform
@@ -21,5 +21,3 @@ endif()
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
     set(CMAKE_PLATFORM "BUILD_FOR_ANDROID")
 endif()
-
-#set(CMAKE_PLATFORM "BUILD_FOR_ANDROID")

@@ -21,9 +21,8 @@ namespace Entropy::Graphics::Vulkan::Caches {
       const ServiceLocator *sl = ServiceLocator::GetInstance();
       _logicalDevice = sl->getService<ILogicalDevice>();
 
-      VkPipelineCacheCreateInfo pipelineCacheCreateInfo = {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO
-      };
+      VkPipelineCacheCreateInfo pipelineCacheCreateInfo{};
+      pipelineCacheCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
 
       VK_CHECK(vkCreatePipelineCache(_logicalDevice->Get(),
         &pipelineCacheCreateInfo, nullptr,

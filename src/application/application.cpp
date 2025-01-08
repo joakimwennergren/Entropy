@@ -94,7 +94,7 @@ Application::Application()
   // Scripting
   sl->registerService(std::make_shared<Lua>());
 
-  _renderer = std::make_unique<Renderers::VulkanRenderer>();
+  _renderer = std::make_shared<Renderers::VulkanRenderer>();
 
   if (const auto instance = sl->getService<IVulkanInstance>(); glfwCreateWindowSurface(instance->Get(), _window,
                                                                                        nullptr,
@@ -249,7 +249,7 @@ void DrawSolidPolygon(b2Transform transform, const b2Vec2 *vertices, int vertexC
 
 void Application::Run()
 {
-  this->OnInit();
+  OnInit();
 
   _timer->Start();
   _lastTick = _timer->GetTick();
@@ -258,14 +258,18 @@ void Application::Run()
   const auto world = sl->getService<IWorld>();
   const auto _lua = sl->getService<ILua>();
   const auto physics2d = sl->getService<IPhysics2D>();
+
+  /*
   for (uint32_t i = 0; i < 100; i++)
   {
     physics2d->debugDrawEntities.push_back(PrimitiveFactory::CreateQuad());
   }
-  const auto debug2DDrawer = new b2DebugDraw();
-  debug2DDrawer->drawShapes = true;
-  debug2DDrawer->DrawSolidPolygon = DrawSolidPolygon;
-  debug2DDrawer->context = &physics2d->debugDrawEntities;
+  */
+
+  // const auto debug2DDrawer = new b2DebugDraw();
+  // debug2DDrawer->drawShapes = true;
+  // debug2DDrawer->DrawSolidPolygon = DrawSolidPolygon;
+  // debug2DDrawer->context = &physics2d->debugDrawEntities;
 
   std::vector<flecs::entity> lines;
   std::vector<flecs::entity> grid;
@@ -284,8 +288,9 @@ void Application::Run()
 
     glfwGetWindowContentScale(_window, &xscale, &yscale);
 
-    _renderer->Render(screen_width, screen_height, xscale, yscale, needResize);
-    this->OnRender(screen_width, screen_height, _deltaTime);
+    _renderer->Render(screen_width, screen_height, xscale, yscale);
+    
+    OnRender(screen_width, screen_height, _deltaTime);
 
     auto on_render = _lua->Get()->get<sol::function>("OnRender");
     auto on_input = _lua->Get()->get<sol::function>("OnInput");
@@ -306,7 +311,7 @@ void Application::Run()
     constexpr float timeStep = 1.0f / 60.0f;
     constexpr int subStepCount = 4;
     b2World_Step(physics2d->Get(), timeStep, subStepCount);
-    b2World_Draw(physics2d->Get(), debug2DDrawer);
+    // b2World_Draw(physics2d->Get(), debug2DDrawer);
 
     // Increment current frame
 
@@ -401,9 +406,10 @@ void framebuffer_resize_callback(GLFWwindow *window, const int width, const int 
 {
   if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr)
   {
-    app->needResize = true;
     app->screen_width = width;
     app->screen_height = height;
+    app->GetVulkanRenderer()->OnResize(width, height);
+    //app->GetVulkanRenderer()->Render(width, height, 1.0, 1.0);
   }
 }
 

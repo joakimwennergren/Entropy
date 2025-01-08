@@ -13,9 +13,6 @@
 [submodule "box2d"]
 	path = external/box2d
 	url = https://github.com/erincatto/box2d.git
-[submodule "asio.cmake"]
-	path = external/asio.cmake
-	url = https://github.com/OlivierLDff/asio.cmake.git
 [submodule "curl"]
 	path = external/curl
 	url = https://github.com/curl/curl.git

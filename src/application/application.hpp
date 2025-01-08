@@ -171,6 +171,8 @@ namespace Entropy::EntryPoints
      */
     void Run();
 
+    std::shared_ptr<Renderers::VulkanRenderer> GetVulkanRenderer() { return _renderer; }
+
     int keyDown = -1;
 
     float scrollX = 0.0f;
@@ -230,16 +232,17 @@ namespace Entropy::EntryPoints
 
     uint32_t physics2dindex = 0;
 
+  private:
     /**
-     * Unique pointer to the VulkanRenderer instance.
+     * Shared pointer to the VulkanRenderer instance.
      *
      * This variable holds an instance of VulkanRenderer, responsible for managing
      * the rendering process using the Vulkan API. By using a unique pointer,
      * ownership and lifecycle management are ensured, preventing memory leaks
      * and ensuring the renderer is properly destroyed when no longer needed.
      */
-  private:
-    std::unique_ptr<Renderers::VulkanRenderer> _renderer;
+    std::shared_ptr<Renderers::VulkanRenderer> _renderer;
+
     /**
      * Unique pointer to a Timer object.
      *

@@ -1,10 +1,15 @@
-C:\VulkanSDK\1.3.275.0\Bin\glslc.exe "C:\\Users\\joaki\\Desktop\\Entropy-Engine\\shaders\\basic\\basic.vert" -o "C:\\Users\\joaki\\Desktop\\Entropy-Engine\\shaders\\basic\\skinned_vert.spv"
-C:\VulkanSDK\1.3.275.0\Bin\glslc.exe "C:\\Users\\joaki\\Desktop\\Entropy-Engine\\shaders\\basic\\basic.frag" -o "C:\\Users\\joaki\\Desktop\\Entropy-Engine\\shaders\\basic\\skinned_frag.spv"
+@echo off
 
+echo compiling vertex shaders..
 
-C:\VulkanSDK\1.3.275.0\Bin\glslc.exe "C:\\Users\\joaki\\Desktop\\Entropy-Engine\\shaders\\basic\\cubemap.vert" -o "C:\\Users\\joaki\\Desktop\\Entropy-Engine\\shaders\\basic\\cubemap_vert.spv"
-C:\VulkanSDK\1.3.275.0\Bin\glslc.exe "C:\\Users\\joaki\\Desktop\\Entropy-Engine\\shaders\\basic\\cubemap.frag" -o "C:\\Users\\joaki\\Desktop\\Entropy-Engine\\shaders\\basic\\cubemap_frag.spv"
+for /R %%f in (..\shaders\*.vert) do (
+    %VULKAN_SDK%\Bin\glslc.exe ..\shaders\%%~nf.vert -o ..\shaders\compiled\%%~nf_vert.spv
+)
+echo Done.
+echo compiling fragment shaders..
 
+for /R %%f in (..\shaders\*.frag) do (
+    %VULKAN_SDK%\Bin\glslc.exe ..\shaders\%%~nf.frag -o ..\shaders\compiled\%%~nf_frag.spv
+)
 
-C:\VulkanSDK\1.3.275.0\Bin\glslc.exe "C:\\Users\\joaki\\Desktop\\Entropy-Engine\\shaders\\basic\\2d.vert" -o "C:\\Users\\joaki\\Desktop\\Entropy-Engine\\shaders\\basic\\2d_vert.spv"
-C:\VulkanSDK\1.3.275.0\Bin\glslc.exe "C:\\Users\\joaki\\Desktop\\Entropy-Engine\\shaders\\basic\\2d.frag" -o "C:\\Users\\joaki\\Desktop\\Entropy-Engine\\shaders\\basic\\2d_frag.spv"
+echo Done.

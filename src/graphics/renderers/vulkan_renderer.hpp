@@ -114,15 +114,14 @@ namespace Entropy::Graphics::Vulkan::Renderers {
                     .order_by<Components::Position>(compare_zIndex)
                     .build();
 
-            _timer = std::make_unique<Timing::Timer>(1.0);
+            _timer = std::make_unique<Timing::Timer>(1.0f);
             _timer->Start();
         }
 
         ~VulkanRenderer() = default;
 
         void Render(int width, int height,
-                    float xscale, float yscale,
-                    bool &needResize);
+                    float xscale, float yscale);
 
         // Comparison function for sorting based on z index
         static int compare_zIndex(flecs::entity_t e1, const Components::Position *p1,
@@ -181,6 +180,15 @@ namespace Entropy::Graphics::Vulkan::Renderers {
 
             // Present
             vkQueuePresentKHR(_logicalDevice->GetGraphicQueue(), &presentInfo);
+        }
+
+        void OnResize(int width, int height)
+        {
+            _synchronizer =
+                std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+            _swapchain->RecreateSwapChain(width, height);
+            _renderPass->RecreateDepthBuffer(width, height);
+            _renderPass->RecreateFrameBuffers(width, height);
         }
 
         std::shared_ptr<StagingBuffer> stagingBuffer;

@@ -62,7 +62,7 @@ namespace Entropy::Graphics::Vulkan::RenderPasses {
                     VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
             VkAttachmentDescription colorAttachment{};
-            colorAttachment.format = VK_FORMAT_B8G8R8A8_UNORM;
+            colorAttachment.format = VK_FORMAT_B8G8R8A8_UNORM; // VK_FORMAT_R8G8B8A8_UNORM; // VK_FORMAT_B8G8R8A8_UNORM
             colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
             colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
             colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -240,11 +240,11 @@ namespace Entropy::Graphics::Vulkan::RenderPasses {
         std::shared_ptr<DepthBufferTexture> _depthBufferTexture = nullptr;
         VkRenderPass _renderPass = VK_NULL_HANDLE;
 
-        VkFormat findSupportedFormat(const std::vector<VkFormat> &candidates,
-                                     VkImageTiling tiling,
-                                     VkFormatFeatureFlags features) const;
+        [[nodiscard]] VkFormat findSupportedFormat(const std::vector<VkFormat> &candidates,
+                                                   VkImageTiling tiling,
+                                                   VkFormatFeatureFlags features) const;
 
-        VkFormat FindDepthFormat() const;
+        [[nodiscard]] VkFormat FindDepthFormat() const;
 
         std::shared_ptr<ILogicalDevice> _logicalDevice;
         std::shared_ptr<IPhysicalDevice> _physicalDevice;
