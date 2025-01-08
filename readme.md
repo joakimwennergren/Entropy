@@ -112,6 +112,8 @@ This section should list any major frameworks/libraries used to bootstrap your p
 
 [![Windows Platform MSVC](https://github.com/joakimwennergren/Entropy-Engine/actions/workflows/cmake-windows-platform-msvc.yml/badge.svg?branch=develop)](https://github.com/joakimwennergren/Entropy-Engine/actions/workflows/cmake-windows-platform-msvc.yml)
 
+[![MacOS Platform Clang](https://github.com/joakimwennergren/Entropy-Engine/actions/workflows/cmake-macos-platform-clang.yml/badge.svg?branch=develop)](https://github.com/joakimwennergren/Entropy-Engine/actions/workflows/cmake-macos-platform-clang.yml)
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
