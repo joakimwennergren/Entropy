@@ -70,8 +70,6 @@ namespace Entropy::Graphics::Vulkan::Renderers {
             _UBO = std::make_unique<UniformBuffer>(sizeof(UboDataDynamic));
             _instanceDataBuffer = std::make_unique<StorageBuffer>(
                 MAX_INSTANCE_COUNT * sizeof(InstanceData));
-            stagingBuffer = std::make_shared<StagingBuffer>(
-                800 * 800 * 4, nullptr, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
 
             // Update descriptor sets
             for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++) {
@@ -182,16 +180,14 @@ namespace Entropy::Graphics::Vulkan::Renderers {
             vkQueuePresentKHR(_logicalDevice->GetGraphicQueue(), &presentInfo);
         }
 
-        void OnResize(int width, int height)
-        {
+        void OnResize(const int width, const int height) {
             _synchronizer =
-                std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+                    std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
             _swapchain->RecreateSwapChain(width, height);
             _renderPass->RecreateDepthBuffer(width, height);
             _renderPass->RecreateFrameBuffers(width, height);
         }
 
-        std::shared_ptr<StagingBuffer> stagingBuffer;
         std::shared_ptr<RenderPass> _renderPass;
         std::shared_ptr<ISwapchain> _swapchain;
 

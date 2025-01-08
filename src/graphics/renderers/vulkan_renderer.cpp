@@ -11,9 +11,8 @@
 
 using namespace Entropy::Graphics::Vulkan::Renderers;
 
-void VulkanRenderer::Render(int width, int height,
-                            float xscale, float yscale) {
-
+void VulkanRenderer::Render(const int width, const int height,
+                            const float xscale, const float yscale) {
     if (_world->Get()->count<Components::Renderable>() == 0)
         return;
 
@@ -158,7 +157,7 @@ void VulkanRenderer::Render(int width, int height,
             e.get<Entropy::Components::Renderable>()->indexBuffer == nullptr) {
             auto renderable = e.get<Entropy::Components::Renderable>();
             // Bind vertex & index buffers
-            VkBuffer vertexBuffers[] = {renderable->vertexBuffer->GetVulkanBuffer()};
+            const VkBuffer vertexBuffers[] = {renderable->vertexBuffer->GetVulkanBuffer()};
             VkDeviceSize offsets[] = {0};
             vkCmdBindVertexBuffers(_commandBuffers[_currentFrame].Get(), 0, 1,
                                    vertexBuffers, offsets);

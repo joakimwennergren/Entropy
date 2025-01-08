@@ -20,5 +20,6 @@ struct ISwapchain : public IService {
     VkFormat swapChainImageFormat;
     std::vector<VkImage> _swapChainImages;
     VkSwapchainKHR _swapChain;
+    VkSwapchainKHR _oldSwapChain;
     std::vector<std::shared_ptr<ImageView> > _swapChainImageViews;
 };

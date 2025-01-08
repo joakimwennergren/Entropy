@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ENTROPY_UBO_H
+#define ENTROPY_UBO_H
 
 #include <glm/glm.hpp>
 
@@ -34,3 +35,5 @@ namespace Entropy::Data {
         int _pad[1];
     };
 } // namespace Entropy::Data
+
+#endif // ENTROPY_UBO_H

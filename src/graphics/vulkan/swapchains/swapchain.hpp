@@ -81,13 +81,17 @@ namespace Entropy::Graphics::Vulkan::SwapChains {
       swapChainImageFormat = VK_FORMAT_B8G8R8A8_UNORM;
       swapChainExtent =
           VkExtent2D{static_cast<uint32_t>(320), static_cast<uint32_t>(480)};
+
       auto [capabilities, formats, presentModes] =
           QuerySwapChainSupport(_physicalDevice->Get(), surface);
+
       auto [format, colorSpace] =
           ChooseSwapSurfaceFormat(formats);
-      VkPresentModeKHR presentMode =
+
+      const VkPresentModeKHR presentMode =
           ChooseSwapPresentMode(presentModes);
-      VkExtent2D extent = ChooseSwapExtent(capabilities, frame);
+
+      const VkExtent2D extent = ChooseSwapExtent(capabilities, frame);
 
       uint32_t imageCount = capabilities.minImageCount + 1;
 
@@ -198,7 +202,7 @@ namespace Entropy::Graphics::Vulkan::SwapChains {
       //     auto colorFormat = VK_FORMAT_B8G8R8A8_SRGB;
       // #endif
 
-      auto colorFormat = VK_FORMAT_R8G8B8A8_UNORM;
+      constexpr auto colorFormat = VK_FORMAT_R8G8B8A8_UNORM;
 
       for (const auto &availableFormat: availableFormats) {
         if (availableFormat.format == colorFormat &&
@@ -221,8 +225,8 @@ namespace Entropy::Graphics::Vulkan::SwapChains {
       return VK_PRESENT_MODE_FIFO_KHR;
     }
 
-    VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities,
-                                VkExtent2D frame) {
+    static VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities,
+                                       VkExtent2D frame) {
       if (capabilities.currentExtent.width !=
           std::numeric_limits<uint32_t>::max()) {
         return capabilities.currentExtent;
@@ -248,7 +252,13 @@ namespace Entropy::Graphics::Vulkan::SwapChains {
     //                                                      VkSurfaceKHR surface);
     // std::vector<VkImageView> swapChainImageViews;
 
-    inline VkSwapchainKHR Get() override { return _swapChain; };
+    VkSwapchainKHR Get() override {
+      if (_oldSwapChain != VK_NULL_HANDLE) {
+        return _oldSwapChain;
+      }
+      return _swapChain;
+    };
+
     // std::shared_ptr<WindowSurface> _surface;
 
   private:
