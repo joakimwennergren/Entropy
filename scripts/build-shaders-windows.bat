@@ -11,4 +11,5 @@ echo compiling fragment shaders..
 for /R %%f in (..\shaders\*.frag) do (
     %VULKAN_SDK%\Bin\glslc.exe ..\shaders\%%~nf.frag -o ..\shaders\compiled\%%~nf_frag.spv
 )
+
 echo Done.
