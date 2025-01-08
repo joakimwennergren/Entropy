@@ -112,9 +112,9 @@ Use the `BLANK_README.md` to get started.
 
 ### Build Status
 
-[![Windows Platform MSVC](https://github.com/joakimwennergren/Entropy-Engine/actions/workflows/cmake-windows-platform-msvc.yml/badge.svg?branch=develop)](https://github.com/joakimwennergren/Entropy-Engine/actions/workflows/cmake-windows-platform-msvc.yml)
+[![Windows Platform MSVC](https://github.com/joakimwennergren/Entropy-Engine/actions/workflows/cmake-windows-platform-msvc.yml/badge.svg?branch=main)](https://github.com/joakimwennergren/Entropy-Engine/actions/workflows/cmake-windows-platform-msvc.yml)
 
-[![MacOS Platform Clang](https://github.com/joakimwennergren/Entropy-Engine/actions/workflows/cmake-macos-platform-clang.yml/badge.svg?branch=develop)](https://github.com/joakimwennergren/Entropy-Engine/actions/workflows/cmake-macos-platform-clang.yml)
+[![MacOS Platform Clang](https://github.com/joakimwennergren/Entropy-Engine/actions/workflows/cmake-macos-platform-clang.yml/badge.svg?branch=main)](https://github.com/joakimwennergren/Entropy-Engine/actions/workflows/cmake-macos-platform-clang.yml)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
