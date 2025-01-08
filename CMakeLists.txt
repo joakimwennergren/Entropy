@@ -137,7 +137,7 @@ if (WIN32)
             box2d
             eventpp
             tinygltf
-            libcurl_static
+            #libcurl_static
     )
 endif (WIN32)
 

@@ -114,7 +114,7 @@ namespace Entropy::Graphics::Vulkan::Renderers {
                     .order_by<Components::Position>(compare_zIndex)
                     .build();
 
-            _timer = std::make_unique<Timing::Timer>(1.0);
+            _timer = std::make_unique<Timing::Timer>(1.0f);
             _timer->Start();
         }
 

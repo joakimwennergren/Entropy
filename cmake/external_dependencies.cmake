@@ -29,9 +29,10 @@ add_subdirectory(external/spdlog)
 # Graphics API
 
 # Vulkan
-if (CMAKE_PLATFORM MATCHES "BUILD_FOR_MACOS" OR "BUILD_FOR_WINDOWS" OR "BUILD_FOR_MACOS")
-    find_package(Vulkan REQUIRED)
-endif ()
+find_package(Vulkan REQUIRED)
+#if (CMAKE_PLATFORM MATCHES "BUILD_FOR_MACOS" OR "BUILD_FOR_WINDOWS" OR "BUILD_FOR_MACOS")
+
+#endif ()
 
 # set(KTX_FEATURE_TESTS OFF)
 # add_subdirectory(external/KTX-Software)
