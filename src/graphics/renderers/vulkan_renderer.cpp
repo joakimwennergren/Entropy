@@ -8,16 +8,14 @@
 #include "ecs/components/renderable.hpp"
 #include "ecs/components/rotation.hpp"
 #include "ecs/components/scale.hpp"
-#include "vulkan/vulkan_core.h"
 
 using namespace Entropy::Graphics::Vulkan::Renderers;
 
 void VulkanRenderer::Render(int width, int height,
-                            float xscale, float yscale,
-                            bool &needResize) {
+                            float xscale, float yscale) {
+
     if (_world->Get()->count<Components::Renderable>() == 0)
         return;
-
 
     const auto currentFence = _synchronizer->GetFences()[_currentFrame];
 
@@ -29,19 +27,6 @@ void VulkanRenderer::Render(int width, int height,
     vkAcquireNextImageKHR(_logicalDevice->Get(), _swapchain->Get(), UINT64_MAX,
                           _synchronizer->GetImageSemaphores()[_currentFrame],
                           VK_NULL_HANDLE, &imageIndex);
-
-
-    if (needResize) {
-        stagingBuffer = std::make_shared<StagingBuffer>(
-            width * height * 4, nullptr, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
-        _synchronizer =
-                std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
-        _swapchain->RecreateSwapChain(width, height);
-        _renderPass->RecreateDepthBuffer(width, height);
-        _renderPass->RecreateFrameBuffers(width, height);
-        needResize = false;
-        return;
-    }
 
     const auto orthoCamera =
             dynamic_cast<OrthographicCamera *>(_cameraManager->currentCamera);
