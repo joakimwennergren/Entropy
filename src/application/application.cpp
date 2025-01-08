@@ -258,14 +258,18 @@ void Application::Run()
   const auto world = sl->getService<IWorld>();
   const auto _lua = sl->getService<ILua>();
   const auto physics2d = sl->getService<IPhysics2D>();
+
+  /*
   for (uint32_t i = 0; i < 100; i++)
   {
     physics2d->debugDrawEntities.push_back(PrimitiveFactory::CreateQuad());
   }
-  const auto debug2DDrawer = new b2DebugDraw();
-  debug2DDrawer->drawShapes = true;
-  debug2DDrawer->DrawSolidPolygon = DrawSolidPolygon;
-  debug2DDrawer->context = &physics2d->debugDrawEntities;
+  */
+
+  // const auto debug2DDrawer = new b2DebugDraw();
+  // debug2DDrawer->drawShapes = true;
+  // debug2DDrawer->DrawSolidPolygon = DrawSolidPolygon;
+  // debug2DDrawer->context = &physics2d->debugDrawEntities;
 
   std::vector<flecs::entity> lines;
   std::vector<flecs::entity> grid;
@@ -306,7 +310,7 @@ void Application::Run()
     constexpr float timeStep = 1.0f / 60.0f;
     constexpr int subStepCount = 4;
     b2World_Step(physics2d->Get(), timeStep, subStepCount);
-    b2World_Draw(physics2d->Get(), debug2DDrawer);
+    // b2World_Draw(physics2d->Get(), debug2DDrawer);
 
     // Increment current frame
 

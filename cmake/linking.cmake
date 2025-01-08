@@ -76,8 +76,6 @@ if(CMAKE_PLATFORM MATCHES "BUILD_FOR_WINDOWS")
         # TracyClient
         GPUOpen::VulkanMemoryAllocator
         flecs::flecs_static
-        BulletCollision
-        BulletDynamics
         BulletDynamics
         BulletCollision
         BulletInverseDynamics
@@ -96,4 +94,4 @@ if(CMAKE_PLATFORM MATCHES "BUILD_FOR_WINDOWS")
 
         # libcurl_static
     )
-endif(WIN32)
+endif()
