@@ -110,7 +110,7 @@ This section should list any major frameworks/libraries used to bootstrap your p
 
 ### Build Status
 
-[![Windows MSVC](https://github.com/joakimwennergren/Entropy-Engine/actions/workflows/cmake-windows-platform-gcc.yml/badge.svg?branch=main)](https://github.com/joakimwennergren/Entropy-Engine/actions/workflows/cmake-windows-platform-gcc.yml)
+[![Windows Platform MSVC](https://github.com/joakimwennergren/Entropy-Engine/actions/workflows/cmake-windows-platform-msvc.yml/badge.svg?branch=develop)](https://github.com/joakimwennergren/Entropy-Engine/actions/workflows/cmake-windows-platform-msvc.yml)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
