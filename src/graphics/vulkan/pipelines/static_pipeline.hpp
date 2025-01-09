@@ -67,14 +67,20 @@ namespace Entropy::Graphics::Vulkan::Pipelines {
                 VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT
             };
 
-            const auto descriptorSetLayout0 = DescriptorSetLayout(bindings, bindingFlags0);
-            const auto descriptorSetLayout1 = DescriptorSetLayout(bindings2, bindingFlags1);
+            const auto descriptorSetLayout0 = std::make_shared<DescriptorSetLayout>(bindings, bindingFlags0);
+            const auto descriptorSetLayout1 = std::make_shared<DescriptorSetLayout>(bindings2, bindingFlags1);
 
-            dsLayouts[0] = descriptorSetLayout0.Get();
-            dsLayouts[1] = descriptorSetLayout1.Get();
+            dsLayouts[0] = descriptorSetLayout0->Get();
+            dsLayouts[1] = descriptorSetLayout1->Get();
 
-            descriptorSets.emplace_back(descriptorSetLayout0);
-            descriptorSets.emplace_back(descriptorSetLayout1);
+            VkDescriptorSetAllocateInfo allocInfo{};
+            allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+            allocInfo.descriptorPool = _descriptorPool->Get();
+            allocInfo.descriptorSetCount = 1;
+            allocInfo.pSetLayouts = dsLayouts.data();
+
+            VK_CHECK(vkAllocateDescriptorSets(_logicalDevice->Get(), &allocInfo,
+                &descriptorSet));
 
             return dsLayouts;
         }

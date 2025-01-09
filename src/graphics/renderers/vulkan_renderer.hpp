@@ -47,7 +47,7 @@ using namespace Entropy::Cameras;
 namespace Entropy::Graphics::Vulkan::Renderers {
     struct VulkanRenderer {
         VulkanRenderer() {
-            ServiceLocator *sl = ServiceLocator::GetInstance();
+            const ServiceLocator *sl = ServiceLocator::GetInstance();
 
             _allocator = sl->getService<IAllocator>();
             _logicalDevice = sl->getService<ILogicalDevice>();
@@ -64,7 +64,7 @@ namespace Entropy::Graphics::Vulkan::Renderers {
             _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
 
             for (uint32_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++) {
-                _commandBuffers.push_back(CommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY));
+                _commandBuffers.emplace_back(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
             }
 
             _UBO = std::make_unique<UniformBuffer>(sizeof(UboDataDynamic));
@@ -86,7 +86,7 @@ namespace Entropy::Graphics::Vulkan::Renderers {
                 objectBufferInfo.range = sizeof(InstanceData) * MAX_INSTANCE_COUNT;
 
                 descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                descriptorWrites[0].dstSet = _staticPipeline->descriptorSets[0].Get()[i];
+                descriptorWrites[0].dstSet = _staticPipeline->descriptorSet;
                 descriptorWrites[0].dstBinding = 1;
                 descriptorWrites[0].dstArrayElement = 0;
                 descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -94,7 +94,7 @@ namespace Entropy::Graphics::Vulkan::Renderers {
                 descriptorWrites[0].pBufferInfo = &bufferInfo;
 
                 descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                descriptorWrites[1].dstSet = _staticPipeline->descriptorSets[0].Get()[i];
+                descriptorWrites[1].dstSet = _staticPipeline->descriptorSet;
                 descriptorWrites[1].dstBinding = 0;
                 descriptorWrites[1].dstArrayElement = 0;
                 descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;

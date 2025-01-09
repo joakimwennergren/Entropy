@@ -33,6 +33,7 @@ namespace Entropy::Graphics::Vulkan::Pipelines {
       const ServiceLocator *sl = ServiceLocator::GetInstance();
       _logicalDevice = sl->getService<ILogicalDevice>();
       _swapChain = sl->getService<ISwapchain>();
+      _descriptorPool = sl->getService<IDescriptorPool>();
       _pipelineCache = sl->getService<IPipelineCache>();
       _renderPass = renderPass;
     }
@@ -60,7 +61,7 @@ namespace Entropy::Graphics::Vulkan::Pipelines {
     [[nodiscard]] VkPipeline GetPipeline() const { return _pipeline; };
     [[nodiscard]] VkPipelineLayout GetPipelineLayout() const { return _pipelineLayout; };
 
-    std::vector<DescriptorSet> descriptorSets;
+    VkDescriptorSet descriptorSet;
 
   protected:
     VkPipelineLayout _pipelineLayout = VK_NULL_HANDLE;
@@ -69,6 +70,7 @@ namespace Entropy::Graphics::Vulkan::Pipelines {
     std::shared_ptr<ILogicalDevice> _logicalDevice;
     std::shared_ptr<ISwapchain> _swapChain;
     std::shared_ptr<RenderPass> _renderPass;
+    std::shared_ptr<IDescriptorPool> _descriptorPool;
     std::shared_ptr<IPipelineCache> _pipelineCache;
   };
 } // namespace Entropy::Graphics::Vulkan::Pipelines

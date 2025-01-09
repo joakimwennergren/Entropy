@@ -114,7 +114,7 @@ void VulkanRenderer::Render(const int width, const int height,
                           VK_PIPELINE_BIND_POINT_GRAPHICS,
                           _staticPipeline->GetPipeline());
 
-        const auto ds0 = _staticPipeline->descriptorSets[0].Get()[_currentFrame];
+        const auto ds0 = _staticPipeline->descriptorSet; //;_staticPipeline->descriptorSets[0]->Get()[_currentFrame];
 
         vkCmdBindDescriptorSets(
             _commandBuffers[_currentFrame].Get(), VK_PIPELINE_BIND_POINT_GRAPHICS,

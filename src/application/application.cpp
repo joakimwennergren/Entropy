@@ -62,7 +62,7 @@ Application::Application() {
   glfwSetWindowContentScaleCallback(_window, WindowContentScaleCallback);
 
   // Create 1ms Timer
-  _timer = std::make_unique<Timer>(1.0);
+  _timer = std::make_unique<Timer>(1.0f);
 
   ServiceLocator *sl = ServiceLocator::GetInstance();
 

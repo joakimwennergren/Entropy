@@ -14,6 +14,7 @@
 #define TINYGLTF_ANDROID_LOAD_FROM_ASSETS
 #endif
 
+#define NOMINMAX
 #include <config.hpp>
 #include <fstream>
 #include <iostream>
@@ -47,6 +48,7 @@
 
 // Changing this value here also requires changing it in the vertex shader
 #define MAX_NUM_JOINTS 128u
+
 
 using namespace Entropy::Graphics::Vulkan::Textures;
 using namespace Entropy::Graphics::Vulkan::Devices;
