@@ -32,10 +32,10 @@ float grid(vec2 fragCoord, float space, float gridWidth)
 }
 
 float sdCircle(vec2 uv, float r, vec2 offset) {
-  float x = uv.x - offset.x;
-  float y = uv.y - offset.y;
+    float x = uv.x - offset.x;
+    float y = uv.y - offset.y;
 
-  return length(vec2(x, y)) - r;
+    return length(vec2(x, y)) - r;
 }
 
 //---------------------------------------------------------
@@ -43,8 +43,8 @@ float sdCircle(vec2 uv, float r, vec2 offset) {
 //---------------------------------------------------------
 float roundedFrame (vec2 pos, vec2 uv, vec2 size, float radius, float thickness)
 {
-  float d = length(max(abs(uv - pos),size) - size) - radius;
-  return smoothstep(0.55, 0.45, abs(d / thickness) * 5.0);
+    float d = length(max(abs(uv - pos), size) - size) - radius;
+    return smoothstep(0.55, 0.45, abs(d / thickness) * 5.0);
 }
 
 void main()
@@ -103,27 +103,25 @@ void main()
         vec2 pos = vec2(0.5, 0.5);
 
         // Normalize the pixel coordinates (this is "passTexCoords" in your case)
-        vec2 uv = inUV0; //inUV0.xy/inResolution.xy;
+        vec2 uv = inUV0;//inUV0.xy/inResolution.xy;
 
         // (Note: iResolution.xy holds the x and y dimensions of the window in pixels)
         vec2 aspectRatio = vec2(inResolution.x/inResolution.y, 1.0);
 
         // In order to make sure visual distances are preserved, we multiply everything by aspectRatio
-        uv *= aspectRatio;
-        pos *= aspectRatio;
-        size *= aspectRatio;
+        //uv *= aspectRatio;
+        //pos *= aspectRatio;
+        //size *= aspectRatio;
 
         //--- rounded frame ---
         float intensity = roundedFrame(pos, uv, size, radius, thickness);
-        vec4 col = mix(vec4(0.0, 0.0, 0.0, 0.0), frameColor, intensity);
+        vec4 col = mix(vec4(0.0, 0.0, 1.0, 0.0), frameColor, intensity);
 
         outColor = col;
 
         //outColor = inColor1 * texture(Sampler2D, inUV0);
 
     } else if (inType == 3) {
-
         outColor = inColor1;
-
     }
 }
