@@ -378,10 +378,16 @@ void cursor_position_callback(GLFWwindow *window, double xposIn,
 
 void framebuffer_resize_callback(GLFWwindow *window, const int width, const int height) {
   if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr) {
+    const ServiceLocator *sl = ServiceLocator::GetInstance();
+    const auto _lua = sl->getService<ILua>();
     app->screen_width = width;
     app->screen_height = height;
     app->GetVulkanRenderer()->OnResize(width, height);
-    //app->GetVulkanRenderer()->Render(width, height, 1.0, 1.0);
+    app->GetVulkanRenderer()->Render(width, height, 1.0, 1.0);
+    auto on_render = _lua->Get()->get<sol::function>("OnRender");
+    if (on_render.valid()) {
+      on_render(1.0f, width, height);
+    }
   }
 }
 

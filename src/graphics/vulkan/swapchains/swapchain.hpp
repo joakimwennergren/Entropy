@@ -77,7 +77,6 @@ namespace Entropy::Graphics::Vulkan::SwapChains {
     void Build(VkSurfaceKHR surface, const VkExtent2D frame,
                VkSwapchainKHR oldSwapChain) override {
       _surface = surface;
-
       swapChainImageFormat = VK_FORMAT_B8G8R8A8_UNORM;
       swapChainExtent =
           VkExtent2D{static_cast<uint32_t>(320), static_cast<uint32_t>(480)};
@@ -253,9 +252,11 @@ namespace Entropy::Graphics::Vulkan::SwapChains {
     // std::vector<VkImageView> swapChainImageViews;
 
     VkSwapchainKHR Get() override {
+      /*
       if (_oldSwapChain != VK_NULL_HANDLE) {
         return _oldSwapChain;
       }
+      */
       return _swapChain;
     };
 
