@@ -31,6 +31,15 @@ float grid(vec2 fragCoord, float space, float gridWidth)
     return clamp(g, 0., 1.0);
 }
 
+//---------------------------------------------------------
+// draw rectangle frame with rounded edges
+//---------------------------------------------------------
+float roundedFrame(vec2 pos, vec2 size, float radius, float thickness)
+{
+  float d = length(max(abs(inUV0 - pos),size) - size) - radius;
+  return smoothstep(0.55, 0.45, abs(d / thickness) * 5.0);
+}
+
 void main()
 {
     // vec3 ambient = vec3(0.5, 0.5, 0.5);
@@ -96,7 +105,16 @@ void main()
         outColor = vec4(col, 1.0);
     } else if (inType == 2) {
 
-        outColor = inColor1 * texture(Sampler2D, inUV0);
+        //--- rounded frame ---
+        vec4 frameColor = vec4(1.0, 0.0, 0.0, 1.0);
+        vec2 size = vec2(0.45, 0.45);
+        vec2 pos = vec2(0.5, 0.5);
+        float intensity = roundedFrame(pos, size, 0.02, 0.1);
+        vec4 col = mix(vec4(0.0, 0.0, 0.0, 0.0), frameColor, intensity);
+
+        outColor = col;
+
+        //outColor = inColor1 * texture(Sampler2D, inUV0);
 
     } else if (inType == 3) {
 
