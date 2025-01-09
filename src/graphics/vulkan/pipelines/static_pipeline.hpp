@@ -64,7 +64,7 @@ namespace Entropy::Graphics::Vulkan::Pipelines {
             const std::vector<VkDescriptorBindingFlags> bindingFlags0 = {};
 
             const std::vector<VkDescriptorBindingFlags> bindingFlags1 = {
-                VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT
+                //VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT
             };
 
             const auto descriptorSetLayout0 = std::make_shared<DescriptorSetLayout>(bindings, bindingFlags0);

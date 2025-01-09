@@ -99,7 +99,7 @@ namespace Entropy::Graphics::Vulkan::Textures {
                 &textureSampler));
 
             const std::vector<VkDescriptorBindingFlags> bindingFlags = {
-                VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT
+                //VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT
             };
 
             VkDescriptorSetLayoutBindingFlagsCreateInfo bindingFlagsInfo = {};
@@ -124,7 +124,7 @@ namespace Entropy::Graphics::Vulkan::Textures {
             layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
             layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
             layoutInfo.pBindings = bindings.data();
-            layoutInfo.pNext = &bindingFlagsInfo;
+            //layoutInfo.pNext = &bindingFlagsInfo;
 
             VK_CHECK(vkCreateDescriptorSetLayout(_logicalDevice->Get(), &layoutInfo,
                 nullptr, &_descriptorSetLayout));
