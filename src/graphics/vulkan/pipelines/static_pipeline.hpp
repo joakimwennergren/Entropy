@@ -4,8 +4,10 @@
 #include <graphics/vulkan/pipelinecaches/pipelinecache.hpp>
 #include <graphics/vulkan/pipelines/pipeline.hpp>
 
-namespace Entropy::Graphics::Vulkan::Pipelines {
-    struct StaticPipeline : Pipeline {
+namespace Entropy::Graphics::Vulkan::Pipelines
+{
+    struct StaticPipeline : Pipeline
+    {
         /**
          * Constructs a StaticPipeline object.
          *
@@ -13,10 +15,11 @@ namespace Entropy::Graphics::Vulkan::Pipelines {
          * @return A constructed StaticPipeline object.
          */
         explicit StaticPipeline(const std::shared_ptr<RenderPass> &renderPass)
-            : Pipeline(renderPass) {
+            : Pipeline(renderPass)
+        {
             const auto dsLayouts = CreateDescriptorSets();
-            _shader = std::make_shared<Shader>(GetShadersDir() + "static_vert.spv",
-                                               GetShadersDir() + "static_frag.spv");
+            _shader = std::make_shared<Shader>(GetShadersDir() + "static/static_vert.spv",
+                                               GetShadersDir() + "static/static_frag.spv");
             Build(_shader, dsLayouts);
         }
 
@@ -27,7 +30,8 @@ namespace Entropy::Graphics::Vulkan::Pipelines {
          *
          * @return A vector of Vulkan descriptor set layouts.
          */
-        std::vector<VkDescriptorSetLayout> CreateDescriptorSets() {
+        std::vector<VkDescriptorSetLayout> CreateDescriptorSets()
+        {
             std::vector<VkDescriptorSetLayout> dsLayouts(2);
 
             VkDescriptorSetLayoutBinding instanceLayoutBinding = {};
@@ -48,23 +52,21 @@ namespace Entropy::Graphics::Vulkan::Pipelines {
             samplerLayoutBinding.binding = 2;
             samplerLayoutBinding.descriptorCount = 1;
             samplerLayoutBinding.descriptorType =
-                    VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
             samplerLayoutBinding.pImmutableSamplers = nullptr;
             samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
             const std::vector bindings = {
                 instanceLayoutBinding,
-                uboLayoutBinding
-            };
+                uboLayoutBinding};
 
             const std::vector bindings2 = {
-                samplerLayoutBinding
-            };
+                samplerLayoutBinding};
 
             const std::vector<VkDescriptorBindingFlags> bindingFlags0 = {};
 
             const std::vector<VkDescriptorBindingFlags> bindingFlags1 = {
-                //VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT
+                // VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT
             };
 
             const auto descriptorSetLayout0 = std::make_shared<DescriptorSetLayout>(bindings, bindingFlags0);
@@ -80,7 +82,7 @@ namespace Entropy::Graphics::Vulkan::Pipelines {
             allocInfo.pSetLayouts = dsLayouts.data();
 
             VK_CHECK(vkAllocateDescriptorSets(_logicalDevice->Get(), &allocInfo,
-                &descriptorSet));
+                                              &descriptorSet));
 
             return dsLayouts;
         }
