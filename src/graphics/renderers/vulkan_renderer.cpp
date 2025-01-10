@@ -84,14 +84,13 @@ void VulkanRenderer::Render(const int width, const int height,
         objectSSBO[render_component->id - 1].model =
                 (translate * scaling * rotation);
 
-        objectSSBO[render_component->id - 1].color =
+        objectSSBO[render_component->id - 1].bgColor =
                 color_component.get() == nullptr
                     ? glm::vec4(1.0, 1.0, 1.0, 1.0)
                     : color_component->color;
 
         objectSSBO[render_component->id - 1].type = render_component->type;
-        objectSSBO[render_component->id - 1].resolution =
-                glm::vec2{static_cast<float>(width), static_cast<float>(height)};
+        objectSSBO[render_component->id - 1].dimension = glm::vec2{scale_component->scale.x, scale_component->scale.y};
 
         vmaUnmapMemory(_allocator->Get(), _instanceDataBuffer->_allocation);
 
@@ -145,20 +144,19 @@ void VulkanRenderer::Render(const int width, const int height,
 
         PushConstBlock constants{};
         constants.instanceIndex = render_component->id - 1;
-        constants.hasTexture = 0;
 
         // upload the matrix to the GPU via push constants
         vkCmdPushConstants(_commandBuffers[_currentFrame].Get(),
                            _staticPipeline->GetPipelineLayout(),
-                           VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstBlock),
+                           VK_SHADER_STAGE_ALL, 0, sizeof(PushConstBlock),
                            &constants);
 
         if (render_component.get() != nullptr &&
-            e.get<Entropy::Components::Renderable>()->indexBuffer == nullptr) {
-            auto renderable = e.get<Entropy::Components::Renderable>();
+            e.get<Components::Renderable>()->indexBuffer == nullptr) {
+            const auto renderable = e.get<Components::Renderable>();
             // Bind vertex & index buffers
             const VkBuffer vertexBuffers[] = {renderable->vertexBuffer->GetVulkanBuffer()};
-            VkDeviceSize offsets[] = {0};
+            constexpr VkDeviceSize offsets[] = {0};
             vkCmdBindVertexBuffers(_commandBuffers[_currentFrame].Get(), 0, 1,
                                    vertexBuffers, offsets);
 

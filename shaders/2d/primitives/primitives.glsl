@@ -38,25 +38,25 @@ void RoundedRectangleFrame()
     // =========================================================================
     // Inputs (uniforms)
 
-    vec2  u_rectSize   = vec2(300.0, 300.0);// The pixel-space scale of the rectangle.
-    vec2  u_rectCenter = (u_rectSize * inUV0);// The pixel-space rectangle center location
+    vec2  u_rectSize   = instanceBuffer.objects[PushConstants.instanceIndex].dimension;// The pixel-space scale of the rectangle.
+    vec2  u_rectCenter = (u_rectSize * UV);// The pixel-space rectangle center location
     vec2  u_offset = vec2(20, 20);
 
     float u_edgeSoftness   = 1.0;// How soft the edges should be (in pixels). Higher values could be used to simulate a drop shadow.
-    vec4  u_cornerRadiuses = vec4(40.0, 40.0, 40.0, 40.0);// The radiuses of the corners(in pixels): [topRight, bottomRight, topLeft, bottomLeft]
+    vec4  u_cornerRadiuses = vec4(0.0, 40.0, 10.0, 0.0);// The radiuses of the corners(in pixels): [topRight, bottomRight, topLeft, bottomLeft]
 
     // Border
-    float u_borderThickness = 5.0;// The border size (in pixels)
+    float u_borderThickness = 2.0;// The border size (in pixels)
     float u_borderSoftness  = 2.0;// How soft the (internal) border should be (in pixels)
 
     // Shadow
-    float u_shadowSoftness = 15.0;// The (half) shadow radius (in pixels)
-    vec2  u_shadowOffset   = vec2(5.0, 5.0);// The pixel-space shadow offset from rectangle center
+    float u_shadowSoftness = 4.0;// The (half) shadow radius (in pixels)
+    vec2  u_shadowOffset   = vec2(0.0, 0.0);// The pixel-space shadow offset from rectangle center
 
     // Colors
     vec4  u_colorBg     = vec4(0.0, 0.0, 0.0, 0.0);// The color of background
-    vec4  u_colorRect   = vec4(1.0, 1.0, 1.0, 1.0);// The color of rectangle
-    vec4  u_colorBorder = vec4(0.0, 0.0, 0.0, 1.0);// The color of (internal) border
+    vec4  u_colorRect   = instanceBuffer.objects[PushConstants.instanceIndex].bgColor;// The color of rectangle
+    vec4  u_colorBorder = vec4(80.0 / 255.0, 96.0 / 255.0, 99.0 / 255.0, 1.0);// The color of (internal) border
     vec4  u_colorShadow = vec4(0.4, 0.4, 0.4, 1.0);// The color of shadow
 
     // =========================================================================

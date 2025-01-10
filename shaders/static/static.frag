@@ -1,5 +1,9 @@
 #version 450
 
+#include "common/push_constants.glsl"
+
+#include "common/instance_data.glsl"
+
 // Common
 #include "common/object_types.glsl"
 #include "common/frag_layout.glsl"
@@ -10,15 +14,14 @@
 
 void main()
 {
-    switch (objectType) {
+    switch (instanceBuffer.objects[PushConstants.instanceIndex].type) {
 
-        // Rounded rectangle frame
         case OBJ_TYPE_ROUNDED_RECTANGLE_FRAME:
-            RoundedRectangleFrame();
+        RoundedRectangleFrame();
         break;
 
-        default:
-            outColor = vec4(1.0, 0.0, 1.0, 1.0);
+        default :
+        outColor = vec4(1.0, 0.0, 1.0, 1.0);
         break;
 
     }

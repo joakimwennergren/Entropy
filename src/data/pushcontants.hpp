@@ -20,18 +20,6 @@ namespace Entropy::Data {
          * and other instance-specific properties.
          */
         uint32_t instanceIndex;
-        /**
-         * @brief Indicates whether an entity or object has a texture.
-         *
-         * This variable acts as a flag to determine if a texture is associated
-         * with the renderable component of an entity. It is commonly used in
-         * rendering pipelines to decide if texture-specific operations should
-         * be applied when rendering an object.
-         *
-         * A value of 1 typically means the entity has a texture,
-         * while a value of 0 implies no texture is present.
-         */
-        uint32_t hasTexture;
     };
 }
 

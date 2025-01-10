@@ -1,32 +1,8 @@
 #version 450
 
-layout (location = 0) in vec3 inPos;
-layout (location = 1) in vec3 inNormal;
-layout (location = 2) in vec2 inUV0;
-layout (location = 3) in vec2 inUV1;
-layout (location = 4) in vec4 inJoint0;
-layout (location = 5) in vec4 inWeight0;
-layout (location = 6) in vec4 inColor0;
-
-//push constants block
-layout(push_constant) uniform constants
-{
-    uint instanceIndex;
-    uint hasTexture;
-} PushConstants;
-
-struct ObjectData{
-    mat4 model;
-    vec4 color;
-    vec2 resolution;
-    int type;
-
-};
-
-//all object matrices
-layout(std140, set = 0, binding = 0) readonly buffer ObjectBuffer{
-    ObjectData objects[];
-} objectBuffer;
+#include "common/vertex_layout.glsl"
+#include "common/push_constants.glsl"
+#include "common/instance_data.glsl"
 
 layout (set = 0, binding = 1) uniform UboInstance
 {
@@ -35,33 +11,16 @@ layout (set = 0, binding = 1) uniform UboInstance
 
 } uboInstance;
 
-layout (location = 1) out vec3 outNormal;
-layout (location = 2) out vec2 outUV0;
-layout (location = 3) out vec4 outColor0;
-layout (location = 4) out vec4 outColor1;
-layout (location = 5) out int outType;
-layout (location = 6) out vec2 outResolution;
-layout (location = 7) out uint outHasTexture;
-
 void main()
 {
-    uint instanceIndex = PushConstants.instanceIndex;
+    // Feed fragment shader with vertex data
+    Normal = inNormal;
+    UV = inUV;
+    Color = inColor;
 
-    // Colors
-    outColor0 = inColor0;
-    outColor1 = objectBuffer.objects[instanceIndex].color;
+    // Model matrix
+    mat4 modelMatrix = instanceBuffer.objects[PushConstants.instanceIndex].model;
 
-    // UV
-    outUV0 = inUV0;
-
-    // Normals
-    outNormal = inNormal;
-
-    outType = objectBuffer.objects[instanceIndex].type;
-    outResolution = objectBuffer.objects[instanceIndex].resolution;
-    outHasTexture = PushConstants.hasTexture;
-
-    mat4 modelMatrix = objectBuffer.objects[instanceIndex].model;
-
-    gl_Position =  uboInstance.perspective * uboInstance.view * modelMatrix * vec4(inPos, 1.0);
+    // Calculate MVP matrix
+    gl_Position = uboInstance.perspective * uboInstance.view * modelMatrix * vec4(inPos, 1.0);
 }
