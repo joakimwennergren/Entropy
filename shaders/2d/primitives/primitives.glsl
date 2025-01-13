@@ -1,5 +1,6 @@
 void RoundedRectangleFrame()
 {
+    // https://andorsaga.wordpress.com/2018/06/26/sdfs-rendering-a-rectangle/
     // =========================================================================
     // Inputs (uniforms)
 
