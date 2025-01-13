@@ -38,6 +38,15 @@ float RoundedBoxSDF(vec2 CenterPosition, vec2 Size, vec4 Radius)
 
     vec2 q = abs(CenterPosition)-Size+Radius.x;
     return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - Radius.x;
+}
+
+float RoundedBoxSDFInside(vec2 CenterPosition, vec2 Size, vec4 Radius)
+{
+    Radius.xy = (CenterPosition.x > 0.0) ? Radius.xy : Radius.zw;
+    Radius.x  = (CenterPosition.y > 0.0) ? Radius.x  : Radius.y;
+
+    vec2 q = abs(CenterPosition)-Size+Radius.x;
+    return min(max(q.x, q.y), 0.0) - Radius.x;
 }void RoundedRectangle()
 {
     // https://andorsaga.wordpress.com/2018/06/26/sdfs-rendering-a-rectangle/
@@ -71,6 +80,7 @@ float RoundedBoxSDF(vec2 CenterPosition, vec2 Size, vec4 Radius)
 
     // Calculate distance to edge.
     float distance = RoundedBoxSDF(u_rectCenter-halfSize, halfSize - u_offset, u_cornerRadiuses);
+    float insideDistance = RoundedBoxSDFInside(u_rectCenter-halfSize, halfSize - u_offset, u_cornerRadiuses);
 
     // Smooth the result (free antialiasing).
     float smoothedAlpha = 1.0-smoothstep(0.0, u_edgeSoftness, distance);
@@ -111,7 +121,7 @@ float RoundedBoxSDF(vec2 CenterPosition, vec2 Size, vec4 Radius)
     );
 
     // Finally output color
-    outColor = res_shadow_with_rect_with_border;
+    outColor = res_shadow_with_rect_with_border; //res_shadow_with_rect_with_border;
 }
 
 void main()

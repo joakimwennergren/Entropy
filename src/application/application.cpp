@@ -24,6 +24,7 @@ using namespace Entropy::Graphics::Vulkan::Textures;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
 using namespace Entropy::Graphics::Vulkan::Memory;
 using namespace Entropy::ECS;
+using namespace Entropy::Input;
 
 using namespace Entropy::EntryPoints;
 
@@ -91,7 +92,11 @@ Application::Application() {
   // Scripting
   sl->registerService(std::make_shared<Lua>());
 
+  // Create the renderer
   _renderer = std::make_shared<Renderers::VulkanRenderer>();
+
+  // Input
+  keyboard = std::make_shared<Input::Keyboard>();
 
   if (const auto instance = sl->getService<IVulkanInstance>(); glfwCreateWindowSurface(instance->Get(), _window,
                                                                  nullptr,
@@ -305,8 +310,6 @@ void Application::Run() {
         1.0f /
         60.0f); // Example: step the simulation with a time step of 1/60 seconds
 
-    // ExecuteScripts(sceneGraph, lua);
-
     _camera->updateCameraVectors();
     _renderer->_camera->setPerspective(
         _camera->Zoom, (float)width / (float)height, 1.0f, 100000.0f);
@@ -317,28 +320,23 @@ void Application::Run() {
 void keyCallback(GLFWwindow *window, int key, int scancode, int action,
                  int mods) {
   if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr) {
-    if (action == GLFW_REPEAT || action == GLFW_PRESS) {
-      app->keyDown = key;
-    } else {
-      app->keyDown = -1;
-    }
-  }
 
-  /*
-  ImGuiIO &io = ImGui::GetIO();
-  if (action == GLFW_PRESS)
-    io.KeysDown[key] = true;
-  if (action == GLFW_RELEASE)
-    io.KeysDown[key] = false;
-  // Modifiers are not reliable across systems
-  io.KeyCtrl =
-      io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
-  io.KeyShift =
-      io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
-  io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
-  io.KeySuper =
-      io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
-      */
+    if(action == GLFW_PRESS) {
+      app->keyboard->keysDown[key] = true;
+    }
+
+    if(action == GLFW_RELEASE) {
+      app->keyboard->keysDown[key] = false;
+    }
+
+    app->keyboard->keyCtrl = app->keyboard->keysDown[GLFW_KEY_LEFT_CONTROL] || app->keyboard->keysDown[GLFW_KEY_RIGHT_CONTROL];
+
+    app->keyboard->keyShift = app->keyboard->keysDown[GLFW_KEY_LEFT_SHIFT] || app->keyboard->keysDown[GLFW_KEY_RIGHT_SHIFT];
+
+    app->keyboard->keyAlt = app->keyboard->keysDown[GLFW_KEY_LEFT_ALT] || app->keyboard->keysDown[GLFW_KEY_RIGHT_ALT];
+
+    app->keyboard->keySuper = app->keyboard->keysDown[GLFW_KEY_LEFT_SUPER] || app->keyboard->keysDown[GLFW_KEY_RIGHT_SUPER];
+  }
 }
 
 void character_callback(GLFWwindow *window, unsigned int codepoint) {
@@ -378,13 +376,12 @@ void cursor_position_callback(GLFWwindow *window, double xposIn,
 
 void framebuffer_resize_callback(GLFWwindow *window, const int width, const int height) {
   if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr) {
-    const ServiceLocator *sl = ServiceLocator::GetInstance();
-    const auto _lua = sl->getService<ILua>();
     app->screen_width = width;
     app->screen_height = height;
     app->GetVulkanRenderer()->OnResize(width, height);
     app->GetVulkanRenderer()->Render(width, height, 1.0, 1.0);
-    auto on_render = _lua->Get()->get<sol::function>("OnRender");
+    const auto lua = ServiceLocator::GetInstance()->getService<ILua>();
+    auto on_render = lua->Get()->get<sol::function>("OnRender");
     if (on_render.valid()) {
       on_render(1.0f, width, height);
     }

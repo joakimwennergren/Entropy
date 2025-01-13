@@ -5,6 +5,8 @@
 #include <entropy.hpp>
 #include <graphics/renderers/vulkan_renderer.hpp>
 
+#include <input/keyboard/keyboard.hpp>
+
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || \
     defined(BUILD_FOR_LINUX)
 
@@ -231,6 +233,8 @@ namespace Entropy::EntryPoints
     std::unordered_map<uint32_t, flecs::entity> entityMap;
 
     uint32_t physics2dindex = 0;
+
+    std::shared_ptr<Input::Keyboard> keyboard;
 
   private:
     /**

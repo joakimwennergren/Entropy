@@ -31,6 +31,7 @@ void RoundedRectangle()
 
     // Calculate distance to edge.
     float distance = RoundedBoxSDF(u_rectCenter-halfSize, halfSize - u_offset, u_cornerRadiuses);
+    float insideDistance = RoundedBoxSDFInside(u_rectCenter-halfSize, halfSize - u_offset, u_cornerRadiuses);
 
     // Smooth the result (free antialiasing).
     float smoothedAlpha = 1.0-smoothstep(0.0, u_edgeSoftness, distance);
@@ -71,5 +72,5 @@ void RoundedRectangle()
     );
 
     // Finally output color
-    outColor = res_shadow_with_rect_with_border;
+    outColor = res_shadow_with_rect_with_border; //res_shadow_with_rect_with_border;
 }
