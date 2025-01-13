@@ -16,8 +16,8 @@ void main()
 {
     switch (instanceBuffer.objects[PushConstants.instanceIndex].type) {
 
-        case OBJ_TYPE_ROUNDED_RECTANGLE_FRAME:
-        RoundedRectangleFrame();
+        case OBJ_TYPE_ROUNDED_RECTANGLE:
+            RoundedRectangle();
         break;
 
         default :

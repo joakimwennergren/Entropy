@@ -1,13 +1,13 @@
-void RoundedRectangleFrame()
+void RoundedRectangle()
 {
     // https://andorsaga.wordpress.com/2018/06/26/sdfs-rendering-a-rectangle/
-    // =========================================================================
-    // Inputs (uniforms)
-
+    
+    // Dimensions
     vec2  u_rectSize   = instanceBuffer.objects[PushConstants.instanceIndex].dimension;// The pixel-space scale of the rectangle.
     vec2  u_rectCenter = (u_rectSize * UV);// The pixel-space rectangle center location
     vec2  u_offset = vec2(20, 20);
-
+    
+    // Corner radiuses
     float u_edgeSoftness   = 1.0;// How soft the edges should be (in pixels). Higher values could be used to simulate a drop shadow.
     vec4  u_cornerRadiuses = vec4(10.0, 120.0, 120.0, 10.0);// The radiuses of the corners(in pixels): [topRight, bottomRight, topLeft, bottomLeft]
 
@@ -29,23 +29,17 @@ void RoundedRectangleFrame()
 
     vec2 halfSize = (u_rectSize / 2.0);// Rectangle extents (half of the size)
 
-    // -------------------------------------------------------------------------
-
     // Calculate distance to edge.
-    float distance = roundedBoxSDF(u_rectCenter-halfSize, halfSize - u_offset, u_cornerRadiuses);
+    float distance = RoundedBoxSDF(u_rectCenter-halfSize, halfSize - u_offset, u_cornerRadiuses);
 
     // Smooth the result (free antialiasing).
     float smoothedAlpha = 1.0-smoothstep(0.0, u_edgeSoftness, distance);
 
-    // -------------------------------------------------------------------------
-    // Border.
-
+    // Border 
     float borderAlpha   = 1.0-smoothstep(u_borderThickness - u_borderSoftness, u_borderThickness, abs(distance));
 
-    // -------------------------------------------------------------------------
     // Apply a drop shadow effect.
-
-    float shadowDistance  = roundedBoxSDF(u_rectCenter-halfSize + u_shadowOffset, halfSize - u_offset, u_cornerRadiuses);
+    float shadowDistance  = RoundedBoxSDF(u_rectCenter-halfSize + u_shadowOffset, halfSize - u_offset, u_cornerRadiuses);
     float shadowAlpha      = 1.0-smoothstep(-u_shadowSoftness, u_shadowSoftness, shadowDistance);
 
     // -------------------------------------------------------------------------
@@ -58,11 +52,10 @@ void RoundedRectangleFrame()
     //   Note:
     //     - Used 'min(u_colorRect.a, smoothedAlpha)' instead of 'smoothedAlpha'
     //       to enable rectangle color transparency
-    vec4 res_shadow_with_rect_color =
-    mix(
-    res_shadow_color,
-    u_colorRect,
-    min(u_colorRect.a, smoothedAlpha)
+    vec4 res_shadow_with_rect_color = mix(
+        res_shadow_color,
+        u_colorRect,
+        min(u_colorRect.a, smoothedAlpha)
     );
 
     // Blend (background+shadow+rect) with border
@@ -71,14 +64,12 @@ void RoundedRectangleFrame()
     //       to make border 'internal'
     //     - Used 'min(u_colorBorder.a, alpha)' instead of 'alpha' to enable
     //       border color transparency
-    vec4 res_shadow_with_rect_with_border =
-    mix(
-    res_shadow_with_rect_color,
-    u_colorBorder,
-    min(u_colorBorder.a, min(borderAlpha, smoothedAlpha))
+    vec4 res_shadow_with_rect_with_border = mix(
+        res_shadow_with_rect_color,
+        u_colorBorder,
+        min(u_colorBorder.a, min(borderAlpha, smoothedAlpha))
     );
 
-    // -------------------------------------------------------------------------
-
+    // Finally output color
     outColor = res_shadow_with_rect_with_border;
 }
