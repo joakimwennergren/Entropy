@@ -15,3 +15,8 @@ float RoundedBoxSDFInside(vec2 CenterPosition, vec2 Size, vec4 Radius)
     vec2 q = abs(CenterPosition)-Size+Radius.x;
     return min(max(q.x, q.y), 0.0) - Radius.x;
 }
+
+float CircleSDF(vec2 p, float r)
+{
+    return length(p) - r;
+}

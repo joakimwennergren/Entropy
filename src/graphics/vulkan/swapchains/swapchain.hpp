@@ -213,7 +213,7 @@ namespace Entropy::Graphics::Vulkan::SwapChains {
       return availableFormats[0];
     }
 
-    VkPresentModeKHR ChooseSwapPresentMode(
+    static VkPresentModeKHR ChooseSwapPresentMode(
       const std::vector<VkPresentModeKHR> &availablePresentModes) {
       for (const auto &availablePresentMode: availablePresentModes) {
         if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {

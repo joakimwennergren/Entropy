@@ -9,7 +9,7 @@
 #include "common/frag_layout.glsl"
 
 // 2D
-#include "2d/sdf/primitives.glsl"
+#include "2d/sdf/functions.glsl"
 #include "2d/primitives/primitives.glsl"
 
 void main()
@@ -17,7 +17,15 @@ void main()
     switch (instanceBuffer.objects[PushConstants.instanceIndex].type) {
 
         case OBJ_TYPE_ROUNDED_RECTANGLE:
-            RoundedRectangle();
+        RoundedRectangle();
+        break;
+
+        case OBJ_TYPE_CIRCLE:
+        Circle();
+        break;
+
+        case OBJ_TYPE_BASIC_SPRITE:
+        outColor = texture(Sampler2D, UV);
         break;
 
         default :

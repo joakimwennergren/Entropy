@@ -142,6 +142,8 @@ namespace Entropy::Scripting {
 
     void BindTypes() {
       _lua.new_usertype<b2BodyId>("b2BodyId");
+      _lua.new_usertype<glm::vec2>("Vec2");
+      _lua.new_usertype<glm::vec4>("Vec4");
       //_lua.new_usertype<b2Vec2>("b2Vec2", "x", &b2Vec2::x, "y", &b2Vec2::y);
 
       // Box2D 2D vector
@@ -202,15 +204,33 @@ namespace Entropy::Scripting {
         return PrimitiveFactory::CreateSprite(path);
       };
 
-      _lua["CreateQuad"] = []() {
-        return PrimitiveFactory::CreateQuad();
+      _lua["CreateRoundedRectangle"] = [](const float x, const float y, const float z, const float w, const float h,
+                                          glm::vec4 cornerRadiuses) {
+        const auto roundedRect = PrimitiveFactory::CreateQuad(0);
+        if (const auto position = roundedRect.get_mut<Position>(); position != nullptr) {
+          position->pos = glm::vec3(x, y, z);
+        }
+        if (const auto scale = roundedRect.get_mut<Scale>(); scale != nullptr) {
+          scale->scale = glm::vec3(w, h, 0.0);
+        }
+        return roundedRect;
+      };
+
+      _lua["CreateCircle"] = [](const float x, const float y, const float z, const float r) {
+        const auto circle = PrimitiveFactory::CreateQuad(1);
+        if (const auto position = circle.get_mut<Position>(); position != nullptr) {
+          position->pos = glm::vec3(x, y, z);
+        }
+        if (const auto scale = circle.get_mut<Scale>(); scale != nullptr) {
+          scale->scale = glm::vec3(r, r, 0.0);
+        }
+        return circle;
       };
 
       // TRS functions
       _lua["Translate"] = [this](const flecs::entity entity, const float x,
                                  const float y, const float z) {
         if (const auto position = entity.get_mut<Position>(); position != nullptr) {
-          const float ppm = _cameraManager->currentCamera->PPM;
           position->pos = glm::vec3(x, y, z);
         }
       };

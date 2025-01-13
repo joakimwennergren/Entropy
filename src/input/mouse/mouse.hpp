@@ -1,25 +1,20 @@
 #pragma once
 
 #include <map>
-#include <config.hpp>
 #include <spdlog/spdlog.h>
+#include <glm/glm.hpp>
 
-namespace Entropy
-{
-    namespace Input
-    {
-        struct Mouse
-        {
-            // Position of cursor
-            float xPos;
-            float yPos;
 
-            // Scrolling
-            float xOffset;
-            float yOffset;
+namespace Entropy::Input {
+    struct Mouse {
+        // Position of cursor
+        glm::vec2 pos{};
 
-            // Buttons
-            std::map<int, bool> mouseDown;
-        };
-    }
+        // Scrolling
+        glm::vec2 scroll{};
+
+        // Buttons
+        std::map<int, bool> mouseDown;
+    };
 }
+

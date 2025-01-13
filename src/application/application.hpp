@@ -6,6 +6,7 @@
 #include <graphics/renderers/vulkan_renderer.hpp>
 
 #include <input/keyboard/keyboard.hpp>
+#include <input/mouse/mouse.hpp>
 
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_WINDOWS) || \
     defined(BUILD_FOR_LINUX)
@@ -22,7 +23,7 @@
  * @param width The new width of the framebuffer.
  * @param height The new height of the framebuffer.
  */
-void framebuffer_resize_callback(GLFWwindow *window, int width, int height);
+void OnFramebufferResize(GLFWwindow *window, int width, int height);
 
 /**
  * Callback function for handling GLFW key events.
@@ -33,8 +34,8 @@ void framebuffer_resize_callback(GLFWwindow *window, int width, int height);
  * @param action The key action: GLFW_PRESS, GLFW_RELEASE, or GLFW_REPEAT.
  * @param mods Bit field describing which modifier keys were held down.
  */
-void keyCallback(GLFWwindow *window, int key, int scancode, int action,
-                 int mods);
+void OnKey(GLFWwindow *window, int key, int scancode, int action,
+           int mods);
 
 /**
  * Callback function to handle cursor position events in a GLFW window.
@@ -49,7 +50,7 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action,
  * @param xpos The new x-coordinate of the cursor.
  * @param ypos The new y-coordinate of the cursor.
  */
-void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
+void OnCursorPosition(GLFWwindow *window, double xpos, double ypos);
 
 /**
  * @brief Callback function that handles window refresh events.
@@ -72,8 +73,8 @@ void window_refresh_callback(GLFWwindow *window);
  * @param action Indicates whether the button was pressed or released.
  * @param mods Bitfield describing which modifier keys were held down.
  */
-void MouseButtonCallback(GLFWwindow *window, int button, int action,
-                         int mods);
+void OnMouseButtonCallback(GLFWwindow *window, int button, int action,
+                           int mods);
 
 /**
  * Callback function for handling Unicode character input events.
@@ -81,7 +82,7 @@ void MouseButtonCallback(GLFWwindow *window, int button, int action,
  * @param window A pointer to the GLFW window that received the event.
  * @param codepoint The Unicode code point of the character.
  */
-void character_callback(GLFWwindow *window, unsigned int codepoint);
+void OnCharacter(GLFWwindow *window, unsigned int codepoint);
 
 /**
  * Callback function for handling scroll events in a GLFW window.
@@ -90,7 +91,7 @@ void character_callback(GLFWwindow *window, unsigned int codepoint);
  * @param xoffset The scroll offset along the x-axis.
  * @param yoffset The scroll offset along the y-axis.
  */
-void ScrollCallback(GLFWwindow *window, double xoffset, double yoffset);
+void OnScroll(GLFWwindow *window, double xoffset, double yoffset);
 
 /**
  * Callback function called when a GLFW window is iconified or restored.
@@ -98,7 +99,7 @@ void ScrollCallback(GLFWwindow *window, double xoffset, double yoffset);
  * @param window A pointer to the GLFW window that received the event.
  * @param iconified A flag indicating whether the window was iconified (1) or restored (0).
  */
-void WindowIconifyCallback(GLFWwindow *window, int iconified);
+void OnWindowIconify(GLFWwindow *window, int iconified);
 
 /**
  * Callback function for handling changes in the content scale of a specified window.
@@ -109,13 +110,11 @@ void WindowIconifyCallback(GLFWwindow *window, int iconified);
  * @param xscale The new x-axis content scale of the window.
  * @param yscale The new y-axis content scale of the window.
  */
-void WindowContentScaleCallback(GLFWwindow *window, float xscale,
-                                float yscale);
+void OnWindowContentScale(GLFWwindow *window, float xscale,
+                          float yscale);
 
-namespace Entropy::EntryPoints
-{
-  class Application
-  {
+namespace Entropy::EntryPoints {
+  class Application {
   public:
     /**
      * Constructor for the Application class.
@@ -159,7 +158,7 @@ namespace Entropy::EntryPoints
      * @param screen_height
      * @param deltaTime The time difference between the current frame and the previous frame in seconds.
      */
-    virtual void OnRender(float screen_width, float screen_height, float deltaTime) = 0;
+    virtual void OnRender(int screen_width, int screen_height, float deltaTime) = 0;
 
     /**
      * Runs the application's main loop.
@@ -175,12 +174,6 @@ namespace Entropy::EntryPoints
 
     std::shared_ptr<Renderers::VulkanRenderer> GetVulkanRenderer() { return _renderer; }
 
-    int keyDown = -1;
-
-    float scrollX = 0.0f;
-
-    float scrollY = 0.0f;
-
     /**
      * Scaling factor along the x-axis.
      *
@@ -189,7 +182,7 @@ namespace Entropy::EntryPoints
      * It is updated through the window content scale callback to reflect changes
      * in the display scaling settings.
      */
-    float xscale = 1.0;
+    float xscale = 1.0f;
     /**
      * Scaling factor for the application's content along the Y-axis.
      *
@@ -197,7 +190,7 @@ namespace Entropy::EntryPoints
      * It is typically updated by the window content scale callback to reflect changes
      * in the window's scaling settings.
      */
-    float yscale = 1.0;
+    float yscale = 1.0f;
 
     /**
      * Stores the width of the application's screen.
@@ -205,22 +198,15 @@ namespace Entropy::EntryPoints
      * This variable holds the current width of the screen in pixels. It is primarily used
      * for configuring rendering settings and handling window resize events.
      */
-    int screen_width = 0;
+    int screen_width{};
     /**
      * Global variable that stores the height of the screen.
      *
      * This variable is used within the Application class to keep track of the current
      * screen height, which can be referenced in rendering and layout calculations.
      */
-    int screen_height = 0;
-    /**
-     * Flag indicating whether the application needs to be resized.
-     *
-     * This boolean flag is set to true whenever a resize event occurs.
-     * It is checked in the main loop to determine if the framebuffer
-     * and related resources need to be updated to match the new window size.
-     */
-    bool needResize = false;
+    int screen_height{};
+
     /**
      * A flag indicating whether the application window is minimized.
      *
@@ -230,11 +216,9 @@ namespace Entropy::EntryPoints
      */
     bool isMinimized = false;
 
-    std::unordered_map<uint32_t, flecs::entity> entityMap;
-
-    uint32_t physics2dindex = 0;
-
+    // Input
     std::shared_ptr<Input::Keyboard> keyboard;
+    std::shared_ptr<Input::Mouse> mouse;
 
   private:
     /**
@@ -280,14 +264,14 @@ namespace Entropy::EntryPoints
      * It is used to calculate the time elapsed between ticks, facilitating updates
      * and synchronization within the game loop.
      */
-    float _lastTick = 0.0f;
+    float _lastTick{};
     /**
      * Variable that represents the time difference between the current frame and the previous frame.
      *
      * This value is typically used to achieve frame rate independent movement and calculations
      * in real-time applications, such as games or simulations.
      */
-    float _deltaTime = 0.0f;
+    float _deltaTime{};
   };
 } // namespace Entropy::EntryPoints
 #endif
