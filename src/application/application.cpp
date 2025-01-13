@@ -178,6 +178,8 @@ void Application::Run() {
   // debug2DDrawer->DrawSolidPolygon = DrawSolidPolygon;
   // debug2DDrawer->context = &physics2d->debugDrawEntities;
 
+  glfwGetWindowContentScale(_window, &xscale, &yscale);
+
   while (!glfwWindowShouldClose(_window)) {
     // Wait for events when minimized
     while (isMinimized) {
@@ -187,8 +189,6 @@ void Application::Run() {
     // Calculate delta time
     _deltaTime = _timer->GetTick() - _lastTick;
     _lastTick = _timer->GetTick();
-
-    glfwGetWindowContentScale(_window, &xscale, &yscale);
 
     _renderer->Render(screen_width, screen_height, xscale, yscale);
 
@@ -255,8 +255,10 @@ void OnFramebufferResize(GLFWwindow *window, const int width, const int height) 
   if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr) {
     app->screen_width = width;
     app->screen_height = height;
+
     app->GetVulkanRenderer()->OnResize(width, height);
-    app->GetVulkanRenderer()->Render(width, height, 1.0, 1.0);
+    app->GetVulkanRenderer()->Render(width, height, app->xscale, app->yscale);
+
     const auto lua = ServiceLocator::GetInstance()->getService<ILua>();
     if (const auto on_render = lua->Get()->get<sol::function>("OnRender"); on_render.valid()) {
       on_render(1.0f, width, height);
