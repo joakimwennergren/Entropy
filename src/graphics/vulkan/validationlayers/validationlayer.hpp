@@ -1,48 +1,37 @@
-#pragma once
+#ifndef ENTROPY_VALIDATION_LAYERS_H
+#define ENTROPY_VALIDATION_LAYERS_H
 
-#include <config.hpp>
-#include <iostream>
 #include <vulkan/vulkan.hpp>
 
-namespace Entropy {
-namespace Graphics {
-namespace Vulkan {
-namespace ValidationLayers {
+namespace Entropy::Graphics::Vulkan::ValidationLayers {
+  class ValidationLayer {
+  public:
+    static bool CheckValidationLayerSupport(
+      const std::vector<const char *> &validationLayers) {
+      uint32_t layerCount;
+      vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
-class ValidationLayer {
-public:
-  /**
-   * @brief Check if provided layers are supported
-   * @param validationLayers std::vector of layers
-   * @return bool
-   */
-  static inline bool CheckValidationLayerSupport(
-      const std::vector<const char *> validationLayers) {
-    uint32_t layerCount;
-    vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+      std::vector<VkLayerProperties> availableLayers(layerCount);
+      vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
-    std::vector<VkLayerProperties> availableLayers(layerCount);
-    vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+      for (const char *layerName: validationLayers) {
+        bool layerFound = false;
 
-    for (const char *layerName : validationLayers) {
-      bool layerFound = false;
+        for (const auto &layerProperties: availableLayers) {
+          if (strcmp(layerName, layerProperties.layerName) == 0) {
+            layerFound = true;
+            break;
+          }
+        }
 
-      for (const auto &layerProperties : availableLayers) {
-        if (strcmp(layerName, layerProperties.layerName) == 0) {
-          layerFound = true;
-          break;
+        if (!layerFound) {
+          return false;
         }
       }
 
-      if (!layerFound) {
-        return false;
-      }
+      return true;
     }
+  };
+} // namespace Entropy::Graphics::Vulkan::ValidationLayers
 
-    return true;
-  }
-};
-} // namespace ValidationLayers
-} // namespace Vulkan
-} // namespace Graphics
-} // namespace Entropy
+#endif // ENTROPY_VALIDATION_LAYERS_H

@@ -4,14 +4,13 @@
 #include <graphics/vulkan/imageviews/imageview.hpp>
 #include <graphics/vulkan/memory/allocator.hpp>
 #include <graphics/vulkan/textures/base_texture.hpp>
-#include <graphics/vulkan/utilities/utilities.hpp>
+#include <graphics/vulkan/utilities/helpers.hpp>
 #include <vulkan/vulkan.hpp>
 
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;
 using namespace Entropy::Graphics::Vulkan::Devices;
 using namespace Entropy::Graphics::Vulkan::ImageViews;
 using namespace Entropy::Graphics::Vulkan::Memory;
-using namespace Entropy::Graphics::Vulkan::Utilities;
 
 namespace Entropy::Graphics::Vulkan::Textures {
   struct SwapChainTexture : BaseTexture {

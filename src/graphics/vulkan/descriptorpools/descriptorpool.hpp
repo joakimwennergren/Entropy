@@ -4,11 +4,9 @@
 
 #include <config.hpp>
 #include <graphics/vulkan/devices/ilogical_device.hpp>
-#include <graphics/vulkan/utilities/utilities.hpp>
+#include <graphics/vulkan/utilities/helpers.hpp>
 #include <servicelocators/servicelocator.hpp>
 #include <vulkan/vulkan.hpp>
-
-using namespace Entropy::Graphics::Vulkan;
 
 namespace Entropy::Graphics::Vulkan::DescriptorPools {
   /**

@@ -1,15 +1,12 @@
-#pragma once
+#ifndef ENTROPY_IMAGEVIEW_H
+#define ENTROPY_IMAGEVIEW_H
 
 #include <vulkan/vulkan.hpp>
 
 #include <graphics/vulkan/queuefamilies/queuefamily.hpp>
 #include <graphics/vulkan/surfaces/surface.hpp>
 #include <graphics/vulkan/devices/ilogical_device.hpp>
-#include <graphics/vulkan/utilities/utilities.hpp>
 
-
-using namespace Entropy::Graphics::Vulkan::Surfaces;
-using namespace Entropy::Graphics::Vulkan::QueueFamilies;
 
 namespace Entropy::Graphics::Vulkan::ImageViews {
     /**
@@ -57,3 +54,5 @@ namespace Entropy::Graphics::Vulkan::ImageViews {
         std::shared_ptr<ILogicalDevice> _logicalDevice;
     };
 } // namespace Entropy::Graphics::Vulkan::ImageViews
+
+#endif // ENTROPY_IMAGEVIEW_H

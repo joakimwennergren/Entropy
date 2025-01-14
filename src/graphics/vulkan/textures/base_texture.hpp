@@ -15,14 +15,13 @@
 #include <graphics/vulkan/imageviews/imageview.hpp>
 #include <graphics/vulkan/memory/allocator.hpp>
 #include <graphics/vulkan/synchronization/queuesync.hpp>
-#include <graphics/vulkan/utilities/utilities.hpp>
+#include <graphics/vulkan/utilities/helpers.hpp>
 
 #ifdef BUILD_FOR_ANDROID
 #include <android/asset_manager.h>
 #endif
 
 using namespace Entropy::Graphics::Vulkan::Buffers;
-using namespace Entropy::Graphics::Vulkan::Utilities;
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;
 using namespace Entropy::Graphics::Vulkan::ImageViews;
 using namespace Entropy::Graphics::Vulkan::Memory;

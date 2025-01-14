@@ -1,5 +1,4 @@
 #include "swapchain.hpp"
-#include "vulkan/vulkan_core.h"
 
 using namespace Entropy::Graphics::Vulkan::SwapChains;
 

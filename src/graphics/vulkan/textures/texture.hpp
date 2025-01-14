@@ -9,7 +9,7 @@
 #include <graphics/vulkan/buffers/stagedbuffer.hpp>
 #include <graphics/vulkan/imageviews/imageview.hpp>
 #include <graphics/vulkan/textures/base_texture.hpp>
-#include <graphics/vulkan/utilities/utilities.hpp>
+#include <graphics/vulkan/utilities/helpers.hpp>
 
 #ifdef BUILD_FOR_ANDROID
 #include <android/asset_manager.h>
@@ -17,7 +17,6 @@
 
 using namespace Entropy::Graphics::Vulkan::Textures;
 using namespace Entropy::Graphics::Vulkan::Buffers;
-using namespace Entropy::Graphics::Vulkan::Utilities;
 using namespace Entropy::Graphics::Vulkan::ImageViews;
 
 namespace Entropy::Graphics::Vulkan::Textures {

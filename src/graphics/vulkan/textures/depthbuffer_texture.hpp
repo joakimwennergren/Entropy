@@ -1,6 +1,6 @@
 #pragma once
 
-#include "graphics/vulkan/utilities/utilities.hpp"
+#include "graphics/vulkan/utilities/helpers.hpp"
 #include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
 #include <graphics/vulkan/imageviews/imageview.hpp>
 #include <graphics/vulkan/memory/allocator.hpp>

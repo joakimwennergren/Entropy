@@ -1,14 +1,12 @@
-#pragma once
-#include "vulkan/vulkan_core.h"
+#ifndef ENTROPY_VULKAN_INSTANCE_H
+#define ENTROPY_VULKAN_INSTANCE_H
+
 #include <vulkan/vulkan.hpp>
-
 #include <spdlog/spdlog.h>
-
 #include "ivk_instance.hpp"
 #include <graphics/vulkan/validationlayers/validationlayer.hpp>
 #include <servicelocators/servicelocator.hpp>
-
-using namespace Entropy::Graphics::Vulkan::ValidationLayers;
+#include <graphics/vulkan/utilities/helpers.hpp>
 
 namespace Entropy::Graphics::Vulkan::Instances {
   struct VulkanInstance final : ServiceBase<IVulkanInstance> {
@@ -89,5 +87,4 @@ namespace Entropy::Graphics::Vulkan::Instances {
   };
 } // namespace Entropy::Graphics::Vulkan::Instances
 
-
-
+#endif // ENTROPY_VULKAN_INSTANCE_H

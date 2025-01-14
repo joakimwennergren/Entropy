@@ -14,7 +14,7 @@
 
 #include <graphics/vulkan/devices/ilogical_device.hpp>
 #include <graphics/vulkan/devices/iphysical_device.hpp>
-#include <graphics/vulkan/utilities/utilities.hpp>
+#include <graphics/vulkan/utilities/helpers.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Surfaces;
 using namespace Entropy::Graphics::Vulkan::QueueFamilies;

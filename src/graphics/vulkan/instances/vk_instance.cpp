@@ -47,7 +47,7 @@ VulkanInstance::VulkanInstance() {
   createInfo.enabledExtensionCount = (uint32_t) extensions.size();
   createInfo.ppEnabledExtensionNames = extensions.data();
 
-  if (ValidationLayer::CheckValidationLayerSupport(_validationLayers)) {
+  if (ValidationLayers::ValidationLayer::CheckValidationLayerSupport(_validationLayers)) {
     createInfo.enabledLayerCount = (uint32_t) _validationLayers.size();
     createInfo.ppEnabledLayerNames = _validationLayers.data();
   }
@@ -66,10 +66,8 @@ VulkanInstance::VulkanInstance() {
   dbgCreateInfo.pfnUserCallback = debugCallback;
   dbgCreateInfo.pUserData = nullptr; // Optional
 
-  if (CreateDebugUtilsMessengerEXT(_instance, &dbgCreateInfo, nullptr,
-                                   &_debugMessenger) != VK_SUCCESS) {
-    throw std::runtime_error("failed to setup debug messenger!");
-  }
+  VK_CHECK(CreateDebugUtilsMessengerEXT(_instance, &dbgCreateInfo, nullptr,
+                                        &_debugMessenger));
 }
 
 VulkanInstance::~VulkanInstance() {

@@ -2,7 +2,7 @@
 
 #include <cassert>
 #include <graphics/vulkan/memory/allocator.hpp>
-#include <graphics/vulkan/utilities/utilities.hpp>
+#include <graphics/vulkan/utilities/helpers.hpp>
 #include <spdlog/spdlog.h>
 #include <vulkan/vulkan.hpp>
 

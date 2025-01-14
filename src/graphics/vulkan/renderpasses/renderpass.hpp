@@ -8,7 +8,7 @@
 #include <graphics/vulkan/textures/depthbuffer_texture.hpp>
 #include <graphics/vulkan/textures/swapchain_texture.hpp>
 #include <vulkan/vulkan.hpp>
-#include <graphics/vulkan/utilities/utilities.hpp>
+#include <graphics/vulkan/utilities/helpers.hpp>
 
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;
 using namespace Entropy::Graphics::Vulkan::SwapChains;
