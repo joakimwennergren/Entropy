@@ -1,37 +1,55 @@
-#pragma once
+#ifndef ENTROPY_SHADER_H
+#define ENTROPY_SHADER_H
 
 #include <fstream>
 #include <graphics/vulkan/devices/ilogical_device.hpp>
 #include <graphics/vulkan/utilities/helpers.hpp>
 #include <vulkan/vulkan.hpp>
 
-namespace Entropy::Graphics::Vulkan::Shaders
-{
-    class Shader
-    {
-    public:
+namespace Entropy::Graphics::Vulkan::Shaders {
+    struct Shader {
         /**
-         * @brief Constructs a Shader object from given vertex and fragment shader files.
+         * @brief Constructor for the Shader class.
          *
-         * This constructor initializes the Shader object by reading and compiling
-         * the provided vertex and fragment shader files.
+         * This constructor initializes a Shader object by reading the vertex and fragment
+         * shader source files and building their respective shader modules.
          *
-         * @param vert Path to the vertex shader file.
-         * @param frag Path to the fragment shader file.
-         * @return No return value as it is a constructor.
+         * @param vert The file path to the vertex shader source code.
+         * @param frag The file path to the fragment shader source code.
+         * @return None.
          */
         Shader(const std::string &vert, const std::string &frag);
+
 
         /**
          * @brief Destructor for the Shader class.
          *
-         * This destructor releases resources associated with the Shader object,
-         * specifically destroying the vertex and fragment shader modules.
+         * Cleans up resources associated with the Shader object, specifically the
+         * vertex and fragment shader modules. These Vulkan shader modules are
+         * destroyed to release the allocated memory.
+         *
+         * @return None.
          */
         ~Shader();
 
+        /**
+         * @brief Retrieves the Vulkan shader module for the vertex shader.
+         *
+         * This method returns the Vulkan shader module associated with
+         * the vertex shader.
+         *
+         * @return The Vulkan shader module for the vertex shader.
+         */
         [[nodiscard]] VkShaderModule GetVertShaderModule() const { return _shaderModuleVert; }
 
+        /**
+         * @brief Retrieves the fragment shader module.
+         *
+         * This method returns the Vulkan shader module associated with the
+         * fragment shader.
+         *
+         * @return The fragment shader module as a VkShaderModule.
+         */
         [[nodiscard]] VkShaderModule GetFragShaderModule() const { return _shaderModuleFrag; }
 
     private:
@@ -79,3 +97,5 @@ namespace Entropy::Graphics::Vulkan::Shaders
         std::shared_ptr<ILogicalDevice> _logicalDevice;
     };
 } // namespace Entropy::Graphics::Vulkan::Shaders
+
+#endif // ENTROPY_SHADER_H

@@ -6,6 +6,10 @@ function Primitives.CreateSprite(path)
     return CreateSprite(path)
 end
 
+function Primitives.CreateBasicRectangle(x, y, z, w, h)
+    return CreateBasicRectangle(x, y, z, w, h)
+end
+
 function Primitives.CreateRoundedRectangle(x, y, z, w, h, cr)
     return CreateRoundedRectangle(x, y, z, w, h, cr)
 end

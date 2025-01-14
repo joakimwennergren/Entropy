@@ -204,6 +204,17 @@ namespace Entropy::Scripting {
         return PrimitiveFactory::CreateSprite(path);
       };
 
+      _lua["CreateBasicRectangle"] = [](const float x, const float y, const float z, const float w, const float h) {
+        const auto rect = PrimitiveFactory::CreateQuad(3);
+        if (const auto position = rect.get_mut<Position>(); position != nullptr) {
+          position->pos = glm::vec3(x, y, z);
+        }
+        if (const auto scale = rect.get_mut<Scale>(); scale != nullptr) {
+          scale->scale = glm::vec3(w, h, 0.0);
+        }
+        return rect;
+      };
+
       _lua["CreateRoundedRectangle"] = [](const float x, const float y, const float z, const float w, const float h,
                                           glm::vec4 cornerRadiuses) {
         const auto roundedRect = PrimitiveFactory::CreateQuad(0);

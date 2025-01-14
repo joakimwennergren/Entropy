@@ -1,12 +1,10 @@
 #pragma once
 
 #include <graphics/vulkan/commandpools/commandpool.hpp>
-#include <graphics/vulkan/synchronization/queuesync.hpp>
 #include <graphics/vulkan/utilities/helpers.hpp>
 #include <spdlog/spdlog.h>
 
 using namespace Entropy::Graphics::Vulkan::CommandPools;
-using namespace Entropy::Graphics::Vulkan::Synchronization;
 
 namespace Entropy::Graphics::Vulkan::CommandBuffers {
  struct CommandBuffer {

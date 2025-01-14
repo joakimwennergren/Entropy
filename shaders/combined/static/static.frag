@@ -65,7 +65,7 @@ float CircleSDF(vec2 p, float r)
 
     // Corner radiuses
     float u_edgeSoftness   = 1.0;// How soft the edges should be (in pixels). Higher values could be used to simulate a drop shadow.
-    vec4  u_cornerRadiuses = vec4(140.0, 140.0, 140.0, 140.0);// The radiuses of the corners(in pixels): [topRight, bottomRight, topLeft, bottomLeft]
+    vec4  u_cornerRadiuses = vec4(20.0, 20.0, 20.0, 20.0);// The radiuses of the corners(in pixels): [topRight, bottomRight, topLeft, bottomLeft]
 
     // Border
     float u_borderThickness = 0.0;// The border size (in pixels)

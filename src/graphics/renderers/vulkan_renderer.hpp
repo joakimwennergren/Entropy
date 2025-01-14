@@ -56,12 +56,11 @@ namespace Entropy::Graphics::Vulkan::Renderers {
             _cameraManager = sl->getService<ICameraManager>();
 
             _renderPass = std::make_shared<RenderPass>();
+            _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
             //_renderPass->CreateFrameBuffers(800, 800);
 
             // Static Pipeline creation
             _staticPipeline = std::make_unique<StaticPipeline>(_renderPass);
-
-            _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
 
             for (uint32_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++) {
                 _commandBuffers.emplace_back(VK_COMMAND_BUFFER_LEVEL_PRIMARY);

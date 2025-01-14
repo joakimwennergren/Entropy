@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ENTROPY_ALLOCATOR_H
+#define ENTROPY_ALLOCATOR_H
 
 #include <graphics/vulkan/instances/ivk_instance.hpp>
 #include <graphics/vulkan/devices/ilogical_device.hpp>
@@ -6,11 +7,16 @@
 #include <graphics/vulkan/utilities/helpers.hpp>
 
 #include "iallocator.hpp"
-#include "spdlog/spdlog.h"
-#include "vk_mem_alloc.h"
-#include <servicelocators/servicelocator.hpp>
 
 namespace Entropy::Graphics::Vulkan::Memory {
+  /**
+   * Allocator initializes and manages Vulkan Memory Allocator (VMA) for efficient memory management in a Vulkan application.
+   *
+   * This class interfaces with Vulkan services and is responsible for setting up and maintaining the VMA allocator instance.
+   * It ensures optimal performance and abstraction by handling low-level Vulkan memory allocation tasks.
+   *
+   * @return Constructs the Allocator object and prepares the VMA instance for memory operations.
+   */
   struct Allocator final : ServiceBase<IAllocator> {
     /**
      * Allocator constructor initializes the VMA (Vulkan Memory Allocator) with the required settings and Vulkan functions.
@@ -53,9 +59,18 @@ namespace Entropy::Graphics::Vulkan::Memory {
      */
     ~Allocator() override { vmaDestroyAllocator(_allocator); }
 
+    /**
+     * Retrieves the Vulkan Memory Allocator (VmaAllocator) instance managed by this class.
+     *
+     * This method provides access to the underlying VMA allocator for performing memory allocation operations in Vulkan.
+     *
+     * @return The Vulkan Memory Allocator (VmaAllocator) instance currently in use.
+     */
     VmaAllocator Get() override { return _allocator; }
 
   private:
     VmaAllocator _allocator = VK_NULL_HANDLE;
   };
 } // namespace Entropy::Graphics::Vulkan::Memory
+
+#endif // ENTROPY_ALLOCATOR_H

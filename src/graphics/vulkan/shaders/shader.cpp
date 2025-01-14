@@ -3,12 +3,9 @@
 using namespace Entropy::Graphics::Vulkan::Shaders;
 
 Shader::Shader(const std::string &vert, const std::string &frag) {
-  const ServiceLocator *sl = ServiceLocator::GetInstance();
-  _logicalDevice = sl->getService<ILogicalDevice>();
-
+  _logicalDevice = ServiceLocator::GetInstance()->getService<ILogicalDevice>();
   _vertCode = ReadFile(vert);
   _fragCode = ReadFile(frag);
-
   if (!_vertCode.empty() && !_fragCode.empty()) {
     _shaderModuleVert = BuildShader(_vertCode);
     _shaderModuleFrag = BuildShader(_fragCode);
@@ -53,9 +50,6 @@ VkShaderModule Shader::BuildShader(const std::vector<char> &code) const {
 }
 
 VkShaderModule Shader::BuildShader(const uint32_t *code, const uint32_t size) const {
-  const ServiceLocator *sl = ServiceLocator::GetInstance();
-  const auto logicalDevice = sl->getService<ILogicalDevice>();
-
   VkShaderModuleCreateInfo createInfo{};
   createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
   createInfo.codeSize = size;
