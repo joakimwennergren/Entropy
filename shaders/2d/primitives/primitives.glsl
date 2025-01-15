@@ -72,7 +72,7 @@ void RoundedRectangle()
     );
 
     // Finally output color
-    outColor = res_shadow_with_rect_with_border;//res_shadow_with_rect_with_border;
+    outColor = res_shadow_with_rect_with_border;
 }
 
 void Circle()
@@ -80,14 +80,19 @@ void Circle()
     // Dimensions
     vec2  u_rectSize   = instanceBuffer.objects[PushConstants.instanceIndex].dimension;// The pixel-space scale of the rectangle.
     vec2  u_rectCenter = (u_rectSize * UV);// The pixel-space rectangle center location
+    vec2  u_offset = vec2(20, 20);
 
-    // Shadow
-    float u_shadowSoftness = 0.0;// The (half) shadow radius (in pixels)
-    vec2  u_shadowOffset   = vec2(0.0, 0.0);// The pixel-space shadow offset from rectangle center
+    // Corner radiuses
+    float u_edgeSoftness   = 1.0;// How soft the edges should be (in pixels). Higher values could be used to simulate a drop shadow.
+    float u_cornerRadius   = 10;
 
     // Border
     float u_borderThickness = 0.0;// The border size (in pixels)
     float u_borderSoftness  = 2.0;// How soft the (internal) border should be (in pixels)
+
+    // Shadow
+    float u_shadowSoftness = 1.0;// The (half) shadow radius (in pixels)
+    vec2  u_shadowOffset   = vec2(0.1, 0.1);// The pixel-space shadow offset from rectangle center
 
     // Colors
     vec4  u_colorBg     = vec4(0.0, 0.0, 0.0, 0.0);// The color of background
@@ -95,24 +100,21 @@ void Circle()
     vec4  u_colorBorder = vec4(80.0 / 255.0, 96.0 / 255.0, 99.0 / 255.0, 1.0);// The color of (internal) border
     vec4  u_colorShadow = vec4(0.4, 0.4, 0.4, 1.0);// The color of shadow
 
-    float radius = instanceBuffer.objects[PushConstants.instanceIndex].dimension.x / 6.0;
-    float u_edgeSoftness   = 1.0;// How soft the edges should be (in pixels). Higher values could be used to simulate a drop shadow.
-
     // =========================================================================
 
     vec2 halfSize = (u_rectSize / 2.0);// Rectangle extents (half of the size)
 
     // Calculate distance to edge.
-    float distance = CircleSDF(u_rectCenter-halfSize, radius);
+    float distance = CircleSDF(u_rectCenter-halfSize, u_cornerRadius);
 
     // Smooth the result (free antialiasing).
     float smoothedAlpha = 1.0-smoothstep(0.0, u_edgeSoftness, distance);
 
-    // Border
+    // Border 
     float borderAlpha   = 1.0-smoothstep(u_borderThickness - u_borderSoftness, u_borderThickness, abs(distance));
 
     // Apply a drop shadow effect.
-    float shadowDistance  = CircleSDF(u_rectCenter-halfSize + u_shadowOffset, radius);
+    float shadowDistance  = CircleSDF(u_rectCenter-halfSize + u_shadowOffset, u_cornerRadius);
     float shadowAlpha      = 1.0-smoothstep(-u_shadowSoftness, u_shadowSoftness, shadowDistance);
 
     // -------------------------------------------------------------------------
@@ -144,5 +146,5 @@ void Circle()
     );
 
     // Finally output color
-    outColor = res_shadow_with_rect_with_border;//res_shadow_with_rect_with_border;
+    outColor = res_shadow_with_rect_with_border;
 }

@@ -107,6 +107,7 @@ Application::Application() {
   const VkExtent2D frame = {static_cast<uint32_t>(screen_width), static_cast<uint32_t>(screen_height)};
 
   _renderer->_swapchain->Build(_surface, frame, VK_NULL_HANDLE);
+  _renderer->_renderPass->RecreateDepthBuffer(screen_width, screen_height);
   _renderer->_renderPass->CreateFrameBuffers(sl->getService<ISwapchain>(),
                                              screen_width, screen_height);
 }

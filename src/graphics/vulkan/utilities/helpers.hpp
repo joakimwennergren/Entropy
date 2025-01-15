@@ -2,7 +2,6 @@
 
 #include <graphics/vulkan/devices/iphysical_device.hpp>
 #include <spdlog/spdlog.h>
-#include <vulkan/vk_enum_string_helper.h>
 
 #define VK_CHECK(x)                                                            \
 do {                                                                           \
@@ -10,7 +9,7 @@ do {                                                                           \
     if (err) {                                                                 \
       spdlog::error(__FILE__);                                                 \
       spdlog::error(__LINE__);                                                 \
-      spdlog::error(string_VkResult(err));                                     \
+      spdlog::error(std::to_string(err));                                      \
       abort();                                                                 \
     }                                                                          \
 } while (0)
