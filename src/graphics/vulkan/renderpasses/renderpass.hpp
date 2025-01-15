@@ -39,9 +39,6 @@ namespace Entropy::Graphics::Vulkan::RenderPasses {
             _physicalDevice = sl->getService<IPhysicalDevice>();
             _swapChain = sl->getService<ISwapchain>();
 
-            RecreateDepthBuffer(100.0,
-                                100.0);
-
             VkAttachmentDescription depthAttachment{};
             depthAttachment.format = FindDepthFormat();
             depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;

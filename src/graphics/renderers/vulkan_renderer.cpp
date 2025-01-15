@@ -23,13 +23,16 @@ void VulkanRenderer::Render(const int width, const int height,
 
     vkResetFences(_logicalDevice->Get(), 1, &currentFence);
 
-    vkAcquireNextImageKHR(_logicalDevice->Get(), _swapchain->Get(), UINT64_MAX,
-                          _synchronizer->GetImageSemaphores()[_currentFrame],
-                          VK_NULL_HANDLE, &imageIndex);
+    const auto imageResult = vkAcquireNextImageKHR(_logicalDevice->Get(), _swapchain->Get(), UINT64_MAX,
+                                                   _synchronizer->GetImageSemaphores()[_currentFrame],
+                                                   VK_NULL_HANDLE, &imageIndex);
+
+    if (imageResult == VK_SUBOPTIMAL_KHR || imageResult == VK_ERROR_OUT_OF_DATE_KHR)
+        return;
 
     const auto orthoCamera =
             dynamic_cast<OrthographicCamera *>(_cameraManager->currentCamera);
-    orthoCamera->setPerspective((float) width, (float) height, xscale, yscale, 0.1f, 256.0f);
+    orthoCamera->setPerspective(width, height, xscale, yscale, 0.1f, 256.0f);
 
     // Begin render pass and command buffer recording
     _commandBuffers[_currentFrame].Record();
@@ -96,7 +99,7 @@ void VulkanRenderer::Render(const int width, const int height,
 
         VkRect2D scissor{};
         scissor.offset = {0, 0};
-        scissor.extent = {(unsigned int) width, (unsigned int) height};
+        scissor.extent = {static_cast<unsigned int>(width), static_cast<unsigned int>(height)};
         vkCmdSetScissor(_commandBuffers[_currentFrame].Get(), 0, 1, &scissor);
 
         // Set Viewport
@@ -113,7 +116,7 @@ void VulkanRenderer::Render(const int width, const int height,
                           VK_PIPELINE_BIND_POINT_GRAPHICS,
                           _staticPipeline->GetPipeline());
 
-        const auto ds0 = _staticPipeline->descriptorSet; //;_staticPipeline->descriptorSets[0]->Get()[_currentFrame];
+        const auto ds0 = _staticPipeline->descriptorSet;
 
         vkCmdBindDescriptorSets(
             _commandBuffers[_currentFrame].Get(), VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -128,7 +131,7 @@ void VulkanRenderer::Render(const int width, const int height,
         }
 
         if (e.has<Components::HasAnimatedSprite>()) {
-            auto textures = e.get<Components::HasAnimatedSprite>();
+            const auto textures = e.get<Components::HasAnimatedSprite>();
             static int textureId;
 
             if (_timer->GetTick() >= 120.0) {

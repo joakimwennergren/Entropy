@@ -20,7 +20,7 @@ uint32_t FindMemoryTypeIndex(const std::shared_ptr<IPhysicalDevice> &physicalDev
 
 VkFormat GetColorFormat() {
 #if defined(BUILD_FOR_MACOS) || defined(BUILD_FOR_LINUX)
-    return VK_FORMAT_R8G8B8A8_UNORM;
+    return VK_FORMAT_B8G8R8A8_UNORM;
 #elif defined(BUILD_FOR_WINDOWS)
     return VK_FORMAT_R8G8B8A8_UNORM;
 #else
