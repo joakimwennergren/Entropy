@@ -25,27 +25,31 @@ namespace Entropy::Graphics::Vulkan::DescriptorSets {
      */
     explicit DescriptorSet(const DescriptorSetLayout layout) {
       const ServiceLocator *sl = ServiceLocator::GetInstance();
-      const auto logicalDevice = sl->getService<ILogicalDevice>();
-      const auto descriptorPool = sl->getService<IDescriptorPool>();
+      _logicalDevice = sl->getService<ILogicalDevice>();
+      _descriptorPool = sl->getService<IDescriptorPool>();
 
-      const std::vector layouts(MAX_CONCURRENT_FRAMES_IN_FLIGHT,
-                                layout.Get());
+      const std::array<VkDescriptorSetLayout, 1> layouts = {layout.Get()};
 
       VkDescriptorSetAllocateInfo allocInfo{};
       allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-      allocInfo.descriptorPool = descriptorPool->Get();
-      allocInfo.descriptorSetCount = MAX_CONCURRENT_FRAMES_IN_FLIGHT;
+      allocInfo.descriptorPool = _descriptorPool->Get();
+      allocInfo.descriptorSetCount = 1;
       allocInfo.pSetLayouts = layouts.data();
 
-      _descriptorSets.resize(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
-
-      VK_CHECK(vkAllocateDescriptorSets(logicalDevice->Get(), &allocInfo,
-        _descriptorSets.data()));
+      VK_CHECK(vkAllocateDescriptorSets(_logicalDevice->Get(), &allocInfo,
+        &_descriptorSet));
     }
 
-    std::vector<VkDescriptorSet> Get() { return _descriptorSets; }
+    ~DescriptorSet()
+    {
+      vkFreeDescriptorSets(_logicalDevice->Get(), _descriptorPool->Get(), 1, &_descriptorSet);
+    }
+
+    VkDescriptorSet Get() { return _descriptorSet; }
 
   private:
-    std::vector<VkDescriptorSet> _descriptorSets;
+    VkDescriptorSet _descriptorSet = VK_NULL_HANDLE;
+    std::shared_ptr<ILogicalDevice> _logicalDevice;
+    std::shared_ptr<IDescriptorPool> _descriptorPool;
   };
 } // namespace Entropy::Graphics::Vulkan::DescriptorSets
