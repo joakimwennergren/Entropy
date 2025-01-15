@@ -11,36 +11,39 @@ using namespace Entropy::Graphics::Vulkan::DescriptorPools;
 using namespace Entropy::Data;
 
 namespace Entropy {
-namespace Graphics {
-namespace Primitives {
-class Plane {
-public:
-  /**
-   * @brief Construct a new Plane object
-   *
-   * @param context
-   */
-  Plane();
+  namespace Graphics {
+    namespace Primitives {
+      class Plane {
+      public:
+        /**
+         * @brief Construct a new Plane object
+         *
+         * @param context
+         */
+        Plane();
 
-  void Test() {};
+        void Test() {
+        };
 
-  VkDescriptorSet _descriptorSet = VK_NULL_HANDLE;
-  VkDescriptorSetLayout _descriptorSetLayout = VK_NULL_HANDLE;
+        VkDescriptorSet _descriptorSet = VK_NULL_HANDLE;
+        VkDescriptorSetLayout _descriptorSetLayout = VK_NULL_HANDLE;
 
-  // std::unique_ptr<Texture> _blank;
+        // std::unique_ptr<Texture> _blank;
 
-  void UpdateDescriptorSets();
-  /**
-   * @brief Destroy the Plane object
-   *
-   */
-  ~Plane();
-  std::unique_ptr<VertexBuffer> vertexBuffer;
-  std::unique_ptr<IndexBuffer<uint16_t>> indexBuffer;
+        void UpdateDescriptorSets();
 
-private:
-  VkSampler _textureSampler;
-};
-} // namespace Primitives
-} // namespace Graphics
+        /**
+         * @brief Destroy the Plane object
+         *
+         */
+        ~Plane();
+
+        std::unique_ptr<Vulkan::Buffers::VertexBuffer> vertexBuffer;
+        std::unique_ptr<Vulkan::Buffers::IndexBuffer<uint16_t> > indexBuffer;
+
+      private:
+        VkSampler _textureSampler;
+      };
+    } // namespace Primitives
+  } // namespace Graphics
 } // namespace Entropy

@@ -48,7 +48,7 @@ namespace Entropy::Graphics::Vulkan::Textures {
    _physicalDevice = sl->getService<IPhysicalDevice>();
    _logicalDevice = sl->getService<ILogicalDevice>();
    _descriptorPool = sl->getService<IDescriptorPool>();
-   _allocator = sl->getService<IAllocator>();
+   _allocator = sl->getService<Memory::IAllocator>();
   }
 
   /**
@@ -129,7 +129,7 @@ namespace Entropy::Graphics::Vulkan::Textures {
   std::shared_ptr<IPhysicalDevice> _physicalDevice;
   std::shared_ptr<ILogicalDevice> _logicalDevice;
   std::shared_ptr<IDescriptorPool> _descriptorPool;
-  std::shared_ptr<IAllocator> _allocator;
+  std::shared_ptr<Memory::IAllocator> _allocator;
  };
 } // namespace Entropy::Graphics::Vulkan::Textures
 

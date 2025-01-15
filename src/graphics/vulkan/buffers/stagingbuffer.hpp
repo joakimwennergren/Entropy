@@ -1,11 +1,13 @@
-#pragma once
+#ifndef ENTROPY_STAGINGBUFFER_H
+#define ENTROPY_STAGINGBUFFER_H
 
 #include <graphics/vulkan/buffers/buffer.hpp>
 
-using namespace Entropy::Graphics::Vulkan::Buffers;
-using namespace Entropy::Graphics::Vulkan;
-
 namespace Entropy::Graphics::Vulkan::Buffers {
+  /**
+   * Represents a staging buffer, which is a temporary buffer used for transferring data between the CPU and GPU.
+   * Inherits from the Buffer class.
+   */
   struct StagingBuffer : Buffer {
     /**
      * Constructs a StagedBuffer with the specified size, data, and usage flags.
@@ -19,13 +21,15 @@ namespace Entropy::Graphics::Vulkan::Buffers {
                   const VkBufferUsageFlags flags) {
       CreateBuffer(size, flags);
 
-      vmaMapMemory(_allocator->Get(), _allocation, &_mappedMemory);
+      vmaMapMemory(_allocator->Get(), allocation, &_mappedMemory);
 
       if (data != nullptr) {
-        memcpy(_mappedMemory, data, static_cast<size_t>(size));
+        memcpy(_mappedMemory, data, size);
       }
 
-      vmaUnmapMemory(_allocator->Get(), _allocation);
+      vmaUnmapMemory(_allocator->Get(), allocation);
     }
   };
 } // namespace Entropy::Graphics::Vulkan::Buffers
+
+#endif // ENTROPY_STAGEBUFFER_H

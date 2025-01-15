@@ -86,7 +86,7 @@ Application::Application() {
   sl->registerService(std::make_shared<Lua>());
 
   // Create the renderer
-  _renderer = std::make_shared<Renderers::VulkanRenderer>();
+  _renderer = std::make_shared<Graphics::Vulkan::Renderers::VulkanRenderer>();
 
   // Create 1ms Timer
   _timer = std::make_unique<Timer>(1.0f);

@@ -172,7 +172,7 @@ namespace Entropy::EntryPoints {
      */
     void Run();
 
-    std::shared_ptr<Renderers::VulkanRenderer> GetVulkanRenderer() { return _renderer; }
+    std::shared_ptr<Graphics::Vulkan::Renderers::VulkanRenderer> GetVulkanRenderer() { return _renderer; }
 
     /**
      * Scaling factor along the x-axis.
@@ -229,7 +229,7 @@ namespace Entropy::EntryPoints {
      * ownership and lifecycle management are ensured, preventing memory leaks
      * and ensuring the renderer is properly destroyed when no longer needed.
      */
-    std::shared_ptr<Renderers::VulkanRenderer> _renderer;
+    std::shared_ptr<Graphics::Vulkan::Renderers::VulkanRenderer> _renderer;
 
     /**
      * Unique pointer to a Timer object.

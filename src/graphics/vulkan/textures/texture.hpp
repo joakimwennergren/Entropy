@@ -5,7 +5,7 @@
 #include <spdlog/spdlog.h>
 #include <string>
 
-#include <graphics/vulkan/buffers/stagedbuffer.hpp>
+#include <graphics/vulkan/buffers/stagingbuffer.hpp>
 #include <graphics/vulkan/imageviews/imageview.hpp>
 #include <graphics/vulkan/textures/base_texture.hpp>
 #include <graphics/vulkan/utilities/helpers.hpp>

@@ -1,5 +1,4 @@
-#ifndef ENTROPY_IVULKAN_INSTANCE_H
-#define ENTROPY_iVULKAN_INSTANCE_H
+#pragma once
 
 #include <vulkan/vulkan.hpp>
 #include <servicelocators/servicelocator.hpp>
@@ -47,5 +46,3 @@ struct IVulkanInstance : IService {
      */
     virtual VkInstance Get() = 0;
 };
-
-#endif //ENTROPY_IVULKAN_INSTANCE_H

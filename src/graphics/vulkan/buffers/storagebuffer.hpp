@@ -1,10 +1,17 @@
-#pragma once
+#ifndef ENTROPY_STORAGEBUFFER_H
+#define ENTROPY_STORAGEBUFFER_H
 
 #include <graphics/vulkan/buffers/buffer.hpp>
 
-using namespace Entropy::Graphics::Vulkan::Buffers;
-
 namespace Entropy::Graphics::Vulkan::Buffers {
+  /**
+   * Represents a storage buffer for Vulkan applications.
+   * The StorageBuffer class extends the Buffer class and provides
+   * functionality for creating and managing storage buffers.
+   *
+   * This class utilizes Vulkan Memory Allocator (VMA) to handle
+   * the creation, mapping, and unmapping of buffer memory.
+   */
   struct StorageBuffer : Buffer {
     /**
      * Constructor for StorageBuffer.
@@ -16,8 +23,10 @@ namespace Entropy::Graphics::Vulkan::Buffers {
     explicit StorageBuffer(const VkDeviceSize bufferSize)
       : Buffer() {
       CreateBuffer(bufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
-      vmaMapMemory(_allocator->Get(), _allocation, &_mappedMemory);
-      vmaUnmapMemory(_allocator->Get(), _allocation);
+      vmaMapMemory(_allocator->Get(), allocation, &_mappedMemory);
+      vmaUnmapMemory(_allocator->Get(), allocation);
     }
   };
 } // namespace Entropy::Graphics::Vulkan::Buffers
+
+#endif // ENTROPY_STORAGEBUFFER_H

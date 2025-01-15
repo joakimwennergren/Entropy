@@ -26,7 +26,7 @@ namespace Entropy::Graphics::Vulkan::Textures {
      */
     DepthBufferTexture(const uint32_t width, const uint32_t height) {
       const ServiceLocator *sl = ServiceLocator::GetInstance();
-      const auto allocator = sl->getService<IAllocator>();
+      const auto allocator = sl->getService<Memory::IAllocator>();
       _physicalDevice = sl->getService<IPhysicalDevice>();
 
       VkFormat depthFormat =

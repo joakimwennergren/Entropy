@@ -77,7 +77,7 @@ void VulkanRenderer::Render(const int width, const int height,
         }
 
         void *objectData;
-        vmaMapMemory(_allocator->Get(), _instanceDataBuffer->_allocation,
+        vmaMapMemory(_allocator->Get(), _instanceDataBuffer->allocation,
                      &objectData);
 
         auto *objectSSBO = static_cast<InstanceData *>(objectData);
@@ -92,7 +92,7 @@ void VulkanRenderer::Render(const int width, const int height,
         objectSSBO[render_component->id - 1].type = render_component->type;
         objectSSBO[render_component->id - 1].dimension = glm::vec2{scale_component->scale.x, scale_component->scale.y};
 
-        vmaUnmapMemory(_allocator->Get(), _instanceDataBuffer->_allocation);
+        vmaUnmapMemory(_allocator->Get(), _instanceDataBuffer->allocation);
 
         VkRect2D scissor{};
         scissor.offset = {0, 0};

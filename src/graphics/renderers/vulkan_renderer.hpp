@@ -10,7 +10,7 @@
 
 #include <data/ubo.hpp>
 #include <ecs/world.hpp>
-#include <graphics/vulkan/buffers/stagedbuffer.hpp>
+#include <graphics/vulkan/buffers/stagingbuffer.hpp>
 #include <graphics/vulkan/buffers/storagebuffer.hpp>
 #include <graphics/vulkan/buffers/uniformbuffer.hpp>
 #include <graphics/vulkan/commandbuffers/commandbuffer.hpp>

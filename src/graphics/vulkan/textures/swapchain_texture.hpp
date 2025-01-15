@@ -24,7 +24,7 @@ namespace Entropy::Graphics::Vulkan::Textures {
      * @param height The height of the swap chain texture in pixels.
      */
     SwapChainTexture(const unsigned int width, const unsigned int height) {
-      const auto allocator = ServiceLocator::GetInstance()->getService<IAllocator>();
+      const auto allocator = ServiceLocator::GetInstance()->getService<Memory::IAllocator>();
 
       VkImageCreateInfo imageInfo{};
       imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;

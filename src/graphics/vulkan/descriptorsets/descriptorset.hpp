@@ -9,14 +9,20 @@
 using namespace Entropy::Graphics::Vulkan::DescriptorSetLayouts;
 
 namespace Entropy::Graphics::Vulkan::DescriptorSets {
-  class DescriptorSet {
+  /**
+   * Manages a collection of descriptors for a particular descriptor set layout.
+   *
+   * Provides functionality to allocate and manage the descriptor sets used in a
+   * graphics or compute pipeline. It handles binding resources like buffers,
+   * images, and samplers to the appropriate binding points defined in the layout.
+   */
+  struct DescriptorSet {
     /**
      * Constructs a DescriptorSet object and allocates descriptor sets.
      *
      * @param layout The DescriptorSetLayout used to create the descriptor sets.
      * @return An initialized instance of DescriptorSet with allocated descriptor sets.
      */
-  public:
     explicit DescriptorSet(const DescriptorSetLayout layout) {
       const ServiceLocator *sl = ServiceLocator::GetInstance();
       const auto logicalDevice = sl->getService<ILogicalDevice>();
