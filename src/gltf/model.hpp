@@ -41,7 +41,7 @@
 #include <graphics/vulkan/buffers/vertexbuffer.hpp>
 #include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
 #include <graphics/vulkan/devices/logical_device.hpp>
-#include <graphics/vulkan/pipelines/pipeline.hpp>
+#include <graphics/vulkan/pipelines/base_pipeline.hpp>
 #include <timing/timer.hpp>
 
 #include <stb_image.h>
@@ -337,7 +337,7 @@ namespace Entropy
       Node *nodeFromIndex(uint32_t index);
       void setupNodeDescriptorSet(Node *node, VkDescriptorSetLayout layout);
       void renderNode(Node *node, VkCommandBuffer commandBuffer,
-                      std::shared_ptr<Pipeline> pipeline,
+                      std::shared_ptr<BasePipeline> pipeline,
                       Material::AlphaMode alphaMode);
 
       std::unique_ptr<VertexBuffer> vertexBuffer;

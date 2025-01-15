@@ -21,7 +21,7 @@ using namespace Entropy::Graphics::Vulkan::Devices;
 using namespace Entropy::Data;
 
 namespace Entropy::Graphics::Vulkan::Pipelines {
-  class Pipeline {
+  class BasePipeline {
     /**
      * Constructs a Pipeline object.
      *
@@ -29,7 +29,7 @@ namespace Entropy::Graphics::Vulkan::Pipelines {
      * @return A constructed Pipeline object.
      */
   public:
-    explicit Pipeline(const std::shared_ptr<RenderPass> &renderPass) {
+    explicit BasePipeline(const std::shared_ptr<RenderPass> &renderPass) {
       const ServiceLocator *sl = ServiceLocator::GetInstance();
       _logicalDevice = sl->getService<ILogicalDevice>();
       _swapChain = sl->getService<ISwapchain>();
@@ -44,7 +44,7 @@ namespace Entropy::Graphics::Vulkan::Pipelines {
      * This method cleans up Vulkan pipeline resources by destroying the pipeline
      * and pipeline layout using the logical device.
      */
-    ~Pipeline() {
+    ~BasePipeline() {
       vkDestroyPipeline(_logicalDevice->Get(), _pipeline, nullptr);
       vkDestroyPipelineLayout(_logicalDevice->Get(), _pipelineLayout, nullptr);
     }

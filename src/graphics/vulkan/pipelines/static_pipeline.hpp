@@ -2,11 +2,11 @@
 
 #include <filesystem/filesystem.hpp>
 #include <graphics/vulkan/pipelinecaches/pipelinecache.hpp>
-#include <graphics/vulkan/pipelines/pipeline.hpp>
+#include <graphics/vulkan/pipelines/base_pipeline.hpp>
 
 namespace Entropy::Graphics::Vulkan::Pipelines
 {
-    struct StaticPipeline : Pipeline
+    struct StaticPipeline : BasePipeline
     {
         /**
          * Constructs a StaticPipeline object.
@@ -15,7 +15,7 @@ namespace Entropy::Graphics::Vulkan::Pipelines
          * @return A constructed StaticPipeline object.
          */
         explicit StaticPipeline(const std::shared_ptr<RenderPass> &renderPass)
-            : Pipeline(renderPass)
+            : BasePipeline(renderPass)
         {
             const auto dsLayouts = CreateDescriptorSets();
             _shader = std::make_shared<Shader>(GetShadersDir() + "static/static_vert.spv",

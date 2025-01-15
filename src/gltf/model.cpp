@@ -1534,7 +1534,7 @@ Node *Model::nodeFromIndex(uint32_t index) {
 }
 
 void Model::renderNode(Node *node, VkCommandBuffer commandBuffer,
-                       std::shared_ptr<Pipeline> pipeline,
+                       std::shared_ptr<BasePipeline> pipeline,
                        Material::AlphaMode alphaMode) {
   if (node->mesh) {
     // Render mesh primitives

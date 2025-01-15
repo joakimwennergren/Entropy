@@ -1,8 +1,8 @@
-#include "pipeline.hpp"
+#include "base_pipeline.hpp"
 
 using namespace Entropy::Graphics::Vulkan::Pipelines;
 
-void Pipeline::Build(const std::shared_ptr<Shader> &shader,
+void BasePipeline::Build(const std::shared_ptr<Shader> &shader,
                      std::vector<VkDescriptorSetLayout> dsLayouts) {
         VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
         vertShaderStageInfo.sType =
