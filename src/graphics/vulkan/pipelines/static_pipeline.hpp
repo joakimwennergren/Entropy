@@ -35,7 +35,7 @@ namespace Entropy::Graphics::Vulkan::Pipelines
             std::vector<VkDescriptorSetLayout> dsLayouts(2);
 
             VkDescriptorSetLayoutBinding instanceLayoutBinding = {};
-            instanceLayoutBinding.binding = 0; // Binding for instance buffer
+            instanceLayoutBinding.binding = 0;
             instanceLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
             instanceLayoutBinding.descriptorCount = 1;
             instanceLayoutBinding.stageFlags = VK_SHADER_STAGE_ALL;
@@ -64,16 +64,10 @@ namespace Entropy::Graphics::Vulkan::Pipelines
                 samplerLayoutBinding};
 
             const std::vector<VkDescriptorBindingFlags> bindingFlags0 = {};
+            const std::vector<VkDescriptorBindingFlags> bindingFlags1 = {};
 
-            const std::vector<VkDescriptorBindingFlags> bindingFlags1 = {
-                // VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT
-            };
-
-            const auto descriptorSetLayout0 = std::make_shared<DescriptorSetLayout>(bindings, bindingFlags0);
-            const auto descriptorSetLayout1 = std::make_shared<DescriptorSetLayout>(bindings2, bindingFlags1);
-
-            dsLayouts[0] = descriptorSetLayout0->Get();
-            dsLayouts[1] = descriptorSetLayout1->Get();
+            dsLayouts[0] = std::make_shared<DescriptorSetLayout>(bindings, bindingFlags0)->Get();
+            dsLayouts[1] = std::make_shared<DescriptorSetLayout>(bindings2, bindingFlags1)->Get();
 
             VkDescriptorSetAllocateInfo allocInfo{};
             allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
