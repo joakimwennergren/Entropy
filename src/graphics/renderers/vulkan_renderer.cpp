@@ -56,7 +56,7 @@ void VulkanRenderer::Render(const int width, const int height,
 
     for (const auto &e: _sortedEntities) {
         auto position_component = e.get_ref<Components::Position>();
-        auto scale_component = e.get_ref<Components::Scale>();
+        auto scale_component = e.get_ref<Components::Dimension>();
         auto color_component = e.get_ref<Components::Color>();
         auto rotation_component = e.get_ref<Components::Rotation>();
         auto render_component = e.get_ref<Components::Renderable>();
@@ -87,13 +87,11 @@ void VulkanRenderer::Render(const int width, const int height,
         objectSSBO[render_component->id - 1].model =
                 (translate * scaling * rotation);
 
-        objectSSBO[render_component->id - 1].bgColor =
-                color_component.get() == nullptr
-                    ? glm::vec4(1.0, 1.0, 1.0, 1.0)
-                    : color_component->color;
-
+        objectSSBO[render_component->id - 1].bgColor = color_component->color;
+        objectSSBO[render_component->id - 1].borderColor = color_component->borderColor;
+        objectSSBO[render_component->id - 1].cornerRadiuses = scale_component->cornerRadiuses;
         objectSSBO[render_component->id - 1].type = render_component->type;
-        objectSSBO[render_component->id - 1].dimension = glm::vec2{scale_component->scale.x, scale_component->scale.y};
+        objectSSBO[render_component->id - 1].dimension = scale_component->scale;
 
         vmaUnmapMemory(_allocator->Get(), _instanceDataBuffer->allocation);
 

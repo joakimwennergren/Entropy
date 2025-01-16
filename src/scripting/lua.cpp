@@ -7,7 +7,7 @@ using namespace Entropy::Scripting;
 
 //   // auto id = AssetId().GetId();
 //   // e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
-//   // e.set<Scale>({glm::vec3(1.0, 1.0, 1.0)});
+//   // e.set<Dimension>({glm::vec3(1.0, 1.0, 1.0)});
 //   // e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 1.0});
 //   // e.set<Entropy::Components::Model>({model});
 //   // e.set<Entropy::Components::Renderable>({id, 0, true});
@@ -45,7 +45,7 @@ using namespace Entropy::Scripting;
 //   //                        // sceneGraph->renderables.push_back(sprite);
 //   //                        // return sprite;
 //   //                    }),
-//   //     "Translate", &Sprite::Translate2D, "Scale", &Sprite::Scale2D,
+//   //     "Translate", &Sprite::Translate2D, "Dimension", &Sprite::Scale2D,
 //   //     "SetScript", &Sprite::SetScript, "SetScriptFile",
 //   //     &Sprite::SetScriptFile, "Parent", sol::property(&Sprite::parent));
 
@@ -60,7 +60,7 @@ using namespace Entropy::Scripting;
 
 //           // auto id = AssetId().GetId();
 //           // e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
-//           // e.set<Scale>({glm::vec3(1.0, 1.0, 1.0)});
+//           // e.set<Dimension>({glm::vec3(1.0, 1.0, 1.0)});
 //           // e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 1.0});
 //           // e.set<Entropy::Components::Model>({model});
 //           // e.set<Entropy::Components::Renderable>({id, 0, true});
@@ -105,11 +105,11 @@ using namespace Entropy::Scripting;
 //     pos->pos = glm::vec3(x, y, z);
 //   };
 
-//   _lua["Scale"] = [this](flecs::entity entity, float x, float y, float z) {
+//   _lua["Dimension"] = [this](flecs::entity entity, float x, float y, float z) {
 //     if (!entity.is_alive())
 //       return;
 
-//     auto pos = entity.get_mut<Entropy::Components::Scale>();
+//     auto pos = entity.get_mut<Entropy::Components::Dimension>();
 //     pos->scale = glm::vec3(x, y, z);
 //   };
 

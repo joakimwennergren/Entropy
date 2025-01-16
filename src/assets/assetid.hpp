@@ -1,10 +1,12 @@
-#pragma once
+#ifndef ENTROPY_ASSETID_H
+#define ENTROPY_ASSETID_H
 
 #include <functional>
 
 struct AssetId {
     /**
-     * Constructs an AssetId object with an automatically generated unique identifier.
+     * Default constructor for the AssetId class.
+     * Automatically generates and assigns a unique identifier.
      */
     AssetId()
         : m_id(++ID) {
@@ -67,3 +69,5 @@ struct std::hash<AssetId> {
         return std::hash<unsigned int>{}(key.GetId());
     }
 };
+
+#endif // ENTROPY_ASSETID_H

@@ -5,14 +5,14 @@ void RoundedRectangle()
     // Dimensions
     vec2  u_rectSize   = instanceBuffer.objects[PushConstants.instanceIndex].dimension;// The pixel-space scale of the rectangle.
     vec2  u_rectCenter = (u_rectSize * UV);// The pixel-space rectangle center location
-    vec2  u_offset = vec2(20, 20);
+    vec2  u_offset = vec2(1, 1);
 
     // Corner radiuses
     float u_edgeSoftness   = 1.0;// How soft the edges should be (in pixels). Higher values could be used to simulate a drop shadow.
-    vec4  u_cornerRadiuses = vec4(20.0, 20.0, 20.0, 20.0);// The radiuses of the corners(in pixels): [topRight, bottomRight, topLeft, bottomLeft]
+    vec4  u_cornerRadiuses = instanceBuffer.objects[PushConstants.instanceIndex].cornerRadiuses;// The radiuses of the corners(in pixels): [topRight, bottomRight, topLeft, bottomLeft]
 
     // Border
-    float u_borderThickness = 0.0;// The border size (in pixels)
+    float u_borderThickness = 1.0;// The border size (in pixels)
     float u_borderSoftness  = 2.0;// How soft the (internal) border should be (in pixels)
 
     // Shadow
@@ -22,7 +22,7 @@ void RoundedRectangle()
     // Colors
     vec4  u_colorBg     = vec4(0.0, 0.0, 0.0, 0.0);// The color of background
     vec4  u_colorRect   = instanceBuffer.objects[PushConstants.instanceIndex].bgColor;// The color of rectangle
-    vec4  u_colorBorder = vec4(80.0 / 255.0, 96.0 / 255.0, 99.0 / 255.0, 1.0);// The color of (internal) border
+    vec4  u_colorBorder = instanceBuffer.objects[PushConstants.instanceIndex].borderColor;// The color of (internal) border
     vec4  u_colorShadow = vec4(0.4, 0.4, 0.4, 1.0);// The color of shadow
 
     // =========================================================================
@@ -31,7 +31,6 @@ void RoundedRectangle()
 
     // Calculate distance to edge.
     float distance = RoundedBoxSDF(u_rectCenter-halfSize, halfSize - u_offset, u_cornerRadiuses);
-    float insideDistance = RoundedBoxSDFInside(u_rectCenter-halfSize, halfSize - u_offset, u_cornerRadiuses);
 
     // Smooth the result (free antialiasing).
     float smoothedAlpha = 1.0-smoothstep(0.0, u_edgeSoftness, distance);
@@ -47,7 +46,7 @@ void RoundedRectangle()
     // Apply colors layer-by-layer: background <- shadow <- rect <- border.
 
     // Blend background with shadow
-    vec4 res_shadow_color = mix(u_colorBg, vec4(u_colorShadow.rgb, shadowAlpha), shadowAlpha);
+    vec4 res_shadow_color = mix(u_colorBg, vec4(0.0, 0.0, 0.0, 0.0), borderAlpha);
 
     // Blend (background+shadow) with rect
     //   Note:

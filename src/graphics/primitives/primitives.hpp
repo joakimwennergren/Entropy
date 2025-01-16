@@ -44,7 +44,7 @@ namespace Entropy::Graphics::Primitives {
             const auto e = world->Get()->entity();
             const auto id = AssetId().GetId();
             e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
-            e.set<Scale>({glm::vec3(1.0, 1.0, 1.0)});
+            e.set<Dimension>({glm::vec3(1.0, 1.0, 1.0)});
             e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
             e.set<SpriteComponent>({sprite});
             auto renderable = Renderable();
@@ -78,7 +78,7 @@ namespace Entropy::Graphics::Primitives {
             const auto e = world->Get()->entity();
             const auto id = AssetId().GetId();
             e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
-            e.set<Scale>({glm::vec3(1.0, 1.0, 1.0)});
+            e.set<Dimension>({glm::vec3(1.0, 1.0, 1.0)});
             e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
             e.set<QuadComponent>({quad});
             auto renderable = Renderable();
@@ -101,7 +101,7 @@ namespace Entropy::Graphics::Primitives {
             const auto e = world->Get()->entity();
             const auto id = AssetId().GetId();
             e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
-            e.set<Scale>({glm::vec3(1.0, 1.0, 1.0)});
+            e.set<Dimension>({glm::vec3(1.0, 1.0, 1.0)});
             e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
             e.set<QuadComponent>({quad});
             e.set<DynamicBodyComponent>({true});

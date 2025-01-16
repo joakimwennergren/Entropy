@@ -2,6 +2,7 @@ struct InstanceData{
     mat4 model;
     vec4 bgColor;
     vec4 borderColor;
+    vec4 cornerRadiuses;
     vec2 dimension;
     int type;
 };

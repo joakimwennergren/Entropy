@@ -203,8 +203,7 @@ void Application::Run() {
     }
 
     if (on_input.valid()) {
-      // on_input(mouse_x, mouse_y, mouse0_state);
-      // on_input(keyDown);
+      on_input(mouse->pos.x, mouse->pos.y);
     }
 
     // 2D physics
