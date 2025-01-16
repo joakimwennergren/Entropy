@@ -31,7 +31,7 @@ for %%a in (%shaders-to-compile%) do (
     ) 
 
     if exist %shaders-dir%\combined\%%a\%%a.frag (
-        :: Compile combined vert shader
+        :: Compile combined frag shader
         %VULKAN_SDK%\Bin\glslc.exe %shaders-dir%\combined\%%a\%%a.frag -o %shaders-dir%\compiled\%%a\%%a_frag.spv
     ) 
 )
