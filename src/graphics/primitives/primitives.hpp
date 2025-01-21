@@ -44,7 +44,7 @@ namespace Entropy::Graphics::Primitives {
             const auto e = world->Get()->entity();
             const auto id = AssetId().GetId();
             e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
-            e.set<Scale>({glm::vec3(1.0, 1.0, 1.0)});
+            e.set<Dimension>({glm::vec3(1.0, 1.0, 1.0)});
             e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
             e.set<SpriteComponent>({sprite});
             auto renderable = Renderable();
@@ -71,14 +71,14 @@ namespace Entropy::Graphics::Primitives {
          * of the IWorld service, and assigns various components to the entity
          * such as position, scale, rotation, and rendering details.
          */
-        static flecs::entity CreateQuad() {
+        static flecs::entity CreateQuad(const int type) {
             const ServiceLocator *sl = ServiceLocator::GetInstance();
             const auto world = sl->getService<IWorld>();
             const auto quad = std::make_shared<Quad>();
             const auto e = world->Get()->entity();
             const auto id = AssetId().GetId();
             e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
-            e.set<Scale>({glm::vec3(1.0, 1.0, 1.0)});
+            e.set<Dimension>({glm::vec3(1.0, 1.0, 1.0)});
             e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
             e.set<QuadComponent>({quad});
             auto renderable = Renderable();
@@ -87,7 +87,7 @@ namespace Entropy::Graphics::Primitives {
             renderable.indexBuffer = quad->indexBuffer;
             renderable.vertexBuffer = quad->vertexBuffer;
             renderable.indices = quad->indices;
-            renderable.type = 2;
+            renderable.type = type;
             e.set<Renderable>(renderable);
             e.set<Color>({glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}});
             e.set<HasTexture>({quad->texture});
@@ -101,7 +101,7 @@ namespace Entropy::Graphics::Primitives {
             const auto e = world->Get()->entity();
             const auto id = AssetId().GetId();
             e.set<Position>({glm::vec3(0.0, 0.0, 0.0)});
-            e.set<Scale>({glm::vec3(1.0, 1.0, 1.0)});
+            e.set<Dimension>({glm::vec3(1.0, 1.0, 1.0)});
             e.set<Rotation>({glm::vec3(1.0, 1.0, 1.0), 0.0});
             e.set<QuadComponent>({quad});
             e.set<DynamicBodyComponent>({true});

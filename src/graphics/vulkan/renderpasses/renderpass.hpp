@@ -8,7 +8,7 @@
 #include <graphics/vulkan/textures/depthbuffer_texture.hpp>
 #include <graphics/vulkan/textures/swapchain_texture.hpp>
 #include <vulkan/vulkan.hpp>
-#include <graphics/vulkan/utilities/utilities.hpp>
+#include <graphics/vulkan/utilities/helpers.hpp>
 
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;
 using namespace Entropy::Graphics::Vulkan::SwapChains;
@@ -39,12 +39,6 @@ namespace Entropy::Graphics::Vulkan::RenderPasses {
             _physicalDevice = sl->getService<IPhysicalDevice>();
             _swapChain = sl->getService<ISwapchain>();
 
-            assert(_logicalDevice != nullptr);
-            assert(_physicalDevice != nullptr);
-
-            RecreateDepthBuffer(_swapChain->swapChainExtent.width,
-                                _swapChain->swapChainExtent.height);
-
             VkAttachmentDescription depthAttachment{};
             depthAttachment.format = FindDepthFormat();
             depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -62,7 +56,7 @@ namespace Entropy::Graphics::Vulkan::RenderPasses {
                     VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
             VkAttachmentDescription colorAttachment{};
-            colorAttachment.format = VK_FORMAT_B8G8R8A8_UNORM; // VK_FORMAT_R8G8B8A8_UNORM; // VK_FORMAT_B8G8R8A8_UNORM
+            colorAttachment.format = GetColorFormat();
             colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
             colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
             colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -92,6 +86,7 @@ namespace Entropy::Graphics::Vulkan::RenderPasses {
                 colorAttachment,
                 depthAttachment
             };
+
             VkRenderPassCreateInfo renderPassInfo{};
             renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
             renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
@@ -162,7 +157,7 @@ namespace Entropy::Graphics::Vulkan::RenderPasses {
          * @param height The height of the depth buffer.
          */
         void RecreateDepthBuffer(uint32_t width, uint32_t height) {
-            _depthBufferTexture = std::make_shared<DepthBufferTexture>(width, height);
+            _depthBufferTexture = std::make_shared<Textures::DepthBufferTexture>(width, height);
         }
 
         [[nodiscard]] VkRenderPass Get() const { return _renderPass; }
@@ -185,7 +180,7 @@ namespace Entropy::Graphics::Vulkan::RenderPasses {
             _swapChainTextures.clear();
             _frameBuffers.clear();
             _swapChainTextures.push_back(
-                std::make_shared<SwapChainTexture>(width, height));
+                std::make_shared<Textures::SwapChainTexture>(width, height));
             _frameBuffers.resize(1);
 
             const std::array<VkImageView, 2> attachments = {
@@ -234,10 +229,10 @@ namespace Entropy::Graphics::Vulkan::RenderPasses {
         }
 
         std::vector<VkFramebuffer> _frameBuffers;
-        std::vector<std::shared_ptr<SwapChainTexture> > _swapChainTextures;
+        std::vector<std::shared_ptr<Textures::SwapChainTexture> > _swapChainTextures;
 
     private:
-        std::shared_ptr<DepthBufferTexture> _depthBufferTexture = nullptr;
+        std::shared_ptr<Textures::DepthBufferTexture> _depthBufferTexture = nullptr;
         VkRenderPass _renderPass = VK_NULL_HANDLE;
 
         [[nodiscard]] VkFormat findSupportedFormat(const std::vector<VkFormat> &candidates,

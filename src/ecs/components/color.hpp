@@ -7,5 +7,6 @@ using namespace Entropy::Graphics::Primitives;
 namespace Entropy::Components {
     struct Color {
         glm::vec4 color;
+        glm::vec4 borderColor;
     };
 }

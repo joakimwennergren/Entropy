@@ -18,6 +18,8 @@
 #include <ecs/components/position.hpp>
 #include <ecs/components/scale.hpp>
 #include <timing/timer.hpp>
+#include <input/keyboard/keyboard.hpp>
+#include <input/mouse/mouse.hpp>
 
 #include "ilua.hpp"
 
@@ -142,6 +144,15 @@ namespace Entropy::Scripting {
 
     void BindTypes() {
       _lua.new_usertype<b2BodyId>("b2BodyId");
+      _lua.new_usertype<glm::vec2>("Vec2");
+      _lua.new_usertype<glm::vec4>("Vec4",
+                                   sol::constructors<glm::vec4(), glm::vec4(double, double, double, double)>());
+
+      _lua.new_usertype<Input::Mouse>("Mouse",
+                                      "position", [](Input::Mouse &self) -> auto &{ return self.pos; },
+                                      "leftButtonDown", [](Input::Mouse &self) -> auto &{ return self.mouseDown[0]; });
+
+      _lua.new_usertype<Input::Keyboard>("Keyboard");
       //_lua.new_usertype<b2Vec2>("b2Vec2", "x", &b2Vec2::x, "y", &b2Vec2::y);
 
       // Box2D 2D vector
@@ -202,15 +213,45 @@ namespace Entropy::Scripting {
         return PrimitiveFactory::CreateSprite(path);
       };
 
-      _lua["CreateQuad"] = []() {
-        return PrimitiveFactory::CreateQuad();
+      _lua["CreateBasicRectangle"] = [](const float x, const float y, const float z, const float w, const float h) {
+        const auto rect = PrimitiveFactory::CreateQuad(3);
+        if (const auto position = rect.get_mut<Position>(); position != nullptr) {
+          position->pos = glm::vec3(x, y, z);
+        }
+        if (const auto scale = rect.get_mut<Dimension>(); scale != nullptr) {
+          scale->scale = glm::vec3(w, h, 0.0);
+        }
+        return rect;
+      };
+
+      _lua["CreateRoundedRectangle"] = [](const float x, const float y, const float z, const float w, const float h,
+                                          const glm::vec4 cornerRadiuses) {
+        const auto roundedRect = PrimitiveFactory::CreateQuad(0);
+        if (const auto position = roundedRect.get_mut<Position>(); position != nullptr) {
+          position->pos = glm::vec3(x, y, z);
+        }
+        if (const auto dim = roundedRect.get_mut<Dimension>(); dim != nullptr) {
+          dim->scale = glm::vec3(w, h, 0.0);
+          dim->cornerRadiuses = cornerRadiuses;
+        }
+        return roundedRect;
+      };
+
+      _lua["CreateCircle"] = [](const float x, const float y, const float z, const float r) {
+        const auto circle = PrimitiveFactory::CreateQuad(1);
+        if (const auto position = circle.get_mut<Position>(); position != nullptr) {
+          position->pos = glm::vec3(x, y, z);
+        }
+        if (const auto scale = circle.get_mut<Dimension>(); scale != nullptr) {
+          scale->scale = glm::vec3(r, r, 0.0);
+        }
+        return circle;
       };
 
       // TRS functions
       _lua["Translate"] = [this](const flecs::entity entity, const float x,
                                  const float y, const float z) {
         if (const auto position = entity.get_mut<Position>(); position != nullptr) {
-          const float ppm = _cameraManager->currentCamera->PPM;
           position->pos = glm::vec3(x, y, z);
         }
       };
@@ -225,18 +266,31 @@ namespace Entropy::Scripting {
 
       _lua["Scale"] = [this](const flecs::entity entity, const float x,
                              const float y, const float z) {
-        if (const auto scale = entity.get_mut<Scale>(); scale != nullptr) {
-          const float ppm = _cameraManager->currentCamera->PPM;
+        if (const auto scale = entity.get_mut<Dimension>(); scale != nullptr) {
           scale->scale = glm::vec3(x, y, z);
         }
       };
 
-      // Colors
+      _lua["SetCornerRadiuses"] = [this](const flecs::entity entity, const float x,
+                                         const float y, const float z, const float w) {
+        if (const auto scale = entity.get_mut<Dimension>(); scale != nullptr) {
+          scale->cornerRadiuses = glm::vec4(x, y, z, w);
+        }
+      };
 
+
+      // Colors
       _lua["SetColor"] = [](const flecs::entity entity, const float r,
                             const float g, const float b, const float a) {
         if (const auto color = entity.get_mut<Color>(); color != nullptr) {
           color->color = glm::vec4(r, g, b, a);
+        }
+      };
+
+      _lua["SetBorderColor"] = [](const flecs::entity entity, const float r,
+                                  const float g, const float b, const float a) {
+        if (const auto color = entity.get_mut<Color>(); color != nullptr) {
+          color->borderColor = glm::vec4(r, g, b, a);
         }
       };
 

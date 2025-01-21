@@ -1,33 +1,29 @@
-#pragma once
-
-#include <config.hpp>
+#ifndef ENTROPY_TEXTURE_H
+#define ENTROPY_TEXTURE_H
 
 #include <stb_image.h>
 #include <spdlog/spdlog.h>
 #include <string>
 
-#include <graphics/vulkan/buffers/stagedbuffer.hpp>
+#include <graphics/vulkan/buffers/stagingbuffer.hpp>
 #include <graphics/vulkan/imageviews/imageview.hpp>
 #include <graphics/vulkan/textures/base_texture.hpp>
-#include <graphics/vulkan/utilities/utilities.hpp>
+#include <graphics/vulkan/utilities/helpers.hpp>
 
 #ifdef BUILD_FOR_ANDROID
 #include <android/asset_manager.h>
 #endif
 
-using namespace Entropy::Graphics::Vulkan::Textures;
-using namespace Entropy::Graphics::Vulkan::Buffers;
-using namespace Entropy::Graphics::Vulkan::Utilities;
-using namespace Entropy::Graphics::Vulkan::ImageViews;
-
 namespace Entropy::Graphics::Vulkan::Textures {
     struct Texture : BaseTexture {
         /**
-         * Constructs a Texture object by loading an image from the specified file path,
-         * creating a Vulkan image and associated resources.
+         * Constructor that creates and loads a texture from the given file path.
+         * This function initializes a Vulkan texture, manages the image loading, buffer creation,
+         * image transitions, and assigns an associated image view.
          *
-         * @param path The file path to the image to be loaded. The path must not be empty.
-         * @return None
+         * @param path The file path of the texture image. Must be a valid and non-empty path.
+         *
+         * @return None. This is a constructor and does not have an explicit return value.
          */
         explicit Texture(const std::string &path) {
             assert(!path.empty());
@@ -39,19 +35,18 @@ namespace Entropy::Graphics::Vulkan::Textures {
             stbi_uc *pixels = stbi_load(path.c_str(), &texWidth, &texHeight,
                                         &texChannels, STBI_rgb_alpha);
 
-            VkDeviceSize imageSize = texWidth * texHeight * 4;
-
+            const VkDeviceSize imageSize = texWidth * texHeight * 4;
             assert(pixels != nullptr);
 
-            auto buffer =
+            const auto buffer =
                     StagingBuffer(imageSize, pixels, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 
             // Create a buffer and free pixels
             stbi_image_free(pixels);
-            auto buf = buffer.GetVulkanBuffer();
+            const auto buf = buffer.GetVulkanBuffer();
 
             // Get the color format being used
-            VkFormat colorFormat = GetColorFormat();
+            const VkFormat colorFormat = GetColorFormat();
 
             // // Create, transition and copy the image
             CreateImage(texWidth, texHeight, colorFormat, VK_IMAGE_TILING_OPTIMAL,
@@ -69,10 +64,10 @@ namespace Entropy::Graphics::Vulkan::Textures {
 
             imageView = std::make_shared<ImageView>(_textureImage, colorFormat);
 
-            BindDescriptorSet(false);
+            BindDescriptorSet();
         }
 
-        void BindDescriptorSet(bool empty) {
+        void BindDescriptorSet() {
             VkPhysicalDeviceProperties properties{};
             vkGetPhysicalDeviceProperties(_physicalDevice->Get(), &properties);
 
@@ -98,15 +93,15 @@ namespace Entropy::Graphics::Vulkan::Textures {
             VK_CHECK(vkCreateSampler(_logicalDevice->Get(), &samplerInfo, nullptr,
                 &textureSampler));
 
-            const std::vector<VkDescriptorBindingFlags> bindingFlags = {
-                VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT
-            };
+            //const std::vector<VkDescriptorBindingFlags> bindingFlags = {
+            //    VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT
+            //};
 
-            VkDescriptorSetLayoutBindingFlagsCreateInfo bindingFlagsInfo = {};
-            bindingFlagsInfo.sType =
-                    VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO_EXT;
-            bindingFlagsInfo.bindingCount = bindingFlags.size();
-            bindingFlagsInfo.pBindingFlags = bindingFlags.data();
+            //VkDescriptorSetLayoutBindingFlagsCreateInfo bindingFlagsInfo = {};
+            //bindingFlagsInfo.sType =
+            //        VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO_EXT;
+            //bindingFlagsInfo.bindingCount = bindingFlags.size();
+            //bindingFlagsInfo.pBindingFlags = bindingFlags.data();
 
             VkDescriptorSetLayoutBinding samplerLayoutBinding{};
             samplerLayoutBinding.binding = 2;
@@ -116,15 +111,15 @@ namespace Entropy::Graphics::Vulkan::Textures {
             samplerLayoutBinding.pImmutableSamplers = nullptr;
             samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-
-            std::array<VkDescriptorSetLayoutBinding, 1> bindings = {
+            const std::array<VkDescriptorSetLayoutBinding, 1> bindings = {
                 samplerLayoutBinding
             };
+
             VkDescriptorSetLayoutCreateInfo layoutInfo{};
             layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
             layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
             layoutInfo.pBindings = bindings.data();
-            layoutInfo.pNext = &bindingFlagsInfo;
+            //layoutInfo.pNext = &bindingFlagsInfo;
 
             VK_CHECK(vkCreateDescriptorSetLayout(_logicalDevice->Get(), &layoutInfo,
                 nullptr, &_descriptorSetLayout));
@@ -144,7 +139,7 @@ namespace Entropy::Graphics::Vulkan::Textures {
 
             VkDescriptorImageInfo imageInfo{};
             imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            imageInfo.imageView = empty ? nullptr : imageView->Get();
+            imageInfo.imageView = imageView->Get();
             imageInfo.sampler = textureSampler;
 
             descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -162,3 +157,5 @@ namespace Entropy::Graphics::Vulkan::Textures {
         }
     };
 } // namespace Entropy::Graphics::Vulkan::Textures
+
+#endif // ENTROPY_TEXTURE_H

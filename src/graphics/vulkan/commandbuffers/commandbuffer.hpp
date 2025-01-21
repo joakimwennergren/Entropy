@@ -1,15 +1,18 @@
-#pragma once
+#ifndef ENTROPY_COMMAND_BUFFER_H
+#define ENTROPY_COMMAND_BUFFER_H
 
 #include <graphics/vulkan/commandpools/commandpool.hpp>
-#include <graphics/vulkan/synchronization/queuesync.hpp>
-#include <graphics/vulkan/utilities/utilities.hpp>
-#include <spdlog/spdlog.h>
-
-using namespace Entropy::Graphics::Vulkan::CommandPools;
-using namespace Entropy::Graphics::Vulkan::Synchronization;
-using namespace Entropy::Graphics::Vulkan::Utilities;
+#include <graphics/vulkan/utilities/helpers.hpp>
 
 namespace Entropy::Graphics::Vulkan::CommandBuffers {
+ /**
+  * @brief Represents a Vulkan CommandBuffer used to record and execute commands.
+  *
+  * This class provides methods for creating, managing, and recording commands
+  * into a Vulkan command buffer. It ensures the proper allocation and cleanup
+  * of Vulkan resources, and offers utilities for efficient command buffer usage,
+  * including single-use and reusable recording patterns.
+  */
  struct CommandBuffer {
   /**
    * @brief CommandBuffer constructor to allocate a Vulkan command buffer.
@@ -17,22 +20,15 @@ namespace Entropy::Graphics::Vulkan::CommandBuffers {
    *        which can be either VK_COMMAND_BUFFER_LEVEL_PRIMARY or VK_COMMAND_BUFFER_LEVEL_SECONDARY.
    * @return (void)
    */
-  explicit CommandBuffer(const VkCommandBufferLevel level) {
-   const ServiceLocator *sl = ServiceLocator::GetInstance();
-   const auto logicalDevice = sl->getService<ILogicalDevice>();
-   const auto commandPool = sl->getService<ICommandPool>();
+  explicit CommandBuffer(VkCommandBufferLevel level);
 
-   assert(logicalDevice != nullptr);
-
-   VkCommandBufferAllocateInfo allocInfo{};
-   allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-   allocInfo.commandPool = commandPool->Get();
-   allocInfo.level = level;
-   allocInfo.commandBufferCount = 1;
-
-   VK_CHECK(vkAllocateCommandBuffers(logicalDevice->Get(), &allocInfo,
-    &_commandBuffer));
-  }
+  /**
+   * @brief Destructor for the CommandBuffer class that frees the allocated Vulkan command buffer.
+   *        Ensures proper cleanup of resources by releasing the allocated command buffer
+   *        from the associated logical device and command pool.
+   * @return (void)
+   */
+  ~CommandBuffer();
 
   /**
    * @brief Begins recording commands into the Vulkan command buffer.
@@ -56,7 +52,6 @@ namespace Entropy::Graphics::Vulkan::CommandBuffers {
    */
   void EndRecording() const;
 
-
   /**
    * @brief Begins recording of a Vulkan command buffer for a one-time submission.
    *
@@ -68,7 +63,6 @@ namespace Entropy::Graphics::Vulkan::CommandBuffers {
    */
   void RecordOnce() const;
 
-
   /**
    * @brief Ends the recording of the Vulkan command buffer.
    *
@@ -78,7 +72,6 @@ namespace Entropy::Graphics::Vulkan::CommandBuffers {
    * @return void
    */
   void EndRecordingOnce() const;
-
 
   /**
    * @brief Retrieves the currently allocated Vulkan command buffer.
@@ -92,5 +85,9 @@ namespace Entropy::Graphics::Vulkan::CommandBuffers {
 
  private:
   VkCommandBuffer _commandBuffer = VK_NULL_HANDLE;
+  std::shared_ptr<ILogicalDevice> _logicalDevice;
+  std::shared_ptr<ICommandPool> _commandPool;
  };
 } // namespace Entropy::Graphics::Vulkan::CommandBuffers
+
+#endif // ENTROPY_COMMAND_BUFFER_H

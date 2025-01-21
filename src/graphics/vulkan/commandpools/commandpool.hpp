@@ -3,11 +3,18 @@
 #include "icommandpool.hpp"
 
 #include <graphics/vulkan/devices/ilogical_device.hpp>
-#include <graphics/vulkan/utilities/utilities.hpp>
+#include <graphics/vulkan/utilities/helpers.hpp>
 #include <spdlog/spdlog.h>
 #include <vulkan/vulkan.hpp>
 
 namespace Entropy::Graphics::Vulkan::CommandPools {
+  /**
+   * Represents a pool used for managing Vulkan command buffers, providing an efficient allocation and resetting mechanism.
+   *
+   * This class initializes a Vulkan command pool associated with a logical device,
+   * enabling streamlined command buffer creation and reset operations, which are vital
+   * for issuing and managing rendering or compute commands in a Vulkan application.
+   */
   struct CommandPool final : ServiceBase<ICommandPool> {
     /**
      * Constructs a CommandPool object and initializes a Vulkan command pool.

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ENTROPY_UBO_H
+#define ENTROPY_UBO_H
 
 #include <glm/glm.hpp>
 
@@ -28,9 +29,13 @@ namespace Entropy::Data {
      */
     struct InstanceData {
         glm::mat4 model;
-        glm::vec4 color;
-        glm::vec2 resolution;
+        glm::vec4 bgColor;
+        glm::vec4 borderColor;
+        glm::vec4 cornerRadiuses;
+        glm::vec2 dimension;
         int type;
         int _pad[1];
     };
 } // namespace Entropy::Data
+
+#endif // ENTROPY_UBO_H

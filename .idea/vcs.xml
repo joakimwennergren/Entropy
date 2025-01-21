@@ -4,7 +4,6 @@
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/external/Catch2" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/external/VulkanMemoryAllocator" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/external/asio.cmake" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/external/box2d" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/external/bullet3" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/external/curl" vcs="Git" />

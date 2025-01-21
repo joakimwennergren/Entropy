@@ -44,15 +44,15 @@ VulkanInstance::VulkanInstance() {
   // extensions.push_back("VK_KHR_surface_protected_capabilities");
 #endif
 
-  createInfo.enabledExtensionCount = (uint32_t) extensions.size();
+  createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
   createInfo.ppEnabledExtensionNames = extensions.data();
 
-  if (ValidationLayer::CheckValidationLayerSupport(_validationLayers)) {
-    createInfo.enabledLayerCount = (uint32_t) _validationLayers.size();
+  if (ValidationLayers::ValidationLayer::CheckValidationLayerSupport(_validationLayers)) {
+    createInfo.enabledLayerCount = static_cast<uint32_t>(_validationLayers.size());
     createInfo.ppEnabledLayerNames = _validationLayers.data();
   }
 
-  vkCreateInstance(&createInfo, nullptr, &this->_instance);
+  vkCreateInstance(&createInfo, nullptr, &_instance);
 
   VkDebugUtilsMessengerCreateInfoEXT dbgCreateInfo{};
   dbgCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -64,36 +64,34 @@ VulkanInstance::VulkanInstance() {
                               VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
                               VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
   dbgCreateInfo.pfnUserCallback = debugCallback;
-  dbgCreateInfo.pUserData = nullptr; // Optional
+  dbgCreateInfo.pUserData = nullptr;
 
-  if (CreateDebugUtilsMessengerEXT(_instance, &dbgCreateInfo, nullptr,
-                                   &_debugMessenger) != VK_SUCCESS) {
-    throw std::runtime_error("failed to setup debug messenger!");
-  }
+  VK_CHECK(CreateDebugUtilsMessengerEXT(_instance, &dbgCreateInfo, nullptr,
+    &_debugMessenger));
 }
 
 VulkanInstance::~VulkanInstance() {
   DestroyDebugUtilsMessengerEXT(_instance, _debugMessenger, nullptr);
+  vkDestroyInstance(_instance, nullptr);
 }
 
 VkResult VulkanInstance::CreateDebugUtilsMessengerEXT(
-  VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
+  const VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
   const VkAllocationCallbacks *pAllocator,
   VkDebugUtilsMessengerEXT *pDebugMessenger) {
-  auto func = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(
-    instance, "vkCreateDebugUtilsMessengerEXT");
+  const auto func = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(
+    instance, "vkCreateDebugUtilsMessengerEXT"));
   if (func != nullptr) {
     return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
-  } else {
-    return VK_ERROR_EXTENSION_NOT_PRESENT;
   }
+  return VK_ERROR_UNKNOWN;
 }
 
 void VulkanInstance::DestroyDebugUtilsMessengerEXT(
-  VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger,
+  const VkInstance instance, const VkDebugUtilsMessengerEXT debugMessenger,
   const VkAllocationCallbacks *pAllocator) {
-  auto func = (PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(
-    instance, "vkDestroyDebugUtilsMessengerEXT");
+  const auto func = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(
+    instance, "vkDestroyDebugUtilsMessengerEXT"));
   if (func != nullptr) {
     func(instance, debugMessenger, pAllocator);
   }

@@ -1,14 +1,16 @@
-#pragma once
+#ifndef ENTROPY_BUFFER_H
+#define ENTROPY_BUFFER_H
 
+#include <vulkan/vulkan.hpp>
 #include <cassert>
 #include <graphics/vulkan/memory/allocator.hpp>
-#include <graphics/vulkan/utilities/utilities.hpp>
-#include <spdlog/spdlog.h>
-#include <vulkan/vulkan.hpp>
-
-using namespace Entropy::Graphics::Vulkan::Memory;
+#include <graphics/vulkan/utilities/helpers.hpp>
 
 namespace Entropy::Graphics::Vulkan::Buffers {
+ /**
+  * Represents a buffer abstraction utilizing Vulkan and the Vulkan Memory Allocator (VMA).
+  * Provides functionality to manage Vulkan buffers, including creation, memory allocation, and mapping.
+  */
  struct Buffer {
   /**
    * Destructor for the Buffer class.
@@ -16,7 +18,7 @@ namespace Entropy::Graphics::Vulkan::Buffers {
    * Allocator.
    */
   ~Buffer() {
-   vmaDestroyBuffer(_allocator->Get(), _buffer, _allocation);
+   vmaDestroyBuffer(_allocator->Get(), _buffer, allocation);
   }
 
   /**
@@ -43,7 +45,7 @@ namespace Entropy::Graphics::Vulkan::Buffers {
   /**
    * Represents a Vulkan Memory Allocator (VMA) allocation.
    */
-  VmaAllocation _allocation = VK_NULL_HANDLE;
+  VmaAllocation allocation = VK_NULL_HANDLE;
 
  protected:
   /**
@@ -54,7 +56,7 @@ namespace Entropy::Graphics::Vulkan::Buffers {
    */
   void CreateBuffer(const VkDeviceSize size, const VkBufferUsageFlags usage) {
    const ServiceLocator *sl = ServiceLocator::GetInstance();
-   _allocator = sl->getService<IAllocator>();
+   _allocator = sl->getService<Memory::IAllocator>();
 
    assert(size != 0);
    assert(usage != 0);
@@ -69,7 +71,7 @@ namespace Entropy::Graphics::Vulkan::Buffers {
    allocInfo.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT;
 
    VK_CHECK(vmaCreateBuffer(_allocator->Get(), &bufferInfo, &allocInfo,
-    &_buffer, &_allocation, nullptr));
+    &_buffer, &allocation, nullptr));
   }
 
   // Vulkan Buffer handle
@@ -79,6 +81,8 @@ namespace Entropy::Graphics::Vulkan::Buffers {
   // Mapped memory
   void *_mappedMemory = nullptr;
   // Allocator dependency
-  std::shared_ptr<IAllocator> _allocator;
+  std::shared_ptr<Memory::IAllocator> _allocator;
  };
 } // namespace Entropy::Graphics::Vulkan::Buffers
+
+#endif // ENTROPY_BUFFER_H

@@ -14,6 +14,7 @@
 #define TINYGLTF_ANDROID_LOAD_FROM_ASSETS
 #endif
 
+#define NOMINMAX
 #include <config.hpp>
 #include <fstream>
 #include <iostream>
@@ -40,13 +41,14 @@
 #include <graphics/vulkan/buffers/vertexbuffer.hpp>
 #include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
 #include <graphics/vulkan/devices/logical_device.hpp>
-#include <graphics/vulkan/pipelines/pipeline.hpp>
+#include <graphics/vulkan/pipelines/base_pipeline.hpp>
 #include <timing/timer.hpp>
 
 #include <stb_image.h>
 
 // Changing this value here also requires changing it in the vertex shader
 #define MAX_NUM_JOINTS 128u
+
 
 using namespace Entropy::Graphics::Vulkan::Textures;
 using namespace Entropy::Graphics::Vulkan::Devices;
@@ -335,7 +337,7 @@ namespace Entropy
       Node *nodeFromIndex(uint32_t index);
       void setupNodeDescriptorSet(Node *node, VkDescriptorSetLayout layout);
       void renderNode(Node *node, VkCommandBuffer commandBuffer,
-                      std::shared_ptr<Pipeline> pipeline,
+                      std::shared_ptr<BasePipeline> pipeline,
                       Material::AlphaMode alphaMode);
 
       std::unique_ptr<VertexBuffer> vertexBuffer;

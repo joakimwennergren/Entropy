@@ -1,6 +1,8 @@
 #include "imageview.hpp"
 
 using namespace Entropy::Graphics::Vulkan::ImageViews;
+using namespace Entropy::Graphics::Vulkan::Surfaces;
+using namespace Entropy::Graphics::Vulkan::QueueFamilies;
 
 ImageView::ImageView(VkImage image, const VkFormat format) {
     const ServiceLocator *sl = ServiceLocator::GetInstance();

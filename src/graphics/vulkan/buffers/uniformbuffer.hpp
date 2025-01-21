@@ -1,11 +1,17 @@
-#pragma once
+#ifndef ENTROPY_UNIFORMBUFFER_H
+#define ENTROPY_UNIFORMBUFFER_H
 
 #include <graphics/vulkan/buffers/buffer.hpp>
 
-using namespace Entropy::Graphics::Vulkan::Buffers;
-using namespace Entropy::Graphics::Vulkan;
-
 namespace Entropy::Graphics::Vulkan::Buffers {
+    /**
+     * Represents a Uniform Buffer in Vulkan.
+     *
+     * This class inherits from the Buffer class and provides functionality
+     * specific to creating and working with uniform buffers in Vulkan. It
+     * ensures the allocated memory for the buffer is properly initialized
+     * and resource management is handled securely.
+     */
     struct UniformBuffer : Buffer {
         /**
          * Constructs a UniformBuffer with the specified buffer size.
@@ -20,8 +26,10 @@ namespace Entropy::Graphics::Vulkan::Buffers {
             : Buffer() {
             assert(bufferSize != 0);
             CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-            vmaMapMemory(_allocator->Get(), _allocation, &_mappedMemory);
-            vmaUnmapMemory(_allocator->Get(), _allocation);
+            vmaMapMemory(_allocator->Get(), allocation, &_mappedMemory);
+            vmaUnmapMemory(_allocator->Get(), allocation);
         }
     };
 } // namespace Entropy::Graphics::Vulkan::Buffers
+
+#endif // ENTROPY_UNIFORMBUFFER_H

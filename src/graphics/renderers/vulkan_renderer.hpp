@@ -10,7 +10,7 @@
 
 #include <data/ubo.hpp>
 #include <ecs/world.hpp>
-#include <graphics/vulkan/buffers/stagedbuffer.hpp>
+#include <graphics/vulkan/buffers/stagingbuffer.hpp>
 #include <graphics/vulkan/buffers/storagebuffer.hpp>
 #include <graphics/vulkan/buffers/uniformbuffer.hpp>
 #include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
@@ -47,7 +47,7 @@ using namespace Entropy::Cameras;
 namespace Entropy::Graphics::Vulkan::Renderers {
     struct VulkanRenderer {
         VulkanRenderer() {
-            ServiceLocator *sl = ServiceLocator::GetInstance();
+            const ServiceLocator *sl = ServiceLocator::GetInstance();
 
             _allocator = sl->getService<IAllocator>();
             _logicalDevice = sl->getService<ILogicalDevice>();
@@ -56,22 +56,19 @@ namespace Entropy::Graphics::Vulkan::Renderers {
             _cameraManager = sl->getService<ICameraManager>();
 
             _renderPass = std::make_shared<RenderPass>();
+            _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
             //_renderPass->CreateFrameBuffers(800, 800);
 
             // Static Pipeline creation
             _staticPipeline = std::make_unique<StaticPipeline>(_renderPass);
 
-            _synchronizer = std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
-
             for (uint32_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++) {
-                _commandBuffers.push_back(CommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY));
+                _commandBuffers.emplace_back(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
             }
 
             _UBO = std::make_unique<UniformBuffer>(sizeof(UboDataDynamic));
             _instanceDataBuffer = std::make_unique<StorageBuffer>(
                 MAX_INSTANCE_COUNT * sizeof(InstanceData));
-            stagingBuffer = std::make_shared<StagingBuffer>(
-                800 * 800 * 4, nullptr, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
 
             // Update descriptor sets
             for (size_t i = 0; i < MAX_CONCURRENT_FRAMES_IN_FLIGHT; i++) {
@@ -88,7 +85,7 @@ namespace Entropy::Graphics::Vulkan::Renderers {
                 objectBufferInfo.range = sizeof(InstanceData) * MAX_INSTANCE_COUNT;
 
                 descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                descriptorWrites[0].dstSet = _staticPipeline->descriptorSets[0].Get()[i];
+                descriptorWrites[0].dstSet = _staticPipeline->descriptorSet;
                 descriptorWrites[0].dstBinding = 1;
                 descriptorWrites[0].dstArrayElement = 0;
                 descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -96,7 +93,7 @@ namespace Entropy::Graphics::Vulkan::Renderers {
                 descriptorWrites[0].pBufferInfo = &bufferInfo;
 
                 descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                descriptorWrites[1].dstSet = _staticPipeline->descriptorSets[0].Get()[i];
+                descriptorWrites[1].dstSet = _staticPipeline->descriptorSet;
                 descriptorWrites[1].dstBinding = 0;
                 descriptorWrites[1].dstArrayElement = 0;
                 descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
@@ -182,16 +179,14 @@ namespace Entropy::Graphics::Vulkan::Renderers {
             vkQueuePresentKHR(_logicalDevice->GetGraphicQueue(), &presentInfo);
         }
 
-        void OnResize(int width, int height)
-        {
+        void OnResize(const int width, const int height) {
             _synchronizer =
-                std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
+                    std::make_unique<Synchronizer>(MAX_CONCURRENT_FRAMES_IN_FLIGHT);
             _swapchain->RecreateSwapChain(width, height);
             _renderPass->RecreateDepthBuffer(width, height);
             _renderPass->RecreateFrameBuffers(width, height);
         }
 
-        std::shared_ptr<StagingBuffer> stagingBuffer;
         std::shared_ptr<RenderPass> _renderPass;
         std::shared_ptr<ISwapchain> _swapchain;
 

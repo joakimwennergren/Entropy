@@ -2,10 +2,11 @@
 
 #include <glm/glm.hpp>
 
-namespace Entropy {
-namespace Components {
-struct Scale {
-  glm::vec3 scale;
-};
-} // namespace Components
-} // namespace Entropy
+
+namespace Entropy::Components {
+  struct Dimension {
+    glm::vec3 scale;
+    glm::vec4 cornerRadiuses{0.0f};
+  };
+} // namespace Entropy::Components
+

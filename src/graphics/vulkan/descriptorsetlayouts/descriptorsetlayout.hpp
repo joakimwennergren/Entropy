@@ -30,7 +30,7 @@ namespace Entropy::Graphics::Vulkan::DescriptorSetLayouts {
       layoutInfo.pBindings = layoutBindings.data();
       layoutInfo.flags =
           VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT;
-      layoutInfo.pNext = &bindingFlagsInfo;
+      //layoutInfo.pNext = &bindingFlagsInfo;
 
       VK_CHECK(vkCreateDescriptorSetLayout(logicalDevice->Get(), &layoutInfo,
         nullptr,
@@ -40,6 +40,6 @@ namespace Entropy::Graphics::Vulkan::DescriptorSetLayouts {
     [[nodiscard]] VkDescriptorSetLayout Get() const { return _descriptorSetLayout; }
 
   private:
-    VkDescriptorSetLayout _descriptorSetLayout = VK_NULL_HANDLE;
+    VkDescriptorSetLayout _descriptorSetLayout;
   };
 } // namespace Entropy::Graphics::Vulkan::DescriptorSetLayouts

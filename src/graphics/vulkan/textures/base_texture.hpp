@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ENTROPY_BASE_TEXTURE_H
+#define ENTROPY_BASE_TEXTURE_H
 
 #include <spdlog/spdlog.h>
 
@@ -14,45 +15,49 @@
 #include <graphics/vulkan/descriptorpools/descriptorpool.hpp>
 #include <graphics/vulkan/imageviews/imageview.hpp>
 #include <graphics/vulkan/memory/allocator.hpp>
-#include <graphics/vulkan/synchronization/queuesync.hpp>
-#include <graphics/vulkan/utilities/utilities.hpp>
+#include <graphics/vulkan/utilities/helpers.hpp>
 
 #ifdef BUILD_FOR_ANDROID
 #include <android/asset_manager.h>
 #endif
 
 using namespace Entropy::Graphics::Vulkan::Buffers;
-using namespace Entropy::Graphics::Vulkan::Utilities;
 using namespace Entropy::Graphics::Vulkan::CommandBuffers;
 using namespace Entropy::Graphics::Vulkan::ImageViews;
-using namespace Entropy::Graphics::Vulkan::Memory;
-using namespace Entropy::Graphics::Vulkan::Synchronization;
-using namespace Entropy::Graphics::Vulkan::DescriptorPools;
 
 namespace Entropy::Graphics::Vulkan::Textures {
+ /**
+  * Represents a base class for managing Vulkan textures.
+  *
+  * The BaseTexture class provides methods and members for creating,
+  * managing, and cleaning up Vulkan textures. It integrates with Vulkan
+  * services like physical devices, logical devices, descriptor pools,
+  * and memory allocators through a service locator mechanism.
+  */
  struct BaseTexture {
   /**
    * Constructor for the BaseTexture class.
    *
-   * Initializes the resources for texture management using the service locator pattern.
-   * Retrieves instances of physical device, logical device, descriptor pool, and allocator from the service locator.
-   *
-   * @return An initialized instance of the BaseTexture class.
+   * Initializes the BaseTexture instance by retrieving and storing essential Vulkan-related
+   * services from the ServiceLocator. These services include the physical device, logical
+   * device, descriptor pool, and memory allocator, which are required for managing
+   * GPU resources and allocation.
    */
   BaseTexture() {
    const ServiceLocator *sl = ServiceLocator::GetInstance();
    _physicalDevice = sl->getService<IPhysicalDevice>();
    _logicalDevice = sl->getService<ILogicalDevice>();
    _descriptorPool = sl->getService<IDescriptorPool>();
-   _allocator = sl->getService<IAllocator>();
+   _allocator = sl->getService<Memory::IAllocator>();
   }
 
   /**
-   * Destructor for the BaseTexture class.
+   * Destructor for managing the cleanup of Vulkan texture resources.
    *
-   * Cleans up Vulkan resources associated with the texture. It destroys the Vulkan image
-   * and frees the descriptor sets. Ensures that the logical device and descriptor pool
-   * acquired during initialization are properly released.
+   * The destructor ensures all allocated Vulkan resources associated with
+   * the texture are properly destroyed, including the texture image,
+   * descriptor sets, and texture sampler. It utilizes the logical device
+   * and descriptor pool resources obtained from the service locator.
    */
   ~BaseTexture() {
    vkDestroyImage(_logicalDevice->Get(),
@@ -114,26 +119,18 @@ namespace Entropy::Graphics::Vulkan::Textures {
                    VkFormat format, VkImageTiling tiling,
                    VkImageUsageFlags usage, VkImage &image);
 
-  /**
-   * Retrieves the color format used for texture sampling in the BaseTexture class.
-   *
-   * This method determines the appropriate Vulkan color format to use based on
-   * the underlying operating system defined during the build process.
-   *
-   * @return A Vulkan format (VkFormat) representing the color format of the texture.
-   */
-  static VkFormat GetColorFormat();
-
   VkImage _textureImage = VK_NULL_HANDLE;
   VmaAllocation _allocation = VK_NULL_HANDLE;
   VkDescriptorSetLayout _descriptorSetLayout = VK_NULL_HANDLE;
   VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
   VkSampler textureSampler = VK_NULL_HANDLE;
-  std::shared_ptr<ImageView> imageView;
 
+  std::shared_ptr<ImageView> imageView;
   std::shared_ptr<IPhysicalDevice> _physicalDevice;
   std::shared_ptr<ILogicalDevice> _logicalDevice;
   std::shared_ptr<IDescriptorPool> _descriptorPool;
-  std::shared_ptr<IAllocator> _allocator;
+  std::shared_ptr<Memory::IAllocator> _allocator;
  };
 } // namespace Entropy::Graphics::Vulkan::Textures
+
+#endif // ENTROPY_BASE_TEXTURE_H

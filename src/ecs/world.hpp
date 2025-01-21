@@ -1,10 +1,11 @@
-#pragma once
+#ifndef ENTROPY_WORLD_H
+#define ENTROPY_WORLD_H
 
-#include "iworld.hpp"
 #include <flecs.h>
+#include "iworld.hpp"
 
 namespace Entropy::ECS {
- struct World final : public ServiceBase<IWorld> {
+ struct World final : ServiceBase<IWorld> {
   /**
    * Constructor for the World class.
    * Initializes the gameWorld object by creating a new instance of flecs::world.
@@ -25,3 +26,5 @@ namespace Entropy::ECS {
   flecs::world *gameWorld;
  };
 } // namespace Entropy::ECS
+
+#endif // ENTROPY_WORLD_H

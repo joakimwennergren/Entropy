@@ -2,10 +2,12 @@
 
 #include <filesystem/filesystem.hpp>
 #include <graphics/vulkan/pipelinecaches/pipelinecache.hpp>
-#include <graphics/vulkan/pipelines/pipeline.hpp>
+#include <graphics/vulkan/pipelines/base_pipeline.hpp>
 
-namespace Entropy::Graphics::Vulkan::Pipelines {
-    struct StaticPipeline : Pipeline {
+namespace Entropy::Graphics::Vulkan::Pipelines
+{
+    struct StaticPipeline : BasePipeline
+    {
         /**
          * Constructs a StaticPipeline object.
          *
@@ -13,10 +15,11 @@ namespace Entropy::Graphics::Vulkan::Pipelines {
          * @return A constructed StaticPipeline object.
          */
         explicit StaticPipeline(const std::shared_ptr<RenderPass> &renderPass)
-            : Pipeline(renderPass) {
+            : BasePipeline(renderPass)
+        {
             const auto dsLayouts = CreateDescriptorSets();
-            _shader = std::make_shared<Shader>(GetShadersDir() + "static_vert.spv",
-                                               GetShadersDir() + "static_frag.spv");
+            _shader = std::make_shared<Shader>(GetShadersDir() + "static/static_vert.spv",
+                                               GetShadersDir() + "static/static_frag.spv");
             Build(_shader, dsLayouts);
         }
 
@@ -27,11 +30,12 @@ namespace Entropy::Graphics::Vulkan::Pipelines {
          *
          * @return A vector of Vulkan descriptor set layouts.
          */
-        std::vector<VkDescriptorSetLayout> CreateDescriptorSets() {
+        std::vector<VkDescriptorSetLayout> CreateDescriptorSets()
+        {
             std::vector<VkDescriptorSetLayout> dsLayouts(2);
 
             VkDescriptorSetLayoutBinding instanceLayoutBinding = {};
-            instanceLayoutBinding.binding = 0; // Binding for instance buffer
+            instanceLayoutBinding.binding = 0;
             instanceLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
             instanceLayoutBinding.descriptorCount = 1;
             instanceLayoutBinding.stageFlags = VK_SHADER_STAGE_ALL;
@@ -48,33 +52,31 @@ namespace Entropy::Graphics::Vulkan::Pipelines {
             samplerLayoutBinding.binding = 2;
             samplerLayoutBinding.descriptorCount = 1;
             samplerLayoutBinding.descriptorType =
-                    VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
             samplerLayoutBinding.pImmutableSamplers = nullptr;
             samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
             const std::vector bindings = {
                 instanceLayoutBinding,
-                uboLayoutBinding
-            };
+                uboLayoutBinding};
 
             const std::vector bindings2 = {
-                samplerLayoutBinding
-            };
+                samplerLayoutBinding};
 
             const std::vector<VkDescriptorBindingFlags> bindingFlags0 = {};
+            const std::vector<VkDescriptorBindingFlags> bindingFlags1 = {};
 
-            const std::vector<VkDescriptorBindingFlags> bindingFlags1 = {
-                VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT
-            };
+            dsLayouts[0] = std::make_shared<DescriptorSetLayout>(bindings, bindingFlags0)->Get();
+            dsLayouts[1] = std::make_shared<DescriptorSetLayout>(bindings2, bindingFlags1)->Get();
 
-            const auto descriptorSetLayout0 = DescriptorSetLayout(bindings, bindingFlags0);
-            const auto descriptorSetLayout1 = DescriptorSetLayout(bindings2, bindingFlags1);
+            VkDescriptorSetAllocateInfo allocInfo{};
+            allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+            allocInfo.descriptorPool = _descriptorPool->Get();
+            allocInfo.descriptorSetCount = 1;
+            allocInfo.pSetLayouts = dsLayouts.data();
 
-            dsLayouts[0] = descriptorSetLayout0.Get();
-            dsLayouts[1] = descriptorSetLayout1.Get();
-
-            descriptorSets.emplace_back(descriptorSetLayout0);
-            descriptorSets.emplace_back(descriptorSetLayout1);
+            VK_CHECK(vkAllocateDescriptorSets(_logicalDevice->Get(), &allocInfo,
+                                              &descriptorSet));
 
             return dsLayouts;
         }

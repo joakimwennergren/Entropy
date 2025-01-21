@@ -71,14 +71,28 @@ namespace Entropy::Cameras {
 
     void setPerspective(const int width, const int height, const float xscale, const float yscale, const float znear,
                         const float zfar) {
-      matrices.perspective = glm::ortho(
-        cameraPosition.x, // Left (allows panning)
-        (static_cast<float>(width) * xscale) / zoomFactor + cameraPosition.x, // Right (panning offset)
-        (static_cast<float>(height) * yscale) / zoomFactor + cameraPosition.y, // Top (panning offset)
-        cameraPosition.y, // Bottom (panning offset)
-        znear, // Near
-        zfar // Far
+      // Calculate the orthographic projection matrix
+      const auto perspective = glm::ortho(
+        cameraPosition.x, // Left
+        static_cast<float>(width) / zoomFactor + cameraPosition.x, // Right
+        static_cast<float>(height) / zoomFactor + cameraPosition.y, // Top
+        cameraPosition.y, // Bottom
+        znear, // Near plane
+        zfar // Far plane
       );
+
+      // Calculate the center of the view based on the left, right, top, and bottom values
+      float centerX = (cameraPosition.x + (static_cast<float>(width) / zoomFactor + cameraPosition.x)) / 2.0f;
+      float centerY = (cameraPosition.y + (static_cast<float>(height) / zoomFactor + cameraPosition.y)) / 2.0f;
+
+      // Apply scaling centered around the view's center
+      glm::mat4 scaledPerspective = perspective;
+      scaledPerspective = glm::translate(scaledPerspective, glm::vec3(centerX, centerY, 0.0f)); // Translate to center
+      scaledPerspective = glm::scale(scaledPerspective, glm::vec3(xscale, yscale, 1.0f)); // Scale
+      scaledPerspective = glm::translate(scaledPerspective, glm::vec3(-centerX, -centerY, 0.0f)); // Translate back
+
+      // Store the result in the matrix
+      matrices.perspective = scaledPerspective;
     }
   };
 };

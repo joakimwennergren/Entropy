@@ -11,9 +11,8 @@
 
 using namespace Entropy::Graphics::Vulkan::Renderers;
 
-void VulkanRenderer::Render(int width, int height,
-                            float xscale, float yscale) {
-
+void VulkanRenderer::Render(const int width, const int height,
+                            const float xscale, const float yscale) {
     if (_world->Get()->count<Components::Renderable>() == 0)
         return;
 
@@ -24,13 +23,16 @@ void VulkanRenderer::Render(int width, int height,
 
     vkResetFences(_logicalDevice->Get(), 1, &currentFence);
 
-    vkAcquireNextImageKHR(_logicalDevice->Get(), _swapchain->Get(), UINT64_MAX,
-                          _synchronizer->GetImageSemaphores()[_currentFrame],
-                          VK_NULL_HANDLE, &imageIndex);
+    const auto imageResult = vkAcquireNextImageKHR(_logicalDevice->Get(), _swapchain->Get(), UINT64_MAX,
+                                                   _synchronizer->GetImageSemaphores()[_currentFrame],
+                                                   VK_NULL_HANDLE, &imageIndex);
+
+    if (imageResult == VK_SUBOPTIMAL_KHR || imageResult == VK_ERROR_OUT_OF_DATE_KHR)
+        return;
 
     const auto orthoCamera =
             dynamic_cast<OrthographicCamera *>(_cameraManager->currentCamera);
-    orthoCamera->setPerspective((float) width, (float) height, xscale, yscale, 0.1f, 256.0f);
+    orthoCamera->setPerspective(width, height, xscale, yscale, 0.1f, 256.0f);
 
     // Begin render pass and command buffer recording
     _commandBuffers[_currentFrame].Record();
@@ -54,7 +56,7 @@ void VulkanRenderer::Render(int width, int height,
 
     for (const auto &e: _sortedEntities) {
         auto position_component = e.get_ref<Components::Position>();
-        auto scale_component = e.get_ref<Components::Scale>();
+        auto scale_component = e.get_ref<Components::Dimension>();
         auto color_component = e.get_ref<Components::Color>();
         auto rotation_component = e.get_ref<Components::Rotation>();
         auto render_component = e.get_ref<Components::Renderable>();
@@ -78,27 +80,24 @@ void VulkanRenderer::Render(int width, int height,
         }
 
         void *objectData;
-        vmaMapMemory(_allocator->Get(), _instanceDataBuffer->_allocation,
+        vmaMapMemory(_allocator->Get(), _instanceDataBuffer->allocation,
                      &objectData);
 
         auto *objectSSBO = static_cast<InstanceData *>(objectData);
         objectSSBO[render_component->id - 1].model =
                 (translate * scaling * rotation);
 
-        objectSSBO[render_component->id - 1].color =
-                color_component.get() == nullptr
-                    ? glm::vec4(1.0, 1.0, 1.0, 1.0)
-                    : color_component->color;
-
+        objectSSBO[render_component->id - 1].bgColor = color_component->color;
+        objectSSBO[render_component->id - 1].borderColor = color_component->borderColor;
+        objectSSBO[render_component->id - 1].cornerRadiuses = scale_component->cornerRadiuses;
         objectSSBO[render_component->id - 1].type = render_component->type;
-        objectSSBO[render_component->id - 1].resolution =
-                glm::vec2{static_cast<float>(width), static_cast<float>(height)};
+        objectSSBO[render_component->id - 1].dimension = scale_component->scale;
 
-        vmaUnmapMemory(_allocator->Get(), _instanceDataBuffer->_allocation);
+        vmaUnmapMemory(_allocator->Get(), _instanceDataBuffer->allocation);
 
         VkRect2D scissor{};
         scissor.offset = {0, 0};
-        scissor.extent = {(unsigned int) width, (unsigned int) height};
+        scissor.extent = {static_cast<unsigned int>(width), static_cast<unsigned int>(height)};
         vkCmdSetScissor(_commandBuffers[_currentFrame].Get(), 0, 1, &scissor);
 
         // Set Viewport
@@ -115,7 +114,7 @@ void VulkanRenderer::Render(int width, int height,
                           VK_PIPELINE_BIND_POINT_GRAPHICS,
                           _staticPipeline->GetPipeline());
 
-        const auto ds0 = _staticPipeline->descriptorSets[0].Get()[_currentFrame];
+        const auto ds0 = _staticPipeline->descriptorSet;
 
         vkCmdBindDescriptorSets(
             _commandBuffers[_currentFrame].Get(), VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -130,7 +129,7 @@ void VulkanRenderer::Render(int width, int height,
         }
 
         if (e.has<Components::HasAnimatedSprite>()) {
-            auto textures = e.get<Components::HasAnimatedSprite>();
+            const auto textures = e.get<Components::HasAnimatedSprite>();
             static int textureId;
 
             if (_timer->GetTick() >= 120.0) {
@@ -146,20 +145,19 @@ void VulkanRenderer::Render(int width, int height,
 
         PushConstBlock constants{};
         constants.instanceIndex = render_component->id - 1;
-        constants.hasTexture = 0;
 
         // upload the matrix to the GPU via push constants
         vkCmdPushConstants(_commandBuffers[_currentFrame].Get(),
                            _staticPipeline->GetPipelineLayout(),
-                           VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstBlock),
+                           VK_SHADER_STAGE_ALL, 0, sizeof(PushConstBlock),
                            &constants);
 
         if (render_component.get() != nullptr &&
-            e.get<Entropy::Components::Renderable>()->indexBuffer == nullptr) {
-            auto renderable = e.get<Entropy::Components::Renderable>();
+            e.get<Components::Renderable>()->indexBuffer == nullptr) {
+            const auto renderable = e.get<Components::Renderable>();
             // Bind vertex & index buffers
-            VkBuffer vertexBuffers[] = {renderable->vertexBuffer->GetVulkanBuffer()};
-            VkDeviceSize offsets[] = {0};
+            const VkBuffer vertexBuffers[] = {renderable->vertexBuffer->GetVulkanBuffer()};
+            constexpr VkDeviceSize offsets[] = {0};
             vkCmdBindVertexBuffers(_commandBuffers[_currentFrame].Get(), 0, 1,
                                    vertexBuffers, offsets);
 

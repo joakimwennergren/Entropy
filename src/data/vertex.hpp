@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ENTROPY_VERTEX_H
+#define ENTROPY_VERTEX_H
 
 #include <array>
 #include <glm/glm.hpp>
@@ -93,3 +94,5 @@ namespace Entropy::Data {
         }
     };
 } // namespace Entropy::Data
+
+#endif // ENTROPY_VERTEX_H

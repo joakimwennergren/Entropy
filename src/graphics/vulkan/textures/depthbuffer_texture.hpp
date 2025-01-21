@@ -1,41 +1,39 @@
-#pragma once
+#ifndef ENTROPY_DEPTHBUFFER_TEXTURE_H
+#define ENTROPY_DEPTHBUFFER_TEXTURE_H
 
-#include "graphics/vulkan/utilities/utilities.hpp"
-#include <graphics/vulkan/commandbuffers/commandbuffer.hpp>
+#include <graphics/vulkan/utilities/helpers.hpp>
 #include <graphics/vulkan/imageviews/imageview.hpp>
 #include <graphics/vulkan/memory/allocator.hpp>
 #include <graphics/vulkan/textures/base_texture.hpp>
 #include <spdlog/spdlog.h>
 #include <vulkan/vulkan.hpp>
 
-using namespace Entropy::Graphics::Vulkan::CommandBuffers;
-using namespace Entropy::Graphics::Vulkan::SwapChains;
-using namespace Entropy::Graphics::Vulkan::Devices;
-using namespace Entropy::Graphics::Vulkan::ImageViews;
-using namespace Entropy::Graphics::Vulkan::Memory;
-using namespace Entropy::Graphics::Vulkan::Textures;
-
 namespace Entropy::Graphics::Vulkan::Textures {
+  /**
+   * Represents a depth buffer texture that utilizes Vulkan for rendering depth information.
+   * This texture is optimized for use as a depth-stencil attachment in Vulkan pipelines
+   * and is allocated using Vulkan Memory Allocator (VMA).
+   */
   struct DepthBufferTexture : BaseTexture {
     /**
-     * Constructs a DepthBufferTexture with the specified width and height.
+     * Constructs a DepthBufferTexture instance, initializing a Vulkan-compatible depth
+     * buffer texture with the specified width and height. The texture is configured
+     * for use as a depth-stencil attachment and allocated using Vulkan Memory Allocator (VMA).
      *
-     * @param width The width of the texture.
-     * @param height The height of the texture.
-     * @return A new DepthBufferTexture instance.
+     * @param width The width of the depth buffer texture in pixels.
+     * @param height The height of the depth buffer texture in pixels.
+     * @return None
      */
     DepthBufferTexture(const uint32_t width, const uint32_t height) {
       const ServiceLocator *sl = ServiceLocator::GetInstance();
-      const auto allocator = sl->getService<IAllocator>();
+      const auto allocator = sl->getService<Memory::IAllocator>();
       _physicalDevice = sl->getService<IPhysicalDevice>();
 
       VkFormat depthFormat =
-          findSupportedFormat({
-                                VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT,
-                                VK_FORMAT_D24_UNORM_S8_UINT
-                              },
-                              VK_IMAGE_TILING_OPTIMAL,
-                              VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+          FindSupportedFormat({
+            VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT,
+            VK_FORMAT_D24_UNORM_S8_UINT
+          });
 
       VmaAllocationCreateInfo allocCreateInfo = {};
       allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO;
@@ -65,32 +63,25 @@ namespace Entropy::Graphics::Vulkan::Textures {
 
   private:
     /**
-     * Finds a supported Vulkan format from the given list of candidates that matches the required
-     * image tiling and format features.
+     * Finds and returns a supported Vulkan format from a list of candidate formats.
+     * The method checks for formats that have the depth-stencil attachment feature enabled.
      *
-     * @param candidates A vector of candidate VkFormat values to search through.
-     * @param tiling The desired VkImageTiling for the format.
-     * @param features The required VkFormatFeatureFlags for the format.
-     * @return The VkFormat that matches the specified criteria, or VK_FORMAT_UNDEFINED if no match is found.
+     * @param candidates A vector of Vulkan format candidates to be checked for support.
+     * @return The first supported Vulkan format that meets the requirements.
+     *         If no supported format is found, returns VK_FORMAT_UNDEFINED.
      */
-    [[nodiscard]] VkFormat findSupportedFormat(const std::vector<VkFormat> &candidates,
-                                               VkImageTiling tiling,
-                                               VkFormatFeatureFlags features) const {
+    [[nodiscard]] VkFormat FindSupportedFormat(const std::vector<VkFormat> &candidates) const {
       for (const VkFormat format: candidates) {
         VkFormatProperties props;
         vkGetPhysicalDeviceFormatProperties(_physicalDevice->Get(), format,
                                             &props);
-
-        if (tiling == VK_IMAGE_TILING_LINEAR &&
-            (props.linearTilingFeatures & features) == features) {
-          return format;
-        } else if (tiling == VK_IMAGE_TILING_OPTIMAL &&
-                   (props.optimalTilingFeatures & features) == features) {
+        if ((props.optimalTilingFeatures & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT) ==
+            VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT) {
           return format;
         }
       }
 
-      spdlog::warn("Failed to find supported format.");
+      spdlog::warn("Failed to find supported depth buffer format.");
       return VK_FORMAT_UNDEFINED;
     }
 
@@ -98,3 +89,5 @@ namespace Entropy::Graphics::Vulkan::Textures {
     std::shared_ptr<IPhysicalDevice> _physicalDevice;
   };
 } // namespace Entropy::Graphics::Vulkan::Textures
+
+#endif // ENTROPY_DEPTHBUFFER_TEXTURE_H
