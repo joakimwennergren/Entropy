@@ -1,7 +1,8 @@
 #include "application.hpp"
+
 #include <ecs/iworld.hpp>
-#include <graphics/renderers/vulkan_renderer.hpp>
 #include <graphics/primitives/primitives.hpp>
+#include <graphics/renderers/vulkan_renderer.hpp>
 
 using namespace Entropy::Graphics::Vulkan::Instances;
 using namespace Entropy::Graphics::Vulkan::Surfaces;
@@ -39,7 +40,8 @@ Application::Application() {
 
   // Create the window
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-  _window = glfwCreateWindow(1000, 640, "Entropy application", nullptr, nullptr);
+  _window =
+      glfwCreateWindow(1000, 640, "Entropy application", nullptr, nullptr);
 
   if (!_window) {
     spdlog::critical("Could not create window.");
@@ -95,16 +97,16 @@ Application::Application() {
   keyboard = std::make_shared<Keyboard>();
   mouse = std::make_shared<Mouse>();
 
-  if (const auto instance = sl->getService<IVulkanInstance>(); glfwCreateWindowSurface(instance->Get(), _window,
-                                                                 nullptr,
-                                                                 &_surface) !=
-                                                               VK_SUCCESS) {
+  if (const auto instance = sl->getService<IVulkanInstance>();
+      glfwCreateWindowSurface(instance->Get(), _window, nullptr, &_surface) !=
+      VK_SUCCESS) {
     std::cout << "Failed to create a window surface for platform 'MacOS'"
-        << std::endl;
+              << std::endl;
   }
 
   glfwGetFramebufferSize(_window, &screen_width, &screen_height);
-  const VkExtent2D frame = {static_cast<uint32_t>(screen_width), static_cast<uint32_t>(screen_height)};
+  const VkExtent2D frame = {static_cast<uint32_t>(screen_width),
+                            static_cast<uint32_t>(screen_height)};
 
   _renderer->_swapchain->Build(_surface, frame, VK_NULL_HANDLE);
   _renderer->_renderPass->RecreateDepthBuffer(screen_width, screen_height);
@@ -131,8 +133,9 @@ size_t GeneratePolygonHash(const b2Vec2 *vertices, int vertexCount) {
   return hash;
 }
 
-void DrawSolidPolygon(b2Transform transform, const b2Vec2 *vertices, int vertexCount, float radius,
-                      b2HexColor color, void *context) {
+void DrawSolidPolygon(b2Transform transform, const b2Vec2 *vertices,
+                      int vertexCount, float radius, b2HexColor color,
+                      void *context) {
   /*
   const auto pool = static_cast<std::vector<flecs::entity> *>(context);
 
@@ -158,7 +161,8 @@ void DrawSolidPolygon(b2Transform transform, const b2Vec2 *vertices, int vertexC
 
   // Update the entity's position (transform)
   if (auto position = polyEntity.get_mut<Position>()) {
-    position->pos = glm::vec3(transform.p.x / 100.0f, transform.p.y / 100.0f, 0.0f);
+    position->pos = glm::vec3(transform.p.x / 100.0f, transform.p.y / 100.0f,
+  0.0f);
   }
   */
 }
@@ -217,9 +221,11 @@ void Application::Run() {
   }
 }
 
-void OnKey(GLFWwindow *window, const int key, const int scancode, const int action,
-           const int mods) {
-  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr) {
+void OnKey(GLFWwindow *window, const int key, const int scancode,
+           const int action, const int mods) {
+  if (const auto app =
+          static_cast<Application *>(glfwGetWindowUserPointer(window));
+      app != nullptr) {
     if (action == GLFW_PRESS) {
       app->keyboard->keysDown[key] = true;
     }
@@ -228,31 +234,36 @@ void OnKey(GLFWwindow *window, const int key, const int scancode, const int acti
       app->keyboard->keysDown[key] = false;
     }
 
-    app->keyboard->keyCtrl = app->keyboard->keysDown[GLFW_KEY_LEFT_CONTROL] || app->keyboard->keysDown[
-                               GLFW_KEY_RIGHT_CONTROL];
+    app->keyboard->keyCtrl = app->keyboard->keysDown[GLFW_KEY_LEFT_CONTROL] ||
+                             app->keyboard->keysDown[GLFW_KEY_RIGHT_CONTROL];
 
-    app->keyboard->keyShift = app->keyboard->keysDown[GLFW_KEY_LEFT_SHIFT] || app->keyboard->keysDown[
-                                GLFW_KEY_RIGHT_SHIFT];
+    app->keyboard->keyShift = app->keyboard->keysDown[GLFW_KEY_LEFT_SHIFT] ||
+                              app->keyboard->keysDown[GLFW_KEY_RIGHT_SHIFT];
 
-    app->keyboard->keyAlt = app->keyboard->keysDown[GLFW_KEY_LEFT_ALT] || app->keyboard->keysDown[GLFW_KEY_RIGHT_ALT];
+    app->keyboard->keyAlt = app->keyboard->keysDown[GLFW_KEY_LEFT_ALT] ||
+                            app->keyboard->keysDown[GLFW_KEY_RIGHT_ALT];
 
-    app->keyboard->keySuper = app->keyboard->keysDown[GLFW_KEY_LEFT_SUPER] || app->keyboard->keysDown[
-                                GLFW_KEY_RIGHT_SUPER];
+    app->keyboard->keySuper = app->keyboard->keysDown[GLFW_KEY_LEFT_SUPER] ||
+                              app->keyboard->keysDown[GLFW_KEY_RIGHT_SUPER];
   }
 }
 
-void OnCharacter(GLFWwindow *window, unsigned int codepoint) {
-}
+void OnCharacter(GLFWwindow *window, unsigned int codepoint) {}
 
 void OnCursorPosition(GLFWwindow *window, const double xpos,
                       const double ypos) {
-  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr) {
+  if (const auto app =
+          static_cast<Application *>(glfwGetWindowUserPointer(window));
+      app != nullptr) {
     app->mouse->pos = glm::vec2(xpos, ypos);
   }
 }
 
-void OnFramebufferResize(GLFWwindow *window, const int width, const int height) {
-  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr) {
+void OnFramebufferResize(GLFWwindow *window, const int width,
+                         const int height) {
+  if (const auto app =
+          static_cast<Application *>(glfwGetWindowUserPointer(window));
+      app != nullptr) {
     app->screen_width = width;
     app->screen_height = height;
 
@@ -260,15 +271,18 @@ void OnFramebufferResize(GLFWwindow *window, const int width, const int height) 
     app->GetVulkanRenderer()->Render(width, height, app->xscale, app->yscale);
 
     const auto lua = ServiceLocator::GetInstance()->getService<ILua>();
-    if (const auto on_render = lua->Get()->get<sol::function>("OnRender"); on_render.valid()) {
+    if (const auto on_render = lua->Get()->get<sol::function>("OnRender");
+        on_render.valid()) {
       on_render(1.0f, width, height);
     }
   }
 }
 
-void OnMouseButtonCallback(GLFWwindow *window, const int button, const int action,
-                           int mods) {
-  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr) {
+void OnMouseButtonCallback(GLFWwindow *window, const int button,
+                           const int action, int mods) {
+  if (const auto app =
+          static_cast<Application *>(glfwGetWindowUserPointer(window));
+      app != nullptr) {
     if (action == GLFW_PRESS) {
       app->mouse->mouseDown[button] = true;
     }
@@ -279,13 +293,17 @@ void OnMouseButtonCallback(GLFWwindow *window, const int button, const int actio
 }
 
 void OnScroll(GLFWwindow *window, const double xoffset, const double yoffset) {
-  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr) {
+  if (const auto app =
+          static_cast<Application *>(glfwGetWindowUserPointer(window));
+      app != nullptr) {
     app->mouse->scroll = glm::vec2(xoffset, yoffset);
   }
 }
 
 void OnWindowIconify(GLFWwindow *window, const int iconified) {
-  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr) {
+  if (const auto app =
+          static_cast<Application *>(glfwGetWindowUserPointer(window));
+      app != nullptr) {
     if (iconified) {
       app->isMinimized = true;
     } else {
@@ -296,7 +314,9 @@ void OnWindowIconify(GLFWwindow *window, const int iconified) {
 
 void OnWindowContentScale(GLFWwindow *window, const float xscale,
                           const float yscale) {
-  if (const auto app = static_cast<Application *>(glfwGetWindowUserPointer(window)); app != nullptr) {
+  if (const auto app =
+          static_cast<Application *>(glfwGetWindowUserPointer(window));
+      app != nullptr) {
     app->xscale = xscale;
     app->yscale = yscale;
   }
