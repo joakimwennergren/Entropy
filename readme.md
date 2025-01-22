@@ -7,7 +7,7 @@
     <img src="https://github.com/joakimwennergren/Entropy-Engine/blob/develop/resources/logo/entropy.png" alt="Logo" width="240" height="240">
   </a>
 
-<h1 align="center">Entropy</h1>
+<h3 align="center">Entropy</h3>
 
   <p align="center">
     Graphics engine with vulkan backend
